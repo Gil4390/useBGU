@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.antlr.runtime.Token;
 import org.tzi.use.gen.assl.statics.GProcedure;
 import org.tzi.use.uml.mm.MClass;
+import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.ModelFactory;
 import org.tzi.use.uml.ocl.type.Type;
@@ -45,29 +46,29 @@ public class Context {
     private Symtable fTypeTable; // declared type names
     // implicit context for some expressions (self or element variable
     // in iterate-based expressions)
-    private ExprContext fExprContext; 
+    private ExprContext fExprContext;
     private int fErrorCount;
     private String fFilename;
-    
+
     private PrintWriter fErr;
     private PrintWriter fOut;
-    
+    private MMultiModel fMultiModel;
     private MModel fModel;
     private MClass fCurrentClass;
     private ModelFactory fModelFactory;
     private MSystemState fSystemState;
     private boolean fInsidePostCondition;
     private List<String> fLoopVarNames;
-    
+
     private List<GProcedure> generatorProcedures;
-    
-    // for test cases: in assert expressions invariant names 
+
+    // for test cases: in assert expressions invariant names
     // are replaced by their expression
     private boolean fIsAssertExpression;
-    
+
     private boolean fIsInsideTestCase;
-    
-    public Context(String filename, PrintWriter err, 
+
+    public Context(String filename, PrintWriter err,
                    VarBindings globalBindings,
                    ModelFactory factory) {
         fFilename = filename;
@@ -78,16 +79,16 @@ public class Context {
         fExprContext = new ExprContext();
         fModelFactory = factory;
         fLoopVarNames = new ArrayList<String>();
-     }
+    }
 
     public void setOut(PrintWriter out) {
-    	fOut = out;
+        fOut = out;
     }
 
     public PrintWriter getOut() {
-    	return fOut;
+        return fOut;
     }
-    
+
     public List<String> loopVarNames() {
         return fLoopVarNames;
     }
@@ -101,28 +102,28 @@ public class Context {
     }
 
     public void setVarTable(Symtable varTable) {
-    	fVarTable = varTable;
+        fVarTable = varTable;
     }
-    
+
     public void buildVarTable(Map<String, Type> symTable)
     {
-    	Symtable newSymtable = new Symtable();
-    	try {
-	    	for (Entry<String, Type> entry : symTable.entrySet()) {
-	    		newSymtable.add(entry.getKey(), entry.getValue(), null);
-	    	}
-    	} catch (SemanticException e) {
-			// since the exception gets thrown if we add something with
-    		// the same name as an existing entry, and we're adding stuff
-    		// from a map (in which keys are unique), we can safely assume
-    		// that we won't end up here unless someone changes the behavior
-    		// of the .add method
-    		System.err.println("please check org.tzi.use.parser.Context:buildVarTable()");
-		}	
-    
-    	fVarTable = newSymtable;
+        Symtable newSymtable = new Symtable();
+        try {
+            for (Entry<String, Type> entry : symTable.entrySet()) {
+                newSymtable.add(entry.getKey(), entry.getValue(), null);
+            }
+        } catch (SemanticException e) {
+            // since the exception gets thrown if we add something with
+            // the same name as an existing entry, and we're adding stuff
+            // from a map (in which keys are unique), we can safely assume
+            // that we won't end up here unless someone changes the behavior
+            // of the .add method
+            System.err.println("please check org.tzi.use.parser.Context:buildVarTable()");
+        }
+
+        fVarTable = newSymtable;
     }
-    
+
     public Symtable varTable() {
         return fVarTable;
     }
@@ -135,6 +136,10 @@ public class Context {
         return fExprContext;
     }
 
+    public void setMultiModel(MMultiModel model) {
+        fMultiModel = model;
+    }
+
     public void setModel(MModel model) {
         fModel = model;
     }
@@ -142,6 +147,10 @@ public class Context {
     public MModel model() {
         return fModel;
     }
+    public MMultiModel multiModel() {
+        return fMultiModel;
+    }
+
 
     public void setSystemState(MSystemState systemState) {
         fSystemState = systemState;
@@ -158,7 +167,7 @@ public class Context {
     public MClass currentClass() {
         return fCurrentClass;
     }
-    
+
     public void setInsidePostCondition(boolean state) {
         fInsidePostCondition = state;
     }
@@ -166,58 +175,58 @@ public class Context {
     public boolean insidePostCondition() {
         return fInsidePostCondition;
     }
-        
+
     public int errorCount() {
         return fErrorCount;
     }
 
     public void reportWarning(Token t, String msg) {
-        fErr.println(fFilename + ":" + t.getLine() + ":" + 
-                     t.getCharPositionInLine() + ": Warning: " + msg);
+        fErr.println(fFilename + ":" + t.getLine() + ":" +
+                t.getCharPositionInLine() + ": Warning: " + msg);
     }
-    
+
     public void reportError(Token t, String msg) {
         fErrorCount++;
-        fErr.println(fFilename + ":" + t.getLine() + ":" + 
-                     t.getCharPositionInLine() + ": " + msg);
+        fErr.println(fFilename + ":" + t.getLine() + ":" +
+                t.getCharPositionInLine() + ": " + msg);
     }
-    
+
     public void reportError(Token t, Exception ex) {
         reportError(t, ex.getMessage());
     }
-    
+
     public void reportError(SemanticException ex) {
         fErrorCount++;
         fErr.println(ex.getMessage());
         fErr.flush();
     }
 
-	public boolean isAssertExpression() {
-		return fIsAssertExpression;
-	}
+    public boolean isAssertExpression() {
+        return fIsAssertExpression;
+    }
 
 
-	public void setIsAssertExpression(boolean fIsAssertExpression) {
-		this.fIsAssertExpression = fIsAssertExpression;
-	}
+    public void setIsAssertExpression(boolean fIsAssertExpression) {
+        this.fIsAssertExpression = fIsAssertExpression;
+    }
 
-	public void setIsInsideTestCase(boolean newValue) {
-		this.fIsInsideTestCase = newValue;
-	}
-	
-	public boolean isInsideTestCase() {
-		return this.fIsInsideTestCase;
-	}
+    public void setIsInsideTestCase(boolean newValue) {
+        this.fIsInsideTestCase = newValue;
+    }
 
-	/**
-	 * Sets the available procedures in an ASSL file 
-	 * @param procedures
-	 */
-	public void setProcedures(List<GProcedure> procedures) {
-		generatorProcedures = procedures;
-	}
-	
-	public List<GProcedure> getProcedures() {
-		return generatorProcedures;
-	}
+    public boolean isInsideTestCase() {
+        return this.fIsInsideTestCase;
+    }
+
+    /**
+     * Sets the available procedures in an ASSL file
+     * @param procedures
+     */
+    public void setProcedures(List<GProcedure> procedures) {
+        generatorProcedures = procedures;
+    }
+
+    public List<GProcedure> getProcedures() {
+        return generatorProcedures;
+    }
 }

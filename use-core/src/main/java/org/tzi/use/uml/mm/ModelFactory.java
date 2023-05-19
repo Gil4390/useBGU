@@ -29,12 +29,16 @@ import org.tzi.use.uml.ocl.expr.VarDecl;
 import org.tzi.use.uml.ocl.expr.VarDeclList;
 import org.tzi.use.uml.ocl.type.Type;
 
-/** 
+/**
  * A ModelFactory creates instances of the Metamodel.
  *
  * @author  Mark Richters
  */
 public class ModelFactory {
+
+    public MMultiModel createMultiModel(String name) {
+        return new MMultiModel(name);
+    }
 
     public MModel createModel(String name) {
         return new MModel(name);
@@ -44,23 +48,23 @@ public class ModelFactory {
         return new MClassImpl(name, isAbstract);
     }
 
-    public MAssociationClass createAssociationClass( String name, 
+    public MAssociationClass createAssociationClass( String name,
                                                      boolean isAbstract ) {
         return new MAssociationClassImpl( name, isAbstract );
     }
 
-    public MClassInvariant createClassInvariant(String name, List<String> vars, 
-            									MClass cls, Expression inv, boolean isExistential) 
-    	throws ExpInvalidException
-	{
-    	return new MClassInvariant(name, vars, cls, inv, isExistential);
-	}
+    public MClassInvariant createClassInvariant(String name, List<String> vars,
+                                                MClass cls, Expression inv, boolean isExistential)
+            throws ExpInvalidException
+    {
+        return new MClassInvariant(name, vars, cls, inv, isExistential);
+    }
 
-    public MPrePostCondition createPrePostCondition(String name, 
-                                                    MOperation op, 
-                                                    boolean isPre, 
-                                                    Expression constraint) 
-        throws ExpInvalidException
+    public MPrePostCondition createPrePostCondition(String name,
+                                                    MOperation op,
+                                                    boolean isPre,
+                                                    Expression constraint)
+            throws ExpInvalidException
     {
         return new MPrePostCondition(name, op, isPre, constraint);
     }
@@ -69,7 +73,7 @@ public class ModelFactory {
         return new MAttribute(name, t);
     }
 
-    public MOperation createOperation(String name, VarDeclList varDeclList, 
+    public MOperation createOperation(String name, VarDeclList varDeclList,
                                       Type resultType) {
         return new MOperation(name, varDeclList, resultType);
     }
@@ -83,8 +87,8 @@ public class ModelFactory {
         return new MGeneralization(child, parent);
     }
 
-    /** 
-     * Creates a new association end. 
+    /**
+     * Creates a new association end.
      *
      * @param cls        the class to be connected.
      * @param rolename   role that the class plays in this association.
@@ -93,9 +97,9 @@ public class ModelFactory {
      * @param isOrdered  use as Set or Sequence
      * @param qualifiers List of qualifier declarations
      */
-    public MAssociationEnd createAssociationEnd(MClass cls, 
-                                                String rolename, 
-                                                MMultiplicity mult, 
+    public MAssociationEnd createAssociationEnd(MClass cls,
+                                                String rolename,
+                                                MMultiplicity mult,
                                                 int kind,
                                                 boolean isOrdered,
                                                 List<VarDecl> qualifiers) {
@@ -106,12 +110,12 @@ public class ModelFactory {
         return new MMultiplicity();
     }
 
-	/**
-	 * Creates a new signal.
-	 * @param name
-	 * @return
-	 */
-	public MSignal createSignal(String name, boolean isAbstract) {	
-		return new MSignalImpl(name, isAbstract);
-	}
+    /**
+     * Creates a new signal.
+     * @param name
+     * @return
+     */
+    public MSignal createSignal(String name, boolean isAbstract) {
+        return new MSignalImpl(name, isAbstract);
+    }
 }

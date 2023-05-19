@@ -5,31 +5,53 @@
 
 // grammar start
 
+
+/*
+    multi_model ::= "multi_model" internal_model (internal_model) * EOF
+*/
+
+multi_model returns [ASTMultiModel n]
+:
+    'multi_model' mmName=IDENT {$n = new ASTMultiModel($mmName);}
+    m=internal_model {$n.addModel($m.n);}
+    (m=internal_model { $n.addModel($m.n); } )*
+    EOF
+    ;
+
+/*
+    model ::= internal_model EOF
+*/
+
+model returns [ASTModel n]
+:
+    m=internal_model {$n=$m.n;}
+    EOF
+    ;
+
 /* ------------------------------------
-  model ::= 
+  internal_model ::=
     "model" id
-    {   
-        classDefinition 
-      | associationDefinition 
+    {
+        classDefinition
+      | associationDefinition
       | "constraints" { invariant | prePost }
       | signalDefinition
       | enumTypeDefinition
-    } 
+    }
 */
-model returns [ASTModel n]
+internal_model returns [ASTModel n]
 :
 	as = annotationSet
     'model' modelName=IDENT { $n = new ASTModel($modelName); $n.setAnnotations($as.annotations); }
     (   generalClassifierDefinition[$n]
       | a=associationDefinition { $n.addAssociation($a.n); }
       | ( 'constraints'
-          (   cons=invariant { $n.addConstraint($cons.n); } 
-            | ppc=prePost { $n.addPrePost($ppc.n); } 
-          )*  
+          (   cons=invariant { $n.addConstraint($cons.n); }
+            | ppc=prePost { $n.addPrePost($ppc.n); }
+          )*
         )
       | e=enumTypeDefinition { $n.addEnumTypeDef($e.n); }
     )*
-    EOF
     ;
     
 /* ------------------------------------
