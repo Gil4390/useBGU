@@ -1,0 +1,19 @@
+multi_model test1
+
+model i_m_1
+
+class Foo
+end
+
+class Bar < Foo
+end
+
+constraints
+
+context Foo inv i1: 
+  exists(true)
+
+context Foo inv i2: 
+  iterate(e; a : Integer = 0 | true)
+
+
