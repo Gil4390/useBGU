@@ -1,0 +1,38 @@
+multi_model test5
+
+model i_m_1
+
+class A
+end
+
+
+model i_m_2
+
+class A
+end
+
+
+model i_m_3
+
+class A
+end
+
+
+model i_m_4
+
+class A
+end
+
+
+model i_m_5
+
+class A
+end
+
+
+model i_m_6
+
+class A
+end
+
+
