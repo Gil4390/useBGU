@@ -1,0 +1,2 @@
+multi4.use:17:6: Redefinition of `A'.
+multi4.use:14:6: `A' previously declared here.

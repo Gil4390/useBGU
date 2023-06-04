@@ -1,0 +1,24 @@
+
+multi_model test3
+
+model i_m_1
+
+class A
+end
+
+constraints
+
+context A inv:
+  A.allInstances->notEmpty
+
+model i_m_2
+
+class B
+end
+
+constraints
+
+context B inv:
+  B.allInstances->notEmpty
+
+

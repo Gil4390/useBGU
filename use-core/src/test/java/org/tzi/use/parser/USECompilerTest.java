@@ -45,6 +45,7 @@ import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
 import org.tzi.use.uml.mm.MModel;
+import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.mm.ModelFactory;
 import org.tzi.use.uml.ocl.expr.Evaluator;
 import org.tzi.use.uml.ocl.expr.Expression;
@@ -119,7 +120,7 @@ public class USECompilerTest extends TestCase {
     public void testSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 32);
+        List<File> fileList = getFilesMatchingSuffix(".use", 36);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -131,6 +132,8 @@ public class USECompilerTest extends TestCase {
         // compile each file and compare with expected result
         for (File specFile : fileList) {
             String specFileName = specFile.getName();
+            if(specFileName.startsWith("multi"))
+                continue;
             try {
                 MModel model = compileSpecification(specFile, newErr);
                 File failFile = getFailFileFromUseFile(specFileName);
@@ -157,6 +160,50 @@ public class USECompilerTest extends TestCase {
             }
         }
     }
+
+
+    public void testMultiSpecification() {
+        Options.explicitVariableDeclarations = false;
+
+        List<File> fileList = getFilesMatchingPrefixWithSuffix("multi",".use", 4,36);
+        // add all the example files which should have no errors
+        File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
+        assertNotNull(files);
+        fileList.addAll(Arrays.asList(files));
+
+        // create a new stream for capturing output on stderr
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+        // compile each file and compare with expected result
+        for (File specFile : fileList) {
+            String specFileName = specFile.getName();
+            try {
+                MMultiModel multi_model = compileMultiSpecification(specFile, newErr);
+                File failFile = getFailFileFromUseFile(specFileName);
+
+                if (failFile.exists()) {
+                    if (multi_model != null) {
+                        failCompileSpecSucceededButErrorsExpected(specFileName, failFile);
+                    } else {
+                        if (!isErrorMessageAsExpected(failFile, errStr)) {
+                            failCompileSpecFailedFailFileDiffers(specFileName, errStr, failFile);
+                        }
+                    }
+                } else {
+                    if (multi_model == null) {
+                        failCompileSpecFailedWithoutFailFile(specFileName, errStr, failFile);
+                    }
+                }
+                if (VERBOSE) {
+                    System.out.println(specFileName + ": PASSED.");
+                }
+                errStr.reset();
+            } catch (FileNotFoundException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+    }
+
 
     public void testExpression() throws IOException {
         MModel model = new ModelFactory().createModel("Test");
@@ -323,12 +370,43 @@ public class USECompilerTest extends TestCase {
         return fileList;
     }
 
+    private List<File> getFilesMatchingPrefixWithSuffix(String prefix, String suffix, int expectedPrefix, int expectedSuffix) {
+        List<File> filteredSuffix = getFilesMatchingSuffix(suffix,expectedSuffix);
+        List<File> filteredPrefix = new ArrayList<File>();
+        for(File f : filteredSuffix) {
+            if(f.getName().startsWith(prefix)) {
+                filteredPrefix.add(f);
+            }
+        }
+        assertEquals(
+                "make sure that all test files can be found "
+                        + " (or update expected number if you have added test files)",
+                expectedPrefix,
+                filteredPrefix.size());
+        return filteredPrefix;
+    }
+
 
     private MModel compileSpecification(File specFile, PrintWriter newErr) throws FileNotFoundException {
         MModel result = null;
 
         try (FileInputStream specStream = new FileInputStream(specFile)){
             result = USECompiler.compileSpecification(specStream,
+                    specFile.getName(), newErr, new ModelFactory());
+            specStream.close();
+        } catch (IOException e) {
+            // This can be ignored
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    private MMultiModel compileMultiSpecification(File specFile, PrintWriter newErr) throws FileNotFoundException {
+        MMultiModel result = null;
+
+        try (FileInputStream specStream = new FileInputStream(specFile)){
+            result = USECompiler.compileMultiSpecification(specStream,
                     specFile.getName(), newErr, new ModelFactory());
             specStream.close();
         } catch (IOException e) {

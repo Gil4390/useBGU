@@ -6,6 +6,7 @@ import org.tzi.use.parser.Context;
 import org.tzi.use.uml.mm.MMultiModel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ASTMultiModel extends AST {
@@ -27,11 +28,14 @@ public class ASTMultiModel extends AST {
         mMultiModel.setFilename(ctx.filename());
         ctx.setMultiModel(mMultiModel);
 
-        for (ASTModel model : fModels) {
+        Iterator<ASTModel> mIt = fModels.iterator();
+        while(mIt.hasNext()) {
+            ASTModel model = mIt.next();
             try{
                 mMultiModel.addModel(model.gen(ctx));
             }catch(Exception e) { //TODO: add custom excepetions
-                System.out.println(e.getMessage());
+                ctx.reportError(fName,e);
+                mIt.remove();
             }
         }
 
