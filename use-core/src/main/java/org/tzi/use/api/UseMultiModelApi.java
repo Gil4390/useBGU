@@ -30,6 +30,7 @@ public class UseMultiModelApi {
     }
 
 
-
-
+    public void addModel(MModel model) throws Exception {
+        mMultiModel.addModel(model);
+    }
 }

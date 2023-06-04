@@ -1,5 +1,6 @@
 package org.tzi.use.uml.mm;
 
+import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseModelApi;
 import org.tzi.use.api.UseMultiModelApi;
 
@@ -20,7 +21,6 @@ public class TestMultiModelUtil {
         return util;
     }
 
-
     /**
      * This method creates an empty multi-model.
      */
@@ -29,4 +29,90 @@ public class TestMultiModelUtil {
         return api.getMultiModel();
     }
 
+
+    public MMultiModel createMultiModelSingleModel() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api = new UseModelApi("PersonCompany");
+            api.createClass("Person", false );
+            api.createClass("Company", false );
+
+            multiApi.addModel(api.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelTwoModels() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("PersonCompany1");
+            api1.createClass("Person", false );
+            api1.createClass("Company", false );
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("PersonCompany2");
+            api2.createClass("Person", false );
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+
+    public MMultiModel createMultiModelTwoModels_SameNameFail() throws Exception {
+        UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+        UseModelApi api1 = new UseModelApi("PersonCompany1");
+        api1.createClass("Person", false );
+        api1.createClass("Company", false );
+        multiApi.addModel(api1.getModel());
+
+        UseModelApi api2 = new UseModelApi("PersonCompany1");
+        api2.createClass("Person", false );
+        api2.createClass("Company", false );
+        multiApi.addModel(api2.getModel());
+
+        return multiApi.getMultiModel();
+    }
+
+
+    public MMultiModel createMultiModelThreeModels() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("PersonCompany1");
+            api1.createClass("Person", false);
+            api1.createClass("Company", false);
+            api1.createAttribute("Company", "name", "String");
+
+            api1.createAssociationClass("Job", false,
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+
+            api1.createAttribute( "Job", "salary", "Integer" );
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("PersonCompany2");
+            api2.createClass("Person", false );
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            UseModelApi api3 = new UseModelApi("PersonCompany3");
+            api3.createClass("Person", false );
+            api3.createClass("Company", false );
+            multiApi.addModel(api3.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
 }

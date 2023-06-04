@@ -1,5 +1,6 @@
 package org.tzi.use.uml.mm;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,7 +17,7 @@ public class MMultiModel {
 
     public void addModel(MModel model) throws Exception { //TODO: add custom exception
         if (fModels.containsKey(model.name()))
-            throw new Exception("MLModel already contains a model `"
+            throw new Exception("MultiModel already contains a model `"
                     + model.name() + "'.");
         // TODO: find out if we need to check more exceptions
         fModels.put(model.name(), model);
@@ -26,6 +27,11 @@ public class MMultiModel {
 
     public void setFilename(String name) {
         fFilename = name;
+    }
+
+
+    public Collection<MModel> models() {
+        return fModels.values();
     }
 
 }
