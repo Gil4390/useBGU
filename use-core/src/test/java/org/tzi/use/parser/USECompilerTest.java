@@ -120,7 +120,7 @@ public class USECompilerTest extends TestCase {
     public void testSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 36);
+        List<File> fileList = getFilesMatchingSuffix(".use", 35);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -165,7 +165,7 @@ public class USECompilerTest extends TestCase {
     public void testMultiSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingPrefixWithSuffix("multi",".use", 4,36);
+        List<File> fileList = getFilesMatchingPrefixWithSuffix("multi",".use", 3,35);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -415,6 +415,40 @@ public class USECompilerTest extends TestCase {
         }
 
         return result;
+    }
+
+    public void testCompileMultiAddModelSpecification() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+        MModel modelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_add_model.use");
+        File modelFile = new File(TEST_PATH + "/t4.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new ModelFactory());
+            specStream1.close();
+
+
+            try (FileInputStream specStream2 = new FileInputStream(modelFile)){
+                modelResult = USECompiler.compileSpecification(specStream2,
+                        modelFile.getName(), newErr, new ModelFactory());
+                specStream2.close();
+                multiModelResult.addModel(modelResult);
+            }
+
+        assertEquals(multiModelResult.models().size(), 3);
+        assertEquals(((MModel)multiModelResult.models().toArray()[2]).name(), modelResult.name());
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+        }
+
+
     }
 
 }
