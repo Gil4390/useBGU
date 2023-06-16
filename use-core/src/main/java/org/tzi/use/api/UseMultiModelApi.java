@@ -7,6 +7,7 @@ import org.tzi.use.uml.mm.ModelFactory;
 public class UseMultiModelApi {
 
     private MMultiModel mMultiModel;
+
     ModelFactory mFactory = new ModelFactory();
 
     public UseMultiModelApi() {
@@ -21,16 +22,16 @@ public class UseMultiModelApi {
         mMultiModel = multimodel;
     }
 
-
-
-
-
     public MMultiModel getMultiModel() {
         return mMultiModel;
     }
 
-
     public void addModel(MModel model) throws Exception {
         mMultiModel.addModel(model);
     }
+
+    public void removeModel(String modelName) throws Exception {
+        mMultiModel.removeModel(modelName);
+    }
+
 }
