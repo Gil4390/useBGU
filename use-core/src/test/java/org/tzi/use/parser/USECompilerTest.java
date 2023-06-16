@@ -447,8 +447,74 @@ public class USECompilerTest extends TestCase {
             // This can be ignored
             e.printStackTrace();
         }
-
-
     }
+
+
+    public void testCompileMultiRemoveModelSpecification1() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_add_model.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new ModelFactory());
+            specStream1.close();
+
+            multiModelResult.removeModel("i_m_1");
+
+            assertEquals(multiModelResult.size(), 1);
+            assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), "i_m_2");
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+        }
+    }
+
+    public void testCompileMultiRemoveModelSpecification2() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+        MModel modelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_add_model.use");
+        File modelFile = new File(TEST_PATH + "/t4.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new ModelFactory());
+            specStream1.close();
+
+
+            try (FileInputStream specStream2 = new FileInputStream(modelFile)){
+                modelResult = USECompiler.compileSpecification(specStream2,
+                        modelFile.getName(), newErr, new ModelFactory());
+                specStream2.close();
+                multiModelResult.addModel(modelResult);
+            }
+
+            assertEquals(multiModelResult.models().size(), 3);
+            assertEquals(((MModel)multiModelResult.models().toArray()[2]).name(), modelResult.name());
+
+            multiModelResult.removeModel("i_m_1");
+
+            assertEquals(multiModelResult.size(), 2);
+            assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), "i_m_2");
+
+            multiModelResult.removeModel("i_m_2");
+
+            assertEquals(multiModelResult.size(), 1);
+            assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), modelResult.name());
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+        }
+    }
+
 
 }
