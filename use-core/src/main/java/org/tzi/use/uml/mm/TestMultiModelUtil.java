@@ -66,6 +66,26 @@ public class TestMultiModelUtil {
         }
     }
 
+    public MMultiModel createMultiModelTwoModelsDifferentClassNames() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("PersonCompany1");
+            api1.createClass("Student", false );
+            api1.createClass("School", false );
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("PersonCompany2");
+            api2.createClass("Person", false );
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
 
     public MMultiModel createMultiModelTwoModels_SameNameFail() throws Exception {
         UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );

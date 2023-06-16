@@ -15,7 +15,7 @@ public class MultiModelCreationTest extends TestCase {
     public void testCreateMultiModelWithSingleModel() {
         try {
             MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelSingleModel();
-            assertEquals(1, multimodel.models().size());
+            assertEquals(1, multimodel.size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );
@@ -25,7 +25,7 @@ public class MultiModelCreationTest extends TestCase {
     public void testCreateMultiModelWithTwoModels() {
         try {
             MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
-            assertEquals(2, multimodel.models().size());
+            assertEquals(2, multimodel.size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );
@@ -44,7 +44,7 @@ public class MultiModelCreationTest extends TestCase {
     public void testCreateMultiModelWithThreeModels() {
         try {
             MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelThreeModels();
-            assertEquals(3, multimodel.models().size());
+            assertEquals(3, multimodel.size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );
