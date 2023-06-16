@@ -14,6 +14,23 @@ public class MMultiModel {
         fFilename = "";
     }
 
+    public void setFilename(String name) {
+        fFilename = name;
+    }
+    /**
+     * Returns the filename of the specification from which this model was read.
+     * May be empty if model is not constructed from a file.
+     */
+    public String filename() {
+        return fFilename;
+    }
+
+    /**
+     * Adds a model. The model must have a unique name within the multiModel.
+     *
+     * @exception Exception
+     *                multiModel already contains a model with the same name.
+     */
     public void addModel(MModel model) throws Exception { //TODO: add custom exception
         if (fModels.containsKey(model.name()))
             throw new Exception("MultiModel already contains a model `"
@@ -24,6 +41,12 @@ public class MMultiModel {
         //model.setMLModel(this); TODO: add setMLModel method
     }
 
+    /**
+     * Removes a model with the given name. The model must exist within the multiModel.
+     *
+     * @exception Exception
+     *                multiModel does not contain a model with the given name.
+     */
     public void removeModel(String modelName) throws Exception { //TODO: add custom exception
         if (!fModels.containsKey(modelName))
             throw new Exception("MultiModel does not contain a model `" + modelName + "'.");
@@ -32,17 +55,33 @@ public class MMultiModel {
         fModels.remove(modelName);
     }
 
-    public void setFilename(String name) {
-        fFilename = name;
+    /**
+     * Returns the specified model by name.
+     *
+     * @return <code>null</code> if model <code>name</code> does not exist.
+     */
+    public MModel getModel(String name) {
+        return fModels.get(name);
     }
 
 
+    /**
+     * Returns a collection containing all models in this multiModel.
+     *
+     * @return collection of MModel objects.
+     */
     public Collection<MModel> models() {
         return fModels.values();
     }
 
+
     public int size(){return fModels.size();}
 
+    /**
+     * Calculates the total number of classes across all MModel objects.
+     *
+     * @return The total number of classes.
+     */
     public int numOfClasses() {
         return fModels.values()
                 .stream()
@@ -50,7 +89,11 @@ public class MMultiModel {
                 .sum();
     }
 
-
+    /**
+     * Calculates the maximum number of classes among all MModel objects.
+     *
+     * @return The maximum number of classes, or -1 if no models are found.
+     */
     public int maxNumOfClasses() {
         return fModels.values()
                 .stream()
@@ -59,6 +102,11 @@ public class MMultiModel {
                 .orElse(-1);
     }
 
+    /**
+     * Checks if there are duplicate class names across all MModel objects.
+     *
+     * @return true if duplicate class names are found, false otherwise.
+     */
     public boolean containsDuplicateClassNames() {
         Set<String> allNames = new HashSet<>();
         for (MModel model : fModels.values()) {
@@ -73,5 +121,5 @@ public class MMultiModel {
         }
         return false;
     }
-    
+
 }
