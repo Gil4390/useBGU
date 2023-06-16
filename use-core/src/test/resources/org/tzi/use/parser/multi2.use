@@ -2,8 +2,24 @@ multi_model test1
 
 model i_m_1
 
-class Foo
+class A
 end
+
+class B
+attributes
+  c : Integer
+end
+
+association R between
+  A[*]
+  B[1]
+end
+
+constraints
+
+context a : A
+  inv: a.b.c >= 0
+
 
 model i_m_2
 
