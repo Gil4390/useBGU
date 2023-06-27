@@ -180,6 +180,10 @@ public class Context {
         return fErrorCount;
     }
 
+    public void setErrorCount(int errorCount) {
+        this.fErrorCount = errorCount;
+    }
+
     public void reportWarning(Token t, String msg) {
         fErr.println(fFilename + ":" + t.getLine() + ":" +
                 t.getCharPositionInLine() + ": Warning: " + msg);

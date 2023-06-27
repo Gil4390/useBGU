@@ -28,11 +28,21 @@ public class ASTMultiModel extends AST {
         mMultiModel.setFilename(ctx.filename());
         ctx.setMultiModel(mMultiModel);
 
+        boolean firstIteration = true;
+
         Iterator<ASTModel> mIt = fModels.iterator();
         while(mIt.hasNext()) {
             ASTModel model = mIt.next();
             try{
-                mMultiModel.addModel(model.gen(ctx));
+                if(firstIteration) {
+                    firstIteration = false;
+                    mMultiModel.addModel(model.gen(ctx));
+                } else{
+                    Context curContext = new Context(ctx.filename(), ctx.getOut(), null, ctx.modelFactory());
+                    curContext.setMultiModel(mMultiModel);
+                    mMultiModel.addModel(model.gen(curContext));
+                    ctx.setErrorCount(ctx.errorCount() + curContext.errorCount());
+                }
             }catch(Exception e) { //TODO: add custom excepetions
                 ctx.reportError(fName,e);
                 mIt.remove();
