@@ -1,5 +1,11 @@
 package org.tzi.use.uml.mm;
 
+import org.tzi.use.graph.DirectedGraph;
+import org.tzi.use.uml.mm.commonbehavior.communications.MSignal;
+import org.tzi.use.uml.mm.commonbehavior.communications.MSignalImpl;
+import org.tzi.use.uml.ocl.type.EnumType;
+import org.tzi.use.uml.ocl.type.TypeFactory;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,6 +18,9 @@ public class MMultiModel {
         fName = name;
         fModels = new TreeMap<>();
         fFilename = "";
+    }
+    public String name() {
+        return fName;
     }
 
     public void setFilename(String name) {
@@ -120,6 +129,62 @@ public class MMultiModel {
             }
         }
         return false;
+    }
+
+
+    public MModel toMModel() throws Exception {
+        String delimiter= "_";
+        ModelFactory factory = new ModelFactory();
+
+        MModel result_model = new MModel(this.fName);
+
+        for (MModel model : fModels.values()) {
+
+            for (EnumType enumType : model.enumTypes()){
+                String newName = model.name() + delimiter + enumType.name();
+                EnumType newEnumType = TypeFactory.mkEnum(newName, enumType.getLiterals());
+                newEnumType.model = result_model;
+            }
+
+            for (MClass mClass : model.classes()){
+                String newName = model.name() + delimiter + mClass.name();
+                MClass newClass = factory.createClass(newName, mClass.isAbstract());
+                result_model.addClass(newClass);
+            }
+
+            for (MAssociation mAssociation : model.associations()){
+                String newName = model.name() + delimiter + mAssociation.name();
+                MAssociation newAssoc = factory.createAssociation(newName);
+                result_model.addAssociation(newAssoc);
+            }
+            //graph
+            //vertices
+            Iterator<MClassifier> it = model.generalizationGraph().iterator();
+            while (it.hasNext()){
+                MClassifier node = it.next();
+                String newName = model.name() + delimiter + node.name();
+                //????
+            }
+            //edges?
+
+            for (MClassInvariant mClassInv : model.classInvariants()){
+                String newName = model.name() + delimiter + mClassInv.name();
+                List<String> varDecList = new ArrayList<>();
+                mClassInv.vars().forEach(p -> varDecList.add(p.name()));
+
+                MClassInvariant newClassInv = factory.createClassInvariant(newName, varDecList, mClassInv.cls(), mClassInv.expandedExpression(), mClassInv.isExistential());
+                result_model.addClassInvariant(newClassInv);
+            }
+
+            for (MSignal mSignal : model.getSignals()){
+                String newName = model.name() + delimiter + mSignal.name();
+                MSignal newSignal = factory.createSignal(newName, mSignal.isAbstract());
+                result_model.addSignal(newSignal);
+            }
+
+        }
+
+        return result_model;
     }
 
 }
