@@ -37,6 +37,9 @@ public class AllTests {
         test.addTestSuite( org.tzi.use.uml.mm.MAssociationClassTest.class );
         test.addTestSuite( org.tzi.use.uml.mm.MMultiplicityTest.class );
         test.addTestSuite( org.tzi.use.uml.mm.ModelCreationTest.class );
+        test.addTestSuite( org.tzi.use.uml.mm.MultiModelCreationTest.class );
+        test.addTestSuite( org.tzi.use.uml.mm.statemachines.MultiModelPropertiesTest.class );
+
         return test;
     }
 }
