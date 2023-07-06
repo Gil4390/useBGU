@@ -159,9 +159,7 @@ public class MMultiModel {
             }
             //graph
             //vertices
-            Iterator<MClassifier> it = model.generalizationGraph().iterator();
-            while (it.hasNext()){
-                MClassifier node = it.next();
+            for (MClassifier node : model.generalizationGraph()) {
                 String newName = model.name() + delimiter + node.name();
                 //????
             }

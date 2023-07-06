@@ -1,6 +1,6 @@
 multi_model test4
 
-model i_m_1
+model model1
 
 class C
 end
@@ -9,7 +9,7 @@ class B
 end
 
 
-model i_m_2
+model model2
 
 class A
 end

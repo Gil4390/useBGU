@@ -44,6 +44,7 @@ import junit.framework.TestCase;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
+import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.mm.ModelFactory;
@@ -462,10 +463,10 @@ public class USECompilerTest extends TestCase {
                     multiFile.getName(), newErr, new ModelFactory());
             specStream1.close();
 
-            multiModelResult.removeModel("i_m_1");
+            multiModelResult.removeModel("model1");
 
             assertEquals(multiModelResult.size(), 1);
-            assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), "i_m_2");
+            assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), "model2");
 
 
         } catch (Exception e) {
@@ -499,15 +500,54 @@ public class USECompilerTest extends TestCase {
             assertEquals(multiModelResult.models().size(), 3);
             assertEquals(((MModel)multiModelResult.models().toArray()[2]).name(), modelResult.name());
 
-            multiModelResult.removeModel("i_m_1");
+            multiModelResult.removeModel("model1");
 
             assertEquals(multiModelResult.size(), 2);
-            assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), "i_m_2");
+            assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), "model2");
 
-            multiModelResult.removeModel("i_m_2");
+            multiModelResult.removeModel("model2");
 
             assertEquals(multiModelResult.size(), 1);
             assertEquals(((MModel)multiModelResult.models().toArray()[0]).name(), modelResult.name());
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+        }
+    }
+
+
+    public void testCompileMultiAddModelConvertToMModel() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+        MModel modelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi5.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new ModelFactory());
+            specStream1.close();
+
+            MModel model1 = ((MModel)multiModelResult.models().toArray()[0]);
+            MModel model2 = ((MModel)multiModelResult.models().toArray()[1]);
+            MModel convertedModel = multiModelResult.toMModel();
+
+            assertEquals(convertedModel.name(), multiModelResult.name());
+
+            for (MClass mClass : model1.classes()){
+                String newName = model1.name() + "_" + mClass.name();
+                MClass cls = convertedModel.getClass(newName);
+                assertNotNull(cls);
+            }
+
+            for (MClass mClass : model2.classes()){
+                String newName = model2.name() + "_" + mClass.name();
+                MClass cls = convertedModel.getClass(newName);
+                assertNotNull(cls);
+            }
 
 
         } catch (Exception e) {

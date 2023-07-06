@@ -1,6 +1,6 @@
 multi_model test1
 
-model i_m_1
+model model1
 
 class A
 end
@@ -21,7 +21,7 @@ context a : A
   inv: a.b.c >= 0
 
 
-model i_m_2
+model model2
 
 class Bar
 end

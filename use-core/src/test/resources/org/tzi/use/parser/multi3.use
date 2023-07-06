@@ -1,7 +1,7 @@
 
 multi_model test3
 
-model i_m_1
+model model1
 
 class A
 end
@@ -11,7 +11,7 @@ constraints
 context A inv:
   A.allInstances->notEmpty
 
-model i_m_2
+model model2
 
 class B
 end
