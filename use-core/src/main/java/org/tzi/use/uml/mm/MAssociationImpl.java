@@ -74,6 +74,11 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
         fAssociationEnds = new ArrayList<MAssociationEnd>(2);
     }
 
+	public MAssociation createCopy(String name) {
+		MAssociation copy = new MAssociationImpl(name);
+		return null;
+	}
+
     @Override
 	public boolean isTypeOfClassifier() {
 		return false;
