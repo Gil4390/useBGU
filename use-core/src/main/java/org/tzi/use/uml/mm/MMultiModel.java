@@ -154,7 +154,7 @@ public class MMultiModel {
 
             for (MAssociation mAssociation : model.associations()){
                 String newName = model.name() + delimiter + mAssociation.name();
-                MAssociation newAssoc = factory.createAssociation(newName);
+                MAssociation newAssoc = mAssociation.makeCopy(newName, model.name()+delimiter, model.classesMap());
                 result_model.addAssociation(newAssoc);
             }
             //graph

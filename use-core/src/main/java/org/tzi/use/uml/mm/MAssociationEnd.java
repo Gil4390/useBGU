@@ -19,11 +19,7 @@
 
 package org.tzi.use.uml.mm;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.expr.VarDecl;
@@ -144,6 +140,36 @@ public final class MAssociationEnd extends MModelElementImpl implements MNavigab
         fIsOrdered = isOrdered;
         fIsExplicitNavigable = isExplicitNavigable;
     }
+
+	public MAssociationEnd makeCopy(String prefix, Map<String, MClass> classes) {
+		MAssociationEnd copy = new MAssociationEnd(
+				classes.get(prefix+this.fClass.name()),
+				this.nameAsRolename(),
+				this.fMultiplicity,
+				this.fKind,
+				this.isOrdered(),
+				this.isExplicitNavigable());
+		copy.isUnion = this.isUnion;
+		copy.isDerived = this.isDerived;
+		for(MAssociationEnd assocEnd : this.subsettedEnds)
+			copy.subsettedEnds.add(assocEnd.makeCopy(prefix,classes));
+
+		for(MAssociationEnd assocEnd : this.subsettingEnds)
+			copy.subsettingEnds.add(assocEnd.makeCopy(prefix, classes));
+
+		for(MAssociationEnd assocEnd : this.redefinedEnds)
+			copy.redefinedEnds.add(assocEnd.makeCopy(prefix, classes));
+
+		for(MAssociationEnd assocEnd : this.redefiningEnds)
+			copy.redefiningEnds.add(assocEnd.makeCopy(prefix, classes));
+
+		//TODO: check if deep copy is needed
+		copy.deriveParameter = this.deriveParameter;
+		copy.deriveExpression = this.deriveExpression;
+		copy.qualifier = this.qualifier;
+		copy.hashCode = this.hashCode;
+		return copy;
+	}
 
     private void setAggregationKind(int kind) {
         if (kind != MAggregationKind.NONE 

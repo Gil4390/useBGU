@@ -22,6 +22,7 @@ package org.tzi.use.uml.mm;
 import org.tzi.use.uml.ocl.expr.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -129,6 +130,18 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
 		this.negated = negated;
 		
 		calculateExpandedExpression();
+    }
+
+    public MClassInvariant makeCopy(String name, String prefix, Map<String, MClass> classes) {
+        MClass cls = classes.get(prefix+this.fClass.name());
+        MClassInvariant copy = null;
+        try {
+            copy = new MClassInvariant(
+                    name, null, cls, this.fBody, this.fIsExistential, this.active, this.negated);
+        } catch (ExpInvalidException e) {
+            throw new RuntimeException(e);
+        }
+        return copy;
     }
 
     public String qualifiedName(){

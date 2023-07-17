@@ -22,6 +22,7 @@ package org.tzi.use.uml.mm;
 import org.eclipse.jdt.annotation.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** 
@@ -230,7 +231,7 @@ public interface MAssociation extends MClassifier {
     
     @Override
     public Iterable<? extends MAssociation> specializationHierachie(boolean includeThis);
-    
+
 	/**
 	 * True, if links can be inserted into this association otherwise
 	 * false, e.g., an association with a derived union at at least
@@ -275,6 +276,17 @@ public interface MAssociation extends MClassifier {
 	 * @return
 	 */
 	boolean isRedefining();
+
+	/**
+	 * create a deep copy of MAssociation
+	 * @param name new name of the assoc
+	 * @param prefix the name of the model followed by '_'.
+	 *               Example: model1_
+	 * @param classes classes associated with the current model
+	 * @return
+	 */
+	public MAssociation makeCopy(String name, String prefix, Map<String, MClass> classes);
+
 
 	/**
 	 * Because the ordering of association ends is important for validating

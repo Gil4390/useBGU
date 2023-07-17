@@ -203,6 +203,8 @@ public class MModel extends MModelElementImpl {
 		return fClasses.values();
 	}
 
+	public Map<String, MClass> classesMap() { return fClasses; }
+
 	/**
 	 * Adds an association. The association must have a unique name within the
 	 * model.
