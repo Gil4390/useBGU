@@ -157,6 +157,7 @@ public class MMultiModel {
                 MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, model.classesMap());
                 result_model.addAssociation(newAssoc);
             }
+
             //graph
             //vertices
             for (MClassifier node : model.generalizationGraph()) {
