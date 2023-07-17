@@ -90,17 +90,6 @@ public class MClassImpl extends MClassifierImpl implements MClass {
 
         // fVTableOperations should work
 
-        for (String key : this.fNavigableElements.keySet()) {
-            MNavigableElement elem = this.fNavigableElements.get(key);
-            MNavigableElement newElem;
-            if (elem instanceof MAssociationClassImpl){
-                newElem = ((MAssociationClassImpl)elem).makeCopy(prefix);
-            }
-
-
-
-        }
-
         return cMClass;
     }
 

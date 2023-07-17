@@ -51,7 +51,7 @@ public final class MPrePostCondition extends MModelElementImpl implements UseFil
 
 
     public MPrePostCondition makeCopy(String prefix) throws Exception {
-        MPrePostCondition newCond = new MPrePostCondition(prefix + this.name(), this.operation().makeCopy(), this.fIsPre, this.fExpr);
+        MPrePostCondition newCond = new MPrePostCondition(prefix + this.name(), this.operation().makeCopy(prefix), this.fIsPre, this.fExpr);
 
         //todo newCond.setPositionInModel();
         return newCond;

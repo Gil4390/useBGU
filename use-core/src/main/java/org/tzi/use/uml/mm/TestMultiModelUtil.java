@@ -53,6 +53,9 @@ public class TestMultiModelUtil {
             UseModelApi api1 = new UseModelApi("PersonCompany1");
             api1.createClass("Person", false );
             api1.createClass("Company", false );
+            api1.createAssociationClass("Job", false,
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
             multiApi.addModel(api1.getModel());
 
             UseModelApi api2 = new UseModelApi("PersonCompany2");

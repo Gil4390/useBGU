@@ -285,7 +285,7 @@ public interface MAssociation extends MClassifier {
 	 * @param classes classes associated with the current model
 	 * @return
 	 */
-	public MAssociation makeCopy(String name, String prefix, Map<String, MClass> classes);
+	public MAssociation makeCopy(String prefix, Map<String, MClass> classes);
 
 
 	/**
