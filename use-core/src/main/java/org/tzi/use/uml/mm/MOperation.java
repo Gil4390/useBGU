@@ -22,10 +22,7 @@ package org.tzi.use.uml.mm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tzi.use.uml.ocl.expr.ExpUndefined;
-import org.tzi.use.uml.ocl.expr.Expression;
-import org.tzi.use.uml.ocl.expr.VarDecl;
-import org.tzi.use.uml.ocl.expr.VarDeclList;
+import org.tzi.use.uml.ocl.expr.*;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.sys.soil.MStatement;
 import org.tzi.use.util.StringUtil;
@@ -64,6 +61,21 @@ public final class MOperation extends MModelElementImpl implements UseFileLocata
 	    fPreConditions = new ArrayList<MPrePostCondition>();
 	    fPostConditions = new ArrayList<MPrePostCondition>();
 	}
+    public MOperation makeCopy(String prefix) throws Exception {
+        MOperation cMOperation = new MOperation(prefix + this.name(), this.paramList(), this.resultType());
+        for (MPrePostCondition cond : this.preConditions()){
+            MPrePostCondition newCond = cond.makeCopy(prefix);
+            cMOperation.addPreCondition(newCond);
+        }
+        for (MPrePostCondition cond : this.postConditions()){
+            MPrePostCondition newCond = cond.makeCopy(prefix);
+            cMOperation.addPostCondition(newCond);
+        }
+        cMOperation.setStatement(this.getStatement());
+        cMOperation.setExpression(this.expression());
+
+        return cMOperation;
+    }
 
     /**
      * Returns <code>true</code> if a SOIL statement (a body with possible side effects)

@@ -135,4 +135,29 @@ public class TestMultiModelUtil {
             throw new Error( e );
         }
     }
+
+
+    public MMultiModel createMultiModelTwoModelsOCLSimple() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Employee", false );
+            api1.createAttribute("Employee", "name", "String");
+            api1.createAttribute("Employee", "salary", "Integer");
+            api1.createInvariant("PositiveSalary", "Employee", "self.salary > 0", false);
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Student", false );
+            api2.createAttribute("Student", "name", "String");
+            api2.createAttribute("Student", "grade", "Integer");
+            api2.createInvariant("ValidGrade", "Student", "self.grade >= 0 and self.grade <= 100", false);
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
 }

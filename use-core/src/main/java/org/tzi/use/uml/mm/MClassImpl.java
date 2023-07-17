@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.tzi.use.uml.mm.statemachines.MProtocolStateMachine;
+import org.tzi.use.uml.ocl.expr.ExpInvalidException;
 import org.tzi.use.uml.sys.MOperationCall;
 import org.tzi.use.util.collections.CollectionUtil;
 
@@ -67,6 +68,40 @@ public class MClassImpl extends MClassifierImpl implements MClass {
         fOperations = new TreeMap<String, MOperation>();
         fVTableOperations = new HashMap<String, MOperation>();
         fNavigableElements = new HashMap<String, MNavigableElement>();
+    }
+
+    public MClassImpl makeCopy(String prefix) throws Exception {
+        String newName = prefix + this.name();
+        MClassImpl cMClass = new MClassImpl(newName, this.isAbstract());
+
+        for (String key : this.fAttributes.keySet()){
+            MAttribute attr = this.fAttributes.get(key);
+            MAttribute cMAttribute = attr.makeCopy(prefix);
+            cMAttribute.setOwner(cMClass);
+            cMClass.addAttribute(cMAttribute);
+        }
+
+        for (String key : this.fOperations.keySet()) {
+            MOperation oper = this.fOperations.get(key);
+            MOperation cMOperation = oper.makeCopy(prefix);
+            cMOperation.setClass(cMClass);
+            cMClass.addOperation(cMOperation);
+        }
+
+        // fVTableOperations should work
+
+        for (String key : this.fNavigableElements.keySet()) {
+            MNavigableElement elem = this.fNavigableElements.get(key);
+            MNavigableElement newElem;
+            if (elem instanceof MAssociationClassImpl){
+                newElem = ((MAssociationClassImpl)elem).makeCopy(prefix);
+            }
+
+
+
+        }
+
+        return cMClass;
     }
 
     /**
