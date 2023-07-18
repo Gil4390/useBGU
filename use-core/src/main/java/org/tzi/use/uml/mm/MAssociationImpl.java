@@ -74,28 +74,30 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
         fAssociationEnds = new ArrayList<MAssociationEnd>(2);
     }
 
-	public MAssociation makeCopy(String prefix) {
-		Map<String, MClass> classes = this.model().classesMap();
+
+	public MAssociation makeCopy(String prefix, Map<String, MClass> classes) {
 		MAssociationImpl copy = new MAssociationImpl(prefix + this.name());
 		for(MAssociationEnd assocEnd : this.fAssociationEnds) {
 			try {
-				copy.addAssociationEnd(assocEnd.makeCopy(prefix, classes));
+				MAssociationEnd assocEndCopy = assocEnd.makeCopy(prefix, classes);
+				assocEndCopy.setAssociation(copy);
+				copy.addAssociationEnd(assocEndCopy);
 			} catch (MInvalidModelException e) {
 				throw new Error(e);
 			}
 		}
 
 		for(MAssociation assoc : this.subsets)
-			copy.addSubsets(assoc.makeCopy(prefix));
+			copy.addSubsets(assoc.makeCopy(prefix, classes));
 
 		for(MAssociation assoc : this.subsettedBy)
-			copy.addSubsettedBy(assoc.makeCopy(prefix));
+			copy.addSubsettedBy(assoc.makeCopy(prefix, classes));
 
 		for(MAssociation assoc : this.redefines)
-			copy.addRedefines(assoc.makeCopy(prefix));
+			copy.addRedefines(assoc.makeCopy(prefix, classes));
 
 		for(MAssociation assoc : this.redefinedBy)
-			copy.addRedefinedBy(assoc.makeCopy(prefix));
+			copy.addRedefinedBy(assoc.makeCopy(prefix, classes));
 
 		copy.isUnion = this.isUnion;
 		copy.isDerived = this.isDerived;

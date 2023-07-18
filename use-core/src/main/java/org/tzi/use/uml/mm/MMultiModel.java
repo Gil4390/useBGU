@@ -154,14 +154,14 @@ public class MMultiModel {
             //association classes
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MAssociationClassImpl){
-                    MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter);
+                    MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter, result_model.classesMap());
                     //result_model.addAssociation();
                     result_model.addClass(newClass);
                 }
             }
 
             for (MAssociation mAssociation : model.associations()){
-                MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter);
+                MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, result_model.classesMap());
                 result_model.addAssociation(newAssoc);
             }
 
@@ -174,11 +174,7 @@ public class MMultiModel {
             //edges?
 
             for (MClassInvariant mClassInv : model.classInvariants()){
-                String newName = model.name() + delimiter + mClassInv.name();
-                List<String> varDecList = new ArrayList<>();
-                mClassInv.vars().forEach(p -> varDecList.add(p.name()));
-
-                MClassInvariant newClassInv = factory.createClassInvariant(newName, varDecList, mClassInv.cls(), mClassInv.expandedExpression(), mClassInv.isExistential());
+                MClassInvariant newClassInv = mClassInv.makeCopy(model.name()+delimiter, result_model.classesMap());
                 result_model.addClassInvariant(newClassInv);
             }
 

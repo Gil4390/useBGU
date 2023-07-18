@@ -142,7 +142,7 @@ public final class MAssociationEnd extends MModelElementImpl implements MNavigab
     }
 
 	public MAssociationEnd makeCopy(String prefix, Map<String, MClass> classes) {
-		MClass cls = classes.get(this.fClass.name());
+		MClass cls = classes.get(prefix+this.fClass.name());
 		MAssociationEnd copy = new MAssociationEnd(
 				cls,
 				this.nameAsRolename(),

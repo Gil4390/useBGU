@@ -132,16 +132,27 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
 		calculateExpandedExpression();
     }
 
-    public MClassInvariant makeCopy(String name, String prefix, Map<String, MClass> classes) {
+    public MClassInvariant makeCopy(String prefix, Map<String, MClass> classes) {
         MClass cls = classes.get(prefix+this.fClass.name());
         MClassInvariant copy = null;
         try {
             copy = new MClassInvariant(
-                    name, null, cls, this.fBody, this.fIsExistential, this.active, this.negated);
+                    prefix+this.name(), null, cls, this.fBody, this.fIsExistential, this.active, this.negated);
+            if(this.fVars.size() > 0) {
+                copy.fHasVars = true;
+                for(VarDecl varDecl : this.fVars) {
+                    copy.fVars.add(new VarDecl(varDecl.name(),cls));
+                }
+            }
+            copy.loaded = this.loaded;
+            copy.checkedByBarrier = this.checkedByBarrier;
+            copy.fPositionInModel = this.fPositionInModel;
+
+            calculateExpandedExpression();
         } catch (ExpInvalidException e) {
             throw new RuntimeException(e);
         }
-        copy.fVars = this.fVars;
+
         return copy;
     }
 
