@@ -155,7 +155,7 @@ public class MMultiModel {
             //association classes
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MAssociationClassImpl){
-                    MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter, result_model.classesMap());
+                    MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter);
                     result_model.addClass(newClass);
                 }
             }
