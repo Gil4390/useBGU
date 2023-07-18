@@ -57,8 +57,8 @@ public class MSignalImpl extends MClassifierImpl implements MSignal {
 	}
 
 	public MSignalImpl makeCopy(String prefix){
-		MSignalImpl mSignal = new MSignalImpl(prefix + this.name(), this.isAbstract());
-		return mSignal;
+		MSignalImpl copy = new MSignalImpl(prefix + this.name(), this.isAbstract());
+		return copy;
 	}
 
 	public void addAttribute(MAttribute attr) throws MInvalidModelException {		
