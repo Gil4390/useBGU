@@ -68,7 +68,7 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
         Map<String, MClass> classes = this.model().classesMap();
         MClassImpl cls = null;
         try {
-            cls = ((MClassImpl)classes.get(this.name())).makeCopy(prefix);
+            cls =  ((MAssociationClassImpl)classes.get(this.name())).fClassImpl.makeCopy(prefix);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

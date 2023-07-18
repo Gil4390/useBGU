@@ -56,6 +56,11 @@ public class MSignalImpl extends MClassifierImpl implements MSignal {
 		super(name, isAbstract);
 	}
 
+	public MSignalImpl makeCopy(String prefix){
+		MSignalImpl mSignal = new MSignalImpl(prefix + this.name(), this.isAbstract());
+		return mSignal;
+	}
+
 	public void addAttribute(MAttribute attr) throws MInvalidModelException {		
 		for (MSignal signal : this.generalizationHierachie(true)) {
 			if (signal.getAttribute(attr.name()) != null) {

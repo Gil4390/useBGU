@@ -65,6 +65,10 @@ public final class EnumType extends MClassifierImpl {
                 throw new IllegalArgumentException("duplicate literal `" +  lit + "'");
         }
     }
+    public EnumType makeCopy(MModel model, String prefix){
+        EnumType enumType = new EnumType(model, prefix + this.name(), new ArrayList<>(this.getLiterals()));
+        return enumType;
+    }
     
     @Override
     public boolean isTypeOfEnum() {

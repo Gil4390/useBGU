@@ -141,8 +141,7 @@ public class MMultiModel {
         for (MModel model : fModels.values()) {
 
             for (EnumType enumType : model.enumTypes()){
-                String newName = model.name() + delimiter + enumType.name();
-                EnumType newEnumType = TypeFactory.mkEnum(newName, enumType.getLiterals());
+                EnumType newEnumType = enumType.makeCopy(result_model, model.name() + delimiter);
                 newEnumType.model = result_model;
             }
             //regular classes
@@ -156,12 +155,10 @@ public class MMultiModel {
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MAssociationClassImpl){
                     MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter);
+                    //result_model.addAssociation();
                     result_model.addClass(newClass);
                 }
             }
-
-
-
 
             for (MAssociation mAssociation : model.associations()){
                 MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter);
@@ -186,8 +183,7 @@ public class MMultiModel {
             }
 
             for (MSignal mSignal : model.getSignals()){
-                String newName = model.name() + delimiter + mSignal.name();
-                MSignal newSignal = factory.createSignal(newName, mSignal.isAbstract());
+                MSignal newSignal = ((MSignalImpl)mSignal).makeCopy(model.name() + delimiter);
                 result_model.addSignal(newSignal);
             }
 
