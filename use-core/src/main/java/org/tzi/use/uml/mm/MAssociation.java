@@ -279,13 +279,11 @@ public interface MAssociation extends MClassifier {
 
 	/**
 	 * create a deep copy of MAssociation
-	 * @param name new name of the assoc
 	 * @param prefix the name of the model followed by '_'.
 	 *               Example: model1_
-	 * @param classes classes associated with the current model
 	 * @return
 	 */
-	public MAssociation makeCopy(String prefix, Map<String, MClass> classes);
+	public MAssociation makeCopy(String prefix);
 
 
 	/**

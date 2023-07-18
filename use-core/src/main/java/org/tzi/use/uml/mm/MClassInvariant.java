@@ -141,6 +141,7 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
         } catch (ExpInvalidException e) {
             throw new RuntimeException(e);
         }
+        copy.fVars = this.fVars;
         return copy;
     }
 

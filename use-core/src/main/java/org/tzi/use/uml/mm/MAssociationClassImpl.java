@@ -64,10 +64,17 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
         fAssociationImpl = new MAssociationImpl( name );
     }
 
-    public MAssociation makeCopy(String prefix, Map<String, MClass> classes) {
+    public MAssociation makeCopy(String prefix) {
+        Map<String, MClass> classes = this.model().classesMap();
+        MClassImpl cls = null;
+        try {
+            cls = ((MClassImpl)classes.get(this.name())).makeCopy(prefix);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         MAssociationClassImpl copy = new MAssociationClassImpl(prefix + this.name(), this.isAbstract());
-        copy.fAssociationImpl = (MAssociationImpl) this.fAssociationImpl.makeCopy(prefix, classes);
-        copy.fClassImpl = (MClassImpl) classes.get(prefix+fClassImpl.name());
+        copy.fAssociationImpl = (MAssociationImpl) this.fAssociationImpl.makeCopy(prefix);
+        copy.fClassImpl = cls;
         return copy;
     }
 
