@@ -145,15 +145,25 @@ public class MMultiModel {
                 EnumType newEnumType = TypeFactory.mkEnum(newName, enumType.getLiterals());
                 newEnumType.model = result_model;
             }
-
+            //regular classes
             for (MClass mClass : model.classes()){
-                String newName = model.name() + delimiter + mClass.name();
-                MClass newClass = factory.createClass(newName, mClass.isAbstract());
-                result_model.addClass(newClass);
+                if(mClass instanceof MClassImpl){
+                    MClass newClass = ((MClassImpl) mClass).makeCopy(model.name() + delimiter);
+                    result_model.addClass(newClass);
+                }
+            }
+            //association classes
+            for (MClass mClass : model.classes()){
+                if(mClass instanceof MAssociationClassImpl){
+                    MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter, result_model.classesMap());
+                    result_model.addClass(newClass);
+                }
             }
 
+
+
+
             for (MAssociation mAssociation : model.associations()){
-                String newName = model.name() + delimiter + mAssociation.name();
                 MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, result_model.classesMap());
                 result_model.addAssociation(newAssoc);
             }
