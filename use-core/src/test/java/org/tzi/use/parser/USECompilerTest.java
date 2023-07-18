@@ -166,7 +166,7 @@ public class USECompilerTest extends TestCase {
     public void testMultiSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingPrefixWithSuffix("multi",".use", 7,38);
+        List<File> fileList = getFilesMatchingPrefixWithSuffix("multi",".use", 7,39);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);

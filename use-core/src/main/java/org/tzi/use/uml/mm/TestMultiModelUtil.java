@@ -4,6 +4,9 @@ import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseModelApi;
 import org.tzi.use.api.UseMultiModelApi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestMultiModelUtil {
 
     private static TestMultiModelUtil util = null;
@@ -76,11 +79,15 @@ public class TestMultiModelUtil {
             UseModelApi api1 = new UseModelApi("PersonCompany1");
             api1.createClass("Student", false );
             api1.createClass("School", false );
+
             multiApi.addModel(api1.getModel());
 
             UseModelApi api2 = new UseModelApi("PersonCompany2");
             api2.createClass("Person", false );
             api2.createClass("Company", false );
+            api2.createAssociationClass("Job", false,
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
             multiApi.addModel(api2.getModel());
 
             return multiApi.getMultiModel();
@@ -140,7 +147,7 @@ public class TestMultiModelUtil {
     }
 
 
-    public MMultiModel createMultiModelTwoModelsOCLSimple() {
+    public MMultiModel createMultiModelTwoModelsInvSimple() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
 
@@ -156,6 +163,69 @@ public class TestMultiModelUtil {
             api2.createAttribute("Student", "name", "String");
             api2.createAttribute("Student", "grade", "Integer");
             api2.createInvariant("ValidGrade", "Student", "self.grade >= 0 and self.grade <= 100", false);
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelTwoModelsInvSameName() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Foo", false );
+            api1.createInvariant("i", "Foo", "true", false);
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Bar", false );
+            api2.createInvariant("i", "Bar", "true", false);
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelTwoModelsWithEnum() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            List<String> literals1 = new ArrayList<String>();
+            literals1.add( "foo" );
+            api1.createEnumeration("A", literals1);
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            List<String> literals2 = new ArrayList<String>();
+            literals2.add( "bar" );
+            api2.createEnumeration("A", literals2);
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+
+    public MMultiModel createMultiModelTwoModelsWithClassAndEnumSameName() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            List<String> literals1 = new ArrayList<String>();
+            literals1.add( "foo" );
+            api1.createEnumeration("A", literals1);
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("A", false );
             multiApi.addModel(api2.getModel());
 
             return multiApi.getMultiModel();
