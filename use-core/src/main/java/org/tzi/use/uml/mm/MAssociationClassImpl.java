@@ -64,16 +64,19 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
         fAssociationImpl = new MAssociationImpl( name );
     }
 
-    public MAssociation makeCopy(String prefix, Map<String, MClass> classes) {
+    public MAssociation makeCopy(String prefix, MModel newModel) {
+        Map<String,MClass> classes = newModel.classesMap();
         MClassImpl cls = null;
         try {
-            cls =  ((MAssociationClassImpl)this.model().classesMap().get(this.name())).fClassImpl.makeCopy(prefix);
+            cls = ((MAssociationClassImpl)this.model().classesMap().get(this.name())).fClassImpl.initCopy(prefix);
+
+            ((MAssociationClassImpl)this.model().classesMap().get(this.name())).fClassImpl.makeCopy(cls, prefix, newModel);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         MAssociationClassImpl copy = new MAssociationClassImpl(prefix + this.name(), this.isAbstract());
         copy.fClassImpl = cls;
-        copy.fAssociationImpl = (MAssociationImpl) this.fAssociationImpl.makeCopy(prefix, classes);
+        copy.fAssociationImpl = (MAssociationImpl) this.fAssociationImpl.makeCopy(prefix, newModel);
         return copy;
     }
 
@@ -734,7 +737,8 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
 		return this.fAssociationImpl.isRedefining();
 	}
 
-	@Override
+
+    @Override
 	public void calculateRedefinedByClosure() {
 		this.fAssociationImpl.calculateRedefinedByClosure();
 	}

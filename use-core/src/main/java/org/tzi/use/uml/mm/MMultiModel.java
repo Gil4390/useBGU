@@ -147,21 +147,23 @@ public class MMultiModel {
             //regular classes
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MClassImpl){
-                    MClass newClass = ((MClassImpl) mClass).makeCopy(model.name() + delimiter);
+                    MClassImpl newClass = ((MClassImpl) mClass).initCopy(model.name() + delimiter);
                     result_model.addClass(newClass);
+                    ((MClassImpl) mClass).makeCopy(newClass, model.name() + delimiter, result_model);
+                    //MClass newClass = ((MClassImpl) mClass).makeCopy(model.name() + delimiter, result_model);
                 }
             }
             //association classes
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MAssociationClassImpl){
-                    MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter, result_model.classesMap());
+                    MClass newClass = (MClass) ((MAssociationClassImpl) mClass).makeCopy(model.name() + delimiter, result_model);
                     //result_model.addAssociation();
                     result_model.addClass(newClass);
                 }
             }
 
             for (MAssociation mAssociation : model.associations()){
-                MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, result_model.classesMap());
+                MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, result_model);
                 result_model.addAssociation(newAssoc);
             }
 

@@ -283,7 +283,7 @@ public interface MAssociation extends MClassifier {
 	 *               Example: model1_
 	 * @return
 	 */
-	public MAssociation makeCopy(String prefix, Map<String, MClass> classes);
+	public MAssociation makeCopy(String prefix, MModel newModel);
 
 
 	/**

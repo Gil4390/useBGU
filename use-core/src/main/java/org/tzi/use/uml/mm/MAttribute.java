@@ -48,8 +48,8 @@ public final class MAttribute extends MModelElementImpl implements UseFileLocata
         fType = type;
     }
 
-    public MAttribute makeCopy(String prefix) {
-        MAttribute mAttribute = new MAttribute(prefix + this.name(), this.fType);
+    public MAttribute makeCopy() {
+        MAttribute mAttribute = new MAttribute(this.name(), this.fType);
         if (this.hasInitExpression())
             mAttribute.setInitExpression(this.getInitExpression().get());
         mAttribute.setDeriveExpression(this.getDeriveExpression());

@@ -140,8 +140,9 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
                     prefix+this.name(), null, cls, this.fBody, this.fIsExistential, this.active, this.negated);
             if(this.fVars.size() > 0) {
                 copy.fHasVars = true;
-                for(VarDecl varDecl : this.fVars) {
-                    copy.fVars.add(new VarDecl(varDecl.name(),cls));
+                for(VarDecl varDecl : this.fVars) { //TODO: fix to a better impl
+                    if(this.fVars.varDecl(0) != varDecl)
+                        copy.fVars.add(new VarDecl(varDecl.name(),cls));
                 }
             }
             copy.loaded = this.loaded;
