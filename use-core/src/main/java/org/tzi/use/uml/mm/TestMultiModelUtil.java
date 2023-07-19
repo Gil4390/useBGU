@@ -56,9 +56,56 @@ public class TestMultiModelUtil {
             UseModelApi api1 = new UseModelApi("PersonCompany1");
             api1.createClass("Person", false );
             api1.createClass("Company", false );
+            api1.createAssociation("Job",
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("PersonCompany2");
+            api2.createClass("Person", false );
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelTwoModelsAssociationClass() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("PersonCompany1");
+            api1.createClass("Person", false );
+            api1.createClass("Company", false );
             api1.createAssociationClass("Job", false,
                     "Person" , "person" , "0..1", MAggregationKind.NONE,
                     "Company", "company", "0..1", MAggregationKind.NONE);
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("PersonCompany2");
+            api2.createClass("Person", false );
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelTwoModelsAssociationClassWithAttribute() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("PersonCompany1");
+            api1.createClass("Person", false );
+            api1.createClass("Company", false );
+            api1.createAssociationClass("Job", false,
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+            api1.createAttribute( "Job", "salary", "Integer" );
             multiApi.addModel(api1.getModel());
 
             UseModelApi api2 = new UseModelApi("PersonCompany2");

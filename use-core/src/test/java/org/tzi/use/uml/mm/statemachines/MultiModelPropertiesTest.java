@@ -18,7 +18,7 @@ public class MultiModelPropertiesTest extends TestCase {
 
     public void testNumOfClasses_TwoModels() {
         MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
-        assertEquals(multiModel.numOfClasses(), 5);
+        assertEquals(multiModel.numOfClasses(), 4);
     }
 
     public void testNumOfClasses_ThreeModels() {
@@ -34,7 +34,7 @@ public class MultiModelPropertiesTest extends TestCase {
 
     public void testMaxNumOfClasses_TwoModels() {
         MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
-        assertEquals(multiModel.maxNumOfClasses(), 3);
+        assertEquals(multiModel.maxNumOfClasses(), 2);
     }
 
     public void testMaxNumOfClasses_ThreeModels() {

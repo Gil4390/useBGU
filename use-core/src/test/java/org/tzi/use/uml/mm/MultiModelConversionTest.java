@@ -168,4 +168,58 @@ public class MultiModelConversionTest extends TestCase {
         }
     }
 
+    public void testConvertMultiModelWithTwoModelsAssociationClass() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsAssociationClass();
+
+            MModel model1 = ((MModel)multimodel.models().toArray()[0]);
+            MModel model2 = ((MModel)multimodel.models().toArray()[1]);
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MClass mClass : model1.classes()){
+                String newName = model1.name() + "_" + mClass.name();
+                MClass cls = convertedModel.getClass(newName);
+                assertNotNull(cls);
+            }
+
+            for (MClass mClass : model2.classes()){
+                String newName = model2.name() + "_" + mClass.name();
+                MClass cls = convertedModel.getClass(newName);
+                assertNotNull(cls);
+            }
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testConvertMultiModelWithTwoModelsAssociationClassWithAttribute() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsAssociationClassWithAttribute();
+
+            MModel model1 = ((MModel)multimodel.models().toArray()[0]);
+            MModel model2 = ((MModel)multimodel.models().toArray()[1]);
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MClass mClass : model1.classes()){
+                String newName = model1.name() + "_" + mClass.name();
+                MClass cls = convertedModel.getClass(newName);
+                assertNotNull(cls);
+            }
+
+            for (MClass mClass : model2.classes()){
+                String newName = model2.name() + "_" + mClass.name();
+                MClass cls = convertedModel.getClass(newName);
+                assertNotNull(cls);
+            }
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
 }
