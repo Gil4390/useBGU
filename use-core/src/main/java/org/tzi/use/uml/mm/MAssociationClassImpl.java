@@ -64,7 +64,18 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
         fAssociationImpl = new MAssociationImpl( name );
     }
 
+    //TODO: fix to a better impl
+    @Override
     public MAssociation makeCopy(String prefix, MModel newModel) {
+        return null;
+    }
+
+    public MAssociationClassImpl initCopy(String prefix) {
+        MAssociationClassImpl copy = new MAssociationClassImpl(prefix + this.name(), this.isAbstract());
+        return copy;
+    }
+
+    public MAssociation makeCopy(MAssociationClassImpl copy, String prefix, MModel newModel) {
         Map<String,MClass> classes = newModel.classesMap();
         MClassImpl cls = null;
         try {
@@ -74,7 +85,6 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        MAssociationClassImpl copy = new MAssociationClassImpl(prefix + this.name(), this.isAbstract());
         copy.fClassImpl = cls;
         copy.fAssociationImpl = (MAssociationImpl) this.fAssociationImpl.makeCopy(prefix, newModel);
         return copy;
@@ -736,6 +746,8 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
 	public boolean isRedefining() {
 		return this.fAssociationImpl.isRedefining();
 	}
+
+
 
 
     @Override
