@@ -106,8 +106,6 @@ public class MultiModelConversionTest extends TestCase {
         }
     }
 
-
-
     public void testConvertMultiModelWithTwoModelsInvSimple() {
         try {
             MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInvSimple();
@@ -221,5 +219,4 @@ public class MultiModelConversionTest extends TestCase {
             throw ( new Error( e ) );
         }
     }
-
 }

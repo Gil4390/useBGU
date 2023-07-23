@@ -134,17 +134,15 @@ public class MMultiModel {
 
     public MModel toMModel() throws Exception {
         String delimiter= "_";
-        ModelFactory factory = new ModelFactory();
-
         MModel result_model = new MModel(this.fName);
 
         for (MModel model : fModels.values()) {
-
+            // user-defined types
             for (EnumType enumType : model.enumTypes()){
                 EnumType newEnumType = enumType.makeCopy(result_model, model.name() + delimiter);
                 newEnumType.model = result_model;
             }
-            //regular classes
+            // regular classes
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MClassImpl){
                     MClassImpl newClass = ((MClassImpl) mClass).initCopy(model.name() + delimiter);
@@ -153,7 +151,7 @@ public class MMultiModel {
                     //MClass newClass = ((MClassImpl) mClass).makeCopy(model.name() + delimiter, result_model);
                 }
             }
-            //association classes
+            // association classes
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MAssociationClassImpl){
                     MAssociationClassImpl newClass = ((MAssociationClassImpl) mClass).initCopy(model.name() + delimiter);
@@ -162,7 +160,7 @@ public class MMultiModel {
                     result_model.addAssociation(newClass);
                 }
             }
-
+            // associations
             for (MAssociation mAssociation : model.associations()){
                 if(!(mAssociation instanceof MAssociationClass)) {
                     MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, result_model);
@@ -170,20 +168,13 @@ public class MMultiModel {
                 }
 
             }
-
-            //graph
-            //vertices
-            for (MClassifier node : model.generalizationGraph()) {
-                String newName = model.name() + delimiter + node.name();
-                //????
-            }
-            //edges?
-
+            // constraints
             for (MClassInvariant mClassInv : model.classInvariants()){
                 MClassInvariant newClassInv = mClassInv.makeCopy(model.name()+delimiter, result_model.classesMap());
                 result_model.addClassInvariant(newClassInv);
             }
 
+            // signals
             for (MSignal mSignal : model.getSignals()){
                 MSignal newSignal = ((MSignalImpl)mSignal).makeCopy(model.name() + delimiter);
                 result_model.addSignal(newSignal);
