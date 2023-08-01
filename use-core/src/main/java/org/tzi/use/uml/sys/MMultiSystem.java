@@ -52,5 +52,22 @@ public class MMultiSystem {
         return convertedSystem;
     }
 
+    //num of total objects from all systems
+    public int numObjects() {
+        return fSystems.values()
+                .stream()
+                .map(system -> system.state().numObjects())
+                .reduce(0, Integer::sum);
+    }
+
+    //num of total links from all systems
+    public int numLinks() {
+        return fSystems.values()
+                .stream()
+                .map(system -> system.state().allLinks().size())
+                .reduce(0, Integer::sum);
+    }
+
+
 
 }
