@@ -46,6 +46,32 @@ public class ObjectCreation {
     }
 
     /**
+     * Creates a model with two classes. It creates instances of those as well.
+     *
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithOnlyObjects(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance()
+                    .createModelWithClassAndAssocs(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (p1) of the class Person
+            systemApi.createObjects("Person", "p1");
+
+            // creation of an object (c1) of the class Company
+            systemApi.createObjects("Company", "c1");
+
+            return system;
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
      * Creates a model with two classes and an association class. It creates
      * instances of those as well.
      *
@@ -69,6 +95,35 @@ public class ObjectCreation {
             // creation of a link between p1 and c1 of an association
             systemApi.createLink("Job", "p1", "c1");
             
+            return system;
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
+     * Creates a model with two classes and an association class. It creates
+     * instances of those as well.
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithObjects(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance().createModelWithClassAndAssocs(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (p1) of the class Person
+            systemApi.createObjects("Person", "p1");
+
+            // creation of an object (c1) of the class Company
+            systemApi.createObjects("Company", "c1");
+
+            // creation of a link between p1 and c1 of an association
+            systemApi.createLink("Job", "p1", "c1");
+
             return system;
         } catch ( Exception e ) {
             throw ( new Error( e ) );
@@ -116,6 +171,44 @@ public class ObjectCreation {
     /**
      * Creates a model with two classes and an association class. It creates
      * instances of those as well.
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithManyObjects(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance()
+                    .createModelWithClassAndAssocs2(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (p1) of the class Person
+            systemApi.createObjects("Person", "p1");
+
+            // creation of four objects (c1-c4) of the class Company
+            systemApi.createObjects(
+                    "Company",
+                    "c1", "c2", "c3", "c4");
+
+            // creation of a link between p1 and c1 of an association
+            systemApi.createLink("Job", "p1", "c1");
+            systemApi.createLink("Job", "p1", "c2");
+            systemApi.createLink("Job", "p1", "c3");
+            systemApi.createLink("Job", "p1", "c4");
+
+            // set an attribute value in c1
+            systemApi.setAttributeValue("c1", "name", "'IBM'");
+
+            return system;
+        } catch ( UseApiException e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
+     * Creates a model with two classes and an association class. It creates
+     * instances of those as well.
      *
      * @return returns the actual System.
      */
@@ -143,6 +236,42 @@ public class ObjectCreation {
             // set an attribute value in c1
             systemApi.setAttributeValue("c1", "name", "'IBM'");
             
+            return system;
+        } catch ( UseApiException e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
+     * Creates a model with two classes and an association class. It creates
+     * instances of those as well.
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithObjectsAndLinkObject(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance()
+                    .createModelWithClassAndAssocClass(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (p1) of the class Person
+            systemApi.createObjects("Person", "p1");
+
+            // creation of an object (c1) of the class Company
+            systemApi.createObjects("Company", "c1");
+
+            // creation of a link object (j1) of class Job between p1 and c1
+            systemApi.createLinkObject(
+                    "Job",
+                    "j1",
+                    "p1", "c1");
+
+            // set an attribute value in c1
+            systemApi.setAttributeValue("c1", "name", "'IBM'");
+
             return system;
         } catch ( UseApiException e ) {
             throw ( new Error( e ) );
@@ -179,6 +308,35 @@ public class ObjectCreation {
     }
 
     /**
+     * Creates an instance of a model with one class and one association class.
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithObjectsOfSameClassAndLinkObject(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance()
+                    .createModelWithOneClassAndOneAssocClass(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an objects (p1,p2) of the class Person
+            systemApi.createObjects("Person", "p1", "p2");
+
+            // creation of a link object (j1) of class Job between p1 and p2
+            systemApi.createLinkObject(
+                    "Job",
+                    "j1",
+                    "p1", "p2");
+
+            return system;
+        } catch ( UseApiException e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
      * Creates a model with two classes and an association class. It creates
      * instances of those as well.
      *
@@ -207,6 +365,45 @@ public class ObjectCreation {
             		"Job",
             		"j1", 
             		"p1", "c1", "s1");
+
+            // set an attribute value in c1
+            systemApi.setAttributeValue("c1", "name", "'IBM'");
+
+            return system;
+        } catch ( UseApiException e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
+     * Creates a model with two classes and an association class. It creates
+     * instances of those as well.
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithObjectsAndTenaryLinkObject(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance()
+                    .createModelWithClassAndTenaryAssocClass(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (p1) of the class Person
+            systemApi.createObjects("Person", "p1");
+
+            // creation of an object (c1) of the class Company
+            systemApi.createObjects("Company", "c1");
+
+            // creation of an object (s1) of the class Salary
+            systemApi.createObjects("Salary", "s1");
+
+            // creation of a link object (j1) of class Job between p1, s1 and c1
+            systemApi.createLinkObject(
+                    "Job",
+                    "j1",
+                    "p1", "c1", "s1");
 
             // set an attribute value in c1
             systemApi.setAttributeValue("c1", "name", "'IBM'");
@@ -257,6 +454,54 @@ public class ObjectCreation {
             // set an attribute value in c1
             systemApi.setAttributeValue("c1", "name", "'IBM'");
             
+            // set an attribute value in c2
+            systemApi.setAttributeValue("c2", "name", "'SUN'");
+
+            return system;
+        } catch ( UseApiException e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
+     * Creates a model with two classes, an association class and an association.
+     * It creates instances of those as well.
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithObjectsAndLinkObject2(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance()
+                    .createComplexModel(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of two objects (p1, p2) of the class Person
+            systemApi.createObjects("Person", "p1", "p2");
+
+            // creation of a link between p1 and p2 (p1 is boss of p2)
+            systemApi.createLink("isBoss", "p1", "p2");
+
+            // creation of two objects (c1, c2) of the class Company
+            systemApi.createObjects("Company", "c1", "c2");
+
+            // creation of a link object (j1) of class Job between p1 and c1
+            systemApi.createLinkObject(
+                    "Job",
+                    "j1",
+                    "p1", "c1");
+
+            // creation of a link object (j2) of class Job between p2 and c1
+            systemApi.createLinkObject(
+                    "Job",
+                    "j2",
+                    "p2", "c1");
+
+            // set an attribute value in c1
+            systemApi.setAttributeValue("c1", "name", "'IBM'");
+
             // set an attribute value in c2
             systemApi.setAttributeValue("c2", "name", "'SUN'");
 
