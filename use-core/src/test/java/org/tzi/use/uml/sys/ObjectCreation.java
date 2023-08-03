@@ -47,7 +47,7 @@ public class ObjectCreation {
 
     /**
      * Creates a model with two classes. It creates instances of those as well.
-     *
+     * The model is created with the given name
      * @return returns the actual System.
      */
     public MSystem createModelWithOnlyObjects(String modelName) {
@@ -507,6 +507,60 @@ public class ObjectCreation {
 
             return system;
         } catch ( UseApiException e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+
+
+    /**
+     * Creates a model with two classes and a simple invariant.
+     * It creates an instance of the Person class with an attribute that doesn't satisfy the invariant
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithObjectsAndConstraintsSimpleUnsatisfactory(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance().createModelWithSimpleInvariant(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (p1) of the class Person
+            systemApi.createObjects("Person", "p1");
+
+            systemApi.setAttributeValue("p1", "salary", "1000");
+
+
+            return system;
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    /**
+     * Creates a model with two classes and a simple invariant.
+     * It creates an instance of the Person class with an attribute that satisfies the invariant
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createModelWithObjectsAndConstraintsSimpleSatisfactory(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance().createModelWithSimpleInvariant(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (p1) of the class Person
+            systemApi.createObjects("Person", "p1");
+
+            systemApi.setAttributeValue("p1", "salary", "6000");
+
+
+            return system;
+        } catch ( Exception e ) {
             throw ( new Error( e ) );
         }
     }

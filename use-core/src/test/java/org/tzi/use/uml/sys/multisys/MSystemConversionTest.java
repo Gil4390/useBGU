@@ -10,6 +10,10 @@ import org.tzi.use.uml.mm.TestMultiModelUtil;
 import org.tzi.use.uml.sys.MMultiSystem;
 import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.uml.sys.ObjectCreation;
+import org.tzi.use.util.NullWriter;
+
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class MSystemConversionTest extends TestCase {
 
@@ -431,8 +435,91 @@ public class MSystemConversionTest extends TestCase {
 
     //=================================== unsatisfactory tests ====================================
 
+    public void testSingleModelConversionSimpleConstraintUnsatisfactory() {
+        try{
+            //create the initial model and its system
+            MSystem system1 = ObjectCreation.getInstance().
+                    createModelWithObjectsAndConstraintsSimpleUnsatisfactory("model1");
+            MModel model1 = system1.model();
+
+            //assert initial model is Unsatisfactory
+            Assert.assertFalse(system1.state().check(new PrintWriter(new NullWriter()),
+                    false,
+                    false,
+                    true, new ArrayList<>()));
+
+
+            //create the multi-model that holds the model
+            MMultiModel multiModel = new MMultiModel("multi");
+            multiModel.addModel(model1);
+
+            //set the previous model1 system that contains the objects
+            MMultiSystem multiSystem = new MMultiSystem(multiModel);
+            multiSystem.setModelSystem(model1.name(), system1);
+
+            //convert
+            MSystem cSystem = multiSystem.toMSystem();
+
+            //assert
+            Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
+
+            //assert multi-model is also Unsatisfactory
+            Assert.assertFalse(cSystem.state().check(new PrintWriter(new NullWriter()),
+                    false,
+                    false,
+                    true, new ArrayList<>()));
+
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+
+    public void testSingleModelConversionSimpleConstraintSatisfactory() {
+        try{
+            //create the initial model and its system
+            MSystem system1 = ObjectCreation.getInstance().
+                    createModelWithObjectsAndConstraintsSimpleSatisfactory("model1");
+            MModel model1 = system1.model();
+
+            //assert initial model is Unsatisfactory
+            Assert.assertTrue(system1.state().check(new PrintWriter(new NullWriter()),
+                    false,
+                    false,
+                    true, new ArrayList<>()));
+
+
+            //create the multi-model that holds the model
+            MMultiModel multiModel = new MMultiModel("multi");
+            multiModel.addModel(model1);
+
+            //set the previous model1 system that contains the objects
+            MMultiSystem multiSystem = new MMultiSystem(multiModel);
+            multiSystem.setModelSystem(model1.name(), system1);
+
+            //convert
+            MSystem cSystem = multiSystem.toMSystem();
+
+            //assert
+            Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
+
+            //assert multi-model is also Satisfactory
+            Assert.assertTrue(cSystem.state().check(new PrintWriter(new NullWriter()),
+                    false,
+                    false,
+                    true, new ArrayList<>()));
+
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+
     //TODO:
-    // a system with an unsatisfactory object combined with a satisfactory model
-    // how do you find out a model is unsatisfactory?
+    // 1. check class with a circular association
+    // (the conversion to from multi model to model fails for some reason)
+    // 2. added check() function to MMultiSystem
+    // 3. added tests for more complex constraints
+
 }
 

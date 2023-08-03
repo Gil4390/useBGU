@@ -39,7 +39,8 @@ public class MMultiSystem {
                 String clsName = system.model().name() + "_" + object.cls().name();
                 MClass convertedClass = convertedModel.getClass(clsName);
                 String newObjName = system.model().name() + "_" + object.name();
-                convertedSystem.createObject(convertedClass, newObjName);
+                MObject mObject = convertedSystem.createObject(convertedClass, newObjName);
+                convertedSystem.addObject(mObject);
             }
 
             //iterate the links
