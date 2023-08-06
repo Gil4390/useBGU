@@ -3,6 +3,7 @@ package org.tzi.use.uml.sys.multisys;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.tzi.use.api.UseMultiModelApi;
+import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.mm.TestModelUtil;
@@ -443,10 +444,8 @@ public class MSystemConversionTest extends TestCase {
             MModel model1 = system1.model();
 
             //assert initial model is Unsatisfactory
-            Assert.assertFalse(system1.state().check(new PrintWriter(new NullWriter()),
-                    false,
-                    false,
-                    true, new ArrayList<>()));
+            UseSystemApi useSystemApi1 = UseSystemApi.create(system1, true);
+            Assert.assertFalse(useSystemApi1.checkState());
 
 
             //create the multi-model that holds the model
@@ -465,10 +464,8 @@ public class MSystemConversionTest extends TestCase {
             Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
 
             //assert multi-model is also Unsatisfactory
-            Assert.assertFalse(cSystem.state().check(new PrintWriter(new NullWriter()),
-                    false,
-                    false,
-                    true, new ArrayList<>()));
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            Assert.assertFalse(useSystemApic.checkState());
 
         } catch (Exception e) {
             throw new Error(e);
@@ -483,10 +480,8 @@ public class MSystemConversionTest extends TestCase {
             MModel model1 = system1.model();
 
             //assert initial model is Unsatisfactory
-            Assert.assertTrue(system1.state().check(new PrintWriter(new NullWriter()),
-                    false,
-                    false,
-                    true, new ArrayList<>()));
+            UseSystemApi useSystemApi1 = UseSystemApi.create(system1, true);
+            Assert.assertTrue(useSystemApi1.checkState());
 
 
             //create the multi-model that holds the model
@@ -505,10 +500,8 @@ public class MSystemConversionTest extends TestCase {
             Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
 
             //assert multi-model is also Satisfactory
-            Assert.assertTrue(cSystem.state().check(new PrintWriter(new NullWriter()),
-                    false,
-                    false,
-                    true, new ArrayList<>()));
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            Assert.assertTrue(useSystemApic.checkState());
 
         } catch (Exception e) {
             throw new Error(e);
@@ -516,9 +509,6 @@ public class MSystemConversionTest extends TestCase {
     }
 
     //TODO:
-    // 1. check class with a circular association
-    // (the conversion to from multi model to model fails for some reason)
-    // 2. add check() function to MMultiSystem
     // 3. add tests for more complex constraints
 
 }

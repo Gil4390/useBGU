@@ -36,11 +36,13 @@ public class MMultiSystem {
 
         for (MSystem system : fSystems.values()){
             //iterate the objects
-            for (MObject object : system.state().allObjects()){
-                String clsName = system.model().name() + "_" + object.cls().name();
-                MClass convertedClass = convertedModel.getClass(clsName);
-                String newObjName = system.model().name() + "_" + object.name();
-                convertedSystem.state().createObject(convertedClass, newObjName);
+            for (MObject object : system.state().allObjects()) {
+                if (object instanceof MObjectImpl) {
+                    String clsName = system.model().name() + "_" + object.cls().name();
+                    MClass convertedClass = convertedModel.getClass(clsName);
+                    String newObjName = system.model().name() + "_" + object.name();
+                    convertedSystem.state().createObject(convertedClass, newObjName);
+                }
             }
 
             //iterate the links

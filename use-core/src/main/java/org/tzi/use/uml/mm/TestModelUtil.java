@@ -552,9 +552,9 @@ public class TestModelUtil {
                     "Person", "employee", "0..1", MAggregationKind.NONE,
                     "Company", "company", "0..1", MAggregationKind.NONE);
 
-//            api.createAssociation("isBoss",
-//                    "Person", "boss", "0..1", MAggregationKind.NONE,
-//                    "Person", "worker", "0..1", MAggregationKind.NONE);
+            api.createAssociation("isBoss",
+                    "Person", "boss", "0..1", MAggregationKind.NONE,
+                    "Person", "worker", "0..1", MAggregationKind.NONE);
 
             api.createInvariant("minimumSalary", "Person", "self.salary >= 5000", false);
 
@@ -582,6 +582,72 @@ public class TestModelUtil {
                     "Person", "worker", "0..1", MAggregationKind.NONE);
 
             //api.createInvariant("minimumSalary", "Person", "self.salary >= 5000", false);
+
+            return api.getModel();
+        } catch (UseApiException e) {
+            //e.printStackTrace();
+            throw new Error(e);
+        }
+    }
+
+    /**
+     * Model with 3 classes and 4 invariants.
+     *
+     * based on the example from <a href="https://useocl.sourceforge.net/w/index.php/Quick_Tour">https://useocl.sourceforge.net/w/index.php/Quick_Tour</a>
+     *
+     */
+    public MModel createComplexModelWithConstraints(String modelName) {
+        try {
+            UseModelApi api = new UseModelApi(modelName);
+            api.createClass("Employee", false);
+            api.createClass("Department", false);
+            api.createClass("Project", false);
+
+            api.createAttribute( "Employee", "name", "String" );
+            api.createAttribute( "Employee", "salary", "Integer" );
+
+            api.createAttribute( "Department", "name", "String" );
+            api.createAttribute( "Department", "location", "String" );
+            api.createAttribute( "Department", "budget", "Integer" );
+
+            api.createAttribute( "Project", "name", "String" );
+            api.createAttribute( "Project", "budget", "Integer" );
+
+
+            api.createAssociation("WorksIn",
+                    "Employee", "employee", "*", MAggregationKind.NONE,
+                    "Department", "department", "1..*", MAggregationKind.NONE);
+
+            api.createAssociation("WorksOn",
+                    "Employee", "employee", "*", MAggregationKind.NONE,
+                    "Project", "project", "*", MAggregationKind.NONE);
+
+            api.createAssociation("Controls",
+                    "Department", "department", "1", MAggregationKind.NONE,
+                    "Project", "project", "*", MAggregationKind.NONE);
+
+
+            api.createInvariant("MoreEmployeesThanProjects",
+                    "Department",
+                    "self.employee->size >= self.project->size",
+                    false);
+
+            api.createInvariant("MoreProjectsHigherSalary",
+                    "Employee",
+                    "Employee.allInstances->forAll(e1, e2 | \n" +
+                            "      e1.project->size > e2.project->size \n" +
+                            "        implies e1.salary > e2.salary)",
+                    false);
+
+            api.createInvariant("BudgetWithinDepartmentBudget",
+                    "Project",
+                    "self.budget <= self.department.budget",
+                    false);
+
+            api.createInvariant("EmployeesInControllingDepartment",
+                    "Project",
+                    "self.department.employee->includesAll(self.employee)",
+                    false);
 
             return api.getModel();
         } catch (UseApiException e) {
