@@ -1,6 +1,7 @@
 package org.tzi.use.uml.sys;
 
 import org.tzi.use.uml.mm.*;
+import org.tzi.use.uml.ocl.value.ObjectValue;
 import org.tzi.use.uml.ocl.value.Value;
 
 import java.util.ArrayList;
@@ -40,7 +41,12 @@ public class MMultiSystem {
                 String clsName = system.model().name() + "_" + object.cls().name();
                 MClass convertedClass = convertedModel.getClass(clsName);
                 String newObjName = system.model().name() + "_" + object.name();
-                convertedSystem.state().createObject(convertedClass, newObjName);
+                MObject convertedObject = convertedSystem.state().createObject(convertedClass, newObjName);
+                for(MAttribute attr : convertedObject.cls().attributes()) {
+                    Value convertedValue = system.state().getObjectState(object).attributeValue(attr.name());
+                    MAttribute newAttr = convertedClass.attribute(attr.name(),true);
+                    convertedSystem.state().getObjectState(convertedObject).setAttributeValue(newAttr, convertedValue);
+                }
             }
 
             //iterate the links
@@ -55,6 +61,10 @@ public class MMultiSystem {
                         String convertedObjName = system.model().name() + "_" + linkObj.name();
                         MObject convertedObj = convertedSystem.state().objectByName(convertedObjName);
                         objects.add(convertedObj);
+                        for(MAttribute attr : convertedObj.cls().attributes()) {
+                            Value convertedValue = system.state().getObjectState(linkObj).attributeValue(attr.name());
+                            convertedSystem.state().getObjectState(convertedObj).setAttributeValue(attr, convertedValue);
+                        }
                     }
                     String convertedLinkObjName = system.model().name() + "_" + ((MLinkObjectImpl) link).name();
                     convertedSystem.state().createLinkObject(convertedAssoc, convertedLinkObjName, objects, link.getQualifier());
