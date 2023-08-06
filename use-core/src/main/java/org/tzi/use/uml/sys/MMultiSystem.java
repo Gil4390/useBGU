@@ -36,14 +36,20 @@ public class MMultiSystem {
 
         for (MSystem system : fSystems.values()){
             //iterate the objects
-            for (MObject object : system.state().allObjects()) {
+            for (MObject object : system.state().allObjects()){
                 if (object instanceof MObjectImpl) {
                     String clsName = system.model().name() + "_" + object.cls().name();
                     MClass convertedClass = convertedModel.getClass(clsName);
                     String newObjName = system.model().name() + "_" + object.name();
-                    convertedSystem.state().createObject(convertedClass, newObjName);
+                    MObject convertedObject = convertedSystem.state().createObject(convertedClass, newObjName);
+                    for(MAttribute attr : convertedObject.cls().attributes()) {
+                        Value convertedValue = system.state().getObjectState(object).attributeValue(attr.name());
+                        MAttribute newAttr = convertedClass.attribute(attr.name(),true);
+                        convertedSystem.state().getObjectState(convertedObject).setAttributeValue(newAttr, convertedValue);
+                    }
                 }
             }
+
 
             //iterate the links
             for (MLink link : system.state().allLinks()){
@@ -57,6 +63,10 @@ public class MMultiSystem {
                         String convertedObjName = system.model().name() + "_" + linkObj.name();
                         MObject convertedObj = convertedSystem.state().objectByName(convertedObjName);
                         objects.add(convertedObj);
+                        for(MAttribute attr : convertedObj.cls().attributes()) {
+                            Value convertedValue = system.state().getObjectState(linkObj).attributeValue(attr.name());
+                            convertedSystem.state().getObjectState(convertedObj).setAttributeValue(attr, convertedValue);
+                        }
                     }
                     String convertedLinkObjName = system.model().name() + "_" + ((MLinkObjectImpl) link).name();
                     convertedSystem.state().createLinkObject(convertedAssoc, convertedLinkObjName, objects, link.getQualifier());
