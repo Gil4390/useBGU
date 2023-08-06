@@ -1,10 +1,14 @@
 package org.tzi.use.uml.sys;
 
+import org.tzi.use.uml.mm.MAssociation;
 import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MMultiModel;
+import org.tzi.use.uml.ocl.value.Value;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MMultiSystem {
@@ -39,13 +43,23 @@ public class MMultiSystem {
                 String clsName = system.model().name() + "_" + object.cls().name();
                 MClass convertedClass = convertedModel.getClass(clsName);
                 String newObjName = system.model().name() + "_" + object.name();
-                MObject mObject = convertedSystem.createObject(convertedClass, newObjName);
-                convertedSystem.addObject(mObject);
+                convertedSystem.state().createObject(convertedClass, newObjName);
             }
 
             //iterate the links
             for (MLink link : system.state().allLinks()){
-                //convertedSystem.createLinkObject()
+                String assocName = system.model().name() + "_" + link.association().name();
+                MAssociation convertedAssoc = convertedModel.getAssociation(assocName);
+                if (convertedAssoc == null)
+                    throw new Exception("association with name: " + assocName + " was not found");
+                List<MObject> objects = new ArrayList<>();
+                for (MObject linkObj : link.linkedObjects()){
+                    String convertedObjName = system.model().name() + "_" + linkObj.name();
+                    MObject convertedObj = convertedSystem.state().objectByName(convertedObjName);
+                    objects.add(convertedObj);
+                }
+
+                convertedSystem.state().createLink(convertedAssoc, objects, link.getQualifier());
             }
 
         }

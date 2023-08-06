@@ -54,7 +54,7 @@ public class ObjectCreation {
         try {
             // creation of the system
             MModel model = TestModelUtil.getInstance()
-                    .createModelWithClassAndAssocs(modelName);
+                    .createModelWithClasses(modelName);
             MSystem system = new MSystem( model );
 
             UseSystemApi systemApi = UseSystemApi.create(system, false);
@@ -110,7 +110,7 @@ public class ObjectCreation {
     public MSystem createModelWithObjects(String modelName) {
         try {
             // creation of the system
-            MModel model = TestModelUtil.getInstance().createModelWithClassAndAssocs(modelName);
+            MModel model = TestModelUtil.getInstance().createModelWithClassAndOneAssoc(modelName);
             MSystem system = new MSystem( model );
 
             UseSystemApi systemApi = UseSystemApi.create(system, false);

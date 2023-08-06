@@ -100,7 +100,7 @@ public class MSystemConversionTest extends TestCase {
     public void testSingleModelConversionWithLinks() {
         try{
             //create the initial model and its system
-            MSystem system1 = ObjectCreation.getInstance().createModelWithObjects();
+            MSystem system1 = ObjectCreation.getInstance().createModelWithObjects("model1");
             MModel model1 = system1.model();
 
             //create the multi-model that holds the model
@@ -518,8 +518,8 @@ public class MSystemConversionTest extends TestCase {
     //TODO:
     // 1. check class with a circular association
     // (the conversion to from multi model to model fails for some reason)
-    // 2. added check() function to MMultiSystem
-    // 3. added tests for more complex constraints
+    // 2. add check() function to MMultiSystem
+    // 3. add tests for more complex constraints
 
 }
 

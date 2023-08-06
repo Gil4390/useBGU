@@ -123,6 +123,41 @@ public class TestModelUtil {
     }
 
     /**
+     * This method creates a model with two classes (Person and Company).
+     */
+    public MModel createModelWithClasses(String modelName) {
+        try {
+            UseModelApi api = new UseModelApi( modelName );
+            api.createClass( "Person", false );
+            api.createClass( "Company", false );
+            return api.getModel();
+        } catch ( UseApiException e ) {
+            throw new Error( e );
+        }
+    }
+
+    /**
+     * This method creates a model with two classes (Person and Company)
+     * and one association (Job).
+     */
+    public MModel createModelWithClassAndOneAssoc(String modelName) {
+        try {
+            UseModelApi api = new UseModelApi( modelName );
+            api.createClass( "Person", false );
+            api.createClass( "Company", false );
+            api.createAssociation("Job",
+                    "Person", "employee", "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+
+
+            return api.getModel();
+        } catch ( UseApiException e ) {
+            //e.printStackTrace();
+            throw new Error( e );
+        }
+    }
+
+    /**
      * This method creates a model with two classes (Person and Company)
      * and two associations (Job and isBoss).
      */
