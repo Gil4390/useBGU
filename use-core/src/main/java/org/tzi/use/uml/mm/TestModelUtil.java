@@ -530,4 +530,29 @@ public class TestModelUtil {
         }
     }
 
+    public MModel createModelWithCircularAssoc(String modelName) {
+        try {
+            UseModelApi api = new UseModelApi(modelName);
+            api.createClass("Person", false);
+            api.createClass("Company", false);
+
+            api.createAttribute( "Person", "salary", "Integer" );
+
+            api.createAssociation("Job",
+                    "Person", "employee", "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+
+            api.createAssociation("isBoss",
+                    "Person", "boss", "0..1", MAggregationKind.NONE,
+                    "Person", "worker", "0..1", MAggregationKind.NONE);
+
+            //api.createInvariant("minimumSalary", "Person", "self.salary >= 5000", false);
+
+            return api.getModel();
+        } catch (UseApiException e) {
+            //e.printStackTrace();
+            throw new Error(e);
+        }
+    }
+
 }

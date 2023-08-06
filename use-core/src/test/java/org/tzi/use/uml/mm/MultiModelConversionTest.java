@@ -219,4 +219,26 @@ public class MultiModelConversionTest extends TestCase {
             throw ( new Error( e ) );
         }
     }
+
+    public void testConvertMultiModelWithCircularAssoc() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelWithCircularAssoc();
+
+            MModel model1 = ((MModel)multimodel.models().toArray()[0]);
+            //MModel model2 = ((MModel)multimodel.models().toArray()[1]);
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MClass mClass : model1.classes()){
+                String newName = model1.name() + "_" + mClass.name();
+                MClass cls = convertedModel.getClass(newName);
+                assertNotNull(cls);
+            }
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
 }

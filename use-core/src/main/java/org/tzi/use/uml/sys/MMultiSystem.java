@@ -45,7 +45,8 @@ public class MMultiSystem {
 
             //iterate the links
             for (MLink link : system.state().allLinks()){
-                //convertedSystem.createLinkObject()
+                //convertedSystem.createL
+                //system.execute()
             }
 
         }

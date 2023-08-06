@@ -170,7 +170,7 @@ public final class MAssociationEnd extends MModelElementImpl implements MNavigab
 		copy.qualifier = this.qualifier;
 		copy.hashCode = this.hashCode;
 
-		cls.registerNavigableEnds(List.of(copy));
+		//cls.registerNavigableEnds(List.of(copy));
 		return copy;
 	}
 
