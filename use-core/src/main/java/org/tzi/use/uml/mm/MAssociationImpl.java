@@ -19,12 +19,7 @@
 
 package org.tzi.use.uml.mm;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.tzi.use.util.collections.CollectionUtil;
@@ -76,11 +71,20 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
 
 
 	public MAssociation makeCopy(String prefix, MModel newModel) {
+		Map<String, MClass> filteredClasses = new HashMap<>();
 		Map<String, MClass> classes = newModel.classesMap();
+
+
+		for(MClass assoc_cls : this.associatedClasses()) {
+			String convertedClsName = prefix + assoc_cls.name();
+			MClass classToAdd = classes.get(convertedClsName);
+			filteredClasses.put(classToAdd.name(),classToAdd);
+		}
+
 		MAssociationImpl copy = new MAssociationImpl(prefix + this.name());
 		for(MAssociationEnd assocEnd : this.fAssociationEnds) {
 			try {
-				MAssociationEnd assocEndCopy = assocEnd.makeCopy(prefix, classes);
+				MAssociationEnd assocEndCopy = assocEnd.makeCopy(prefix, filteredClasses);
 				assocEndCopy.setAssociation(copy);
 				copy.addAssociationEnd(assocEndCopy);
 			} catch (MInvalidModelException e) {
