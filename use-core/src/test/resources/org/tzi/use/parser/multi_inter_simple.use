@@ -1,0 +1,64 @@
+multi_model test5
+
+model model1
+
+class Employee
+attributes
+  name : String
+  salary : Integer
+end
+
+constraints
+
+context Employee
+  inv PositiveSalary:
+    self.salary > 0
+
+
+model model2
+
+class Student
+attributes
+  name : String
+  grade : Integer
+  salary : Integer
+end
+
+constraints
+
+context Student inv:
+    self.grade >= 0 and self.grade <= 100
+
+
+model model3
+
+class Project
+attributes
+  name : String
+  budget : Integer
+end
+
+constraints
+
+context Project inv:
+    self.budget > 0 and self.budget <= 10000
+
+
+inter-associations
+association WorksOn between
+    model1_Employee[1..*] role employees
+    model3_Project[*] role projects
+end
+
+association Internship between
+    model1_Student[*] role students
+    model3_Project[1] role projects
+end
+
+inter-constraints
+
+-- the sum of people that can work on a project is greater than 3
+context model3_Project inv:
+    ( self.students->size() + self.employees->size() ) > 3
+
+

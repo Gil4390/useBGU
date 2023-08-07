@@ -1,0 +1,45 @@
+multi_model test5
+
+model model1
+
+class Employee
+attributes
+  name : String
+  salary : Integer
+end
+
+constraints
+
+context Employee
+  inv PositiveSalary:
+    self.salary > 0
+
+
+model model2
+
+class Student
+attributes
+  name : String
+  grade : Integer
+  salary : Integer
+end
+
+constraints
+
+context Student inv:
+    self.grade >= 0 and self.grade <= 100
+
+
+inter-associations
+association Job between
+    model1_Employee[1] role a1
+    model2_Student[*] role a2
+end
+
+inter-constraints
+
+-- an employee salary must be larger than any student salary
+context model1_Employee inv:
+    self.a2.forAll(s1 | self.salary > s1.salary)
+
+
