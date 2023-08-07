@@ -7,7 +7,10 @@
 
 
 /*
-    multi_model ::= "multi_model" internal_model (internal_model) * EOF
+    multi_model ::= "multi_model" internal_model (internal_model)*
+                    ( 'inter-associations' (associationDefinition)* )?
+                    ( 'inter-constraints' (invariant | prePost)* )?
+                    EOF
 */
 
 multi_model returns [ASTMultiModel n]
@@ -15,6 +18,14 @@ multi_model returns [ASTMultiModel n]
     'multi_model' mmName=IDENT {$n = new ASTMultiModel($mmName);}
     m=internal_model {$n.addModel($m.n);}
     (m=internal_model { $n.addModel($m.n); } )*
+    ('inter-associations'
+        (a=associationDefinition { $n.addAssociation($a.n); })*
+    )?
+    ('inter-constraints'
+        ( cons=invariant { $n.addConstraint($cons.n); }
+          | ppc=prePost { $n.addPrePost($ppc.n); }
+        )*
+    )?
     EOF
     ;
 
@@ -459,7 +470,7 @@ keyUnion:
   
 keyAssociation:
   {input.LT(1).getText().equals("association")}? IDENT ;
-  
+
 keyRole:
   {input.LT(1).getText().equals("role")}? IDENT ;
 

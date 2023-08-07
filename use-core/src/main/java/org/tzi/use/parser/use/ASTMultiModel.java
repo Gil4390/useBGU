@@ -18,11 +18,16 @@ public class ASTMultiModel extends AST {
     // assoc class?
     private final List<ASTConstraintDefinition> fInterConstraints;
 
+    private final List<ASTPrePost> fInterPrePosts;
+
+
+
     public ASTMultiModel(Token name) {
         fName = name;
         fModels = new ArrayList<>();
         fInterAssoc = new ArrayList<>();
         fInterConstraints = new ArrayList<>();
+        fInterPrePosts = new ArrayList<>();
     }
 
     public void addModel(ASTModel model) {
@@ -57,6 +62,18 @@ public class ASTMultiModel extends AST {
 
 
         return mMultiModel;
+    }
+
+    public void addAssociation(ASTAssociation assoc) {
+        fInterAssoc.add(assoc);
+    }
+
+    public void addConstraint(ASTConstraintDefinition cons) {
+        fInterConstraints.add(cons);
+    }
+
+    public void addPrePost(ASTPrePost ppc) {
+        fInterPrePosts.add(ppc);
     }
 
     public String toString() {
