@@ -14,9 +14,15 @@ public class ASTMultiModel extends AST {
     private final Token fName;
     private final List<ASTModel> fModels;
 
+    private final List<ASTAssociation> fInterAssoc;
+    // assoc class?
+    private final List<ASTConstraintDefinition> fInterConstraints;
+
     public ASTMultiModel(Token name) {
         fName = name;
         fModels = new ArrayList<>();
+        fInterAssoc = new ArrayList<>();
+        fInterConstraints = new ArrayList<>();
     }
 
     public void addModel(ASTModel model) {
