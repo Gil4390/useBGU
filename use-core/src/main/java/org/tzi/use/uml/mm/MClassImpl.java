@@ -79,12 +79,11 @@ public class MClassImpl extends MClassifierImpl implements MClass {
 
     public MClassImpl makeCopy(MClassImpl cMClass,String prefix, MModel newModel) throws Exception {
 
-        for (String key : this.fAttributes.keySet()){
+        cMClass.setModel(newModel);
+        for (String key : this.fAttributes.keySet()) {
             MAttribute attr = this.fAttributes.get(key);
-            MAttribute cMAttribute = attr.makeCopy();
-            cMAttribute.setOwner(cMClass);
-            cMClass.setModel(newModel);
-            cMClass.addAttribute(cMAttribute);
+            //attr.setOwner(cMClass);
+            cMClass.addAttribute(attr);
         }
 
         for (String key : this.fOperations.keySet()) {
