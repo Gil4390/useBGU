@@ -3,9 +3,11 @@ package org.tzi.use.parser.use;
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.AST;
 import org.tzi.use.parser.Context;
+import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.mm.MMultiModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,12 +16,13 @@ public class ASTMultiModel extends AST {
     private final Token fName;
     private final List<ASTModel> fModels;
 
-    private final List<ASTAssociation> fInterAssoc;
+    private final List<ASTInterAssociation> fInterAssoc;
     // assoc class?
     private final List<ASTConstraintDefinition> fInterConstraints;
 
     private final List<ASTPrePost> fInterPrePosts;
 
+    private HashMap<String, Context> contextMap;
 
 
     public ASTMultiModel(Token name) {
@@ -28,6 +31,7 @@ public class ASTMultiModel extends AST {
         fInterAssoc = new ArrayList<>();
         fInterConstraints = new ArrayList<>();
         fInterPrePosts = new ArrayList<>();
+        contextMap = new HashMap<>();
     }
 
     public void addModel(ASTModel model) {
@@ -47,9 +51,11 @@ public class ASTMultiModel extends AST {
             try{
                 if(firstIteration) {
                     firstIteration = false;
+                    contextMap.put(model.name(), ctx);
                     mMultiModel.addModel(model.gen(ctx));
                 } else{
                     Context curContext = new Context(ctx.filename(), ctx.getOut(), null, ctx.modelFactory());
+                    contextMap.put(model.name(), curContext);
                     curContext.setMultiModel(mMultiModel);
                     mMultiModel.addModel(model.gen(curContext));
                     ctx.setErrorCount(ctx.errorCount() + curContext.errorCount());
@@ -60,11 +66,19 @@ public class ASTMultiModel extends AST {
             }
         }
 
+        for(ASTInterAssociation assoc : fInterAssoc) {
+            try {
+                assoc.gen(contextMap, mMultiModel);
+            } catch (SemanticException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
 
         return mMultiModel;
     }
 
-    public void addAssociation(ASTAssociation assoc) {
+    public void addInterAssociation(ASTInterAssociation assoc) {
         fInterAssoc.add(assoc);
     }
 

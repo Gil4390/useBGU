@@ -13,11 +13,13 @@ public class MMultiModel {
     private Map<String, MModel> fModels; // <modelName, MModel>
     private String fName;
     private String fFilename; // name of .use file
+    private List<MInterAssociation> fInterAssociations;
 
     public MMultiModel(String name) {
         fName = name;
         fModels = new TreeMap<>();
         fFilename = "";
+        fInterAssociations = new ArrayList<>();
     }
     public String name() {
         return fName;
@@ -62,6 +64,10 @@ public class MMultiModel {
 
         // TODO: find out if we need to check more exceptions
         fModels.remove(modelName);
+    }
+
+    public void addInterAssociation(MInterAssociation association) {
+        fInterAssociations.add(association);
     }
 
     /**

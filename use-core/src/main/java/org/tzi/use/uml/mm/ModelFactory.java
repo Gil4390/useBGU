@@ -83,6 +83,10 @@ public class ModelFactory {
         return new MAssociationImpl(name);
     }
 
+    public MInterAssociation createInterAssociation(String name) {
+        return new MInterAssociation(name);
+    }
+
     public MGeneralization createGeneralization(MClassifier child, MClassifier parent) {
         return new MGeneralization(child, parent);
     }

@@ -304,4 +304,8 @@ public class ASTModel extends ASTAnnotatable {
     public String toString() {
         return "(" + fName + ")";
     }
+
+    public String name() {
+        return fName.getText();
+    }
 }

@@ -34,11 +34,11 @@ import java.util.List;
  * @author  Mark Richters
  */
 public class ASTAssociation extends ASTAnnotatable {
-    private Token fKind;
-    
-    private Token fName;
-    
-    private List<ASTAssociationEnd> fAssociationEnds;
+    protected Token fKind;
+
+	protected Token fName;
+
+	protected List<ASTAssociationEnd> fAssociationEnds;
 
     public ASTAssociation(Token kind, Token name) {
         fKind = kind;
@@ -103,7 +103,7 @@ public class ASTAssociation extends ASTAnnotatable {
 		gen.generate();
     }
 
-    private void checkDerive() throws SemanticException {
+    protected void checkDerive() throws SemanticException {
     	int derived = 0;
     	for (ASTAssociationEnd aend : fAssociationEnds) {
     		if (aend.isDerived()) derived++;
@@ -113,7 +113,7 @@ public class ASTAssociation extends ASTAnnotatable {
 			throw new SemanticException(fName, "Only one association end can be derived. One direction is always calculated by USE.");
 		}
     }
-    	
+
 	private enum ValidationContext {
 		SUBSETS,
 		REDEFINES

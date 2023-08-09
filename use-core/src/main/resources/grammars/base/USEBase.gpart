@@ -19,7 +19,7 @@ multi_model returns [ASTMultiModel n]
     m=internal_model {$n.addModel($m.n);}
     (m=internal_model { $n.addModel($m.n); } )*
     ('inter-associations'
-        (a=associationDefinition { $n.addAssociation($a.n); })*
+        (a=interAssociationDefinition { $n.addInterAssociation($a.n); })*
     )?
     ('inter-constraints'
         ( cons=invariant { $n.addConstraint($cons.n); }
@@ -241,6 +241,28 @@ operationDefinition returns [ASTOperation n]
     ( ppc=prePostClause { $n.addPrePostClause($ppc.n); } )*
     ( SEMI )?
     ;
+
+
+/* ------------------------------------
+  interAssociationDefinition ::=
+    ( "association" | "aggregation" | "composition" )
+    id "between"
+    associationEnd associationEnd { associationEnd }
+    "end"
+*/
+interAssociationDefinition returns [ASTInterAssociation n]
+@init{ Token t = null; }
+:
+	as = annotationSet
+    { t = input.LT(1); }
+    ( keyAssociation | keyAggregation | keyComposition )
+    name=IDENT { $n = new ASTInterAssociation(t, $name); $n.setAnnotations($as.annotations); }
+    'between'
+    ae=associationEnd { $n.addEnd($ae.n); }
+    ( ae=associationEnd { $n.addEnd($ae.n); } )+
+    'end'
+    ;
+
 
 /* ------------------------------------
   associationDefinition ::= 
