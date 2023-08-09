@@ -247,7 +247,7 @@ operationDefinition returns [ASTOperation n]
   interAssociationDefinition ::=
     ( "association" | "aggregation" | "composition" )
     id "between"
-    associationEnd associationEnd { associationEnd }
+    interAssociationEnd interAssociationEnd { interAssociationEnd }
     "end"
 */
 interAssociationDefinition returns [ASTInterAssociation n]
@@ -258,8 +258,8 @@ interAssociationDefinition returns [ASTInterAssociation n]
     ( keyAssociation | keyAggregation | keyComposition )
     name=IDENT { $n = new ASTInterAssociation(t, $name); $n.setAnnotations($as.annotations); }
     'between'
-    ae=associationEnd { $n.addEnd($ae.n); }
-    ( ae=associationEnd { $n.addEnd($ae.n); } )+
+    ae=interAssociationEnd { $n.addInterEnd($ae.n); }
+    ( ae=interAssociationEnd { $n.addInterEnd($ae.n); } )+
     'end'
     ;
 
@@ -282,6 +282,28 @@ associationDefinition returns [ASTAssociation n]
     ae=associationEnd { $n.addEnd($ae.n); }
     ( ae=associationEnd { $n.addEnd($ae.n); } )+
     'end'
+    ;
+
+
+
+/* ------------------------------------
+  interAssociationEnd ::=
+    modelId "_" clsId "[" multiplicity "]" [ "role" id ] ( "ordered" | "subsets" id | "union" | "redefines" )* [ ";" ]
+*/
+interAssociationEnd returns [ASTInterAssociationEnd n]
+:
+	as = annotationSet
+    modelName=IDENT DOT clsName=IDENT LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
+    ( keyRole rn=IDENT { $n.setRolename($rn); } )?
+    (
+        'ordered' { $n.setOrdered(); }
+      | 'subsets' sr=IDENT { $n.addSubsetsRolename($sr); }
+      | keyUnion { $n.setUnion(true); }
+      | 'redefines' rd=IDENT { $n.addRedefinesRolename($rd); }
+      | (keyDerived|keyDerive) ( LPAREN parameter = elemVarsDeclaration RPAREN)? EQUAL exp=expression { $n.setDerived($exp.n, $parameter.n); }
+      | keyQualifier qualifiers = paramList {$n.setQualifiers($qualifiers.paramList); }
+    )*
+    ( SEMI )?
     ;
 
 

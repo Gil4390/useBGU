@@ -138,6 +138,20 @@ public class MMultiModel {
     }
 
 
+    /**
+     * Calculates the number of intermediate associations that involve a specified class name.
+     * @param clsName The name of the class for which intermediate associations are to be counted.
+     * @return The count of intermediate associations that involve the specified class name.
+     */
+    public int numOfInterAssociations(String clsName) {
+        long count = fInterAssociations.stream()
+                .filter(assoc -> assoc.associationEnds().stream()
+                        .anyMatch(assocEnd -> assocEnd.name().equals(clsName)))
+                .count();
+
+        return (int) count;
+    }
+
     public MModel toMModel() throws Exception {
         String delimiter= "_";
         MModel result_model = new MModel(this.fName);
@@ -186,6 +200,12 @@ public class MMultiModel {
                 result_model.addSignal(newSignal);
             }
 
+        }
+
+        //inter-associations
+        for(MInterAssociation interAssoc : fInterAssociations) {
+            MAssociation association = interAssoc.makeCopy("", result_model);
+            result_model.addAssociation(association);
         }
 
         return result_model;

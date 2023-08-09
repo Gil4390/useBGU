@@ -5,14 +5,22 @@ import org.tzi.use.parser.Context;
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.mm.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ASTInterAssociation extends ASTAssociation{
 
-    //private String modelName;
+    protected List<ASTInterAssociationEnd> fInterAssociationEnds;
+
 
     public ASTInterAssociation(Token kind, Token name) {
         super(kind, name);
+        fInterAssociationEnds = new ArrayList<>();
+    }
+
+    public void addInterEnd(ASTInterAssociationEnd iae) {
+        fInterAssociationEnds.add(iae);
     }
 
     public MAssociation gen(HashMap<String, Context> contextMap, MMultiModel multiModel) throws SemanticException
@@ -33,16 +41,15 @@ public class ASTInterAssociation extends ASTAssociation{
             kind = MAggregationKind.COMPOSITION;
 
         try {
-            for (ASTAssociationEnd ae : fAssociationEnds) {
-                if (!ae.getQualifiers().isEmpty() && this.fAssociationEnds.size() > 2) {
+            for (ASTInterAssociationEnd ae : fInterAssociationEnds) {
+                if (!ae.getQualifiers().isEmpty() && this.fInterAssociationEnds.size() > 2) {
                     throw new SemanticException(fName,
                             "Error in " + MAggregationKind.name(assoc.aggregationKind()) + " `" +
                                     assoc.name() + "': Only binary associations can be qualified.");
                 }
                 // kind of association determines kind of first
                 // association end
-                String modelName = ae.getClassName().split("_")[0];
-                Context ctx = contextMap.get(modelName);
+                Context ctx = contextMap.get(ae.modelName());
                 MAssociationEnd aend = ae.gen(ctx, kind);
                 assoc.addAssociationEnd(aend);
 
