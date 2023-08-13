@@ -18,7 +18,7 @@ public class ASTMultiModel extends AST {
 
     private final List<ASTInterAssociation> fInterAssoc;
     // assoc class?
-    private final List<ASTConstraintDefinition> fInterConstraints;
+    private final List<ASTInterConstraintDefinition> fInterConstraints;
 
     private final List<ASTPrePost> fInterPrePosts;
 
@@ -74,6 +74,10 @@ public class ASTMultiModel extends AST {
             }
         }
 
+        for(ASTInterConstraintDefinition inv : fInterConstraints) {
+            inv.gen(contextMap);
+        }
+
 
         return mMultiModel;
     }
@@ -82,7 +86,7 @@ public class ASTMultiModel extends AST {
         fInterAssoc.add(assoc);
     }
 
-    public void addConstraint(ASTConstraintDefinition cons) {
+    public void addConstraint(ASTInterConstraintDefinition cons) {
         fInterConstraints.add(cons);
     }
 

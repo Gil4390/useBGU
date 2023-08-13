@@ -58,7 +58,7 @@ end
 inter-constraints
 
 -- the sum of people that can work on a project is greater than 3
-context model3_Project inv:
+context model3.Project inv:
     ( self.students->size() + self.employees->size() ) > 3
 
 

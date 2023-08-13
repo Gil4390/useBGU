@@ -39,7 +39,7 @@ end
 inter-constraints 
 
 -- an employee salary must be larger than any student salary
-context model1_Employee inv:
+context model1.Employee inv:
     self.a2.forAll(s1 | self.salary > s1.salary)
     
 

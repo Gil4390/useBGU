@@ -15,6 +15,8 @@ public class MMultiModel {
     private String fFilename; // name of .use file
     private List<MInterAssociation> fInterAssociations;
 
+    private List<MInterAssociation> fInterConstraints;
+
     public MMultiModel(String name) {
         fName = name;
         fModels = new TreeMap<>();

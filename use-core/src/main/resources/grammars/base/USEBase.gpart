@@ -22,7 +22,7 @@ multi_model returns [ASTMultiModel n]
         (a=interAssociationDefinition { $n.addInterAssociation($a.n); })*
     )?
     ('inter-constraints'
-        ( cons=invariant { $n.addConstraint($cons.n); }
+        ( cons=interInvariant { $n.addConstraint($cons.n); }
           | ppc=prePost { $n.addPrePost($ppc.n); }
         )*
     )?
@@ -263,7 +263,22 @@ interAssociationDefinition returns [ASTInterAssociation n]
     'end'
     ;
 
+/* ------------------------------------
+  interInvariant ::=
+    invariantContext invariantClause { invariantClause }
 
+  invariantContext :=
+    "context" [ id ":" ] simpleType
+*/
+interInvariant returns [ASTInterConstraintDefinition n]
+:
+    { $n = new ASTInterConstraintDefinition(); }
+    'context'
+    ( v=IDENT { $n.addVarName($v); }
+       (',' v=IDENT  { $n.addVarName($v); } )* COLON )?
+    modelName=IDENT DOT t=simpleType { $n.setType($t.n); $n.setModelName($modelName); }
+    ( inv=invariantClause { $n.addInvariantClause($inv.n); } )* //+
+    ;
 /* ------------------------------------
   associationDefinition ::= 
     ( "association" | "aggregation" | "composition" ) 
