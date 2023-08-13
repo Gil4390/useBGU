@@ -582,27 +582,27 @@ public class ObjectCreation {
             UseSystemApi systemApi = UseSystemApi.create(system, false);
 
             systemApi.createObjects("Department", "cs");
-            systemApi.setAttributeValue("cs", "name", "Computer Science");
-            systemApi.setAttributeValue("cs", "location", "Bermen");
+            systemApi.setAttributeValue("cs", "name", "'Computer Science'");
+            systemApi.setAttributeValue("cs", "location", "'Bermen'");
             systemApi.setAttributeValue("cs", "budget", "10000");
 
             systemApi.createObjects("Employee", "john");
-            systemApi.setAttributeValue("john", "name", "John");
+            systemApi.setAttributeValue("john", "name", "'John'");
             systemApi.setAttributeValue("john", "salary", "4000");
 
             systemApi.createObjects("Employee", "frank");
-            systemApi.setAttributeValue("frank", "name", "Frank");
+            systemApi.setAttributeValue("frank", "name", "'Frank'");
             systemApi.setAttributeValue("frank", "salary", "4500");
 
             systemApi.createLink("WorksIn", "john", "cs");
             systemApi.createLink("WorksIn", "frank", "cs");
 
             systemApi.createObjects("Project", "research");
-            systemApi.setAttributeValue("research", "name", "Research");
+            systemApi.setAttributeValue("research", "name", "'Research'");
             systemApi.setAttributeValue("research", "budget", "12000");
 
             systemApi.createObjects("Project", "teaching");
-            systemApi.setAttributeValue("teaching", "name", "Validating UML");
+            systemApi.setAttributeValue("teaching", "name", "'Validating UML'");
             systemApi.setAttributeValue("teaching", "budget", "3000");
 
             systemApi.createLink("Controls", "cs", "research");
