@@ -240,6 +240,51 @@ public class MultiModelConversionTest extends TestCase {
             throw ( new Error( e ) );
         }
     }
+
+    //=============================== inter =========================================
+
+    public void testConvertMultiModelWithTwoModelsInterAssociation() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInterAssociation();
+
+            MModel model1 = ((MModel)multimodel.models().toArray()[0]);
+            MModel model2 = ((MModel)multimodel.models().toArray()[1]);
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MInterAssociation interAssoc : multimodel.interAssociations()){
+                MAssociation assoc = convertedModel.getAssociation(interAssoc.name());
+                assertNotNull(assoc);
+            }
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testConvertMultiModelMultipleInterAssociation() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelMultipleInterAssociation();
+
+            MModel model1 = ((MModel)multimodel.models().toArray()[0]);
+            MModel model2 = ((MModel)multimodel.models().toArray()[1]);
+            MModel model3 = ((MModel)multimodel.models().toArray()[2]);
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MInterAssociation interAssoc : multimodel.interAssociations()){
+                MAssociation assoc = convertedModel.getAssociation(interAssoc.name());
+                assertNotNull(assoc);
+            }
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+
     //TODO:
     // mm with 2 models and 1 inter assoc
     // mm with 3 models and multiple inter assoc

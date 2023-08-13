@@ -293,4 +293,56 @@ public class TestMultiModelUtil {
     }
 
     //=============================== inter =========================================
+
+    public MMultiModel createMultiModelTwoModelsInterAssociation() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("PersonCompany1");
+            api1.createClass("Person", false );
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("PersonCompany2");
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createInterAssociation("Job", "PersonCompany1", "PersonCompany2",
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelMultipleInterAssociation() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Person", false );
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            UseModelApi api3 = new UseModelApi("model3");
+            api3.createClass("School", false );
+            multiApi.addModel(api3.getModel());
+
+            multiApi.createInterAssociation("Job", "model1", "model2",
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+            multiApi.createInterAssociation("Studies", "model1", "model3",
+                    "Person" , "graduate" , "0..1", MAggregationKind.NONE,
+                    "School", "studiedAt", "0..1", MAggregationKind.NONE);
+            multiApi.createInterAssociation("Students", "model2", "model3",
+                    "Company" , "worksAt" , "0..1", MAggregationKind.NONE,
+                    "School", "interns", "0..1", MAggregationKind.NONE);
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
 }
