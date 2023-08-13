@@ -240,5 +240,13 @@ public class MultiModelConversionTest extends TestCase {
             throw ( new Error( e ) );
         }
     }
+    //TODO:
+    // mm with 2 models and 1 inter assoc
+    // mm with 3 models and multiple inter assoc
+    // mm with 2 models and 2 inter assoc between the same classes
+    // mm with 2 models and simple inter constraint
+    // mm with 3 models and simple inter constraint
+    // mm with 2 models and complex inter constraint
+    // mm with 3 models and complex inter constraint
 
 }

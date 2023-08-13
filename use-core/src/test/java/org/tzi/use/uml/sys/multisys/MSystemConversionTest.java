@@ -509,7 +509,14 @@ public class MSystemConversionTest extends TestCase {
     }
 
     //TODO:
-    // 3. add tests for more complex constraints
+    // add tests for more complex constraints
+
+
+    //====================================== inter assoc ====================================
+    //TODO:
+    // make instances of the mm in tests from the multi conversion tests
+    // start with 2 models each with object diagram, combine them into a mm, add inter assoc, and convert,
+    // then add links between the new objects in the new diagram
 
 }
 

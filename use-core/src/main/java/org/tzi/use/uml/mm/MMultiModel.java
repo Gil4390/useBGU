@@ -215,6 +215,10 @@ public class MMultiModel {
             result_model.addAssociation(association);
         }
 
+        //inter-constraints
+        for(MClassInvariant inv : fInterConstraints) {
+            result_model.addClassInvariant(inv);
+        }
         return result_model;
     }
 
