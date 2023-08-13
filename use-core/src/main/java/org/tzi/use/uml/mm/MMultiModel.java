@@ -15,13 +15,14 @@ public class MMultiModel {
     private String fFilename; // name of .use file
     private List<MInterAssociation> fInterAssociations;
 
-    private List<MInterAssociation> fInterConstraints;
+    private List<MClassInvariant> fInterConstraints;
 
     public MMultiModel(String name) {
         fName = name;
         fModels = new TreeMap<>();
         fFilename = "";
         fInterAssociations = new ArrayList<>();
+        fInterConstraints = new ArrayList<>();
     }
     public String name() {
         return fName;
@@ -70,6 +71,10 @@ public class MMultiModel {
 
     public void addInterAssociation(MInterAssociation association) {
         fInterAssociations.add(association);
+    }
+
+    public void addInterConstraint(MClassInvariant constraint) {
+        fInterConstraints.add(constraint);
     }
 
     /**

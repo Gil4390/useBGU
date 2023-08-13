@@ -60,7 +60,7 @@ association Job between
 end
 
 
-association Job between
+association Graduates between
     model1.Employee[*] role graduates
     model2.School[0..1] role studiedAt
 end

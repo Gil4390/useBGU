@@ -4,12 +4,10 @@ import org.antlr.runtime.Token;
 import org.tzi.use.parser.AST;
 import org.tzi.use.parser.Context;
 import org.tzi.use.parser.SemanticException;
+import org.tzi.use.uml.mm.MClassInvariant;
 import org.tzi.use.uml.mm.MMultiModel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ASTMultiModel extends AST {
 
@@ -75,7 +73,11 @@ public class ASTMultiModel extends AST {
         }
 
         for(ASTInterConstraintDefinition inv : fInterConstraints) {
-            inv.gen(contextMap);
+
+            Collection<MClassInvariant> invariants = inv.gen(contextMap);
+            for(MClassInvariant invariant : invariants) {
+                mMultiModel.addInterConstraint(invariant);
+            }
         }
 
 

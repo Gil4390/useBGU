@@ -41,6 +41,7 @@ public class ASTInterAssociation extends ASTAssociation{
             kind = MAggregationKind.COMPOSITION;
 
         try {
+            List<MModel> modelsToAddAssociations = new ArrayList<>();
             for (ASTInterAssociationEnd ae : fInterAssociationEnds) {
                 if (!ae.getQualifiers().isEmpty() && this.fInterAssociationEnds.size() > 2) {
                     throw new SemanticException(fName,
@@ -58,7 +59,9 @@ public class ASTInterAssociation extends ASTAssociation{
 
                 if (aend.isUnion())
                     assoc.setUnion(true);
+                modelsToAddAssociations.add(ctx.model());
             }
+            modelsToAddAssociations.get(0).addAssociation(assoc);
             multiModel.addInterAssociation(assoc);
         } catch (MInvalidModelException ex) {
             throw new SemanticException(fName,

@@ -41,5 +41,7 @@ inter-constraints
 -- an employee salary must be larger than any student salary
 context model1.Employee inv:
     self.a2.forAll(s1 | self.salary > s1.salary)
-    
+-- student salary must be smaller than his employee's salary
+context model2.Student inv:
+    self.salary < self.a1.salary
 
