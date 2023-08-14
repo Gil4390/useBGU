@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 
 public class MultiModelConversionTest extends TestCase {
 
+    public static final String delimiter = "_";
+
     public void testConvertMultiModelWithSingleModel() {
         try {
             MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelSingleModel();
@@ -14,7 +16,7 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model.classes()){
-                String newName = model.name() + "_" + mClass.name();
+                String newName = model.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -36,13 +38,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -63,13 +65,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -90,13 +92,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -117,13 +119,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -147,13 +149,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -177,13 +179,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -204,13 +206,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
@@ -231,7 +233,7 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + delimiter + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }

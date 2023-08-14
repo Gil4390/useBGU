@@ -479,7 +479,7 @@ public class MSystemConversionTest extends TestCase {
                     createModelWithObjectsAndConstraintsSimpleSatisfactory("model1");
             MModel model1 = system1.model();
 
-            //assert initial model is Unsatisfactory
+            //assert initial model is satisfactory
             UseSystemApi useSystemApi1 = UseSystemApi.create(system1, true);
             Assert.assertTrue(useSystemApi1.checkState());
 
@@ -551,7 +551,7 @@ public class MSystemConversionTest extends TestCase {
                     createComplexModelWithConstraintsSatisfactory("model1");
             MModel model1 = system1.model();
 
-            //assert initial model is Unsatisfactory
+            //assert initial model is satisfactory
             UseSystemApi useSystemApi1 = UseSystemApi.create(system1, true);
             Assert.assertTrue(useSystemApi1.checkState());
 
@@ -571,7 +571,7 @@ public class MSystemConversionTest extends TestCase {
             Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
 
-            //assert multi-model is also Unsatisfactory
+            //assert multi-model is also satisfactory
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
             Assert.assertTrue(useSystemApic.checkState());
 
@@ -580,8 +580,56 @@ public class MSystemConversionTest extends TestCase {
         }
     }
 
-    //TODO:
-    // add tests for more complex constraints
+    // TODO:
+    // convert a mm with object and add new objects to the converted, test for satisfiability
+
+    public void testSingleModelConversionAndAdditionSimple() {
+        try{
+            //create the initial model and its system
+            MSystem system1 = ObjectCreation.getInstance().
+                    createModelWithObjectsAndConstraintsSimpleSatisfactory("model1");
+            MModel model1 = system1.model();
+
+            //assert initial model is satisfactory
+            UseSystemApi useSystemApi1 = UseSystemApi.create(system1, true);
+            Assert.assertTrue(useSystemApi1.checkState());
+
+
+            //create the multi-model that holds the model
+            MMultiModel multiModel = new MMultiModel("multi");
+            multiModel.addModel(model1);
+
+            //set the previous model1 system that contains the objects
+            MMultiSystem multiSystem = new MMultiSystem(multiModel);
+            multiSystem.setModelSystem(model1.name(), system1);
+
+            //convert
+            MSystem cSystem = multiSystem.toMSystem();
+
+            //assert
+            Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
+
+            //assert multi-model is also Satisfactory
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            Assert.assertTrue(useSystemApic.checkState());
+
+            //now add new objects that break the constraints
+            useSystemApic.createObject("model1_Person", "newP");
+            Assert.assertEquals(multiSystem.numObjects() + 1, cSystem.state().numObjects());
+
+            useSystemApic.setAttributeValue("newP", "salary", "6000");
+            Assert.assertTrue(useSystemApic.checkState());
+
+            useSystemApic.setAttributeValue("newP", "salary", "1000");
+            Assert.assertFalse(useSystemApic.checkState());
+
+
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+
 
 
     //====================================== inter assoc ====================================

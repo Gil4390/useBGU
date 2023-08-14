@@ -29,6 +29,7 @@ public class MMultiSystem {
     }
 
     public MSystem toMSystem() throws Exception{
+        String delimiter= "_";
         MModel convertedModel = fMultiModel.toMModel();
         MSystem convertedSystem = new MSystem(convertedModel);
 
@@ -38,9 +39,9 @@ public class MMultiSystem {
             //iterate the objects
             for (MObject object : system.state().allObjects()){
                 if (object instanceof MObjectImpl) {
-                    String clsName = system.model().name() + "_" + object.cls().name();
+                    String clsName = system.model().name() + delimiter + object.cls().name();
                     MClass convertedClass = convertedModel.getClass(clsName);
-                    String newObjName = system.model().name() + "_" + object.name();
+                    String newObjName = system.model().name() + delimiter + object.name();
                     MObject convertedObject = convertedSystem.state().createObject(convertedClass, newObjName);
                     for(MAttribute attr : convertedObject.cls().attributes()) {
                         Value convertedValue = system.state().getObjectState(object).attributeValue(attr.name());
@@ -54,13 +55,13 @@ public class MMultiSystem {
             //iterate the links
             for (MLink link : system.state().allLinks()){
                 if (link instanceof MLinkObjectImpl){
-                    String assocName = system.model().name() + "_" + link.association().name();
+                    String assocName = system.model().name() + delimiter + link.association().name();
                     MAssociationClass convertedAssoc = (MAssociationClass) convertedModel.getAssociation(assocName);
                     if (convertedAssoc == null)
                         throw new Exception("association with name: " + assocName + " was not found");
                     List<MObject> objects = new ArrayList<>();
                     for (MObject linkObj : link.linkedObjects()) {
-                        String convertedObjName = system.model().name() + "_" + linkObj.name();
+                        String convertedObjName = system.model().name() + delimiter + linkObj.name();
                         MObject convertedObj = convertedSystem.state().objectByName(convertedObjName);
                         objects.add(convertedObj);
                         for(MAttribute attr : convertedObj.cls().attributes()) {
@@ -68,20 +69,20 @@ public class MMultiSystem {
                             convertedSystem.state().getObjectState(convertedObj).setAttributeValue(attr, convertedValue);
                         }
                     }
-                    String convertedLinkObjName = system.model().name() + "_" + ((MLinkObjectImpl) link).name();
+                    String convertedLinkObjName = system.model().name() + delimiter + ((MLinkObjectImpl) link).name();
                     convertedSystem.state().createLinkObject(convertedAssoc, convertedLinkObjName, objects, link.getQualifier());
                 }
             }
 
             for (MLink link : system.state().allLinks()){
                 if (link instanceof MLinkImpl) {
-                    String assocName = system.model().name() + "_" + link.association().name();
+                    String assocName = system.model().name() + delimiter + link.association().name();
                     MAssociation convertedAssoc = convertedModel.getAssociation(assocName);
                     if (convertedAssoc == null)
                         throw new Exception("association with name: " + assocName + " was not found");
                     List<MObject> objects = new ArrayList<>();
                     for (MObject linkObj : link.linkedObjects()) {
-                        String convertedObjName = system.model().name() + "_" + linkObj.name();
+                        String convertedObjName = system.model().name() + delimiter + linkObj.name();
                         MObject convertedObj = convertedSystem.state().objectByName(convertedObjName);
                         objects.add(convertedObj);
                     }
