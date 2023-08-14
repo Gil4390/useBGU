@@ -389,10 +389,49 @@ public class TestMultiModelUtil {
             api2.createAttribute("Student", "ident", "Integer");
             multiApi.addModel(api2.getModel());
 
-            multiApi.createInterAssociation("Job", "model1", "model2",
+            multiApi.createInterAssociation("Job", "model2", "model1",
                     "Student" , "student" , "0..1", MAggregationKind.NONE,
                     "Employee", "employee", "0..1", MAggregationKind.NONE);
             multiApi.createInterInvariant("ValidId", "model2" ,"Student", "self.ident = self.employee.ident", false);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelInterConstraintComplex() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Employee", false );
+            api1.createAttribute("Employee", "name", "String");
+            api1.createAttribute("Employee", "salary", "Integer");
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Student", false );
+            api2.createAttribute("Student", "name", "String");
+            api2.createAttribute("Student", "grade", "Integer");
+            multiApi.addModel(api2.getModel());
+
+            UseModelApi api3 = new UseModelApi("model3");
+            api3.createClass("Company", false );
+            api3.createAttribute("Company", "name", "String");
+            multiApi.addModel(api3.getModel());
+
+            multiApi.createInterAssociation("Interns", "model3", "model2",
+                    "Company" , "internAt" , "0..1", MAggregationKind.NONE,
+                    "Student", "interns", "*", MAggregationKind.NONE);
+            multiApi.createInterAssociation("Supervise", "model2", "model1",
+                    "Student" , "supervising" , "*", MAggregationKind.NONE,
+                    "Employee", "supervisors", "*", MAggregationKind.NONE);
+            multiApi.createInterAssociation("Workers", "model3", "model1",
+                    "Company" , "worksAt" , "0..1", MAggregationKind.NONE,
+                    "Employee", "employers", "*", MAggregationKind.NONE);
+            multiApi.createInterInvariant("ValidSupervisors", "model3" ,"Company",
+                    "self.interns->forAll(i1 | i1.supervisors->size() > 0)", false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {

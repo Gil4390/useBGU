@@ -146,7 +146,7 @@ public class UseMultiModelApi {
         } catch (MInvalidModelException e) {
             throw new UseApiException("Invariant creation failed!", e);
         }
-
+        mMultiModel.addInterConstraint(mClassInvariant);
         return mClassInvariant;
     }
 
