@@ -11,7 +11,7 @@ public class MInterAssociation extends MAssociationImpl{
      */
 
 
-    MInterAssociation(String name) {
+    public MInterAssociation(String name) {
         super(name);
     }
 }

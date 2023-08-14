@@ -72,9 +72,14 @@ public class MMultiModel {
     public void addInterAssociation(MInterAssociation association) {
         fInterAssociations.add(association);
     }
-
+    //TODO: implement in a way that it adds MNavigableElement to each model
+    // replace it with gen() in ASTInterAssociation
     public void addInterConstraint(MClassInvariant constraint) {
         fInterConstraints.add(constraint);
+    }
+
+    public List<MInterAssociation> interAssociations() {
+        return fInterAssociations;
     }
 
     /**
@@ -189,7 +194,8 @@ public class MMultiModel {
             }
             // associations
             for (MAssociation mAssociation : model.associations()){
-                if(!(mAssociation instanceof MAssociationClass)) {
+                if(!(mAssociation instanceof MAssociationClass)
+                        && !(mAssociation instanceof MInterAssociation)) {
                     MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, result_model);
                     result_model.addAssociation(newAssoc);
                 }
