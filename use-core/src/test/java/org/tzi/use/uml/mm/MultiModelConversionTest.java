@@ -316,12 +316,42 @@ public class MultiModelConversionTest extends TestCase {
 
             assertEquals(convertedModel.name(), multimodel.name());
 
+            for (MClassInvariant classInv : multimodel.interConstraints()){
+                MClassInvariant inv = convertedModel.getClassInvariant(classInv.cls().name()+"::"+classInv.name());
+                assertNotNull(inv);
+            }
+
+            assertEquals(1, convertedModel.modelClassInvariants().size());
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testConvertMultiModelComplexInterConstraint() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelInterConstraintComplex();
+
+            MModel model1 = ((MModel)multimodel.models().toArray()[0]);
+            MModel model2 = ((MModel)multimodel.models().toArray()[1]);
+            MModel model3 = ((MModel)multimodel.models().toArray()[2]);
+
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
             for (MInterAssociation interAssoc : multimodel.interAssociations()){
                 MAssociation assoc = convertedModel.getAssociation(interAssoc.name());
                 assertNotNull(assoc);
             }
 
-            assertEquals(2, convertedModel.associations().size());
+            for (MClassInvariant classInv : multimodel.interConstraints()){
+                MClassInvariant inv = convertedModel.getClassInvariant(classInv.cls().name()+"::"+classInv.name());
+                assertNotNull(inv);
+            }
+
+            assertEquals(1, convertedModel.modelClassInvariants().size());
+            assertEquals(3, convertedModel.associations().size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );

@@ -82,6 +82,10 @@ public class MMultiModel {
         return fInterAssociations;
     }
 
+    public List<MClassInvariant> interConstraints() {
+        return fInterConstraints;
+    }
+
     /**
      * Returns the specified model by name.
      *
@@ -203,8 +207,10 @@ public class MMultiModel {
             }
             // constraints
             for (MClassInvariant mClassInv : model.classInvariants()){
-                MClassInvariant newClassInv = mClassInv.makeCopy(model.name()+delimiter, result_model.classesMap());
-                result_model.addClassInvariant(newClassInv);
+                if(!fInterConstraints.contains(mClassInv)) {
+                    MClassInvariant newClassInv = mClassInv.makeCopy(model.name() + delimiter, result_model.classesMap());
+                    result_model.addClassInvariant(newClassInv);
+                }
             }
 
             // signals

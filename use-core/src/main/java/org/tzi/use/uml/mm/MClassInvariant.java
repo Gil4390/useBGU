@@ -78,7 +78,7 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
      * <code>className.allInstances()->forAll(body)</code>.
      */
     private boolean fIsExistential;
-    
+
     /**
      * Constructs a new invariant. The <code>name</code> and <code>vars</code> is optional, i.e., can be <code>null</code>.
      */
@@ -86,7 +86,6 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
         throws ExpInvalidException
     {
         super(name);
-        
         if (!inv.type().isTypeOfBoolean()) {
         	throw new ExpInvalidException("An invariant must be a boolean expression.");
         }
