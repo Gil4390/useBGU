@@ -345,4 +345,58 @@ public class TestMultiModelUtil {
             throw new Error( e );
         }
     }
+
+    public MMultiModel createMultiModelTwoInterAssociationSameClass() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Person", false );
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Company", false );
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createInterAssociation("Job", "model1", "model2",
+                    "Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "Company", "company", "*", MAggregationKind.NONE);
+            multiApi.createInterAssociation("Study", "model2", "model1",
+                    "Company" , "graduate" , "0..1", MAggregationKind.NONE,
+                    "Person", "studiedAt", "0..1", MAggregationKind.NONE);
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelInterConstraintSimple() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Employee", false );
+            api1.createAttribute("Employee", "name", "String");
+            api1.createAttribute("Employee", "salary", "Integer");
+            api1.createAttribute("Employee", "ident", "Integer");
+
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Student", false );
+            api2.createAttribute("Student", "name", "String");
+            api2.createAttribute("Student", "grade", "Integer");
+            api2.createAttribute("Student", "ident", "Integer");
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createInterAssociation("Job", "model1", "model2",
+                    "Student" , "student" , "0..1", MAggregationKind.NONE,
+                    "Employee", "employee", "0..1", MAggregationKind.NONE);
+            multiApi.createInterInvariant("ValidId", "model2" ,"Student", "self.ident = self.employee.ident", false);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
 }
