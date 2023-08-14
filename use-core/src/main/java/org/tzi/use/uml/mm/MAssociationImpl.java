@@ -73,17 +73,26 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
 	public MAssociation makeCopy(String prefix, MModel newModel) {
 		Map<String, MClass> filteredClasses = new HashMap<>();
 		Map<String, MClass> classes = newModel.classesMap();
-
+		boolean interAssociationFlag = prefix.isEmpty();
 
 		for(MClass assoc_cls : this.associatedClasses()) {
+			if(interAssociationFlag) {
+				prefix = assoc_cls.model().name() + "_";
+			}
 			String convertedClsName = prefix + assoc_cls.name();
 			MClass classToAdd = classes.get(convertedClsName);
 			filteredClasses.put(classToAdd.name(),classToAdd);
-		}
 
+		}
+		if(interAssociationFlag) {
+			prefix = "";
+		}
 		MAssociationImpl copy = new MAssociationImpl(prefix + this.name());
 		for(MAssociationEnd assocEnd : this.fAssociationEnds) {
 			try {
+				if(interAssociationFlag) {
+					prefix = assocEnd.cls().model().name() + "_";
+				}
 				MAssociationEnd assocEndCopy = assocEnd.makeCopy(prefix, filteredClasses);
 				assocEndCopy.setAssociation(copy);
 				copy.addAssociationEnd(assocEndCopy);

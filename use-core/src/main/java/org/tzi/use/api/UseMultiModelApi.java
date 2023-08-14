@@ -1,13 +1,20 @@
 package org.tzi.use.api;
 
+import org.tzi.use.parser.SemanticException;
+import org.tzi.use.parser.SrcPos;
+import org.tzi.use.parser.Symtable;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
 import org.tzi.use.uml.mm.*;
+import org.tzi.use.uml.ocl.expr.ExpInvalidException;
+import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.expr.VarDecl;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.util.NullPrintWriter;
 import org.tzi.use.util.StringUtil;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -97,6 +104,50 @@ public class UseMultiModelApi {
 
         MAssociationEnd end = new MAssociationEnd(classEnd, endRoleName, m, endAggregation, isOrdered, qualifierDecl);
         return end;
+    }
+
+    public MClassInvariant createInterInvariant(String invName, String modelName, String contextName,
+                                           String invBody, boolean isExistential) throws UseApiException {
+
+        MModel mModel = mMultiModel.getModel(modelName);
+        MClass cls = mModel.getClass(contextName);
+
+        Symtable vars = new Symtable();
+        try {
+            vars.add("self", cls, new SrcPos("self", 1, 1));
+        } catch (SemanticException e1) {
+            throw new UseApiException("Could not add " + StringUtil.inQuotes("self") + " to symtable.", e1);
+        }
+
+        StringWriter errBuffer = new StringWriter();
+        PrintWriter errorPrinter = new PrintWriter(errBuffer, true);
+
+        Expression invExp = OCLCompiler.compileExpression(mModel, invBody, "UseApi", errorPrinter, vars);
+
+        if (invExp == null) {
+            throw new UseApiException(errBuffer.toString());
+        }
+
+        return createInterInvariantEx(invName, mModel, contextName, invExp, isExistential);
+    }
+
+    public MClassInvariant createInterInvariantEx(String invName, MModel mModel, String contextName,
+                                             Expression invBody, boolean isExistential) throws UseApiException {
+        MClass cls = mModel.getClass(contextName);
+
+        MClassInvariant mClassInvariant = null;
+        try {
+            mClassInvariant = mFactory.createClassInvariant(invName, null,
+                    cls, invBody, isExistential);
+
+            mModel.addClassInvariant(mClassInvariant);
+        } catch (ExpInvalidException e) {
+            throw new UseApiException("Invalid invariant expression!", e);
+        } catch (MInvalidModelException e) {
+            throw new UseApiException("Invariant creation failed!", e);
+        }
+
+        return mClassInvariant;
     }
 
     public Type getType(String typeExpr, MModel mModel) throws UseApiException {
