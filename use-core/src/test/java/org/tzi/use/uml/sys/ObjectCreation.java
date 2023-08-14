@@ -566,7 +566,63 @@ public class ObjectCreation {
     }
 
     /**
-     * Creates a model with 3 classes and 4 invariants.
+     * Creates a model with 3 classes and 4 invariants. only 3 of the 4 invariants hold
+     * based on the example from <a href="https://useocl.sourceforge.net/w/index.php/Quick_Tour">https://useocl.sourceforge.net/w/index.php/Quick_Tour</a>
+     *
+     * It creates instances of those as well.
+     * The model is created with the given name
+     * @return returns the actual System.
+     */
+    public MSystem createComplexModelWithConstraintsUnSatisfactory(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance().createComplexModelWithConstraints(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            systemApi.createObjects("Department", "cs");
+            systemApi.setAttributeValue("cs", "name", "'Computer Science'");
+            systemApi.setAttributeValue("cs", "location", "'Bermen'");
+            systemApi.setAttributeValue("cs", "budget", "10000");
+
+            systemApi.createObjects("Employee", "john");
+            systemApi.setAttributeValue("john", "name", "'John'");
+            systemApi.setAttributeValue("john", "salary", "4000");
+
+            systemApi.createObjects("Employee", "frank");
+            systemApi.setAttributeValue("frank", "name", "'Frank'");
+            systemApi.setAttributeValue("frank", "salary", "4500");
+
+            systemApi.createLink("WorksIn", "john", "cs");
+            systemApi.createLink("WorksIn", "frank", "cs");
+
+            systemApi.createObjects("Project", "research");
+            systemApi.setAttributeValue("research", "name", "'Research'");
+            systemApi.setAttributeValue("research", "budget", "12000");
+
+            systemApi.createObjects("Project", "teaching");
+            systemApi.setAttributeValue("teaching", "name", "'Validating UML'");
+            systemApi.setAttributeValue("teaching", "budget", "3000");
+
+            systemApi.createLink("Controls", "cs", "research");
+            systemApi.createLink("Controls", "cs", "teaching");
+
+            systemApi.createLink("WorksOn", "frank", "research");
+            systemApi.createLink("WorksOn", "frank", "teaching");
+            systemApi.createLink("WorksOn", "john", "research");
+
+
+            return system;
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+
+
+    /**
+     * Creates a model with 3 classes and 4 invariants. all 4 invariants hold
      * based on the example from <a href="https://useocl.sourceforge.net/w/index.php/Quick_Tour">https://useocl.sourceforge.net/w/index.php/Quick_Tour</a>
      *
      * It creates instances of those as well.
@@ -584,7 +640,7 @@ public class ObjectCreation {
             systemApi.createObjects("Department", "cs");
             systemApi.setAttributeValue("cs", "name", "'Computer Science'");
             systemApi.setAttributeValue("cs", "location", "'Bermen'");
-            systemApi.setAttributeValue("cs", "budget", "10000");
+            systemApi.setAttributeValue("cs", "budget", "13000"); // <-- large enough budget
 
             systemApi.createObjects("Employee", "john");
             systemApi.setAttributeValue("john", "name", "'John'");

@@ -21,6 +21,8 @@ package org.tzi.use.uml.ocl.expr;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
 
 import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.mm.MNavigableElement;
@@ -89,6 +91,41 @@ public final class ExpNavigation extends Expression {
         Value res = UndefinedValue.instance;
         final Value val = fObjExp.eval(ctx);
 
+        MNavigableElement convertedSrc = this.fSrc;
+        MNavigableElement convertedDst = this.fDst;
+
+        if (ctx.preState() != null) {
+            Map<String, MClass> classes = ctx.preState().system().model().classesMap();
+            if (!classes.containsKey(this.fSrc.cls().name())) {
+                // in conversion
+                String srcModelName = this.fSrc.association().model().name();
+                String srcClassName = this.fSrc.cls().name();
+                String convertedSrcClassName = srcModelName + "_" + srcClassName;
+                Map<String, ? extends MNavigableElement> ends1 = classes.get(convertedSrcClassName).navigableEnds();
+
+                String dstModelName = this.fDst.association().model().name();
+                String dstClassName = this.fDst.cls().name();
+                String convertedDstClassName = dstModelName + "_" + dstClassName;
+                Map<String, ? extends MNavigableElement> ends2 = classes.get(convertedDstClassName).navigableEnds();
+
+                for (Map.Entry<String, ? extends MNavigableElement> entry : ends1.entrySet()) {
+                    MNavigableElement value = entry.getValue();
+                    if (value.cls().name().equals(convertedDstClassName)) {
+                        convertedDst = value;
+                        break;
+                    }
+                }
+
+                for (Map.Entry<String, ? extends MNavigableElement> entry : ends2.entrySet()) {
+                    MNavigableElement value = entry.getValue();
+                    if (value.cls().name().equals(convertedSrcClassName)) {
+                        convertedSrc = value;
+                        break;
+                    }
+                }
+            }
+        }
+
         // if we don't have an object we can't navigate 
         if (! val.isUndefined() ) {
             // get the object
@@ -105,7 +142,7 @@ public final class ExpNavigation extends Expression {
     			qualifierValues.add(exp.eval(ctx));
     		}
         	        	
-            List<MObject> objList = obj.getNavigableObjects(state, fSrc, fDst, qualifierValues);
+            List<MObject> objList = obj.getNavigableObjects(state, convertedSrc, convertedDst, qualifierValues);
             if (resultType.isTypeOfClass() ) {
                 if (objList.size() > 1 )
                     throw new MultiplicityViolationException(
