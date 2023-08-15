@@ -3,15 +3,14 @@ package org.tzi.use.uml.sys;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.Value;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MMultiSystem {
 
     private MMultiModel fMultiModel;
-    private Map<String, MSystem> fSystems;
+    public Map<String, MSystem> fSystems;
+
+    //private Map<Pair> fInterLinks;
 
     public MMultiSystem(MMultiModel fMultiModel) {
         this.fMultiModel = fMultiModel;
@@ -22,6 +21,14 @@ public class MMultiSystem {
             fSystems.put(model.name(), modelSystem);
         }
 
+    }
+
+    public Collection<MSystem> systems(){
+        return this.fSystems.values();
+    }
+
+    public MMultiModel multiModel(){
+        return this.fMultiModel;
     }
 
     public void setModelSystem(String modelName, MSystem system){

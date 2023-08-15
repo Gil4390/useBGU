@@ -386,13 +386,15 @@ public class TestMultiModelUtil {
             api2.createClass("Student", false );
             api2.createAttribute("Student", "name", "String");
             api2.createAttribute("Student", "grade", "Integer");
-            api2.createAttribute("Student", "ident", "Integer");
+            api2.createAttribute("Student", "salary", "Integer");
             multiApi.addModel(api2.getModel());
 
             multiApi.createInterAssociation("Job", "model2", "model1",
                     "Student" , "student" , "0..1", MAggregationKind.NONE,
-                    "Employee", "employee", "0..1", MAggregationKind.NONE);
-            multiApi.createInterInvariant("ValidId", "model2" ,"Student", "self.ident = self.employee.ident", false);
+                    "Employee", "employee", "*", MAggregationKind.NONE);
+            multiApi.createInterInvariant("ValidId", "model2" ,"Student",
+                    "self.employee->forAll(e | e.salary < self.salary)",
+                    false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {

@@ -1,15 +1,10 @@
 package org.tzi.use.api;
 
 import org.tzi.use.api.impl.UseSystemApiNative;
-import org.tzi.use.uml.mm.MAssociation;
-import org.tzi.use.uml.mm.MAssociationClass;
-import org.tzi.use.uml.mm.MAttribute;
-import org.tzi.use.uml.mm.MClass;
+import org.tzi.use.api.impl.UseSystemApiUndoable;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.Value;
-import org.tzi.use.uml.sys.MLink;
-import org.tzi.use.uml.sys.MLinkObject;
-import org.tzi.use.uml.sys.MObject;
-import org.tzi.use.uml.sys.MSystem;
+import org.tzi.use.uml.sys.*;
 import org.tzi.use.util.StringUtil;
 
 import javax.naming.OperationNotSupportedException;
@@ -19,18 +14,39 @@ import java.util.Map;
 
 public class UseMultiSystemApi {
 
-    private Map<String,UseSystemApi> multiSystemMap;
+    //private Map<String,UseSystemApi> multiSystemMap;
+
+    private MMultiSystem multiSystem;
+    private UseMultiModelApi multiModelApi;
 
     public UseMultiSystemApi() {
-        this.multiSystemMap = new HashMap<>();
+
+    }
+
+    public UseMultiSystemApi(MMultiModel multi, boolean enableUndo) {
+        this.multiModelApi = new UseMultiModelApi(multi);
+        this.multiSystem = new MMultiSystem(multi);
+    }
+
+    public UseMultiSystemApi(MMultiSystem multiSys, boolean enableUndo) {
+        this.multiModelApi = new UseMultiModelApi(multiSys.multiModel());
+        this.multiSystem = multiSys;
+    }
+
+    public MMultiSystem getMultiSystem() {
+        return multiSystem;
+    }
+
+    public UseMultiModelApi getMultiModelApi() {
+        return multiModelApi;
     }
 
     public void addSystemApi(MSystem system, boolean enableUndo) {
-        this.multiSystemMap.put(system.model().name(),UseSystemApi.create(system, enableUndo));
+        this.multiSystem.fSystems.put(system.model().name(),system);
     }
 
     public void removeSystemApi(MSystem system) {
-        this.multiSystemMap.remove(system.model().name());
+        this.multiSystem.fSystems.remove(system.model().name());
     }
 
     public boolean checkSystemState(String modelName) throws UseApiException {
@@ -38,7 +54,8 @@ public class UseMultiSystemApi {
     }
 
     public boolean checkAllSystemStates() {
-        for(UseSystemApi api : this.multiSystemMap.values()) {
+        for(MSystem sys : this.multiSystem.systems()) {
+            UseSystemApi api = new UseSystemApiNative(sys);
             if(!api.checkState())
                 return false;
         }
@@ -53,6 +70,14 @@ public class UseMultiSystemApi {
         return this.getApiSafe(modelName).createObjectEx(objectClass,objectName);
     }
 
+    public final Value setAttributeValue(
+            String modelName,
+            String objectName,
+            String attributeName,
+            String valueExpression) throws UseApiException {
+
+        return getApiSafe(modelName).setAttributeValue(objectName, attributeName, valueExpression);
+    }
 
     public void setAttributeValueEx(String modelName, MObject object, MAttribute attribute, Value value) throws UseApiException {
         this.getApiSafe(modelName).setAttributeValueEx(object, attribute, value);
@@ -107,10 +132,10 @@ public class UseMultiSystemApi {
     }
 
     public UseSystemApi getApiSafe(String modelName) throws UseApiException {
-        UseSystemApi api = this.multiSystemMap.get(modelName);
-        if(api == null) {
+        MSystem sys = multiSystem.fSystems.get(modelName);
+        if(sys == null) {
             throw new UseApiException("No existing api "+ StringUtil.inQuotes(modelName));
         }
-        return api;
+        return new UseSystemApiUndoable(sys);
     }
 }

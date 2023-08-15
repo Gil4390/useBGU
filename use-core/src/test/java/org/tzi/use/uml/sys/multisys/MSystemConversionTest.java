@@ -3,6 +3,7 @@ package org.tzi.use.uml.sys.multisys;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.tzi.use.api.UseMultiModelApi;
+import org.tzi.use.api.UseMultiSystemApi;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MMultiModel;
@@ -637,6 +638,105 @@ public class MSystemConversionTest extends TestCase {
     // make instances of the mm in tests from the multi conversion tests
     // start with 2 models each with object diagram, combine them into a mm, add inter assoc, and convert,
     // then add links between the new objects in the new diagram
+
+    public void testMultiModelTwoModelsInterAssociationAddingInterLinks() {
+        try {
+            // creation of the system
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInterAssociation();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+
+            multiSystemApi.createObjects("PersonCompany1", "Person", "p1");
+            multiSystemApi.createObjects("PersonCompany2", "Company", "c1");
+
+            MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
+
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            useSystemApic.createLink("Job", "PersonCompany1_p1", "PersonCompany2_c1");
+
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 1, cSystem.state().allLinks().size());
+
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testMultiModelMultipleInterAssociationAddingInterLinks() {
+        try {
+            // creation of the system
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelMultipleInterAssociation();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+
+            multiSystemApi.createObjects("model1", "Person", "p1");
+            multiSystemApi.createObjects("model2", "Company", "c1");
+            multiSystemApi.createObjects("model3", "School", "s1");
+
+            MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
+
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            useSystemApic.createLink("Job", "model1_p1", "model2_c1");
+            useSystemApic.createLink("Studies", "model1_p1", "model3_s1");
+            useSystemApic.createLink("Students", "model2_c1", "model3_s1");
+
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 3, cSystem.state().allLinks().size());
+
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testMultiModelTwoModelsInterAssociationSameClassAddingInterLinks() {
+        try {
+            // creation of the system
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoInterAssociationSameClass();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+
+            multiSystemApi.createObjects("model1", "Person", "p1");
+            multiSystemApi.createObjects("model2", "Company", "c1");
+
+            MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
+
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            useSystemApic.createLink("Job", "model1_p1", "model2_c1");
+            useSystemApic.createLink("Study", "model2_c1", "model1_p1");
+
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 2, cSystem.state().allLinks().size());
+
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testMultiModelInterConstraintSimple() {
+        try {
+            // creation of the system
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelInterConstraintSimple();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+
+            multiSystemApi.createObjects("model1", "Employee", "e1");
+            multiSystemApi.createObjects("model2", "Student", "s1");
+
+            multiSystemApi.setAttributeValue("model1", "e1", "salary", "123");
+            multiSystemApi.setAttributeValue("model2", "s1", "salary", "1234");
+
+            MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
+
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            useSystemApic.createLink("Job", "model2_s1", "model1_e1");
+
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 1, cSystem.state().allLinks().size());
+
+            //useSystemApic.setAttributeValue("model2_s1", "salary", "1234");
+
+            Assert.assertTrue(useSystemApic.checkState());
+
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
 
 }
 
