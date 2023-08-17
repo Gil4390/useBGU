@@ -12,6 +12,8 @@ import org.tzi.use.uml.mm.MMultiModel;
 
 public class MSystemStateConvertedModelTest extends TestCase {
 
+
+    //TODO: create diagram object, convert
     public void testMultiObjectCreationConvertedModel() {
         try {
             MMultiModel multi1 = createMultiModel();

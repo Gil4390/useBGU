@@ -440,4 +440,55 @@ public class TestMultiModelUtil {
             throw new Error( e );
         }
     }
+
+//    public MMultiModel createMultiModelInterConstraintComplex2() {
+//        try {
+//            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+//
+//            UseModelApi api1 = new UseModelApi("model1");
+//            api1.createClass("Employee", false );
+//            api1.createAttribute("Employee", "name", "String");
+//            api1.createAttribute("Employee", "salary", "Integer");
+//            api1.createAttribute("Employee", "level", "String");
+//
+//            multiApi.addModel(api1.getModel());
+//
+//            UseModelApi api2 = new UseModelApi("model2");
+//            api2.createClass("Student", false );
+//            api2.createClass("Meeting", false );
+//            api2.createAttribute("Student", "name", "String");
+//            api2.createAttribute("Student", "grade", "Integer");
+//            multiApi.addModel(api2.getModel());
+//
+//            UseModelApi api3 = new UseModelApi("model3");
+//            api3.createClass("Company", false );
+//            api3.createAttribute("Company", "name", "String");
+//            multiApi.addModel(api3.getModel());
+//
+//            multiApi.createInterAssociation("Interns", "model3", "model2",
+//                    "Company" , "internAt" , "0..1", MAggregationKind.NONE,
+//                    "Student", "interns", "*", MAggregationKind.NONE);
+//            multiApi.createInterAssociation("Supervise", "model2", "model1",
+//                    "Student" , "supervising" , "*", MAggregationKind.NONE,
+//                    "Employee", "supervisors", "*", MAggregationKind.NONE);
+//            multiApi.createInterAssociation("Workers", "model3", "model1",
+//                    "Company" , "worksAt" , "0..1", MAggregationKind.NONE,
+//                    "Employee", "employers", "*", MAggregationKind.NONE);
+//            multiApi.createInterAssociation("Meet", "model2", "model1",
+//                    "Meeting" , "meetings" , "*", MAggregationKind.NONE,
+//                    "Employee", "participants", "*", MAggregationKind.NONE);
+//            multiApi.createInterAssociation("MeetStudent", "model2", "model2",
+//                    "Meeting" , "meetings" , "*", MAggregationKind.NONE,
+//                    "Student", "students", "*", MAggregationKind.NONE);
+//            multiApi.createInterInvariant("ValidSupervisors", "model2" ,"Meeting",
+//                    "self.mt->exists(m | m.emp->exists(em| em.oclIsTypeOf(Manager) and\n" +
+//                            "\t\t\t\t\t\t\tnot self.supervisor->includes(em) and \n" +
+//                            "\t\t\t\t\t\t\tem.oclAsType(Manager).level='A'))", false);
+//
+//
+//            return multiApi.getMultiModel();
+//        } catch (Exception e ) {
+//            throw new Error( e );
+//        }
+//    }
 }

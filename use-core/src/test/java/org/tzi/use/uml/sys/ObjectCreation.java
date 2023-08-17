@@ -497,10 +497,10 @@ public class ObjectCreation {
                     "p1", "c1");
 
             // creation of a link object (j2) of class Job between p2 and c1
-            systemApi.createLinkObject(
-                    "Job",
-                    "j2",
-                    "p2", "c1");
+//            systemApi.createLinkObject(
+//                    "Job",
+//                    "j2",
+//                    "p2", "c1");
 
             // set an attribute value in c1
             systemApi.setAttributeValue("c1", "name", "'IBM'");

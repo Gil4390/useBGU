@@ -284,7 +284,7 @@ public class MSystemConversionTest extends TestCase {
     }
 
     //=================================== more complex cases ==================================
-
+    //TODO: add objects after conversion that unsatisfy constraints/ constraints /
     public void testTwoModelsConversionComplex1() {
         try{
             //create the initial models and their systems
@@ -309,6 +309,14 @@ public class MSystemConversionTest extends TestCase {
             //assert
             Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
+
+
+            //add objects to converted system
+            UseSystemApi cSystemApi = UseSystemApi.create(cSystem, true);
+            assertTrue(cSystemApi.checkState());
+            cSystemApi.createObjects("model1_Person", "p5");
+            cSystemApi.createLink("model1_Job","p5","model1_c1");
+            assertFalse(cSystemApi.checkState());
 
         } catch (Exception e) {
             throw new Error(e);
@@ -339,6 +347,8 @@ public class MSystemConversionTest extends TestCase {
             //assert
             Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
+
+
 
         } catch (Exception e) {
             throw new Error(e);
@@ -400,6 +410,17 @@ public class MSystemConversionTest extends TestCase {
             Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
 
+            //check converted system
+            UseSystemApi cSystemApi = UseSystemApi.create(cSystem, true);
+            assertTrue(cSystemApi.checkState());
+            cSystemApi.createObjects("model2_Person", "p5");
+            cSystemApi.createObjects("model2_Company", "c5");
+            cSystemApi.createObjects("model2_Salary", "s5");
+
+            cSystemApi.createLinkObject("model2_Job","j2","p5","c5","s5");
+            assertTrue(cSystemApi.checkState());
+
+
         } catch (Exception e) {
             throw new Error(e);
         }
@@ -429,6 +450,17 @@ public class MSystemConversionTest extends TestCase {
             //assert
             Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
+
+            //check converted system
+            UseSystemApi cSystemApi = UseSystemApi.create(cSystem, true);
+            assertTrue(cSystemApi.checkState(new PrintWriter(System.out)));
+            cSystemApi.createObjects("model2_Person", "p5");
+            cSystemApi.createLink("model2_isBoss","model2_p1", "p5");
+            assertFalse(cSystemApi.checkState());
+            cSystemApi.undo();
+            assertTrue(cSystemApi.checkState());
+            cSystemApi.createLink("model2_Job", "p5","model2_c1");
+            assertFalse(cSystemApi.checkState());
 
         } catch (Exception e) {
             throw new Error(e);
@@ -731,7 +763,7 @@ public class MSystemConversionTest extends TestCase {
 
             //useSystemApic.setAttributeValue("model2_s1", "salary", "1234");
 
-            Assert.assertTrue(useSystemApic.checkState());
+            Assert.assertTrue(useSystemApic.checkState(new PrintWriter(System.out)));
 
         } catch ( Exception e ) {
             throw ( new Error( e ) );
