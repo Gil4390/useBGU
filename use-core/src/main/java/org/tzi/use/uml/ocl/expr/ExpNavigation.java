@@ -98,12 +98,12 @@ public final class ExpNavigation extends Expression {
             Map<String, MClass> classes = ctx.preState().system().model().classesMap();
             if (!classes.containsKey(this.fSrc.cls().name())) {
                 // in conversion
-                String srcModelName = this.fSrc.association().model().name();
+                String srcModelName = this.fSrc.cls().model().name();
                 String srcClassName = this.fSrc.cls().name();
                 String convertedSrcClassName = srcModelName + "_" + srcClassName;
                 Map<String, ? extends MNavigableElement> ends1 = classes.get(convertedSrcClassName).navigableEnds();
 
-                String dstModelName = this.fDst.association().model().name();
+                String dstModelName = this.fDst.cls().model().name();
                 String dstClassName = this.fDst.cls().name();
                 String convertedDstClassName = dstModelName + "_" + dstClassName;
                 Map<String, ? extends MNavigableElement> ends2 = classes.get(convertedDstClassName).navigableEnds();

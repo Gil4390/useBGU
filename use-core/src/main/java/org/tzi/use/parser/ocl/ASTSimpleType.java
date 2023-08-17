@@ -49,8 +49,15 @@ public class ASTSimpleType extends ASTType {
             
             if (res == null ) {
                 // check for object type
-                res = ctx.model().getClassifier(name);
-                
+                if (ctx.multiModel() != null && name.contains("_")){
+                    String modelName = name.split("_")[0];
+                    String clsName = name.split("_")[1];
+                    res = ctx.multiModel().getModel(modelName).getClassifier(clsName);
+                }
+                else{
+                    res = ctx.model().getClassifier(name);
+                }
+
                 if (res == null )
                     throw new SemanticException(fName,
                                                 "Expected type name, found `" + name + "'.");

@@ -392,8 +392,11 @@ public class TestMultiModelUtil {
             multiApi.createInterAssociation("Job", "model2", "model1",
                     "Student" , "student" , "0..1", MAggregationKind.NONE,
                     "Employee", "employee", "*", MAggregationKind.NONE);
-            multiApi.createInterInvariant("ValidId", "model2" ,"Student",
-                    "self.employee->forAll(e | e.salary < self.salary)",
+            multiApi.createInterInvariant("SalaryInv", "model2" ,"Student",
+                    "self.employee->forAll(e | e.salary > self.salary)",
+                    false);
+            multiApi.createInterInvariant("SizeInv", "model2" ,"Student",
+                    "self.employee->size() >= 2",
                     false);
 
             return multiApi.getMultiModel();
@@ -434,6 +437,90 @@ public class TestMultiModelUtil {
                     "Employee", "employers", "*", MAggregationKind.NONE);
             multiApi.createInterInvariant("ValidSupervisors", "model3" ,"Company",
                     "self.interns->forAll(i1 | i1.supervisors->size() > 0)", false);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelInterConstraintComplex2() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Employee", false );
+            api1.createAttribute("Employee", "name", "String");
+            api1.createAttribute("Employee", "salary", "Integer");
+
+            api1.createClass("Manager", false);
+            api1.createGeneralization("Manager", "Employee");
+            api1.createAttribute("Manager", "level", "String");
+
+            api1.createClass("Worker", false);
+            api1.createGeneralization("Worker", "Employee");
+
+            api1.createClass("Company", false );
+            api1.createAttribute("Company", "name", "String");
+            api1.createAttribute("Company", "location", "String");
+
+            api1.createAssociation("Works",
+                    "Employee" , "workers" , "*", MAggregationKind.NONE,
+                    "Company", "company", "0..1", MAggregationKind.NONE);
+
+            api1.createInvariant("PositiveSalary", "Employee", "self.salary > 0", false);
+
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Student", false );
+            api2.createAttribute("Student", "name", "String");
+            api2.createAttribute("Student", "grade", "Integer");
+            api2.createAttribute("Student", "salary", "Integer");
+
+            api2.createClass("School", false );
+            api2.createAttribute("School", "name", "String");
+            api2.createAttribute("School", "location", "String");
+
+            api2.createClass("Meeting", false );
+            api2.createAttribute("School", "start_", "Integer");
+            api2.createAttribute("School", "end_", "Integer");
+
+            api2.createAssociation("Studies",
+                    "Student" , "students" , "*", MAggregationKind.NONE,
+                    "School", "school", "0..1", MAggregationKind.NONE);
+            api2.createAssociation("meets",
+                    "Student", "std", "1..3", MAggregationKind.NONE,
+                    "Meeting" , "mt" , "0..*", MAggregationKind.NONE);
+            api2.createInvariant("validGrade", "Student", "self.grade >= 0 and self.grade <= 100", false);
+
+            multiApi.addModel(api2.getModel());
+
+
+            multiApi.createInterAssociation("supervising", "model1", "model2",
+                    "Employee", "supervisor", "1..2", MAggregationKind.NONE,
+                    "Student" , "students" , "*", MAggregationKind.NONE);
+            multiApi.createInterAssociation("study", "model1", "model2",
+                    "Employee", "graduates", "*", MAggregationKind.NONE,
+                    "School" , "studiedAt" , "0..1", MAggregationKind.NONE);
+            multiApi.createInterAssociation("empMeets", "model1", "model2",
+                    "Employee", "emp", "1..2", MAggregationKind.NONE,
+                    "Meeting" , "mt" , "0..*", MAggregationKind.NONE);
+
+            // an employee salary must be larger than any student salary [attributes]
+            multiApi.createInterInvariant("empLargerSalary", "model1" ,"Employee",
+                    "self.students->forAll(s1 | self.salary > s1.salary)", false);
+            // an employee can supervise only students from his school
+            multiApi.createInterInvariant("empStudentSameSchool", "model1" ,"Employee",
+                    "self.students->forAll(s1 | s1.school = self.studiedAt)", false);
+            // a student must have least one supervisor who is a manager
+            multiApi.createInterInvariant("atLeastOneManager", "model2" ,"Student",
+                    "self.supervisor->exists(oclIsTypeOf(model1_Manager))", false);
+            // a student must attend with a manager of level 'A' who is not his supervisor
+            multiApi.createInterInvariant("meeting", "model2" ,"Student",
+                    "self.mt->exists(m |\tm.emp->exists(em| em.oclIsTypeOf(model1_Manager) and\n" +
+                            "not self.supervisor->includes(em) and \n" +
+                            "em.oclAsType(model1_Manager).level='A'))", false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {

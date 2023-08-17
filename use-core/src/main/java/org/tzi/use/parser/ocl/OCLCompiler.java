@@ -27,6 +27,7 @@ import org.tzi.use.parser.ParseErrorHandler;
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.parser.Symtable;
 import org.tzi.use.uml.mm.MModel;
+import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.value.VarBindings;
@@ -86,6 +87,24 @@ public class OCLCompiler {
 				new ByteArrayInputStream(in.getBytes()), 
 				inName, 
 				err, 
+				null,
+				varTable);
+	}
+
+	public static Expression compileExpression(MMultiModel multiModel,
+											   MModel model,
+											   String in,
+											   String inName,
+											   PrintWriter err,
+											   Symtable varTable) {
+
+		return compileExpression(
+				multiModel,
+				model,
+				null,
+				new ByteArrayInputStream(in.getBytes()),
+				inName,
+				err,
 				null,
 				varTable);
 	}
@@ -230,6 +249,73 @@ public class OCLCompiler {
         err.flush();
         return expr;
     }
+
+	private static Expression compileExpression(MMultiModel multiModel,
+												MModel model,
+												MSystemState state,
+												InputStream in,
+												String inName,
+												PrintWriter err,
+												VarBindings globalBindings,
+												Symtable varTable) {
+		Expression expr = null;
+		ParseErrorHandler errHandler = new ParseErrorHandler(inName, err);
+
+		ANTLRInputStream aInput;
+		try {
+			aInput = new ANTLRInputStream(in);
+			aInput.name = inName;
+		} catch (IOException e1) {
+			err.println(e1.getMessage());
+			return expr;
+		}
+
+		OCLLexer lexer = new OCLLexer(aInput);
+
+		CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+		OCLParser parser = new OCLParser(tokenStream);
+
+		lexer.init(errHandler);
+		parser.init(errHandler);
+
+
+
+		try {
+			// Parse the input expression
+			ASTExpression astExpr = parser.expressionOnly();
+
+			if (errHandler.errorCount() == 0 ) {
+
+				// Generate code
+				Context ctx = new Context(inName, err, globalBindings, null);
+				ctx.setMultiModel(multiModel);
+				ctx.setModel(model);
+				ctx.setSystemState(state);
+				if (varTable != null)
+					ctx.setVarTable(varTable);
+
+				expr = astExpr.gen(ctx);
+
+				// check for semantic errors
+				if (ctx.errorCount() > 0 )
+					expr = null;
+			}
+		} catch (RecognitionException e) {
+			err.println(parser.getSourceName() +":" +
+					e.line + ":" +
+					e.charPositionInLine + ": " +
+					e.getMessage());
+		} catch (SemanticException e) {
+			err.println(e.getMessage());
+		} catch (NullPointerException e) {
+			// Only throw if not handled before
+			if (errHandler.errorCount() == 0)
+				throw e;
+		}
+
+		err.flush();
+		return expr;
+	}
 
     /**
      * Compiles a type.
