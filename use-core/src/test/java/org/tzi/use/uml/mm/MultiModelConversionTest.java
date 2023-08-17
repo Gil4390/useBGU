@@ -319,11 +319,13 @@ public class MultiModelConversionTest extends TestCase {
             assertEquals(convertedModel.name(), multimodel.name());
 
             for (MClassInvariant classInv : multimodel.interConstraints()){
-                MClassInvariant inv = convertedModel.getClassInvariant(classInv.cls().name()+"::"+classInv.name());
+                String modelName = classInv.cls().model().name();
+                String invName = modelName + delimiter + classInv.cls().name()+"::"+ modelName + delimiter + classInv.name();
+                MClassInvariant inv = convertedModel.getClassInvariant(invName);
                 assertNotNull(inv);
             }
 
-            assertEquals(1, convertedModel.modelClassInvariants().size());
+            assertEquals(2, convertedModel.modelClassInvariants().size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );
@@ -348,7 +350,9 @@ public class MultiModelConversionTest extends TestCase {
             }
 
             for (MClassInvariant classInv : multimodel.interConstraints()){
-                MClassInvariant inv = convertedModel.getClassInvariant(classInv.cls().name()+"::"+classInv.name());
+                String modelName = classInv.cls().model().name();
+                String invName = modelName + delimiter + classInv.cls().name()+"::"+ modelName + delimiter + classInv.name();
+                MClassInvariant inv = convertedModel.getClassInvariant(invName);
                 assertNotNull(inv);
             }
 
@@ -361,13 +365,33 @@ public class MultiModelConversionTest extends TestCase {
     }
 
 
-    //TODO:
-    // mm with 2 models and 1 inter assoc
-    // mm with 3 models and multiple inter assoc
-    // mm with 2 models and 2 inter assoc between the same classes
-    // mm with 2 models and simple inter constraint
-    // mm with 3 models and simple inter constraint
-    // mm with 2 models and complex inter constraint
-    // mm with 3 models and complex inter constraint
+    public void testConvertMultiModelComplexInterConstraint2() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelInterConstraintComplex2();
+
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MInterAssociation interAssoc : multimodel.interAssociations()){
+                MAssociation assoc = convertedModel.getAssociation(interAssoc.name());
+                assertNotNull(assoc);
+            }
+
+            for (MClassInvariant classInv : multimodel.interConstraints()){
+                String modelName = classInv.cls().model().name();
+                String invName = modelName + delimiter + classInv.cls().name()+"::"+ modelName + delimiter + classInv.name();
+                MClassInvariant inv = convertedModel.getClassInvariant(invName);
+                assertNotNull(inv);
+            }
+
+            assertEquals(6, convertedModel.modelClassInvariants().size());
+            assertEquals(6, convertedModel.associations().size());
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
 
 }

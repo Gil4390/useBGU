@@ -107,10 +107,12 @@ public class UseMultiModelApi {
     }
 
     public MClassInvariant createInterInvariant(String invName, String modelName, String contextName,
-                                           String invBody, boolean isExistential) throws UseApiException {
+                                                String invBody, boolean isExistential) throws UseApiException {
 
         MModel mModel = mMultiModel.getModel(modelName);
-        MClass cls = mModel.getClass(contextName);
+        UseModelApi api = new UseModelApi(mModel);
+
+        MClass cls = api.getClassSafe(contextName);
 
         Symtable vars = new Symtable();
         try {
@@ -122,32 +124,15 @@ public class UseMultiModelApi {
         StringWriter errBuffer = new StringWriter();
         PrintWriter errorPrinter = new PrintWriter(errBuffer, true);
 
-        Expression invExp = OCLCompiler.compileExpression(mModel, invBody, "UseApi", errorPrinter, vars);
+        Expression invExp = OCLCompiler.compileExpression(mMultiModel, mModel, invBody, "UseApi", errorPrinter, vars);
 
         if (invExp == null) {
             throw new UseApiException(errBuffer.toString());
         }
 
-        return createInterInvariantEx(invName, mModel, contextName, invExp, isExistential);
-    }
-
-    public MClassInvariant createInterInvariantEx(String invName, MModel mModel, String contextName,
-                                             Expression invBody, boolean isExistential) throws UseApiException {
-        MClass cls = mModel.getClass(contextName);
-
-        MClassInvariant mClassInvariant = null;
-        try {
-            mClassInvariant = mFactory.createClassInvariant(invName, null,
-                    cls, invBody, isExistential);
-
-            mModel.addClassInvariant(mClassInvariant);
-        } catch (ExpInvalidException e) {
-            throw new UseApiException("Invalid invariant expression!", e);
-        } catch (MInvalidModelException e) {
-            throw new UseApiException("Invariant creation failed!", e);
-        }
-        mMultiModel.addInterConstraint(mClassInvariant);
-        return mClassInvariant;
+        MClassInvariant inv = api.createInvariantEx(invName, contextName, invExp, isExistential);
+        mMultiModel.addInterConstraint(inv);
+        return inv;
     }
 
     public Type getType(String typeExpr, MModel mModel) throws UseApiException {

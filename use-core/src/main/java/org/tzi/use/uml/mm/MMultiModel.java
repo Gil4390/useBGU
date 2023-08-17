@@ -229,7 +229,8 @@ public class MMultiModel {
 
         //inter-constraints
         for(MClassInvariant inv : fInterConstraints) {
-            result_model.addClassInvariant(inv);
+            MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap());
+            result_model.addClassInvariant(newClassInv);
         }
         return result_model;
     }
