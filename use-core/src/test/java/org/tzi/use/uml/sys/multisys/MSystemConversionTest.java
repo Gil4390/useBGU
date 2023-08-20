@@ -848,9 +848,9 @@ public class MSystemConversionTest extends TestCase {
     }
 
     //TODO
-    // test where you add inter constraint between objects of the same mode, right now we get an error
+    // test where you add inter assoc \ constraint between objects of the same mode, right now we get an error
     // tests where we instantiate objects and links based on the multi model that azzam made, one test that satisfies and another that doesn't
-
+    // tests for inter links
 
     public void testMultiModelInterConstraintComplex2Unsatisfactory() {
         try {

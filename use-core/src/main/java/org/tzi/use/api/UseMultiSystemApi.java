@@ -93,6 +93,26 @@ public class UseMultiSystemApi {
         return this.getApiSafe(modelName).createLinkEx(association, connectedObjects, qualifierValues);
     }
 
+    public final MInterLink createInterLink(String modelNameSrc, String modelNameDst, String associationName,
+                                       String objNameSrc, String objNameDst) throws UseApiException {
+
+
+        //search that the assoc and objects exist
+        MInterAssociation association = multiModelApi.getInterAssociationSafe(associationName);
+        MObject objSrc = getApiSafe(modelNameSrc).getObjectSafe(objNameSrc);
+        MObject objDst = getApiSafe(modelNameDst).getObjectSafe(objNameDst);
+
+        //same link twice
+
+        //assoc connects src and dst
+
+
+        MInterLink interLink = new MInterLink(modelNameSrc + "_" + objNameSrc,  modelNameDst + "_" + objNameDst, associationName);
+        multiSystem.addInterLink(interLink);
+
+        return interLink;
+    }
+
 
     public MLinkObject createLinkObjectEx(String modelName, MAssociationClass associationClass, String newObjectName, MObject[] connectedObjects, Value[][] qualifierValues) throws UseApiException {
         return this.getApiSafe(modelName).createLinkObjectEx(associationClass, newObjectName, connectedObjects, qualifierValues);

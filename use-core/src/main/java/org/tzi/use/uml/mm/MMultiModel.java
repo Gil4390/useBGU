@@ -13,7 +13,7 @@ public class MMultiModel {
     private Map<String, MModel> fModels; // <modelName, MModel>
     private String fName;
     private String fFilename; // name of .use file
-    private List<MInterAssociation> fInterAssociations;
+    private HashMap<String, MInterAssociation> fInterAssociations;
 
     private List<MClassInvariant> fInterConstraints;
 
@@ -21,7 +21,7 @@ public class MMultiModel {
         fName = name;
         fModels = new TreeMap<>();
         fFilename = "";
-        fInterAssociations = new ArrayList<>();
+        fInterAssociations = new HashMap<>();
         fInterConstraints = new ArrayList<>();
     }
     public String name() {
@@ -70,7 +70,7 @@ public class MMultiModel {
     }
 
     public void addInterAssociation(MInterAssociation association) {
-        fInterAssociations.add(association);
+        fInterAssociations.put(association.name(), association);
     }
     //TODO: implement in a way that it adds MNavigableElement to each model
     // replace it with gen() in ASTInterAssociation
@@ -78,8 +78,12 @@ public class MMultiModel {
         fInterConstraints.add(constraint);
     }
 
-    public List<MInterAssociation> interAssociations() {
-        return fInterAssociations;
+    public Collection<MInterAssociation> interAssociations() {
+        return fInterAssociations.values();
+    }
+
+    public MInterAssociation getInterAssociations(String assocName) {
+        return fInterAssociations.get(assocName);
     }
 
     public List<MClassInvariant> interConstraints() {
@@ -160,7 +164,7 @@ public class MMultiModel {
      * @return The count of intermediate associations that involve the specified class name.
      */
     public int numOfInterAssociations(String clsName) {
-        long count = fInterAssociations.stream()
+        long count = fInterAssociations.values().stream()
                 .filter(assoc -> assoc.associationEnds().stream()
                         .anyMatch(assocEnd -> assocEnd.name().equals(clsName)))
                 .count();
@@ -222,7 +226,7 @@ public class MMultiModel {
         }
 
         //inter-associations
-        for(MInterAssociation interAssoc : fInterAssociations) {
+        for(MInterAssociation interAssoc : fInterAssociations.values()) {
             MAssociation association = interAssoc.makeCopy("", result_model);
             result_model.addAssociation(association);
         }

@@ -147,4 +147,14 @@ public class UseMultiModelApi {
         return type;
     }
 
+    public MInterAssociation getInterAssociationSafe(String interAssociationName) throws UseApiException {
+        MInterAssociation association =  this.mMultiModel.getInterAssociations(interAssociationName);
+
+        if (association == null) {
+            throw new UseApiException("Unknown inter association named " + StringUtil.inQuotes(interAssociationName) +".");
+        }
+
+        return association;
+    }
+
 }

@@ -1,5 +1,8 @@
 package org.tzi.use.uml.sys;
 
+import org.tzi.use.api.UseSystemApi;
+import org.tzi.use.api.impl.UseSystemApiNative;
+import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.Value;
 
@@ -10,7 +13,7 @@ public class MMultiSystem {
     private MMultiModel fMultiModel;
     public Map<String, MSystem> fSystems;
 
-    //private Map<Pair> fInterLinks;
+    public List<MInterLink> fInterLinks;
 
     public MMultiSystem(MMultiModel fMultiModel) {
         this.fMultiModel = fMultiModel;
@@ -99,6 +102,12 @@ public class MMultiSystem {
 
         }
 
+        for (MInterLink interLink : fInterLinks){
+            UseSystemApi api = new UseSystemApiUndoable(convertedSystem);
+            api.createLink(interLink.associationName, interLink.objNameSrc, interLink.objNameDst);
+        }
+
+
         return convertedSystem;
     }
 
@@ -118,6 +127,8 @@ public class MMultiSystem {
                 .reduce(0, Integer::sum);
     }
 
-
+    public void addInterLink(MInterLink interLink){
+        this.fInterLinks.add(interLink);
+    }
 
 }
