@@ -19,7 +19,7 @@ public class MMultiSystem {
         this.fMultiModel = fMultiModel;
         this.fSystems = new HashMap<>();
         this.fInterLinks = new ArrayList<>();
-
+        this.fInterLinks = new ArrayList<>();
         for (MModel model : fMultiModel.models()){
             MSystem modelSystem = new MSystem(model);
             fSystems.put(model.name(), modelSystem);

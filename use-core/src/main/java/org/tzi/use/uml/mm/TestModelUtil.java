@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseModelApi;
+import org.tzi.use.api.UseMultiModelApi;
 
 /**
  * The class <code>TestModelUtil</code> offers methods for creating
@@ -564,6 +565,24 @@ public class TestModelUtil {
             throw new Error(e);
         }
     }
+
+    public MModel createModelWithGeneralization(String name) {
+        try {
+            UseModelApi api1 = new UseModelApi(name);
+            api1.createClass("Person", false );
+            api1.createClass("Adult", false );
+            api1.createClass("Company", false );
+
+            api1.createGeneralization("Adult","Person");
+            api1.createAssociation("Job","Person","employee","*",
+                    MAggregationKind.NONE,"Company","workplace","0..1",MAggregationKind.NONE);
+
+            return api1.getModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
 
     public MModel createModelWithCircularAssoc(String modelName) {
         try {

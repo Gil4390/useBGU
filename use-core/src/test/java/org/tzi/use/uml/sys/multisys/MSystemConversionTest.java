@@ -664,6 +664,39 @@ public class MSystemConversionTest extends TestCase {
     }
 
 
+    public void testMultiModelGeneralization() {
+        try{
+            //create the initial model and its system
+            MSystem system1 = ObjectCreation.getInstance().createModelWithGeneralization("model1");
+            MModel model1 = system1.model();
+
+            UseSystemApi useSystemApi1 = UseSystemApi.create(system1, true);
+            assertTrue(useSystemApi1.checkState());
+
+            //create the multi-model that holds the model
+            MMultiModel multiModel = new MMultiModel("multi");
+            multiModel.addModel(model1);
+
+            //set the previous model1 system that contains the objects
+            MMultiSystem multiSystem = new MMultiSystem(multiModel);
+            multiSystem.setModelSystem(model1.name(), system1);
+
+            //convert
+            MSystem cSystem = multiSystem.toMSystem();
+
+            //assert
+            Assert.assertEquals(multiSystem.numObjects(), cSystem.state().numObjects());
+            Assert.assertEquals(multiSystem.numLinks(), cSystem.state().allLinks().size());
+
+            //assert multi-model is also satisfactory
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            Assert.assertTrue(useSystemApic.checkState());
+
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+
 
     //====================================== inter assoc ====================================
 
@@ -847,6 +880,36 @@ public class MSystemConversionTest extends TestCase {
         }
     }
 
+    //TODO: fix
+    public void testMultiModelInterConstraintSelfAssoc() {
+        try {
+            // creation of the system
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelInterConstraintSelfAssociation();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+
+            multiSystemApi.createObjects("model1", "Employee", "e1");
+            multiSystemApi.createObjects("model1", "Employee", "e2");
+            multiSystemApi.createObjects("model1", "Employee", "e3");
+
+            MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
+
+            UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            useSystemApic.setAttributeValue("model1_e1","salary","100");
+            useSystemApic.setAttributeValue("model1_e2","salary","50");
+            useSystemApic.setAttributeValue("model1_e3","salary","70");
+
+            useSystemApic.createLink("WorksFor", "model1_e1", "model1_e2");
+            useSystemApic.createLink("WorksFor", "model1_e1", "model1_e3");
+
+            Assert.assertTrue(useSystemApic.checkState(new PrintWriter(System.out)));
+
+
+        } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+
     //TODO
     // test where you add inter assoc \ constraint between objects of the same mode, right now we get an error
     // tests where we instantiate objects and links based on the multi model that azzam made, one test that satisfies and another that doesn't
@@ -924,7 +987,6 @@ public class MSystemConversionTest extends TestCase {
             throw (new Error(e));
         }
     }
-
 
 
 }

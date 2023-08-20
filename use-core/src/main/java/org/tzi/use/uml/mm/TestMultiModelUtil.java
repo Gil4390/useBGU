@@ -72,6 +72,7 @@ public class TestMultiModelUtil {
         }
     }
 
+
     public MMultiModel createMultiModelTwoModelsAssociationClass() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
@@ -370,6 +371,7 @@ public class TestMultiModelUtil {
         }
     }
 
+
     public MMultiModel createMultiModelInterConstraintSimple() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
@@ -437,6 +439,30 @@ public class TestMultiModelUtil {
                     "Employee", "employers", "*", MAggregationKind.NONE);
             multiApi.createInterInvariant("ValidSupervisors", "model3" ,"Company",
                     "self.interns->forAll(i1 | i1.supervisors->size() > 0)", false);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelInterConstraintSelfAssociation() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Employee", false );
+            api1.createAttribute("Employee", "name", "String");
+            api1.createAttribute("Employee", "salary", "Integer");
+            api1.createAttribute("Employee", "age", "Integer");
+
+            multiApi.addModel(api1.getModel());
+
+            multiApi.createInterAssociation("WorksFor", "model1", "model1",
+                    "Employee" , "supervisor" , "0..1", MAggregationKind.NONE,
+                    "Employee", "supervising", "*", MAggregationKind.NONE);
+            multiApi.createInterInvariant("SalaryLowerThanSupervisor", "model1" ,"Employee",
+                    "self.supervising->forAll(e1 | e1.salary < self.salary)", false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {

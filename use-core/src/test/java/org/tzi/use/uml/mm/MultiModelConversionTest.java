@@ -1,6 +1,8 @@
 package org.tzi.use.uml.mm;
 
 import junit.framework.TestCase;
+import org.tzi.use.api.UseMultiModelApi;
+import org.tzi.use.api.UseMultiSystemApi;
 
 public class MultiModelConversionTest extends TestCase {
 
@@ -384,6 +386,59 @@ public class MultiModelConversionTest extends TestCase {
                 MClassInvariant inv = convertedModel.getClassInvariant(invName);
                 assertNotNull(inv);
             }
+
+            assertEquals(6, convertedModel.modelClassInvariants().size());
+            assertEquals(6, convertedModel.associations().size());
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testConvertMultiModelInterAssociationOneModel() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
+            UseMultiModelApi multiApi = new UseMultiModelApi(multimodel);
+            multiApi.createInterAssociation("Works", "PersonCompany1", "PersonCompany1",
+                    "Company" , "g" , "0..1", MAggregationKind.NONE,
+                    "Person", "s", "0..1", MAggregationKind.NONE);
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MInterAssociation interAssoc : multimodel.interAssociations()){
+                MAssociation assoc = convertedModel.getAssociation(interAssoc.name());
+                assertNotNull(assoc);
+            }
+
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testConvertMultiModelInterConstraintOneModel() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
+            UseMultiModelApi multiApi = new UseMultiModelApi(multimodel);
+            multiApi.createInterAssociation("Works", "PersonCompany1", "PersonCompany1",
+                    "Company" , "g" , "0..1", MAggregationKind.NONE,
+                    "Person", "s", "0..1", MAggregationKind.NONE);
+            MModel convertedModel = multimodel.toMModel();
+
+            assertEquals(convertedModel.name(), multimodel.name());
+
+            for (MInterAssociation interAssoc : multimodel.interAssociations()){
+                MAssociation assoc = convertedModel.getAssociation(interAssoc.name());
+                assertNotNull(assoc);
+            }
+//
+//            for (MClassInvariant classInv : multimodel.interConstraints()){
+//                String modelName = classInv.cls().model().name();
+//                String invName = modelName + delimiter + classInv.cls().name()+"::"+ modelName + delimiter + classInv.name();
+//                MClassInvariant inv = convertedModel.getClassInvariant(invName);
+//                assertNotNull(inv);
+//            }
 
             assertEquals(6, convertedModel.modelClassInvariants().size());
             assertEquals(6, convertedModel.associations().size());

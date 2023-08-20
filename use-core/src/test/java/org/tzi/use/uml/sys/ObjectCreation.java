@@ -19,6 +19,7 @@
 
 package org.tzi.use.uml.sys;
 
+import org.junit.Test;
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseMultiSystemApi;
 import org.tzi.use.api.UseSystemApi;
@@ -674,6 +675,33 @@ public class ObjectCreation {
 
             return system;
         } catch ( Exception e ) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public MSystem createModelWithGeneralization(String modelName) {
+        try {
+            // creation of the system
+            MModel model = TestModelUtil.getInstance().createModelWithGeneralization(modelName);
+            MSystem system = new MSystem( model );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            // creation of an object (a1) of the class Adult
+            systemApi.createObjects("Adult", "a1");
+
+            // creation of an object (c1) of the class Company
+            systemApi.createObjects("Company", "c1");
+
+
+            // creation of a link object (j1) of class Job between p1 and c1
+            systemApi.createLink(
+                    "Job",
+                    "a1", "c1");
+
+
+            return system;
+        } catch ( UseApiException e ) {
             throw ( new Error( e ) );
         }
     }
