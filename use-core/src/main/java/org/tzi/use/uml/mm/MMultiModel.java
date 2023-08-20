@@ -223,6 +223,20 @@ public class MMultiModel {
                 result_model.addSignal(newSignal);
             }
 
+            Iterator<MGeneralization> iterator = model.generalizationGraph().edgeIterator();
+            while (iterator.hasNext()){
+                MGeneralization gen = iterator.next();
+                MClassifier parent = gen.parent();
+                MClassifier child = gen.child();
+                String parentName = parent.name();
+                String childName = child.name();
+
+                MClass convertedParentCls = result_model.getClass(model.name() + delimiter + parentName);
+                MClass convertedChildCls = result_model.getClass(model.name() + delimiter + childName);
+                MGeneralization convertedGen = new MGeneralization(convertedParentCls, convertedChildCls);
+                result_model.addGeneralization(convertedGen);
+            }
+
         }
 
         //inter-associations

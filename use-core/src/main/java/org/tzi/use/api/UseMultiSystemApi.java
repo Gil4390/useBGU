@@ -107,7 +107,7 @@ public class UseMultiSystemApi {
         //assoc connects src and dst
 
 
-        MInterLink interLink = new MInterLink(modelNameSrc + "_" + objNameSrc,  modelNameDst + "_" + objNameDst, associationName);
+        MInterLink interLink = new MInterLink(associationName, modelNameSrc + "_" + objNameSrc,  modelNameDst + "_" + objNameDst);
         multiSystem.addInterLink(interLink);
 
         return interLink;
