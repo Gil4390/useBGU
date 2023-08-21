@@ -233,7 +233,7 @@ public class MMultiModel {
 
                 MClass convertedParentCls = result_model.getClass(model.name() + delimiter + parentName);
                 MClass convertedChildCls = result_model.getClass(model.name() + delimiter + childName);
-                MGeneralization convertedGen = new MGeneralization(convertedParentCls, convertedChildCls);
+                MGeneralization convertedGen = new MGeneralization(convertedChildCls, convertedParentCls);
                 result_model.addGeneralization(convertedGen);
             }
 
@@ -247,8 +247,13 @@ public class MMultiModel {
 
         //inter-constraints
         for(MClassInvariant inv : fInterConstraints) {
+//            UseModelApi api = new UseModelApi(result_model);
+//            api.createInvariant(inv.cls().model().name() + delimiter + inv.name(),
+//                    inv.cls().model().name() + delimiter + inv.cls().name(),
+//                    inv.bodyExpression().toString(), inv.isExistential());
             MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap());
             result_model.addClassInvariant(newClassInv);
+
         }
         return result_model;
     }

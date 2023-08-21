@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.tzi.use.api.UseMultiModelApi;
 import org.tzi.use.api.UseMultiSystemApi;
 import org.tzi.use.api.UseSystemApi;
+import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.mm.TestModelUtil;
@@ -985,6 +986,36 @@ public class MSystemConversionTest extends TestCase {
 
         } catch (Exception e) {
             throw (new Error(e));
+        }
+    }
+
+    //TODO: FIX
+    public void testMultiModelInterAssociationGeneralization() {
+        try{
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelInterAssocitionWithGeneralization();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+            MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
+            UseSystemApi systemApi = new UseSystemApiUndoable(cSystem);
+
+            systemApi.createObjects("model1_Person","p1");
+            systemApi.createObjects("model2_Company","c1");
+
+            systemApi.createLink("Job","p1","c1");
+
+            assertFalse(systemApi.checkState());
+
+            systemApi.createObjects("model1_Adult","a1");
+            systemApi.deleteLink("Job", new String[]{"p1","c1"});
+            systemApi.deleteObject("p1");
+            systemApi.createLink("Job","a1","c1");
+
+            assertTrue(systemApi.checkState(new PrintWriter(System.out)));
+
+
+
+
+        } catch (Exception e) {
+            throw new Error(e);
         }
     }
 

@@ -470,6 +470,35 @@ public class TestMultiModelUtil {
         }
     }
 
+    public MMultiModel createMultiModelInterAssocitionWithGeneralization() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Person", false );
+            api1.createClass("Adult", false );
+            api1.createGeneralization("Adult", "Person");
+
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Company", false );
+
+            multiApi.addModel(api2.getModel());
+
+
+            multiApi.createInterAssociation("Job", "model1", "model2",
+                    "Person" , "employees" , "*", MAggregationKind.NONE,
+                    "Company", "workplace", "0..1", MAggregationKind.NONE);
+            multiApi.createInterInvariant("AdultEmployees", "model2" ,"Company",
+                    "self.employees->forAll(e1 | e1.oclIsTypeOf(model1_Adult))", false);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
     public MMultiModel createMultiModelInterConstraintComplex2() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
