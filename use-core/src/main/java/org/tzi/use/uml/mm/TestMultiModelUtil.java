@@ -491,7 +491,7 @@ public class TestMultiModelUtil {
                     "Person" , "employees" , "*", MAggregationKind.NONE,
                     "Company", "workplace", "0..1", MAggregationKind.NONE);
             multiApi.createInterInvariant("AdultEmployees", "model2" ,"Company",
-                    "self.employees->forAll(e1 | e1.oclIsTypeOf(model1_Adult))", false);
+                    "self.employees->forAll(e1 | e1.oclIsTypeOf(model1.Adult))", false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {
@@ -570,12 +570,12 @@ public class TestMultiModelUtil {
                     "self.students->forAll(s1 | s1.school = self.studiedAt)", false);
             // a student must have least one supervisor who is a manager
             multiApi.createInterInvariant("atLeastOneManager", "model2" ,"Student",
-                    "self.supervisor->exists(oclIsTypeOf(model1_Manager))", false);
+                    "self.supervisor->exists(oclIsTypeOf(model1.Manager))", false);
             // a student must attend with a manager of level 'A' who is not his supervisor
             multiApi.createInterInvariant("meeting", "model2" ,"Student",
-                    "self.mt->exists(m |\tm.emp->exists(em| em.oclIsTypeOf(model1_Manager) and\n" +
+                    "self.mt->exists(m |\tm.emp->exists(em| em.oclIsTypeOf(model1.Manager) and\n" +
                             "not self.supervisor->includes(em) and \n" +
-                            "em.oclAsType(model1_Manager).level='A'))", false);
+                            "em.oclAsType(model1.Manager).level='A'))", false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {

@@ -18,6 +18,8 @@ public class MMultiModel {
 
     private List<MClassInvariant> fInterConstraints;
 
+    private Map<String, String> fInterConstraintsString;
+
     public MMultiModel(String name) {
         fName = name;
         fModels = new TreeMap<>();
@@ -78,6 +80,7 @@ public class MMultiModel {
     public void addInterConstraint(MClassInvariant constraint) {
         fInterConstraints.add(constraint);
     }
+
 
     public Collection<MInterAssociation> interAssociations() {
         return fInterAssociations.values();
@@ -248,12 +251,17 @@ public class MMultiModel {
 
         //inter-constraints
         for(MClassInvariant inv : fInterConstraints) {
-//            UseModelApi api = new UseModelApi(result_model);
-//            api.createInvariant(inv.cls().model().name() + delimiter + inv.name(),
-//                    inv.cls().model().name() + delimiter + inv.cls().name(),
-//                    inv.bodyExpression().toString(), inv.isExistential());
-            MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap());
-            result_model.addClassInvariant(newClassInv);
+            UseModelApi api = new UseModelApi(result_model);
+
+            String str = inv.bodyExpression().toString();
+
+
+            api.createInvariant(inv.cls().model().name() + delimiter + inv.name(),
+                    inv.cls().model().name() + delimiter + inv.cls().name(),
+                    inv.bodyExpression().toString(),
+                    inv.isExistential());
+//            MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap());
+//            result_model.addClassInvariant(newClassInv);
 
         }
         return result_model;

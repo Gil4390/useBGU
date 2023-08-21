@@ -74,6 +74,7 @@ public class ASTMultiModel extends AST {
 
         for(ASTInterConstraintDefinition inv : fInterConstraints) {
 
+
             Collection<MClassInvariant> invariants = inv.gen(contextMap);
             for(MClassInvariant invariant : invariants) {
                 mMultiModel.addInterConstraint(invariant);
