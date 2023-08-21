@@ -27,8 +27,6 @@ public class ASTMultiType extends ASTType{
             throw new SemanticException(fModelName,
                     "Expected type name, found `" + modelName + "_" + className + "'.");
 
-
-
         return res;
     }
 
