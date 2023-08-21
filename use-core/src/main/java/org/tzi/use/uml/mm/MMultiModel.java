@@ -1,5 +1,6 @@
 package org.tzi.use.uml.mm;
 
+import org.tzi.use.api.UseModelApi;
 import org.tzi.use.graph.DirectedGraph;
 import org.tzi.use.uml.mm.commonbehavior.communications.MSignal;
 import org.tzi.use.uml.mm.commonbehavior.communications.MSignalImpl;
