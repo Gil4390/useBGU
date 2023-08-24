@@ -87,13 +87,15 @@ public final class ExpIsTypeOf extends Expression {
             res = BooleanValue.TRUE;
 
         if (t instanceof MClassifier && fTargetType instanceof MClassifier){
-            String tModelName = ((MClassifier) t).name().split("_")[0];
-            String tClassName = ((MClassifier) t).name().split("_")[1];
+            if (((MClassifier) t).name().contains("_")) {
+                String tModelName = ((MClassifier) t).name().split("_")[0];
+                String tClassName = ((MClassifier) t).name().split("_")[1];
 
-            String fModelName = ((MClassifier) fTargetType).model().name();
-            String fClassName = ((MClassifier) fTargetType).name();
-            if (tModelName.equals(fModelName) && tClassName.equals(fClassName))
-                res = BooleanValue.TRUE;
+                String fModelName = ((MClassifier) fTargetType).model().name();
+                String fClassName = ((MClassifier) fTargetType).name();
+                if (tModelName.equals(fModelName) && tClassName.equals(fClassName))
+                    res = BooleanValue.TRUE;
+            }
         }
         ctx.exit(this, res);
         return res;

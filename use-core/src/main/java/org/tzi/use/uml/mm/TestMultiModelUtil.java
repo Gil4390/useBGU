@@ -582,4 +582,60 @@ public class TestMultiModelUtil {
             throw new Error( e );
         }
     }
+
+    public MMultiModel createMultiModelWithConstraintOclIsType() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("A", false );
+
+            api1.createClass("B", false);
+            api1.createGeneralization("B", "A");
+
+            api1.createClass("C", false);
+            api1.createGeneralization("C", "B");
+
+
+            api1.createClass("Foo", false );
+            api1.createClass("Goo", false );
+
+            api1.createAssociation("assoc1",
+                    "A" , "r1" , "*", MAggregationKind.NONE,
+                    "Foo", "r2", "*", MAggregationKind.NONE);
+
+            api1.createAssociation("assoc2",
+                    "Goo" , "g1" , "*", MAggregationKind.NONE,
+                    "Foo", "g2", "*", MAggregationKind.NONE);
+
+
+            api1.createInvariant("inv1", "Foo", "self.r1->exists(oclIsTypeOf(B))", false);
+
+            multiApi.addModel(api1.getModel());
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("Bar", false );
+            multiApi.addModel(api2.getModel());
+
+
+            multiApi.createInterAssociation("interAssoc1", "model1", "model2",
+                    "A", "a1", "*", MAggregationKind.NONE,
+                    "Bar" , "a2" , "*", MAggregationKind.NONE);
+
+            multiApi.createInterInvariant("inv2", "model2" , "Bar",
+                    "self.a1->exists(oclIsTypeOf(model1.B))", false);
+
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    //TODO:
+    // finish oclIsTypeOf
+    // oclIsKindOf
+    // oclAsType
+    // selectByKind
+    // selectByType
 }

@@ -974,6 +974,50 @@ public class MSystemConversionTest extends TestCase {
             throw (new Error(e));
         }
     }
+
+    public void testMultiModelWithConstraintOclIsType() {
+        try {
+            // testing normal single model
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelWithConstraintOclIsType();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+
+            multiSystemApi.getApiSafe("model1").createObject("Goo", "goo");
+            multiSystemApi.getApiSafe("model1").createObject("Foo", "foo");
+            multiSystemApi.getApiSafe("model1").createLink("assoc2", "goo", "foo");
+            Assert.assertFalse(multiSystemApi.getApiSafe("model1").checkState());
+
+            multiSystemApi.getApiSafe("model1").createObject("A", "a");
+            multiSystemApi.getApiSafe("model1").createLink("assoc1", "a", "foo");
+            Assert.assertFalse(multiSystemApi.getApiSafe("model1").checkState());
+            multiSystemApi.getApiSafe("model1").createObject("C", "c");
+            multiSystemApi.getApiSafe("model1").createLink("assoc1", "c", "foo");
+            Assert.assertFalse(multiSystemApi.getApiSafe("model1").checkState());
+
+            multiSystemApi.getApiSafe("model1").createObject("B", "b");
+            multiSystemApi.getApiSafe("model1").createLink("assoc1", "b", "foo");
+            Assert.assertTrue(multiSystemApi.getApiSafe("model1").checkState());
+
+            //testing inter assoc and constraints
+
+            MSystem cSystem1 = multiSystemApi.getMultiSystem().toMSystem();
+            UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
+
+            useSystemApi1.createObjects("model2_Bar", "bar");
+            Assert.assertFalse(useSystemApi1.checkState());
+
+            useSystemApi1.createLink("interAssoc1", "model1_a", "bar");
+            Assert.assertFalse(useSystemApi1.checkState());
+
+            useSystemApi1.createLink("interAssoc1", "model1_c", "bar");
+            Assert.assertFalse(useSystemApi1.checkState());
+
+            useSystemApi1.createLink("interAssoc1", "model1_b", "bar");
+            Assert.assertTrue(useSystemApi1.checkState());
+
+        } catch (Exception e) {
+            throw (new Error(e));
+        }
+    }
     //endregion
 
 
