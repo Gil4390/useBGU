@@ -58,7 +58,8 @@ public class ASTMultiModel extends AST {
                     mMultiModel.addModel(model.gen(curContext));
                     ctx.setErrorCount(ctx.errorCount() + curContext.errorCount());
                 }
-            }catch(Exception e) { //TODO: add custom excepetions
+            }
+            catch(Exception e) {
                 ctx.reportError(fName,e);
                 mIt.remove();
             }

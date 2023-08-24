@@ -227,6 +227,7 @@ public class MMultiModel {
                 result_model.addSignal(newSignal);
             }
 
+            // generalizations
             Iterator<MGeneralization> iterator = model.generalizationGraph().edgeIterator();
             while (iterator.hasNext()){
                 MGeneralization gen = iterator.next();
@@ -251,17 +252,8 @@ public class MMultiModel {
 
         //inter-constraints
         for(MClassInvariant inv : fInterConstraints) {
-            UseModelApi api = new UseModelApi(result_model);
-
-            String str = inv.bodyExpression().toString();
-
-
-            api.createInvariant(inv.cls().model().name() + delimiter + inv.name(),
-                    inv.cls().model().name() + delimiter + inv.cls().name(),
-                    inv.bodyExpression().toString(),
-                    inv.isExistential());
-//            MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap());
-//            result_model.addClassInvariant(newClassInv);
+            MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap());
+            result_model.addClassInvariant(newClassInv);
 
         }
         return result_model;
