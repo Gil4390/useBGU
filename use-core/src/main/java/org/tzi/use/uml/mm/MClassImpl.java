@@ -82,7 +82,6 @@ public class MClassImpl extends MClassifierImpl implements MClass {
         cMClass.setModel(newModel);
         for (String key : this.fAttributes.keySet()) {
             MAttribute attr = this.fAttributes.get(key);
-            //attr.setOwner(cMClass);
             cMClass.addAttribute(attr);
         }
 
@@ -92,8 +91,6 @@ public class MClassImpl extends MClassifierImpl implements MClass {
             cMOperation.setClass(cMClass);
             cMClass.addOperation(cMOperation);
         }
-
-        // fVTableOperations should work
 
         return cMClass;
     }

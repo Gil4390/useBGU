@@ -64,7 +64,6 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
         fAssociationImpl = new MAssociationImpl( name );
     }
 
-    //TODO: fix to a better impl
     @Override
     public MAssociation makeCopy(String prefix, MModel newModel) {
         return null;

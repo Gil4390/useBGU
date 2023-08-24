@@ -53,7 +53,6 @@ public final class MAttribute extends MModelElementImpl implements UseFileLocata
         if (this.hasInitExpression())
             mAttribute.setInitExpression(this.getInitExpression().get());
         mAttribute.setDeriveExpression(this.getDeriveExpression());
-        //position in model?
 
         return mAttribute;
     }
