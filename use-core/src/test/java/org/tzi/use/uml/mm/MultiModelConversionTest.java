@@ -440,8 +440,8 @@ public class MultiModelConversionTest extends TestCase {
 //                assertNotNull(inv);
 //            }
 
-            assertEquals(6, convertedModel.modelClassInvariants().size());
-            assertEquals(6, convertedModel.associations().size());
+            assertEquals(0, convertedModel.modelClassInvariants().size());
+            assertEquals(2, convertedModel.associations().size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );

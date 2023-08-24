@@ -19,6 +19,8 @@
 
 package org.tzi.use.uml.ocl.expr;
 
+import org.tzi.use.uml.mm.MClassImpl;
+import org.tzi.use.uml.mm.MClassifier;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.type.Type.VoidHandling;
 import org.tzi.use.uml.ocl.type.TypeFactory;
@@ -83,6 +85,16 @@ public final class ExpIsTypeOf extends Expression {
         // Note: the value may be undefined, still the type test is valid!
         if (t.equals(fTargetType) )
             res = BooleanValue.TRUE;
+
+        if (t instanceof MClassifier && fTargetType instanceof MClassifier){
+            String tModelName = ((MClassifier) t).name().split("_")[0];
+            String tClassName = ((MClassifier) t).name().split("_")[1];
+
+            String fModelName = ((MClassifier) fTargetType).model().name();
+            String fClassName = ((MClassifier) fTargetType).name();
+            if (tModelName.equals(fModelName) && tClassName.equals(fClassName))
+                res = BooleanValue.TRUE;
+        }
         ctx.exit(this, res);
         return res;
     }
