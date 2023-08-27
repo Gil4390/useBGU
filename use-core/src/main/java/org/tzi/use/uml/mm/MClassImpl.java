@@ -57,6 +57,10 @@ public class MClassImpl extends MClassifierImpl implements MClass {
     // other classes reachable by associations 
     private Map<String, MNavigableElement> fNavigableElements;
 
+    public boolean isConverted = false;
+    public MClassImpl originalClass;
+    public MClassImpl convertedClass;
+
     /**
      * All owned PSM
      */

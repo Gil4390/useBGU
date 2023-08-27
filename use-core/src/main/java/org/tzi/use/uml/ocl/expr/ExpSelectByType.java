@@ -20,6 +20,7 @@
 package org.tzi.use.uml.ocl.expr;
 
 import org.tzi.use.parser.SemanticException;
+import org.tzi.use.uml.mm.MClassImpl;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.value.Value;
 
@@ -42,7 +43,18 @@ public class ExpSelectByType extends ExpSelectByKind {
 
 	@Override
 	protected boolean includeElement(Value v) {
-		return v.getRuntimeType().equals(type().elemType());
+		Type t = v.getRuntimeType();
+
+		if (t.equals(type().elemType()))
+			return true;
+
+
+		if (t instanceof MClassImpl && ((MClassImpl) t).isConverted){
+			if (((MClassImpl) t).originalClass.equals(type().elemType())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

@@ -19,6 +19,7 @@
 
 package org.tzi.use.uml.ocl.expr;
 
+import org.tzi.use.uml.mm.MClassImpl;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.type.Type.VoidHandling;
 import org.tzi.use.uml.ocl.type.TypeFactory;
@@ -76,6 +77,11 @@ public final class ExpIsKindOf extends Expression {
         // Note: the value may be undefined, still the type test is valid!
         if (t.conformsTo(fTargetType))
             res = BooleanValue.TRUE;
+
+        if (t instanceof MClassImpl && ((MClassImpl) t).isConverted){
+            if (((MClassImpl) t).originalClass.conformsTo(fTargetType))
+                res = BooleanValue.TRUE;
+        }
         
         ctx.exit(this, res);
         return res;

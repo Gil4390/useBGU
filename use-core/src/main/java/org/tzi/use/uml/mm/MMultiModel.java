@@ -190,9 +190,13 @@ public class MMultiModel {
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MClassImpl){
                     MClassImpl newClass = ((MClassImpl) mClass).initCopy(model.name() + delimiter);
+                    newClass.isConverted = true;
+                    newClass.originalClass = (MClassImpl) mClass;
+
                     result_model.addClass(newClass);
                     ((MClassImpl) mClass).makeCopy(newClass, model.name() + delimiter, result_model);
-                    //MClass newClass = ((MClassImpl) mClass).makeCopy(model.name() + delimiter, result_model);
+
+                    ((MClassImpl) mClass).convertedClass = newClass;
                 }
             }
             // association classes

@@ -23,10 +23,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.tzi.use.parser.SemanticException;
+import org.tzi.use.uml.mm.MClassImpl;
 import org.tzi.use.uml.ocl.type.CollectionType;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.type.Type.VoidHandling;
 import org.tzi.use.uml.ocl.type.TypeFactory;
+import org.tzi.use.uml.ocl.value.BooleanValue;
 import org.tzi.use.uml.ocl.value.CollectionValue;
 import org.tzi.use.uml.ocl.value.UndefinedValue;
 import org.tzi.use.uml.ocl.value.Value;
@@ -99,7 +101,18 @@ public class ExpSelectByKind extends Expression {
 	}
 	
 	protected boolean includeElement(Value v) {
-		return v.getRuntimeType().conformsTo(type().elemType());
+		Type t = v.getRuntimeType();
+
+		if (t.conformsTo(type().elemType()))
+			return true;
+
+
+		if (t instanceof MClassImpl && ((MClassImpl) t).isConverted){
+			if (((MClassImpl) t).originalClass.conformsTo(type().elemType())) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override

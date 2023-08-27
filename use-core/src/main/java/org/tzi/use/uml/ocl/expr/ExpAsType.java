@@ -20,6 +20,7 @@
 package org.tzi.use.uml.ocl.expr;
 
 import org.tzi.use.uml.mm.MClass;
+import org.tzi.use.uml.mm.MClassImpl;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.value.ObjectValue;
 import org.tzi.use.uml.ocl.value.UndefinedValue;
@@ -90,6 +91,16 @@ public final class ExpAsType extends Expression {
             // subtype!  See initialization of res above
             if (obj.exists(ctx.postState()) && obj.cls().conformsTo(targetType) )
                 res = new ObjectValue((MClass) targetType, obj);
+
+
+            if (obj.exists(ctx.postState())){
+                if (obj.cls() instanceof MClassImpl && ((MClassImpl) obj.cls()).isConverted){
+                    if (((MClassImpl) obj.cls()).originalClass.conformsTo(targetType)){
+                        res = new ObjectValue((((MClassImpl)targetType).convertedClass), obj);
+                    }
+                }
+            }
+
         } else {
             // value is fine if its type is equal or a subtype of the
             // expected type
