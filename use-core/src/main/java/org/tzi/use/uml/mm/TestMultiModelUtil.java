@@ -455,7 +455,12 @@ public class TestMultiModelUtil {
             api1.createAttribute("Employee", "name", "String");
             api1.createAttribute("Employee", "salary", "Integer");
             api1.createAttribute("Employee", "age", "Integer");
-
+            //delete
+//            api1.createAssociation("Working",
+//                    "Employee" , "supervisor1" , "0..1", MAggregationKind.NONE,
+//                    "Employee", "supervising1", "*", MAggregationKind.NONE);
+//            api1.createInvariant("SalaryLowerThanSupervisor1" ,"Employee",
+//                    "self.supervising1->forAll(e1 | e1.salary < self.salary)", false);
             multiApi.addModel(api1.getModel());
 
             multiApi.createInterAssociation("WorksFor", "model1", "model1",

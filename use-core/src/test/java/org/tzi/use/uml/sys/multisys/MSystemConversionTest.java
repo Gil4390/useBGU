@@ -893,13 +893,28 @@ public class MSystemConversionTest extends TestCase {
             MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelInterConstraintSelfAssociation();
             UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
 
-            multiSystemApi.createObjects("model1", "Employee", "e1");
-            multiSystemApi.createObjects("model1", "Employee", "e2");
-            multiSystemApi.createObjects("model1", "Employee", "e3");
+//            multiSystemApi.createObjects("model1", "Employee", "e1");
+//            multiSystemApi.createObjects("model1", "Employee", "e2");
+//            multiSystemApi.createObjects("model1", "Employee", "e3");
+            //------test without multimodel
+//            UseSystemApi useSystemApic = UseSystemApi.create(multiModel.getModel("model1"), true);
+//            useSystemApic.createObjects("Employee", "e1");
+//            useSystemApic.createObjects("Employee", "e2");
+//            useSystemApic.createObjects( "Employee", "e3");
+//            useSystemApic.setAttributeValue("e1","salary","100");
+//            useSystemApic.setAttributeValue("e2","salary","50");
+//            useSystemApic.setAttributeValue("e3","salary","70");
+//
+//            useSystemApic.createLink("Working","e1","e3");
+//            useSystemApic.createLink("Working","e1","e2");
+//
+//            Assert.assertTrue(useSystemApic.checkState(new PrintWriter(System.out)));
+
 
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
+            useSystemApic.createObjects("model1_Employee","model1_e1","model1_e2","model1_e3");
             useSystemApic.setAttributeValue("model1_e1","salary","100");
             useSystemApic.setAttributeValue("model1_e2","salary","50");
             useSystemApic.setAttributeValue("model1_e3","salary","70");
@@ -1256,6 +1271,7 @@ public class MSystemConversionTest extends TestCase {
             throw (new Error(e));
         }
     }
+
     //endregion
 
 

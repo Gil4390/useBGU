@@ -110,7 +110,8 @@ public final class ExpNavigation extends Expression {
 
                 for (Map.Entry<String, ? extends MNavigableElement> entry : ends1.entrySet()) {
                     MNavigableElement value = entry.getValue();
-                    if (value.cls().name().equals(convertedDstClassName)) {
+                    if (value.cls().name().equals(convertedDstClassName)
+                            && convertedDst.nameAsRolename().equals(value.nameAsRolename())) {
                         convertedDst = value;
                         break;
                     }
@@ -118,7 +119,8 @@ public final class ExpNavigation extends Expression {
 
                 for (Map.Entry<String, ? extends MNavigableElement> entry : ends2.entrySet()) {
                     MNavigableElement value = entry.getValue();
-                    if (value.cls().name().equals(convertedSrcClassName)) {
+                    if (value.cls().name().equals(convertedSrcClassName)
+                            && convertedSrc.nameAsRolename().equals(value.nameAsRolename())) {
                         convertedSrc = value;
                         break;
                     }
