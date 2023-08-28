@@ -1164,6 +1164,44 @@ public class MSystemConversionTest extends TestCase {
         }
     }
 
+    public void testMultiModelWithConstraintOclAsType() {
+        try {
+            // testing normal single model
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelWithConstraintOclAsType();
+            UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
+
+            multiSystemApi.getApiSafe("model1").createObject("Student", "s1");
+                multiSystemApi.getApiSafe("model1").createObject("School", "school");
+            multiSystemApi.getApiSafe("model1").createLink("PartOfSchool", "school", "s1");
+
+            multiSystemApi.getApiSafe("model1").setAttributeValue("s1", "ID", "''");
+            Assert.assertFalse(multiSystemApi.getApiSafe("model1").checkState());
+
+            multiSystemApi.getApiSafe("model1").setAttributeValue("s1", "ID", "'123'");
+            Assert.assertTrue(multiSystemApi.getApiSafe("model1").checkState());
+
+            //testing inter assoc and constraints
+
+            MSystem cSystem1 = multiSystemApi.getMultiSystem().toMSystem();
+            UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
+
+            useSystemApi1.createObjects("model2_University", "university");
+            useSystemApi1.createLink("PartOfUni", "university", "model1_s1");
+            Assert.assertTrue(useSystemApi1.checkState());
+
+            useSystemApi1.createObject("model1_Student", "s2");
+            useSystemApi1.setAttributeValue("s2", "ID", "''");
+            useSystemApi1.createLink("PartOfUni", "university", "s2");
+            Assert.assertFalse(useSystemApi1.checkState());
+
+            useSystemApi1.setAttributeValue("s2", "ID", "'456'");
+            Assert.assertTrue(useSystemApi1.checkState());
+
+        } catch (Exception e) {
+            throw (new Error(e));
+        }
+    }
+
     //endregion
 
 

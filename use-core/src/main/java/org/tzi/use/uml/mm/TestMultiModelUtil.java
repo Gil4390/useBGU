@@ -586,12 +586,15 @@ public class TestMultiModelUtil {
     private static UseModelApi helper1() throws UseApiException {
         UseModelApi api1 = new UseModelApi("model1");
         api1.createClass("A", false );
+        api1.createAttribute("A", "attrA", "String");
 
         api1.createClass("B", false);
         api1.createGeneralization("B", "A");
+        api1.createAttribute("B", "attrB", "String");
 
         api1.createClass("C", false);
         api1.createGeneralization("C", "B");
+        api1.createAttribute("C", "attrC", "String");
 
 
         api1.createClass("Foo", false );
@@ -713,6 +716,52 @@ public class TestMultiModelUtil {
 
             multiApi.createInterInvariant("inv2", "model2" , "Bar",
                     "self.a1->selectByKind(model1.B)->size() >= 1", false);
+
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelWithConstraintOclAsType() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            api1.createClass("Person", false);
+            api1.createClass("Student", false);
+            api1.createClass("Teacher", false);
+            api1.createGeneralization("Student", "Person");
+            api1.createGeneralization("Teacher", "Person");
+
+            api1.createAttribute("Student", "ID", "String");
+
+            api1.createClass("School", false);
+
+            api1.createAssociation("PartOfSchool",
+                    "School", "school", "*", MAggregationKind.NONE,
+                    "Person", "people", "*", MAggregationKind.NONE);
+
+            api1.createInvariant("inv1", "School",
+                    "self.people->forAll(p | p.oclIsTypeOf(Student) implies p.oclAsType(Student).ID <> '')",
+                    false);
+
+            multiApi.addModel(api1.getModel());
+
+
+
+            UseModelApi api2 = new UseModelApi("model2");
+            api2.createClass("University", false );
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createInterAssociation("PartOfUni", "model2", "model1",
+                    "University", "university", "*", MAggregationKind.NONE,
+                    "Person" , "people" , "*", MAggregationKind.NONE);
+
+            multiApi.createInterInvariant("inv2", "model2" , "University",
+                    "self.people->forAll(p | p.oclIsTypeOf(model1.Student) implies p.oclAsType(model1.Student).ID <> '')",
+                    false);
 
 
             return multiApi.getMultiModel();
