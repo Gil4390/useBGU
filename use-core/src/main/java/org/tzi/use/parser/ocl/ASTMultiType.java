@@ -25,12 +25,12 @@ public class ASTMultiType extends ASTType{
         Type res = ctx.multiModel().getModel(modelName).getClassifier(className);
         if (res == null )
             throw new SemanticException(fModelName,
-                    "Expected type name, found `" + modelName + "_" + className + "'.");
+                    "Expected type name, found `" + modelName + "@" + className + "'.");
 
         return res;
     }
 
     public String toString() {
-        return fModelName.getText() + "_" + fClassName.getText();
+        return fModelName.getText() + "@" + fClassName.getText();
     }
 }

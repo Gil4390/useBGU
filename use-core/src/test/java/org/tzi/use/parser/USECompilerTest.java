@@ -538,13 +538,13 @@ public class USECompilerTest extends TestCase {
             assertEquals(convertedModel.name(), multiModelResult.name());
 
             for (MClass mClass : model1.classes()){
-                String newName = model1.name() + "_" + mClass.name();
+                String newName = model1.name() + "@" + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }
 
             for (MClass mClass : model2.classes()){
-                String newName = model2.name() + "_" + mClass.name();
+                String newName = model2.name() + "@" + mClass.name();
                 MClass cls = convertedModel.getClass(newName);
                 assertNotNull(cls);
             }

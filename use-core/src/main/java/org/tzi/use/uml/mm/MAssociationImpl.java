@@ -77,7 +77,7 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
 
 		for(MClass assoc_cls : this.associatedClasses()) {
 			if(interAssociationFlag) {
-				prefix = assoc_cls.model().name() + "_";
+				prefix = assoc_cls.model().name() + "@";
 			}
 			String convertedClsName = prefix + assoc_cls.name();
 			MClass classToAdd = classes.get(convertedClsName);
@@ -91,7 +91,7 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
 		for(MAssociationEnd assocEnd : this.fAssociationEnds) {
 			try {
 				if(interAssociationFlag) {
-					prefix = assocEnd.cls().model().name() + "_";
+					prefix = assocEnd.cls().model().name() + "@";
 				}
 				MAssociationEnd assocEndCopy = assocEnd.makeCopy(prefix, filteredClasses);
 				assocEndCopy.setAssociation(copy);

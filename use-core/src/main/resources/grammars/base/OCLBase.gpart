@@ -627,11 +627,11 @@ simpleType returns [ASTSimpleType n]
     ;
 
 /* ------------------------------------
-  multiType ::= modelName "." className
+  multiType ::= modelName "@" className
 */
 multiType returns [ASTMultiType n]
 :
-    modelName=IDENT DOT className=IDENT { $n = new ASTMultiType(modelName, $className); }
+    modelName=IDENT AT className=IDENT { $n = new ASTMultiType(modelName, $className); }
     ;
 
 

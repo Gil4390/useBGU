@@ -55,22 +55,22 @@ context Student inv:
 inter-associations
 
 association Job between
-    model1.Employee[1] role supervisor
-    model2.Student[*] role students
+    model1@Employee[1] role supervisor
+    model2@Student[*] role students
 end
 
 
 association Graduates between
-    model1.Employee[*] role graduates
-    model2.School[0..1] role studiedAt
+    model1@Employee[*] role graduates
+    model2@School[0..1] role studiedAt
 end
 
 inter-constraints
 
 -- an employee salary must be larger than any student salary
-context model1.Employee inv:
+context model1@Employee inv:
     self.students->forAll(s1 | self.salary > s1.salary)
 
 -- an employee can supervise only students from his school
-context model1.Employee inv:
+context model1@Employee inv:
     self.students->forAll(s1 | s1.school = self.studiedAt)

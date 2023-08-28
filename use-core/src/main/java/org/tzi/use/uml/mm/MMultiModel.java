@@ -177,7 +177,7 @@ public class MMultiModel {
     }
 
     public MModel toMModel() throws Exception {
-        String delimiter= "_";
+        String delimiter= "@";
         MModel result_model = new MModel(this.fName);
 
         for (MModel model : fModels.values()) {

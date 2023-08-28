@@ -32,16 +32,16 @@ context Student inv:
 
 inter-associations
 association Job between
-    model1.Employee[1] role a1
-    model2.Student[*] role a2
+    model1@Employee[1] role a1
+    model2@Student[*] role a2
 end
 
 inter-constraints 
 
 -- an employee salary must be larger than any student salary
-context model1.Employee inv:
+context model1@Employee inv:
     self.a2.forAll(s1 | self.salary > s1.salary)
 -- student salary must be smaller than his employee's salary
-context model2.Student inv:
+context model2@Student inv:
     self.salary < self.a1.salary
 

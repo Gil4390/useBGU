@@ -6,7 +6,7 @@ import org.tzi.use.api.UseMultiSystemApi;
 
 public class MultiModelConversionTest extends TestCase {
 
-    public static final String delimiter = "_";
+    public static final String delimiter = "@";
 
     public void testConvertMultiModelWithSingleModel() {
         try {

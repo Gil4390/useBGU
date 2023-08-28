@@ -318,8 +318,8 @@ public class MSystemConversionTest extends TestCase {
             //add objects to converted system
             UseSystemApi cSystemApi = UseSystemApi.create(cSystem, true);
             assertTrue(cSystemApi.checkState());
-            cSystemApi.createObjects("model1_Person", "p5");
-            cSystemApi.createLink("model1_Job","p5","model1_c1");
+            cSystemApi.createObjects("model1@Person", "p5");
+            cSystemApi.createLink("model1@Job","p5","model1@c1");
             assertFalse(cSystemApi.checkState());
 
         } catch (Exception e) {
@@ -417,11 +417,11 @@ public class MSystemConversionTest extends TestCase {
             //check converted system
             UseSystemApi cSystemApi = UseSystemApi.create(cSystem, true);
             assertTrue(cSystemApi.checkState());
-            cSystemApi.createObjects("model2_Person", "p5");
-            cSystemApi.createObjects("model2_Company", "c5");
-            cSystemApi.createObjects("model2_Salary", "s5");
+            cSystemApi.createObjects("model2@Person", "p5");
+            cSystemApi.createObjects("model2@Company", "c5");
+            cSystemApi.createObjects("model2@Salary", "s5");
 
-            cSystemApi.createLinkObject("model2_Job","j2","p5","c5","s5");
+            cSystemApi.createLinkObject("model2@Job","j2","p5","c5","s5");
             assertTrue(cSystemApi.checkState());
 
 
@@ -458,12 +458,12 @@ public class MSystemConversionTest extends TestCase {
             //check converted system
             UseSystemApi cSystemApi = UseSystemApi.create(cSystem, true);
             assertTrue(cSystemApi.checkState(new PrintWriter(System.out)));
-            cSystemApi.createObjects("model2_Person", "p5");
-            cSystemApi.createLink("model2_isBoss","model2_p1", "p5");
+            cSystemApi.createObjects("model2@Person", "p5");
+            cSystemApi.createLink("model2@isBoss","model2@p1", "p5");
             assertFalse(cSystemApi.checkState());
             cSystemApi.undo();
             assertTrue(cSystemApi.checkState());
-            cSystemApi.createLink("model2_Job", "p5","model2_c1");
+            cSystemApi.createLink("model2@Job", "p5","model2@c1");
             assertFalse(cSystemApi.checkState());
 
         } catch (Exception e) {
@@ -652,7 +652,7 @@ public class MSystemConversionTest extends TestCase {
             Assert.assertTrue(useSystemApic.checkState());
 
             //now add new objects that break the constraints
-            useSystemApic.createObject("model1_Person", "newP");
+            useSystemApic.createObject("model1@Person", "newP");
             Assert.assertEquals(multiSystem.numObjects() + 1, cSystem.state().numObjects());
 
             useSystemApic.setAttributeValue("newP", "salary", "6000");
@@ -718,7 +718,7 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createLink("Job", "PersonCompany1_p1", "PersonCompany2_c1");
+            useSystemApic.createLink("Job", "PersonCompany1@p1", "PersonCompany2@c1");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 1, cSystem.state().allLinks().size());
@@ -741,9 +741,9 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createLink("Job", "model1_p1", "model2_c1");
-            useSystemApic.createLink("Studies", "model1_p1", "model3_s1");
-            useSystemApic.createLink("Students", "model2_c1", "model3_s1");
+            useSystemApic.createLink("Job", "model1@p1", "model2@c1");
+            useSystemApic.createLink("Studies", "model1@p1", "model3@s1");
+            useSystemApic.createLink("Students", "model2@c1", "model3@s1");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 3, cSystem.state().allLinks().size());
@@ -765,8 +765,8 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createLink("Job", "model1_p1", "model2_c1");
-            useSystemApic.createLink("Study", "model2_c1", "model1_p1");
+            useSystemApic.createLink("Job", "model1@p1", "model2@c1");
+            useSystemApic.createLink("Study", "model2@c1", "model1@p1");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 2, cSystem.state().allLinks().size());
@@ -793,13 +793,13 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createLink("Job", "model2_s1", "model1_e1");
-            useSystemApic.createLink("Job", "model2_s1", "model1_e2");
+            useSystemApic.createLink("Job", "model2@s1", "model1@e1");
+            useSystemApic.createLink("Job", "model2@s1", "model1@e2");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 2, cSystem.state().allLinks().size());
 
-            useSystemApic.setAttributeValue("model2_s1", "salary", "50");
+            useSystemApic.setAttributeValue("model2@s1", "salary", "50");
 
             Assert.assertTrue(useSystemApic.checkState());
 
@@ -823,7 +823,7 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createLink("Job", "model2_s1", "model1_e1");
+            useSystemApic.createLink("Job", "model2@s1", "model1@e1");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 1, cSystem.state().allLinks().size());
@@ -848,7 +848,7 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createLink("Interns", "model3_c1", "model2_s1");
+            useSystemApic.createLink("Interns", "model3@c1", "model2@s1");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 1, cSystem.state().allLinks().size());
@@ -873,8 +873,8 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createLink("Interns", "model3_c1", "model2_s1");
-            useSystemApic.createLink("Supervise", "model2_s1", "model1_e1");
+            useSystemApic.createLink("Interns", "model3@c1", "model2@s1");
+            useSystemApic.createLink("Supervise", "model2@s1", "model1@e1");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 2, cSystem.state().allLinks().size());
@@ -914,13 +914,13 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
 
             UseSystemApi useSystemApic = UseSystemApi.create(cSystem, true);
-            useSystemApic.createObjects("model1_Employee","model1_e1","model1_e2","model1_e3");
-            useSystemApic.setAttributeValue("model1_e1","salary","100");
-            useSystemApic.setAttributeValue("model1_e2","salary","50");
-            useSystemApic.setAttributeValue("model1_e3","salary","70");
+            useSystemApic.createObjects("model1@Employee","model1@e1","model1@e2","model1@e3");
+            useSystemApic.setAttributeValue("model1@e1","salary","100");
+            useSystemApic.setAttributeValue("model1@e2","salary","50");
+            useSystemApic.setAttributeValue("model1@e3","salary","70");
 
-            useSystemApic.createLink("WorksFor", "model1_e1", "model1_e2");
-            useSystemApic.createLink("WorksFor", "model1_e1", "model1_e3");
+            useSystemApic.createLink("WorksFor", "model1@e1", "model1@e2");
+            useSystemApic.createLink("WorksFor", "model1@e1", "model1@e3");
 
             Assert.assertTrue(useSystemApic.checkState(new PrintWriter(System.out)));
 
@@ -1017,16 +1017,16 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem1 = multiSystemApi.getMultiSystem().toMSystem();
             UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
 
-            useSystemApi1.createObjects("model2_Bar", "bar");
+            useSystemApi1.createObjects("model2@Bar", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_a", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@a", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_c", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@c", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_b", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@b", "bar");
             Assert.assertTrue(useSystemApi1.checkState());
 
         } catch (Exception e) {
@@ -1064,19 +1064,19 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem1 = multiSystemApi.getMultiSystem().toMSystem();
             UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
 
-            useSystemApi1.createObjects("model2_Bar", "bar");
+            useSystemApi1.createObjects("model2@Bar", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_a", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@a", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_c", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@c", "bar");
             Assert.assertTrue(useSystemApi1.checkState());
 
-            useSystemApi1.deleteLink("interAssoc1", new String[]{"model1_c", "bar"});
+            useSystemApi1.deleteLink("interAssoc1", new String[]{"model1@c", "bar"});
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_b", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@b", "bar");
             Assert.assertTrue(useSystemApi1.checkState());
 
         } catch (Exception e) {
@@ -1111,16 +1111,16 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem1 = multiSystemApi.getMultiSystem().toMSystem();
             UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
 
-            useSystemApi1.createObjects("model2_Bar", "bar");
+            useSystemApi1.createObjects("model2@Bar", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_a", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@a", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_c", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@c", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_b", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@b", "bar");
             Assert.assertTrue(useSystemApi1.checkState());
 
         } catch (Exception e) {
@@ -1158,19 +1158,19 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem1 = multiSystemApi.getMultiSystem().toMSystem();
             UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
 
-            useSystemApi1.createObjects("model2_Bar", "bar");
+            useSystemApi1.createObjects("model2@Bar", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_a", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@a", "bar");
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_c", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@c", "bar");
             Assert.assertTrue(useSystemApi1.checkState());
 
-            useSystemApi1.deleteLink("interAssoc1", new String[]{"model1_c", "bar"});
+            useSystemApi1.deleteLink("interAssoc1", new String[]{"model1@c", "bar"});
             Assert.assertFalse(useSystemApi1.checkState());
 
-            useSystemApi1.createLink("interAssoc1", "model1_b", "bar");
+            useSystemApi1.createLink("interAssoc1", "model1@b", "bar");
             Assert.assertTrue(useSystemApi1.checkState());
 
 
@@ -1200,11 +1200,11 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem1 = multiSystemApi.getMultiSystem().toMSystem();
             UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
 
-            useSystemApi1.createObjects("model2_University", "university");
-            useSystemApi1.createLink("PartOfUni", "university", "model1_s1");
+            useSystemApi1.createObjects("model2@University", "university");
+            useSystemApi1.createLink("PartOfUni", "university", "model1@s1");
             Assert.assertTrue(useSystemApi1.checkState());
 
-            useSystemApi1.createObject("model1_Student", "s2");
+            useSystemApi1.createObject("model1@Student", "s2");
             useSystemApi1.setAttributeValue("s2", "ID", "''");
             useSystemApi1.createLink("PartOfUni", "university", "s2");
             Assert.assertFalse(useSystemApi1.checkState());
@@ -1240,8 +1240,8 @@ public class MSystemConversionTest extends TestCase {
 
             UseSystemApi useSystemApi1 = UseSystemApi.create(cSystem1, true);
 
-            useSystemApi1.createObject("model1_Manager", "m1");
-            useSystemApi1.createObject("model2_Student", "s1");
+            useSystemApi1.createObject("model1@Manager", "m1");
+            useSystemApi1.createObject("model2@Student", "s1");
             useSystemApi1.createLink("supervising", "m1", "s1");
 
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects() + 2, cSystem1.state().numObjects());
@@ -1283,14 +1283,14 @@ public class MSystemConversionTest extends TestCase {
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
             UseSystemApi systemApi = new UseSystemApiUndoable(cSystem);
 
-            systemApi.createObjects("model1_Person","p1");
-            systemApi.createObjects("model2_Company","c1");
+            systemApi.createObjects("model1@Person","p1");
+            systemApi.createObjects("model2@Company","c1");
 
             systemApi.createLink("Job","p1","c1");
 
             assertFalse(systemApi.checkState());
 
-            systemApi.createObjects("model1_Adult","a1");
+            systemApi.createObjects("model1@Adult","a1");
             systemApi.deleteLink("Job", new String[]{"p1","c1"});
             systemApi.deleteObject("p1");
             systemApi.createLink("Job","a1","c1");

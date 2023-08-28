@@ -276,7 +276,7 @@ interInvariant returns [ASTInterConstraintDefinition n]
     'context'
     ( v=IDENT { $n.addVarName($v); }
        (',' v=IDENT  { $n.addVarName($v); } )* COLON )?
-    modelName=IDENT DOT t=simpleType { $n.setType($t.n); $n.setModelName($modelName); }
+    modelName=IDENT AT t=simpleType { $n.setType($t.n); $n.setModelName($modelName); }
     ( inv=invariantClause { $n.addInvariantClause($inv.n); } )* //+
     ;
 /* ------------------------------------
@@ -303,12 +303,12 @@ associationDefinition returns [ASTAssociation n]
 
 /* ------------------------------------
   interAssociationEnd ::=
-    modelId "_" clsId "[" multiplicity "]" [ "role" id ] ( "ordered" | "subsets" id | "union" | "redefines" )* [ ";" ]
+    modelId "@" clsId "[" multiplicity "]" [ "role" id ] ( "ordered" | "subsets" id | "union" | "redefines" )* [ ";" ]
 */
 interAssociationEnd returns [ASTInterAssociationEnd n]
 :
 	as = annotationSet
-    modelName=IDENT DOT clsName=IDENT LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
+    modelName=IDENT AT clsName=IDENT LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
     ( keyRole rn=IDENT { $n.setRolename($rn); } )?
     (
         'ordered' { $n.setOrdered(); }

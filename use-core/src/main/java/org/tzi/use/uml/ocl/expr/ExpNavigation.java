@@ -100,12 +100,12 @@ public final class ExpNavigation extends Expression {
                 // in conversion
                 String srcModelName = this.fSrc.cls().model().name();
                 String srcClassName = this.fSrc.cls().name();
-                String convertedSrcClassName = srcModelName + "_" + srcClassName;
+                String convertedSrcClassName = srcModelName + "@" + srcClassName;
                 Map<String, ? extends MNavigableElement> ends1 = classes.get(convertedSrcClassName).navigableEnds();
 
                 String dstModelName = this.fDst.cls().model().name();
                 String dstClassName = this.fDst.cls().name();
-                String convertedDstClassName = dstModelName + "_" + dstClassName;
+                String convertedDstClassName = dstModelName + "@" + dstClassName;
                 Map<String, ? extends MNavigableElement> ends2 = classes.get(convertedDstClassName).navigableEnds();
 
                 for (Map.Entry<String, ? extends MNavigableElement> entry : ends1.entrySet()) {

@@ -40,7 +40,7 @@ public class MMultiSystem {
     }
 
     public MSystem toMSystem() throws Exception{
-        String delimiter= "_";
+        String delimiter= "@";
         MModel convertedModel = fMultiModel.toMModel();
         MSystem convertedSystem = new MSystem(convertedModel);
 

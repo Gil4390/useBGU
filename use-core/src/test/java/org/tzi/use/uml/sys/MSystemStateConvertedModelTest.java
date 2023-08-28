@@ -20,11 +20,11 @@ public class MSystemStateConvertedModelTest extends TestCase {
             MModel convertedModel = multi1.toMModel();
             UseSystemApiUndoable api = new UseSystemApiUndoable(convertedModel);
 
-            api.createObjects("model1_Product","m1_p1");
-            api.createObjects("model2_Employee","m2_e1","m2_e2");
-            assertTrue(api.getSystem().state().hasObjectWithName("m1_p1"));
-            assertTrue(api.getSystem().state().hasObjectWithName("m2_e1"));
-            assertTrue(api.getSystem().state().hasObjectWithName("m2_e2"));
+            api.createObjects("model1@Product","m1@p1");
+            api.createObjects("model2@Employee","m2@e1","m2@e2");
+            assertTrue(api.getSystem().state().hasObjectWithName("m1@p1"));
+            assertTrue(api.getSystem().state().hasObjectWithName("m2@e1"));
+            assertTrue(api.getSystem().state().hasObjectWithName("m2@e2"));
 
         } catch (Exception e) {
             throw new Error(e);
@@ -37,10 +37,10 @@ public class MSystemStateConvertedModelTest extends TestCase {
             MModel convertedModel = multi1.toMModel();
             UseSystemApiUndoable api = new UseSystemApiUndoable(convertedModel);
 
-            api.createObjects("model1_Product","m1_p1");
-            api.createObjects("model2_Employee","m2_e1","m2_e2");
+            api.createObjects("model1@Product","m1@p1");
+            api.createObjects("model2@Employee","m2@e1","m2@e2");
 
-            api.deleteObjects("m1_p1","m2_e1","m2_e2");
+            api.deleteObjects("m1@p1","m2@e1","m2@e2");
             assertFalse(api.getSystem().state().hasObjects());
 
         } catch (Exception e) {
@@ -54,13 +54,13 @@ public class MSystemStateConvertedModelTest extends TestCase {
             MModel convertedModel = multi1.toMModel();
             UseSystemApiUndoable api = new UseSystemApiUndoable(convertedModel);
 
-            api.createObjects("model1_Product","m1_p1");
-            api.createObjects("model2_Employee","m2_e1","m2_e2");
+            api.createObjects("model1@Product","m1@p1");
+            api.createObjects("model2@Employee","m2@e1","m2@e2");
 
             api.undo();
-            assertTrue(api.getSystem().state().hasObjectWithName("m1_p1"));
-            assertTrue(api.getSystem().state().hasObjectWithName("m2_e1"));
-            assertFalse(api.getSystem().state().hasObjectWithName("m2_e2"));
+            assertTrue(api.getSystem().state().hasObjectWithName("m1@p1"));
+            assertTrue(api.getSystem().state().hasObjectWithName("m2@e1"));
+            assertFalse(api.getSystem().state().hasObjectWithName("m2@e2"));
 
         } catch (Exception e) {
             throw new Error(e);
@@ -73,10 +73,10 @@ public class MSystemStateConvertedModelTest extends TestCase {
             MMultiModel multi1 = createMultiModelWithAssocs();
             MModel converted = multi1.toMModel();
             UseSystemApiUndoable api = new UseSystemApiUndoable(converted);
-            api.createObjects("model1_Store","s1");
-            api.createObjects("model1_Product","p1","p2");
+            api.createObjects("model1@Store","s1");
+            api.createObjects("model1@Product","p1","p2");
 
-            api.createLink("model1_Goods","s1","p1");
+            api.createLink("model1@Goods","s1","p1");
         } catch (Exception e) {
             throw new Error(e);
         }

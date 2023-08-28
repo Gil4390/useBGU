@@ -46,19 +46,19 @@ context Project inv:
 
 inter-associations
 association WorksOn between
-    model1.Employee[1..*] role employees
-    model3.Project[*] role projects
+    model1@Employee[1..*] role employees
+    model3@Project[*] role projects
 end
 
 association Internship between
-    model2.Student[*] role students
-    model3.Project[1] role projects
+    model2@Student[*] role students
+    model3@Project[1] role projects
 end
 
 inter-constraints
 
 -- the sum of people that can work on a project is greater than 3
-context model3.Project inv:
+context model3@Project inv:
     ( self.students->size() + self.employees->size() ) > 3
 
 
