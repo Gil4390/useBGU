@@ -1,0 +1,86 @@
+multi_model contr
+
+--************************************
+--model1
+model model1
+
+class A
+end
+
+
+
+class B
+end
+
+association q between
+    A[*] role q1
+    B[0..1] role q2
+end
+
+
+--************************************
+model model2
+
+class D
+end
+
+class C
+end
+
+	
+association r between
+    C[1] role r1
+	D[2] role r2
+end
+
+--************************************
+
+model model3
+
+class E
+end
+
+class F
+end
+
+association s between
+	F[*] role s1
+	E[3..*] role s2
+end
+
+
+
+--**********inter-associations**********
+
+inter-associations
+
+association t between
+    model1@A[1] role t1
+    model2@C[1] role t2
+end
+
+
+association w between
+    model1@A[1] role w1
+    model2@D[1] role w2
+end
+
+
+association x between
+    model2@C[0..1] role x1
+    model3@F[*] role x2
+end
+
+
+association z between
+    model2@C[1] role z1
+    model3@E[1..2] role z2
+end
+
+
+--**********inter-constraints**********
+inter-constraints
+
+context model2@C
+inv const1:
+	self.x2->forAll(f | self.z2->includesAll(f.s2))
