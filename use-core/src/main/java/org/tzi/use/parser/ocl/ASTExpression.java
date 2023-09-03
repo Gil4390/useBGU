@@ -30,14 +30,9 @@ import org.tzi.use.parser.AST;
 import org.tzi.use.parser.Context;
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.mm.MClassifier;
+import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MNavigableElement;
-import org.tzi.use.uml.ocl.expr.ExpCollect;
-import org.tzi.use.uml.ocl.expr.ExpInvalidException;
-import org.tzi.use.uml.ocl.expr.ExpNavigation;
-import org.tzi.use.uml.ocl.expr.ExpNavigationClassifierSource;
-import org.tzi.use.uml.ocl.expr.ExpStdOp;
-import org.tzi.use.uml.ocl.expr.Expression;
-import org.tzi.use.uml.ocl.expr.VarDecl;
+import org.tzi.use.uml.ocl.expr.*;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.util.StringUtil;
 
@@ -262,6 +257,116 @@ public abstract class ASTExpression extends AST {
                                         "' is not a role name.");
         try { 
             res = new ExpNavigation(srcExpr, src, dst, qualifierExpressions);
+        } catch (ExpInvalidException ex) {
+            throw new SemanticException(rolenameToken, ex);
+        }
+        return res;
+    }
+
+    protected Expression genMultiNavigation( Token rolenameToken,
+                                             MClassifier srcClass,
+                                             Expression srcExpr,
+                                             MNavigableElement dst )
+            throws SemanticException {
+        return genMultiNavigation( null, rolenameToken, srcClass, srcExpr, dst, Collections.<ASTExpression>emptyList(), Collections.<ASTExpression>emptyList() );
+    }
+
+    protected Expression genMultiNavigation(Context ctx, Token rolenameToken,
+                                            MClassifier srcClass,
+                                            Expression srcExpr,
+                                            MNavigableElement dst,
+                                            List<ASTExpression> explicitRolenameOrQualifiers,
+                                            List<ASTExpression> qualifiers )
+            throws SemanticException
+    {
+        Expression res = null;
+
+        // find source end
+        MNavigableElement src = null;
+
+        if (srcClass.equals(dst.association())) {
+            return new ExpNavigationClassifierSource(dst.cls(), srcExpr, dst);
+        }
+
+        if (navigationNeedsExplicitRolename(srcClass, dst)) {
+            if (explicitRolenameOrQualifiers.size() == 0) {
+                // an explicit rolename is needed, but not provided
+                throw new SemanticException(
+                        rolenameToken,
+                        "The navigation path from "
+                                + StringUtil.inQuotes(srcClass.name())
+                                + " to "
+                                + StringUtil.inQuotes(dst.nameAsRolename())
+                                + " is ambiguous, "
+                                + "but no qualification of the source association was given.");
+            }
+
+            if (explicitRolenameOrQualifiers.size() > 1) {
+                // an explicit rolename is needed, but more than one was
+                // provided
+                throw new SemanticException(
+                        rolenameToken,
+                        "More then one qualification for the ambiguous navigation path from "
+                                + StringUtil.inQuotes(srcClass.name())
+                                + " to "
+                                + StringUtil.inQuotes(dst.nameAsRolename())
+                                + " was given. May be you interchanged it with qualifier values?");
+            }
+
+            ASTExpression explicitRolenameExp = explicitRolenameOrQualifiers.get(0);
+
+            if (!(explicitRolenameExp instanceof ASTOperationExpression)) {
+                // Must be a OperationExpression which encapsulates an IDENT
+                throw new SemanticException(rolenameToken,
+                        "Invalid qualification given");
+            }
+
+            ASTOperationExpression explicitRolenameOpExp = (ASTOperationExpression)explicitRolenameExp;
+            Token explicitRolenameToken = explicitRolenameOpExp.getOpToken();
+
+            src = dst.association().getSourceEnd(srcClass, dst, explicitRolenameToken.getText());
+
+            if ( src == null ) {
+                throw new SemanticException( explicitRolenameToken,
+                        "Identifier `" + explicitRolenameToken.getText() + "' is not a correct"
+                                + " rolename which is associated with `" + srcClass.name() + "'" );
+            }
+        } else {
+            if (!explicitRolenameOrQualifiers.isEmpty()) {
+                if (!qualifiers.isEmpty()) {
+                    throw new SemanticException(rolenameToken,
+                            "No qualification required for navigation path from "
+                                    + StringUtil.inQuotes(srcClass.name()) + " to "
+                                    + StringUtil.inQuotes(dst.nameAsRolename())
+                                    + "required!");
+                }
+
+                // Qualifiers are provided
+                qualifiers = explicitRolenameOrQualifiers;
+            }
+
+            src = dst.association().getSourceEnd(srcClass, dst, null);
+        }
+
+        List<Expression> qualifierExpressions;
+        if (qualifiers.isEmpty()) {
+            qualifierExpressions = Collections.emptyList();
+        } else {
+            qualifierExpressions = new ArrayList<Expression>();
+            for (ASTExpression qualifierExp : qualifiers) {
+                qualifierExpressions.add(qualifierExp.gen(ctx));
+            }
+        }
+
+        if ( src == null )
+            throw new SemanticException(rolenameToken,
+                    "Identifier `" + rolenameToken.getText() +
+                            "' is not a role name.");
+        try {
+            //validation checks?
+            MModel srcModel = src.cls().model();
+            MModel dstModel = dst.cls().model();
+            res = new ExpMultiNavigation(srcExpr, srcModel, dstModel, src, dst, qualifierExpressions);
         } catch (ExpInvalidException ex) {
             throw new SemanticException(rolenameToken, ex);
         }
