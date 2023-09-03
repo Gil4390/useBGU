@@ -21,6 +21,7 @@ package org.tzi.use.uml.ocl.expr;
 
 import org.tzi.use.uml.mm.MClassImpl;
 import org.tzi.use.uml.mm.MClassifier;
+import org.tzi.use.uml.mm.MInterClassImpl;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.type.Type.VoidHandling;
 import org.tzi.use.uml.ocl.type.TypeFactory;
@@ -86,8 +87,8 @@ public final class ExpIsTypeOf extends Expression {
         if (t.equals(fTargetType) )
             res = BooleanValue.TRUE;
 
-        if (t instanceof MClassImpl && ((MClassImpl) t).isConverted){
-            if (((MClassImpl) t).originalClass.equals(fTargetType) )
+        if (t instanceof MInterClassImpl){
+            if (((MInterClassImpl) t).originalClass.equals(fTargetType) )
                 res = BooleanValue.TRUE;
         }
 

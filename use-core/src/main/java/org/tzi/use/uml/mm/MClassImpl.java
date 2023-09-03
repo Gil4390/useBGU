@@ -45,9 +45,9 @@ public class MClassImpl extends MClassifierImpl implements MClass {
 	/**
 	 * All defined attributes of this class excluding inherited ones.
 	 */
-    private Map<String, MAttribute> fAttributes;
-    
-    private Map<String, MOperation> fOperations;
+    protected Map<String, MAttribute> fAttributes;
+
+    protected Map<String, MOperation> fOperations;
     
     /**
      * Maps all operations (including inherited)
@@ -57,9 +57,6 @@ public class MClassImpl extends MClassifierImpl implements MClass {
     // other classes reachable by associations 
     private Map<String, MNavigableElement> fNavigableElements;
 
-    public boolean isConverted = false;
-    public MClassImpl originalClass;
-    public MClassImpl convertedClass;
 
     /**
      * All owned PSM

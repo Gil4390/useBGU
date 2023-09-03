@@ -121,7 +121,7 @@ public class USECompilerTest extends TestCase {
     public void testSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 46);
+        List<File> fileList = getFilesMatchingSuffix(".use", 47);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -166,7 +166,7 @@ public class USECompilerTest extends TestCase {
     public void testMultiSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingPrefixWithSuffix("multi",".use", 14,46);
+        List<File> fileList = getFilesMatchingPrefixWithSuffix("multi",".use", 15,47);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);

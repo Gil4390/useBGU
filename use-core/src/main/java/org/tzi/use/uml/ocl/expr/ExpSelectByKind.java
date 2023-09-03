@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.mm.MClassImpl;
+import org.tzi.use.uml.mm.MInterClassImpl;
 import org.tzi.use.uml.ocl.type.CollectionType;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.type.Type.VoidHandling;
@@ -107,8 +108,8 @@ public class ExpSelectByKind extends Expression {
 			return true;
 
 
-		if (t instanceof MClassImpl && ((MClassImpl) t).isConverted){
-			if (((MClassImpl) t).originalClass.conformsTo(type().elemType())) {
+		if (t instanceof MInterClassImpl){
+			if (((MInterClassImpl) t).originalClass.conformsTo(type().elemType())) {
 				return true;
 			}
 		}

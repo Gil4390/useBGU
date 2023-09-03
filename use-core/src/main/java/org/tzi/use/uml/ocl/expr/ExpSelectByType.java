@@ -21,6 +21,7 @@ package org.tzi.use.uml.ocl.expr;
 
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.mm.MClassImpl;
+import org.tzi.use.uml.mm.MInterClassImpl;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.value.Value;
 
@@ -49,8 +50,8 @@ public class ExpSelectByType extends ExpSelectByKind {
 			return true;
 
 
-		if (t instanceof MClassImpl && ((MClassImpl) t).isConverted){
-			if (((MClassImpl) t).originalClass.equals(type().elemType())) {
+		if (t instanceof MInterClassImpl){
+			if (((MInterClassImpl) t).originalClass.equals(type().elemType())) {
 				return true;
 			}
 		}
