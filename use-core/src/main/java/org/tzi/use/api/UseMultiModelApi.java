@@ -109,7 +109,7 @@ public class UseMultiModelApi {
     public MClassInvariant createInterInvariant(String invName, String modelName, String contextName,
                                                 String invBody, boolean isExistential) throws UseApiException {
 
-        MModel mModel = mMultiModel.getModel(modelName);
+         MModel mModel = mMultiModel.getModel(modelName);
         UseModelApi api = new UseModelApi(mModel);
 
         MClass cls = api.getClassSafe(contextName);

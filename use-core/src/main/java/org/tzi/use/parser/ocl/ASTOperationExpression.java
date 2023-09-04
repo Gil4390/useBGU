@@ -333,10 +333,7 @@ public class ASTOperationExpression extends ASTExpression {
                 MNavigableElement dst = srcClass.navigableEnd(opname);
                 
                 if (dst != null ){
-                    if(ctx.multiModel() != null)
-                        res = genMultiNavigation(fOp, srcClass, srcExpr, dst);
-                    else
-                        res = genNavigation(fOp, srcClass, srcExpr, dst);
+                    res = genNavigation(fOp, srcClass, srcExpr, dst);
                 } else {
                     // (1) predefined OCL operation
                     res = genStdOperation(ctx, fOp, opname, fArgExprs);
@@ -353,10 +350,7 @@ public class ASTOperationExpression extends ASTExpression {
             if (dst == null) {
             	throw new SemanticException(fOp, StringUtil.inQuotes(opname) + " is not a valid rolename that is reachable from class " + StringUtil.inQuotes(srcClass3.name()));
             } else {
-                if(ctx.multiModel() != null)
-                    res = genMultiNavigation( ctx, fOp, srcClass3, srcExpr, dst, fExplicitRolenameOrQualifiers, fQualifiers);
-                else
-            	    res = genNavigation( ctx, fOp, srcClass3, srcExpr, dst, fExplicitRolenameOrQualifiers, fQualifiers );
+                res = genNavigation( ctx, fOp, srcClass3, srcExpr, dst, fExplicitRolenameOrQualifiers, fQualifiers );
             }
             
             break;
@@ -469,11 +463,7 @@ public class ASTOperationExpression extends ASTExpression {
                     // transform c.r into c->collect($e | $e.r)
                     ExpVariable eVar = new ExpVariable("$e", elemType);
 
-                    Expression eNav;
-                    if(ctx.multiModel() != null)
-                        eNav = genMultiNavigation(ctx, fOp, srcClass, eVar, dst, explicitRolenameOrQualifiers, qualiferValues);
-                    else
-                        eNav = genNavigation(ctx, fOp, srcClass, eVar, dst, explicitRolenameOrQualifiers, qualiferValues);
+                    Expression eNav = genNavigation(ctx, fOp, srcClass, eVar, dst, explicitRolenameOrQualifiers, qualiferValues);
 
                     eNav.setIsPre(this.isPre());
                     res = genImplicitCollect(srcExpr, eNav, elemType);
