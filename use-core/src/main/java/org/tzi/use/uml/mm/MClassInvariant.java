@@ -113,7 +113,7 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
         		fVars.add(new VarDecl(var, fClass));
         	}
         }
-        
+
         calculateExpandedExpression();
     }
 
@@ -131,7 +131,7 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
 		calculateExpandedExpression();
     }
 
-    public MClassInvariant makeCopy(String prefix, Map<String, MClass> classes) {
+    public MClassInvariant makeCopy(String prefix, Map<String, MClass> classes, boolean isInterInvariant) {
         MClass cls = classes.get(prefix+this.fClass.name());
         MClassInvariant copy = null;
         try {
@@ -146,6 +146,11 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
             copy.loaded = this.loaded;
             copy.checkedByBarrier = this.checkedByBarrier;
             copy.fPositionInModel = this.fPositionInModel;
+
+            //if(!isInterInvariant) {
+            copy.fBody.processWithVisitor(new ExpressionConversionVisitor(classes));
+            //}
+
 
             calculateExpandedExpression();
         } catch (ExpInvalidException e) {

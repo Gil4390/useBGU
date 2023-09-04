@@ -242,8 +242,8 @@ public class ASTOperationExpression extends ASTExpression {
         Expression res = null;
         String opname = fOp.getText();
         Type srcType = srcExpr.type();
-        
-        // handles cases like 
+
+        // handles cases like
         // !! set C.f().a := 2 (= set attribute a of object C.f() to 2)
         // where f() is an operation without return value.
         if (srcType == null) {
@@ -350,7 +350,7 @@ public class ASTOperationExpression extends ASTExpression {
             if (dst == null) {
             	throw new SemanticException(fOp, StringUtil.inQuotes(opname) + " is not a valid rolename that is reachable from class " + StringUtil.inQuotes(srcClass3.name()));
             } else {
-            	res = genNavigation( ctx, fOp, srcClass3, srcExpr, dst, fExplicitRolenameOrQualifiers, fQualifiers );
+                res = genNavigation( ctx, fOp, srcClass3, srcExpr, dst, fExplicitRolenameOrQualifiers, fQualifiers );
             }
             
             break;
@@ -462,7 +462,9 @@ public class ASTOperationExpression extends ASTExpression {
 
                     // transform c.r into c->collect($e | $e.r)
                     ExpVariable eVar = new ExpVariable("$e", elemType);
+
                     Expression eNav = genNavigation(ctx, fOp, srcClass, eVar, dst, explicitRolenameOrQualifiers, qualiferValues);
+
                     eNav.setIsPre(this.isPre());
                     res = genImplicitCollect(srcExpr, eNav, elemType);
                 }

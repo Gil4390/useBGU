@@ -457,7 +457,7 @@ public class MSystemConversionTest extends TestCase {
 
             //check converted system
             UseSystemApi cSystemApi = UseSystemApi.create(cSystem, true);
-            assertTrue(cSystemApi.checkState(new PrintWriter(System.out)));
+            assertTrue(cSystemApi.checkState());
             cSystemApi.createObjects("model2@Person", "p5");
             cSystemApi.createLink("model2@isBoss","model2@p1", "p5");
             assertFalse(cSystemApi.checkState());
@@ -879,7 +879,7 @@ public class MSystemConversionTest extends TestCase {
             Assert.assertEquals(multiSystemApi.getMultiSystem().numObjects(), cSystem.state().numObjects());
             Assert.assertEquals(multiSystemApi.getMultiSystem().numLinks() + 2, cSystem.state().allLinks().size());
 
-            Assert.assertTrue(useSystemApic.checkState(new PrintWriter(System.out)));
+            Assert.assertTrue(useSystemApic.checkState());
 
         } catch ( Exception e ) {
             throw ( new Error( e ) );
@@ -922,7 +922,7 @@ public class MSystemConversionTest extends TestCase {
             useSystemApic.createLink("WorksFor", "model1@e1", "model1@e2");
             useSystemApic.createLink("WorksFor", "model1@e1", "model1@e3");
 
-            Assert.assertTrue(useSystemApic.checkState(new PrintWriter(System.out)));
+            Assert.assertTrue(useSystemApic.checkState());
 
 
         } catch ( Exception e ) {
@@ -1295,7 +1295,7 @@ public class MSystemConversionTest extends TestCase {
             systemApi.deleteObject("p1");
             systemApi.createLink("Job","a1","c1");
 
-            assertTrue(systemApi.checkState(new PrintWriter(System.out)));
+            assertTrue(systemApi.checkState());
 
 
 
