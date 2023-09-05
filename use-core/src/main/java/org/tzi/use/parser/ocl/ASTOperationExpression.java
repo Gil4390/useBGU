@@ -462,9 +462,7 @@ public class ASTOperationExpression extends ASTExpression {
 
                     // transform c.r into c->collect($e | $e.r)
                     ExpVariable eVar = new ExpVariable("$e", elemType);
-
                     Expression eNav = genNavigation(ctx, fOp, srcClass, eVar, dst, explicitRolenameOrQualifiers, qualiferValues);
-
                     eNav.setIsPre(this.isPre());
                     res = genImplicitCollect(srcExpr, eNav, elemType);
                 }

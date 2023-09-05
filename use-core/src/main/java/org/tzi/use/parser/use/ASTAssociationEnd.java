@@ -233,7 +233,6 @@ public class ASTAssociationEnd extends ASTAnnotatable {
     
     public MAssociationEnd gen(Context ctx, int kind) throws SemanticException {
         // lookup class at association end in current model
-        //TODO: fix implementation
         MClass cls = ctx.model().getClass(fName.getText());
 
         if (cls == null )
@@ -345,5 +344,4 @@ public class ASTAssociationEnd extends ASTAnnotatable {
     public String toString() {
         return (fRolename == null ? "unnamed end on " + getClassName() : fRolename.getText());
     }
-
 }

@@ -86,6 +86,7 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
         throws ExpInvalidException
     {
         super(name);
+
         if (!inv.type().isTypeOfBoolean()) {
         	throw new ExpInvalidException("An invariant must be a boolean expression.");
         }
@@ -131,12 +132,11 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
 		calculateExpandedExpression();
     }
 
-    public MClassInvariant makeCopy(String prefix, Map<String, MClass> classes, boolean isInterInvariant) {
-        MClass cls = classes.get(prefix+this.fClass.name());
-        MClassInvariant copy = null;
+    public MClassInvariant makeCopy(String prefix, Map<String, MClass> classes) {
         try {
-            copy = new MClassInvariant(prefix+this.name(), null, cls, this.fBody, this.fIsExistential, this.active, this.negated);
-            if(this.fVars.size() > 0) {
+            MClass cls = classes.get(prefix+this.fClass.name());
+            MClassInvariant copy = new MClassInvariant(prefix+this.name(), null, cls, this.fBody, this.fIsExistential, this.active, this.negated);
+            if(!this.fVars.isEmpty()) {
                 for(VarDecl varDecl : this.fVars) {
                     if(this.fVars.varDecl(0) != varDecl)
                         copy.fVars.add(new VarDecl(varDecl.name(),cls));
@@ -147,17 +147,15 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
             copy.checkedByBarrier = this.checkedByBarrier;
             copy.fPositionInModel = this.fPositionInModel;
 
-            //if(!isInterInvariant) {
+            //call the visitor to find ExpNavigation and replace the ends with the correct ones
             copy.fBody.processWithVisitor(new ExpressionConversionVisitor(classes));
-            //}
-
 
             calculateExpandedExpression();
+
+            return copy;
         } catch (ExpInvalidException e) {
             throw new RuntimeException(e);
         }
-
-        return copy;
     }
 
     public String qualifiedName(){

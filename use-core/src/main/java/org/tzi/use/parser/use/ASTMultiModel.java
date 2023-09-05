@@ -15,7 +15,7 @@ public class ASTMultiModel extends AST {
     private final List<ASTModel> fModels;
 
     private final List<ASTInterAssociation> fInterAssoc;
-    // assoc class?
+
     private final List<ASTInterConstraintDefinition> fInterConstraints;
 
     private final List<ASTPrePost> fInterPrePosts;
@@ -82,7 +82,6 @@ public class ASTMultiModel extends AST {
             }
         }
 
-
         return mMultiModel;
     }
 
@@ -101,7 +100,5 @@ public class ASTMultiModel extends AST {
     public String toString() {
         return "(" + fName + ")";
     }
-
-
 
 }

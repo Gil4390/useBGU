@@ -18,7 +18,6 @@ public class MMultiModel {
 
     private List<MClassInvariant> fInterConstraints;
 
-    private Map<String, String> fInterConstraintsString;
 
     public MMultiModel(String name) {
         fName = name;
@@ -48,14 +47,11 @@ public class MMultiModel {
      * @exception Exception
      *                multiModel already contains a model with the same name.
      */
-    public void addModel(MModel model) throws Exception { //TODO: add custom exception
+    public void addModel(MModel model) throws Exception {
         if (fModels.containsKey(model.name()))
             throw new Exception("MultiModel already contains a model `"
                     + model.name() + "'.");
-        // TODO: find out if we need to check more exceptions
         fModels.put(model.name(), model);
-        // TODO: add to GenGraph
-        //model.setMLModel(this); TODO: add setMLModel method
     }
 
     /**
@@ -64,23 +60,20 @@ public class MMultiModel {
      * @exception Exception
      *                multiModel does not contain a model with the given name.
      */
-    public void removeModel(String modelName) throws Exception { //TODO: add custom exception
+    public void removeModel(String modelName) throws Exception {
         if (!fModels.containsKey(modelName))
             throw new Exception("MultiModel does not contain a model `" + modelName + "'.");
 
-        // TODO: find out if we need to check more exceptions
         fModels.remove(modelName);
     }
 
     public void addInterAssociation(MInterAssociation association) {
         fInterAssociations.put(association.name(), association);
     }
-    //TODO: implement in a way that it adds MNavigableElement to each model
-    // replace it with gen() in ASTInterAssociation
+
     public void addInterConstraint(MClassInvariant constraint) {
         fInterConstraints.add(constraint);
     }
-
 
     public Collection<MInterAssociation> interAssociations() {
         return fInterAssociations.values();
@@ -219,7 +212,7 @@ public class MMultiModel {
             // constraints
             for (MClassInvariant mClassInv : model.classInvariants()){
                 if(!fInterConstraints.contains(mClassInv)) {
-                    MClassInvariant newClassInv = mClassInv.makeCopy(model.name() + delimiter, result_model.classesMap(), false);
+                    MClassInvariant newClassInv = mClassInv.makeCopy(model.name() + delimiter, result_model.classesMap());
                     result_model.addClassInvariant(newClassInv);
                 }
             }
@@ -255,7 +248,7 @@ public class MMultiModel {
 
         //inter-constraints
         for(MClassInvariant inv : fInterConstraints) {
-            MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap(), true);
+            MClassInvariant newClassInv = inv.makeCopy(inv.cls().model().name() + delimiter, result_model.classesMap());
             result_model.addClassInvariant(newClassInv);
 
         }

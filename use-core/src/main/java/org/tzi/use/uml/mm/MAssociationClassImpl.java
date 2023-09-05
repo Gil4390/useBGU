@@ -740,9 +740,6 @@ public class MAssociationClassImpl extends MClassifierImpl implements MAssociati
 		return this.fAssociationImpl.isRedefining();
 	}
 
-
-
-
     @Override
 	public void calculateRedefinedByClosure() {
 		this.fAssociationImpl.calculateRedefinedByClosure();

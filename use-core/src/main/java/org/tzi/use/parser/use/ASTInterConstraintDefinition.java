@@ -13,10 +13,10 @@ import java.util.*;
 
 public class ASTInterConstraintDefinition extends AST {
     private List<Token> fVarNames;   // optional
-
     private Token fModelName;
     private ASTType fType;
     private ArrayList<ASTInvariantClause> fInvariantClauses;
+
     public ASTInterConstraintDefinition() {
         fVarNames = new ArrayList<Token>();
         fInvariantClauses = new ArrayList<ASTInvariantClause>();
@@ -37,10 +37,6 @@ public class ASTInterConstraintDefinition extends AST {
     public void setModelName(Token modelName) {
         fModelName = modelName;
     }
-
-/*    public void gen(Context ctx) {
-        gen(ctx, true);
-    }*/
 
     public Collection<MClassInvariant> gen(HashMap<String, Context> contextMap) {
         Collection<MClassInvariant> invs = new LinkedList<MClassInvariant>();
