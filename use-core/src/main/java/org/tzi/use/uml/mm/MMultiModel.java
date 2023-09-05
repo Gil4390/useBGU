@@ -6,6 +6,7 @@ import org.tzi.use.uml.mm.commonbehavior.communications.MSignal;
 import org.tzi.use.uml.mm.commonbehavior.communications.MSignalImpl;
 import org.tzi.use.uml.ocl.type.EnumType;
 import org.tzi.use.uml.ocl.type.TypeFactory;
+import org.tzi.use.util.collections.CollectionUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,7 +68,77 @@ public class MMultiModel {
         fModels.remove(modelName);
     }
 
-    public void addInterAssociation(MInterAssociation association) {
+    public void addInterAssociation(MInterAssociation association) throws MInvalidModelException {
+
+        // check for role name conflicts: for each class the set of
+        // navigable classes must have unique role names
+        for (MClass cls : association.associatedClasses()) {
+            Map<String, ? extends MNavigableElement> aends = cls
+                    .navigableEnds();
+            List<String> newRolenames = new ArrayList<String>();
+
+            for (MNavigableElement elem : association.navigableEndsFrom(cls)) {
+                String newRolename = elem.nameAsRolename();
+
+                newRolenames.add(newRolename);
+
+                if (aends.containsKey(newRolename)) {
+                    // Inherited?
+                    boolean inherited = false;
+                    MNavigableElement otherEnd = aends.get(newRolename);
+
+                    if (otherEnd.association() instanceof MAssociationClass
+                            && association instanceof MAssociationClass) {
+                        MAssociationClass otherCls = (MAssociationClass) otherEnd
+                                .association();
+                        MAssociationClass ourCls = (MAssociationClass) association;
+
+                        if (ourCls.allParents().contains(otherCls)) {
+                            inherited = true;
+                        }
+                    }
+
+                    if (!inherited) {
+                        throw new MInvalidModelException(
+                                "Association end `"
+                                        + newRolename
+                                        + "' navigable from class `"
+                                        + cls.name()
+                                        + "' conflicts with same rolename in association `"
+                                        + ((MNavigableElement) aends
+                                        .get(newRolename))
+                                        .association().name() + "'.");
+                    }
+                }
+            }
+
+            // tests if the rolenames are already used in one of the subclasses
+            for (MClass subCls : CollectionUtil
+                    .<MClassifier, MClass> downCastUnsafe(cls.allChildren())) {
+                for (int i = 0; i < newRolenames.size(); i++) {
+                    String newRolename = newRolenames.get(i);
+                    if (subCls.navigableEnds().containsKey(newRolename)) {
+                        throw new MInvalidModelException(
+                                "Association end `"
+                                        + newRolename
+                                        + "' navigable from class `"
+                                        + subCls.name()
+                                        + "' conflicts with same rolename in association `"
+                                        + ((MNavigableElement) subCls
+                                        .navigableEnds().get(
+                                                newRolename))
+                                        .association().name() + "'.");
+                    }
+                }
+            }
+        }
+
+        // for each class register the association and the
+        // reachable association ends
+        for (MAssociationEnd aend : association.associationEnds()) {
+            MClass cls = aend.cls();
+            cls.registerNavigableEnds(association.navigableEndsFrom(cls));
+        }
         fInterAssociations.put(association.name(), association);
     }
 
