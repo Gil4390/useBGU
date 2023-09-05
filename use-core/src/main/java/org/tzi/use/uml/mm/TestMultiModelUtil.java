@@ -475,7 +475,7 @@ public class TestMultiModelUtil {
         }
     }
 
-    public MMultiModel createMultiModelInterAssocitionWithGeneralization() {
+    public MMultiModel createMultiModelInterAssociationWithGeneralization() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
 
@@ -775,7 +775,5 @@ public class TestMultiModelUtil {
         }
     }
 
-    //TODO:
-    // oclAsType
 
 }

@@ -1274,11 +1274,9 @@ public class MSystemConversionTest extends TestCase {
 
     //endregion
 
-
-    //TODO: FIX
     public void testMultiModelInterAssociationGeneralization() {
         try{
-            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelInterAssocitionWithGeneralization();
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelInterAssociationWithGeneralization();
             UseMultiSystemApi multiSystemApi = new UseMultiSystemApi(multiModel, false);
             MSystem cSystem = multiSystemApi.getMultiSystem().toMSystem();
             UseSystemApi systemApi = new UseSystemApiUndoable(cSystem);
@@ -1296,9 +1294,6 @@ public class MSystemConversionTest extends TestCase {
             systemApi.createLink("Job","a1","c1");
 
             assertTrue(systemApi.checkState());
-
-
-
 
         } catch (Exception e) {
             throw new Error(e);
