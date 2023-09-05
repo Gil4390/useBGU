@@ -22,7 +22,6 @@ package org.tzi.use.uml.mm;
 import org.eclipse.jdt.annotation.NonNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** 
@@ -276,15 +275,6 @@ public interface MAssociation extends MClassifier {
 	 * @return
 	 */
 	boolean isRedefining();
-
-	/**
-	 * create a deep copy of MAssociation
-	 * @param prefix the name of the model followed by '@'.
-	 *               Example: model1@
-	 * @return
-	 */
-	public MAssociation makeCopy(String prefix, MModel newModel);
-
 
 	/**
 	 * Because the ordering of association ends is important for validating

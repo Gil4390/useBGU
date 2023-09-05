@@ -108,16 +108,16 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
 		}
 
 		for(MAssociation assoc : this.subsets)
-			copy.addSubsets(assoc.makeCopy(prefix, newModel));
+			copy.addSubsets(((MAssociationImpl)assoc).makeCopy(prefix, newModel));
 
 		for(MAssociation assoc : this.subsettedBy)
-			copy.addSubsettedBy(assoc.makeCopy(prefix, newModel));
+			copy.addSubsettedBy(((MAssociationImpl)assoc).makeCopy(prefix, newModel));
 
 		for(MAssociation assoc : this.redefines)
-			copy.addRedefines(assoc.makeCopy(prefix, newModel));
+			copy.addRedefines(((MAssociationImpl)assoc).makeCopy(prefix, newModel));
 
 		for(MAssociation assoc : this.redefinedBy)
-			copy.addRedefinedBy(assoc.makeCopy(prefix, newModel));
+			copy.addRedefinedBy(((MAssociationImpl)assoc).makeCopy(prefix, newModel));
 
 		copy.isUnion = this.isUnion;
 		copy.isDerived = this.isDerived;

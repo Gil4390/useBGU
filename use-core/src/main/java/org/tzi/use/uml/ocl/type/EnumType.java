@@ -66,8 +66,7 @@ public final class EnumType extends MClassifierImpl {
         }
     }
     public EnumType makeCopy(MModel model, String prefix){
-        EnumType enumType = new EnumType(model, prefix + this.name(), new ArrayList<>(this.getLiterals()));
-        return enumType;
+        return new EnumType(model, prefix + this.name(), new ArrayList<>(this.getLiterals()));
     }
     
     @Override

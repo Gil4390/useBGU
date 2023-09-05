@@ -69,15 +69,8 @@ public class MClassImpl extends MClassifierImpl implements MClass {
         fNavigableElements = new HashMap<String, MNavigableElement>();
     }
 
-    public MClassImpl initCopy(String prefix) {
-        String newName = prefix + this.name();
-
-        MClassImpl cMClass = new MClassImpl(newName, this.isAbstract());
-        return cMClass;
-    }
 
     public MClassImpl makeCopy(MClassImpl cMClass,String prefix, MModel newModel) throws Exception {
-
         cMClass.setModel(newModel);
         for (String key : this.fAttributes.keySet()) {
             MAttribute attr = this.fAttributes.get(key);

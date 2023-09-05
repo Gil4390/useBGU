@@ -273,7 +273,8 @@ public class MMultiModel {
             // association classes
             for (MClass mClass : model.classes()){
                 if(mClass instanceof MAssociationClassImpl){
-                    MAssociationClassImpl newClass = new MAssociationClassImpl(model.name() + delimiter + mClass.name(), mClass.isAbstract());
+                    String newName = model.name() + delimiter + mClass.name();
+                    MAssociationClassImpl newClass = new MAssociationClassImpl(newName, mClass.isAbstract());
                     result_model.addClass(newClass);
                     ((MAssociationClassImpl) mClass).makeCopy(newClass, model.name()+delimiter, result_model);
                     result_model.addAssociation(newClass);
@@ -283,7 +284,7 @@ public class MMultiModel {
             for (MAssociation mAssociation : model.associations()){
                 if(!(mAssociation instanceof MAssociationClass)
                         && !(mAssociation instanceof MInterAssociation)) {
-                    MAssociation newAssoc = mAssociation.makeCopy(model.name()+delimiter, result_model);
+                    MAssociation newAssoc = ((MAssociationImpl)mAssociation).makeCopy(model.name()+delimiter, result_model);
                     result_model.addAssociation(newAssoc);
                 }
 
