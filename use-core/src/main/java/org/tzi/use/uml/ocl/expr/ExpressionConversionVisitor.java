@@ -8,7 +8,7 @@ import org.tzi.use.uml.ocl.type.Type;
 import java.io.PrintWriter;
 import java.util.Map;
 
-public class ExpressionConversionVisitor implements ExpressionVisitor{
+public class ExpressionConversionVisitor implements ExpressionVisitor {
 
 
     private Map<String, MClass> classes;

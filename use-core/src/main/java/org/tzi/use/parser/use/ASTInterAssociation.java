@@ -61,7 +61,7 @@ public class ASTInterAssociation extends ASTAssociation{
                     assoc.setUnion(true);
                 modelsToAddAssociations.add(ctx.model());
             }
-            modelsToAddAssociations.get(0).addAssociation(assoc);
+            //modelsToAddAssociations.get(0).addAssociation(assoc);
             multiModel.addInterAssociation(assoc);
         } catch (MInvalidModelException ex) {
             throw new SemanticException(fName,

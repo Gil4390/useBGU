@@ -68,7 +68,7 @@ public class UseMultiModelApi {
             assoc.addAssociationEnd(end1);
             assoc.addAssociationEnd(end2);
 
-            model1.addAssociation(assoc);
+            //model1.addAssociation(assoc);
             mMultiModel.addInterAssociation(assoc);
         } catch (MInvalidModelException e) {
             throw new UseApiException("Association creation failed", e);
