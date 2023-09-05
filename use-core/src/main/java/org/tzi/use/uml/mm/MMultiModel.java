@@ -64,7 +64,15 @@ public class MMultiModel {
     public void removeModel(String modelName) throws Exception {
         if (!fModels.containsKey(modelName))
             throw new Exception("MultiModel does not contain a model `" + modelName + "'.");
-
+        for(MInterAssociation interAssoc : this.fInterAssociations.values()) {
+            boolean found = interAssoc
+                    .associationEnds()
+                    .stream()
+                    .anyMatch(ae -> ae.cls().model().name().equals(modelName));
+            if(found) {
+                throw new Exception(modelName+" cannot be removed due to related inter-association called: "+"'"+interAssoc.name()+"'.");
+            }
+        }
         fModels.remove(modelName);
     }
 

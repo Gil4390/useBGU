@@ -1,5 +1,6 @@
 package org.tzi.use.uml.mm;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.tzi.use.api.UseMultiModelApi;
 import org.tzi.use.uml.sys.MSystem;
@@ -93,6 +94,18 @@ public class MultiModelCreationTest extends TestCase {
             assertEquals(0, api.getMultiModel().size());
         } catch (Exception e) {
             throw (new Error(e));
+        }
+    }
+
+    public void testRemoveModelWithInterAssociationFail() {
+        try {
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInterAssociation();
+            UseMultiModelApi api = new UseMultiModelApi(multimodel);
+
+            api.removeModel("PersonCompany1");
+
+        } catch (Exception e) {
+            assertEquals("PersonCompany1 cannot be removed due to related inter-association called: 'Job'.",e.getMessage());
         }
     }
 
