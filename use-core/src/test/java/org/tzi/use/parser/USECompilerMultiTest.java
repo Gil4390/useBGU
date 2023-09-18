@@ -6,6 +6,7 @@ import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
+import org.tzi.use.parser.use.USECompilerMulti;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.mm.ModelFactory;
@@ -312,7 +313,7 @@ public class USECompilerMultiTest extends TestCase {
         MMultiModel result = null;
 
         try (FileInputStream specStream = new FileInputStream(specFile)){
-            result = USECompiler.compileMultiSpecification(specStream,
+            result = USECompilerMulti.compileMultiSpecification(specStream,
                     specFile.getName(), newErr, new MultiModelFactory());
             specStream.close();
         } catch (IOException e) {
@@ -333,7 +334,7 @@ public class USECompilerMultiTest extends TestCase {
         PrintWriter newErr = new PrintWriter(errStr);
 
         try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
                     multiFile.getName(), newErr, new MultiModelFactory());
             specStream1.close();
 
@@ -364,7 +365,7 @@ public class USECompilerMultiTest extends TestCase {
         PrintWriter newErr = new PrintWriter(errStr);
 
         try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
                     multiFile.getName(), newErr, new MultiModelFactory());
             specStream1.close();
 
@@ -388,7 +389,7 @@ public class USECompilerMultiTest extends TestCase {
         PrintWriter newErr = new PrintWriter(errStr);
 
         try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
                     multiFile.getName(), newErr, new MultiModelFactory());
             specStream1.close();
 
@@ -429,7 +430,7 @@ public class USECompilerMultiTest extends TestCase {
         PrintWriter newErr = new PrintWriter(errStr);
 
         try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            multiModelResult = USECompiler.compileMultiSpecification(specStream1,
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
                     multiFile.getName(), newErr, new MultiModelFactory());
             specStream1.close();
 
