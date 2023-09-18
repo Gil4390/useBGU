@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseModelApi;
-import org.tzi.use.api.UseMultiModelApi;
 
 /**
  * The class <code>TestModelUtil</code> offers methods for creating
@@ -125,6 +124,7 @@ public class TestModelUtil {
 
     /**
      * This method creates a model with two classes (Person and Company).
+     * @param modelName The model is created with the given name
      */
     public MModel createModelWithClasses(String modelName) {
         try {
@@ -137,26 +137,6 @@ public class TestModelUtil {
         }
     }
 
-    /**
-     * This method creates a model with two classes (Person and Company)
-     * and one association (Job).
-     */
-    public MModel createModelWithClassAndOneAssoc(String modelName) {
-        try {
-            UseModelApi api = new UseModelApi( modelName );
-            api.createClass( "Person", false );
-            api.createClass( "Company", false );
-            api.createAssociation("Job",
-                    "Person", "employee", "0..1", MAggregationKind.NONE,
-                    "Company", "company", "0..1", MAggregationKind.NONE);
-
-
-            return api.getModel();
-        } catch ( UseApiException e ) {
-            //e.printStackTrace();
-            throw new Error( e );
-        }
-    }
 
     /**
      * This method creates a model with two classes (Person and Company)
@@ -183,8 +163,9 @@ public class TestModelUtil {
     }
 
     /**
-     * This method creates a model with two classes (Person and Company) with the name given
+     * This method creates a model with two classes (Person and Company)
      * and two associations (Job and isBoss).
+     * @param modelName The model is created with the given name
      */
     public MModel createModelWithClassAndAssocs(String modelName) {
         try {
@@ -229,6 +210,7 @@ public class TestModelUtil {
     /**
      * This method creates a model with two classes (Person and Company)
      * and one association (Job). It contains higher multiplicities.
+     * @param modelName The model is created with the given name
      */
     public MModel createModelWithClassAndAssocs2(String modelName) {
         try {
@@ -271,6 +253,7 @@ public class TestModelUtil {
     /**
      * This method creates a model with two classes (Person and Company)
      * and an association class (Job).
+     * @param modelName The model is created with the given name
      */
     public MModel createModelWithClassAndAssocClass(String modelName) {
         try {
@@ -311,6 +294,7 @@ public class TestModelUtil {
     /**
      * This method creates a model with one class (Person)
      * and one associationclass (Job).
+     * @param modelName The model is created with the given name
      */
     public MModel createModelWithOneClassAndOneAssocClass(String modelName) {
         try {
@@ -354,6 +338,7 @@ public class TestModelUtil {
     /**
      * This method creates a model with three classes (Person, Salary and Company)
      * and an associationclass (Job).
+     * @param modelName The model is created with the given name
      */
     public MModel createModelWithClassAndTenaryAssocClass(String modelName) {
         try {
@@ -407,6 +392,7 @@ public class TestModelUtil {
     /**
      * This method creates a model with two classes (Bank and Person)
      * and one qualified association (Account).
+     * @param modelName The model is created with the given name
      */
     public MModel createModelWithClassAndQualifiedAssoc(String modelName) {
         try {
@@ -463,6 +449,7 @@ public class TestModelUtil {
     /**
      * This method creates a model with two classes (Person and Company),
      * an associationclass (Job) and an association (isBoss).
+     * @param modelName The model is created with the given name
      */
     public MModel createComplexModel(String modelName) {
         try {
@@ -508,6 +495,29 @@ public class TestModelUtil {
         }
     }
 
+    /**
+     * This method creates a model with Three classes (Person, Adult
+     * and Employee), a generalization structure between Person and Adult
+     * and one association (Job) between Person and Company
+     * @param modelName The model is created with the given name
+     */
+    public MModel createModelWithGeneralization(String modelName) {
+        try {
+            UseModelApi api1 = new UseModelApi(modelName);
+            api1.createClass("Person", false );
+            api1.createClass("Adult", false );
+            api1.createClass("Company", false );
+
+            api1.createGeneralization("Adult","Person");
+            api1.createAssociation("Job","Person","employee","*",
+                    MAggregationKind.NONE,"Company","workplace","0..1",MAggregationKind.NONE);
+
+            return api1.getModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
     public MModel createModelWithOperation() {
         try{
         	UseModelApi api = new UseModelApi( "Person" );
@@ -541,6 +551,11 @@ public class TestModelUtil {
         }
     }
 
+    /**
+     * This method creates a model with two classes (Person and Company),
+     * two associations (Job and isBoss) and one invariant
+     * @param modelName The model is created with the given name
+     */
     public MModel createModelWithSimpleInvariant(String modelName) {
         try {
             UseModelApi api = new UseModelApi(modelName);
@@ -566,53 +581,11 @@ public class TestModelUtil {
         }
     }
 
-    public MModel createModelWithGeneralization(String name) {
-        try {
-            UseModelApi api1 = new UseModelApi(name);
-            api1.createClass("Person", false );
-            api1.createClass("Adult", false );
-            api1.createClass("Company", false );
-
-            api1.createGeneralization("Adult","Person");
-            api1.createAssociation("Job","Person","employee","*",
-                    MAggregationKind.NONE,"Company","workplace","0..1",MAggregationKind.NONE);
-
-            return api1.getModel();
-        } catch (Exception e ) {
-            throw new Error( e );
-        }
-    }
-
-
-    public MModel createModelWithCircularAssoc(String modelName) {
-        try {
-            UseModelApi api = new UseModelApi(modelName);
-            api.createClass("Person", false);
-            api.createClass("Company", false);
-
-            api.createAttribute( "Person", "salary", "Integer" );
-
-            api.createAssociation("Job",
-                    "Person", "employee", "0..1", MAggregationKind.NONE,
-                    "Company", "company", "0..1", MAggregationKind.NONE);
-
-            api.createAssociation("isBoss",
-                    "Person", "boss", "0..1", MAggregationKind.NONE,
-                    "Person", "worker", "0..1", MAggregationKind.NONE);
-
-            api.createInvariant("minimumSalary", "Person", "self.salary >= 5000", false);
-
-            return api.getModel();
-        } catch (UseApiException e) {
-            //e.printStackTrace();
-            throw new Error(e);
-        }
-    }
 
     /**
      * Model with 3 classes and 4 invariants.
      *
-     * based on the example from <a href="https://useocl.sourceforge.net/w/index.php/Quick_Tour">https://useocl.sourceforge.net/w/index.php/Quick_Tour</a>
+     * based on the example from <a href="https://github.com/useocl/use/blob/master/manual/main.md">https://github.com/useocl/use/blob/master/manual/main.md</a>
      *
      */
     public MModel createComplexModelWithConstraints(String modelName) {

@@ -421,7 +421,7 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelWithCircularAssoc() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
-            MModel model = TestModelUtil.getInstance().createModelWithCircularAssoc("model1");
+            MModel model = TestModelUtil.getInstance().createModelWithClassAndAssocs("model1");
             multiApi.addModel(model);
             return multiApi.getMultiModel();
         } catch(Exception e) {

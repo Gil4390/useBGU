@@ -114,7 +114,7 @@ public class USECompiler {
         err.flush();
         return model;
     }
-
+    
     /**
      * Compiles a specification.
      *

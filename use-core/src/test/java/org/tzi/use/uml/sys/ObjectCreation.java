@@ -104,34 +104,6 @@ public class ObjectCreation {
         }
     }
 
-    /**
-     * Creates a model with two classes and an association class. It creates
-     * instances of those as well.
-     * The model is created with the given name
-     * @return returns the actual System.
-     */
-    public MSystem createModelWithObjects(String modelName) {
-        try {
-            // creation of the system
-            MModel model = TestModelUtil.getInstance().createModelWithClassAndOneAssoc(modelName);
-            MSystem system = new MSystem( model );
-
-            UseSystemApi systemApi = UseSystemApi.create(system, false);
-
-            // creation of an object (p1) of the class Person
-            systemApi.createObjects("Person", "p1");
-
-            // creation of an object (c1) of the class Company
-            systemApi.createObjects("Company", "c1");
-
-            // creation of a link between p1 and c1 of an association
-            systemApi.createLink("Job", "p1", "c1");
-
-            return system;
-        } catch ( Exception e ) {
-            throw ( new Error( e ) );
-        }
-    }
 
     /**
      * Creates a model with two classes and an association class. It creates
@@ -497,10 +469,10 @@ public class ObjectCreation {
                     "p1", "c1");
 
             // creation of a link object (j2) of class Job between p2 and c1
-//            systemApi.createLinkObject(
-//                    "Job",
-//                    "j2",
-//                    "p2", "c1");
+            systemApi.createLinkObject(
+                    "Job",
+                    "j2",
+                    "p2", "c1");
 
             // set an attribute value in c1
             systemApi.setAttributeValue("c1", "name", "'IBM'");
@@ -570,7 +542,7 @@ public class ObjectCreation {
 
     /**
      * Creates a model with 3 classes and 4 invariants. only 3 of the 4 invariants hold
-     * based on the example from <a href="https://useocl.sourceforge.net/w/index.php/Quick_Tour">https://useocl.sourceforge.net/w/index.php/Quick_Tour</a>
+     * based on the example from <a href="https://github.com/useocl/use/blob/master/manual/main.md">https://github.com/useocl/use/blob/master/manual/main.md</a>
      *
      * It creates instances of those as well.
      * The model is created with the given name
@@ -626,7 +598,7 @@ public class ObjectCreation {
 
     /**
      * Creates a model with 3 classes and 4 invariants. all 4 invariants hold
-     * based on the example from <a href="https://useocl.sourceforge.net/w/index.php/Quick_Tour">https://useocl.sourceforge.net/w/index.php/Quick_Tour</a>
+     * based on the example from <a href="https://github.com/useocl/use/blob/master/manual/main.md">https://github.com/useocl/use/blob/master/manual/main.md</a>
      *
      * It creates instances of those as well.
      * The model is created with the given name
