@@ -1,0 +1,29 @@
+multi_model test1
+
+model model1
+
+class A
+end
+
+class B
+attributes
+  c : Integer
+end
+
+association R between
+  A[*]
+  B[1]
+end
+
+constraints
+
+context a : A
+  inv: a.b.c >= 0
+
+
+model model2
+
+class Bar
+end
+
+

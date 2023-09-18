@@ -594,6 +594,7 @@ tupleItem returns [ASTTupleItem n]
       simpleType 
     | collectionType
     | tupleType
+    | multiType
 */
 type returns [ASTType n]
 @init { Token tok = null; }
@@ -603,6 +604,7 @@ type returns [ASTType n]
       nTSimple=simpleType { $n = $nTSimple.n; if ($n != null) $n.setStartToken(tok); }
     | nTCollection=collectionType { $n = $nTCollection.n; if ($n != null) $n.setStartToken(tok); }
     | nTTuple=tupleType { $n = $nTTuple.n; if ($n != null) $n.setStartToken(tok); }
+    | nMultiType=multiType { $n = $nMultiType.n; if ($n != null) $n.setStartToken(tok); }
     )
     ;
 
@@ -622,6 +624,14 @@ typeOnly returns [ASTType n]
 simpleType returns [ASTSimpleType n]
 :
     name=IDENT { $n = new ASTSimpleType($name); }
+    ;
+
+/* ------------------------------------
+  multiType ::= modelName "@" className
+*/
+multiType returns [ASTMultiType n]
+:
+    modelName=IDENT AT className=IDENT { $n = new ASTMultiType(modelName, $className); }
     ;
 
 

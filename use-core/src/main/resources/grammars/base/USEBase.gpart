@@ -5,31 +5,64 @@
 
 // grammar start
 
+
+/*
+    multi_model ::= "multi_model" internal_model (internal_model)*
+                    ( 'inter-associations' (associationDefinition)* )?
+                    ( 'inter-constraints' (invariant | prePost)* )?
+                    EOF
+*/
+
+multi_model returns [ASTMultiModel n]
+:
+    'multi_model' mmName=IDENT {$n = new ASTMultiModel($mmName);}
+    m=internal_model {$n.addModel($m.n);}
+    (m=internal_model { $n.addModel($m.n); } )*
+    ('inter-associations'
+        (a=interAssociationDefinition { $n.addInterAssociation($a.n); })*
+    )?
+    ('inter-constraints'
+        ( cons=interInvariant { $n.addConstraint($cons.n); }
+          | ppc=prePost { $n.addPrePost($ppc.n); }
+        )*
+    )?
+    EOF
+    ;
+
+/*
+    model ::= internal_model EOF
+*/
+
+model returns [ASTModel n]
+:
+    m=internal_model {$n=$m.n;}
+    EOF
+    ;
+
 /* ------------------------------------
-  model ::= 
+  internal_model ::=
     "model" id
-    {   
-        classDefinition 
-      | associationDefinition 
+    {
+        classDefinition
+      | associationDefinition
       | "constraints" { invariant | prePost }
       | signalDefinition
       | enumTypeDefinition
-    } 
+    }
 */
-model returns [ASTModel n]
+internal_model returns [ASTModel n]
 :
 	as = annotationSet
     'model' modelName=IDENT { $n = new ASTModel($modelName); $n.setAnnotations($as.annotations); }
     (   generalClassifierDefinition[$n]
       | a=associationDefinition { $n.addAssociation($a.n); }
       | ( 'constraints'
-          (   cons=invariant { $n.addConstraint($cons.n); } 
-            | ppc=prePost { $n.addPrePost($ppc.n); } 
-          )*  
+          (   cons=invariant { $n.addConstraint($cons.n); }
+            | ppc=prePost { $n.addPrePost($ppc.n); }
+          )*
         )
       | e=enumTypeDefinition { $n.addEnumTypeDef($e.n); }
     )*
-    EOF
     ;
     
 /* ------------------------------------
@@ -209,6 +242,43 @@ operationDefinition returns [ASTOperation n]
     ( SEMI )?
     ;
 
+
+/* ------------------------------------
+  interAssociationDefinition ::=
+    ( "association" | "aggregation" | "composition" )
+    id "between"
+    interAssociationEnd interAssociationEnd { interAssociationEnd }
+    "end"
+*/
+interAssociationDefinition returns [ASTAssociation n]
+@init{ Token t = null; }
+:
+	as = annotationSet
+    { t = input.LT(1); }
+    ( keyAssociation | keyAggregation | keyComposition )
+    name=IDENT { $n = new ASTAssociation(t, $name); $n.setAnnotations($as.annotations); }
+    'between'
+    ae=interAssociationEnd { $n.addEnd($ae.n); }
+    ( ae=interAssociationEnd { $n.addEnd($ae.n); } )+
+    'end'
+    ;
+
+/* ------------------------------------
+  interInvariant ::=
+    invariantContext invariantClause { invariantClause }
+
+  invariantContext :=
+    "context" [ id ":" ] simpleType
+*/
+interInvariant returns [ASTConstraintDefinition n]
+:
+    { $n = new ASTConstraintDefinition(); }
+    'context'
+    ( v=IDENT { $n.addVarName($v); }
+       (',' v=IDENT  { $n.addVarName($v); } )* COLON )?
+    t=multiType { $n.setType($t.n); }
+    ( inv=invariantClause { $n.addInvariantClause($inv.n); } )* //+
+    ;
 /* ------------------------------------
   associationDefinition ::= 
     ( "association" | "aggregation" | "composition" ) 
@@ -227,6 +297,28 @@ associationDefinition returns [ASTAssociation n]
     ae=associationEnd { $n.addEnd($ae.n); }
     ( ae=associationEnd { $n.addEnd($ae.n); } )+
     'end'
+    ;
+
+
+
+/* ------------------------------------
+  interAssociationEnd ::=
+    modelId "@" clsId "[" multiplicity "]" [ "role" id ] ( "ordered" | "subsets" id | "union" | "redefines" )* [ ";" ]
+*/
+interAssociationEnd returns [ASTInterAssociationEnd n]
+:
+	as = annotationSet
+    modelName=IDENT AT clsName=IDENT LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
+    ( keyRole rn=IDENT { $n.setRolename($rn); } )?
+    (
+        'ordered' { $n.setOrdered(); }
+      | 'subsets' sr=IDENT { $n.addSubsetsRolename($sr); }
+      | keyUnion { $n.setUnion(true); }
+      | 'redefines' rd=IDENT { $n.addRedefinesRolename($rd); }
+      | (keyDerived|keyDerive) ( LPAREN parameter = elemVarsDeclaration RPAREN)? EQUAL exp=expression { $n.setDerived($exp.n, $parameter.n); }
+      | keyQualifier qualifiers = paramList {$n.setQualifiers($qualifiers.paramList); }
+    )*
+    ( SEMI )?
     ;
 
 
@@ -437,7 +529,7 @@ keyUnion:
   
 keyAssociation:
   {input.LT(1).getText().equals("association")}? IDENT ;
-  
+
 keyRole:
   {input.LT(1).getText().equals("role")}? IDENT ;
 

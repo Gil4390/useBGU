@@ -1,0 +1,123 @@
+multi_model test5
+--model1
+model model1
+
+class Employee
+attributes
+  name : String
+  salary : Integer
+end
+
+class Manager< Employee
+attributes
+	level: String
+end
+
+class Worker< Employee
+end
+
+
+class Company
+attributes
+    name : String
+    location : String
+end
+
+association Works between
+    Employee[*] role workers
+    Company[0..1] role company
+end
+
+constraints
+context Employee
+  inv PositiveSalary:
+    self.salary > 0
+
+-----------------------------------------------
+model model2
+class Student
+attributes
+  name : String
+  grade : Integer
+  salary : Integer
+end
+
+class School
+attributes
+  name : String
+  location : String
+end
+
+
+class Meeting 
+attributes
+	start_: Integer
+	end_: Integer
+end	
+	
+association Studies between
+    Student[*] role students
+    School[0..1] role school
+end
+
+
+constraints
+context Student inv:
+    self.grade >= 0 and self.grade <= 100
+
+
+
+
+inter-associations
+
+association supervising between
+    model1@Employee[1..2] role supervisor
+    model2@Student[*] role students
+end
+
+
+association study between
+    model1@Employee[*] role graduates
+    model2@School[0..1] role studiedAt
+end
+
+
+association empMeets between
+    model1@Employee[1..2] role emp
+    model2@Meeting[0..*] role mt
+end
+
+association meets between
+    model2@Student[1..3] role std
+    model2@Meeting[0..*] role mt
+end
+
+
+----------------------------------------------------------------------
+
+inter-constraints
+
+-- an employee salary must be larger than any student salary [attributes]
+context model1@Employee inv:
+    self.students->forAll(s1 | self.salary > s1.salary)
+
+-- an employee can supervise only students from his school
+context model1@Employee inv:
+    self.students->forAll(s1 | s1.school = self.studiedAt)
+	
+	
+
+context model2@Student
+	--a student must have least one supervisor who is a manager	
+	inv manager:
+	self.supervisor->exists(oclIsTypeOf(model1@Manager))
+
+	--a student must attend with a manager of level 'A' who is not his supervisor.
+    inv meeting1:
+    self.mt->exists(m |	m.emp->exists(em| em.oclIsTypeOf(model1@Manager) and
+                        not self.supervisor->includes(em) and
+                        em.oclAsType(model1@Manager).level='A'))
+	
+	inv meeting2:
+		self.mt->forAll(m| m.emp->includesAll(self.supervisor))
+		

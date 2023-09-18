@@ -1,0 +1,20 @@
+multi_model test4
+
+model model1
+
+class C
+end
+
+class B
+end
+
+
+model model2
+
+class A
+end
+
+class A
+end
+
+

@@ -1,0 +1,13 @@
+multi_model test1
+
+model model1
+
+class Foo
+end
+
+model model1
+
+class Bar
+end
+
+

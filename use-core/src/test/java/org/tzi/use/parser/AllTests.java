@@ -37,6 +37,7 @@ public class AllTests {
     public static Test suite() {
         final TestSuite test = new TestSuite( "All parser tests" );
         test.addTestSuite( org.tzi.use.parser.USECompilerTest.class );
+        test.addTestSuite( org.tzi.use.parser.USECompilerMultiTest.class );
         test.addTest(org.tzi.use.parser.soil.AllTests.suite());
         test.addTest(org.tzi.use.parser.shell.AllTests.suite());
         

@@ -1,0 +1,20 @@
+multi_model test_multi_add_model
+
+model model1
+
+class A
+end
+
+class BB
+end
+
+
+model model2
+
+class C
+end
+
+class D
+end
+
+
