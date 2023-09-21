@@ -13,14 +13,17 @@ import org.tzi.use.util.collections.CollectionUtil;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * A MultiModel is a top-level package containing models.
+ * <p>
+ * holds inter-classes, inter-associations, inter-invariants, etc.
+ */
 public class MMultiModel extends MModel{
     private Map<String, MModel> fModels; // <modelName, MModel>
-
 
     public MMultiModel(String name) {
         super(name);
         fModels = new TreeMap<>();
-
     }
 
 
@@ -147,11 +150,13 @@ public class MMultiModel extends MModel{
     @Override
     public MClass getClass(String name) {
         if(name.contains("@")) {
+            //regular class
             String modelName = name.split("@")[0];
             String clsName = name.split("@")[1];
             return fModels.get(modelName).getClass(clsName);
         } else {
-            return null;
+            //inter-class
+            return super.getClass(name);
         }
     }
 
@@ -195,6 +200,10 @@ public class MMultiModel extends MModel{
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null)
+            return false;
         if (!(obj instanceof MMultiModel))
             return false;
 
