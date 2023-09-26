@@ -1,5 +1,6 @@
 package org.tzi.use.parser;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.tzi.use.api.UseMultiModelApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
@@ -381,6 +382,70 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
+    public void testCompileMultiModelInterAssoc() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_assoc.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+            api.createObjects("model1@Employee", "e1");
+            api.createObjects("model2@Student", "s1");
+            api.setAttributeValue("e1","salary","50");
+            api.setAttributeValue("s1","grade","60");
+            assertFalse(api.checkState());
+
+            api.createLink("Job","e1","s1");
+
+            assertTrue(api.checkState());
+            assertEquals(2, api.getSystem().state().numObjects());
+            assertEquals(1, api.getSystem().state().allLinks().size());
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+        }
+    }
+
+    public void testCompileMultiModelInterAssoc2() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_assoc.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+            api.createObjects("model1@Employee", "e1");
+            api.createObjects("model2@Student", "s1");
+
+            api.createLink("Job","e1","s1");
+            api.createLink("Job","e1","s1");
+
+            fail("double link creation");
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            assertEquals(e.getMessage(), "Link creation failed!");
+        }
+    }
+
     public void testCompileMultiModelInvariant() throws FileNotFoundException {
         MMultiModel multiModelResult = null;
 
@@ -413,6 +478,56 @@ public class USECompilerMultiTest extends TestCase {
             api.setAttributeValue("e1","salary","45");
 
             assertFalse(api.checkState());
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+        }
+    }
+
+    public void testCompileMultiModelInvariant2() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_complex.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+            api.createObjects("model1@Employee", "e1");
+            api.createObjects("model1@Company", "c1");
+            api.createObjects("model2@Student", "s1");
+            api.createObjects("model2@Student", "s2");
+            api.createObjects("model2@School", "school1");
+            api.createObjects("model2@School", "school2");
+
+
+            api.setAttributeValue("e1","salary","100");
+            api.setAttributeValue("s1","grade","95");
+            api.setAttributeValue("s1","salary","50");
+            api.setAttributeValue("s2","grade","95");
+            api.setAttributeValue("s2","salary","50");
+
+            api.createLink("model2@Studies","s1","school1");
+            api.createLink("model2@Studies","s2","school2");
+
+            api.createLink("Graduates","e1","school1");
+            api.createLink("Job","e1","s2");
+            api.createLink("Job","e1","s1");
+
+            assertFalse(api.checkState());
+
+            api.deleteLink("model2@Studies", new String[]{"s2", "school2"});
+            api.createLink("model2@Studies","s2","school1");
+
+            assertTrue(api.checkState());
+
 
         } catch (Exception e) {
             // This can be ignored

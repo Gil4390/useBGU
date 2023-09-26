@@ -37,14 +37,14 @@ public abstract class MModelElementImpl implements MModelElement {
 	
 	private static Map<String, MutableInteger> fNameMap = new HashMap<String, MutableInteger>();
 	
-	private final String fName;
+	private String fName;
 	
 	/**
 	 * The hash code of an model elements does not change after loading,
 	 * therefore we don't need to calculate it every time.
 	 * 
 	 */
-    private final int hashCode;
+    private int hashCode;
     
     /**
      * Possible annotations of this model element.
@@ -154,6 +154,11 @@ public abstract class MModelElementImpl implements MModelElement {
             return fName.equals(((MModelElement) obj).name());
         
         return false;
+    }
+
+    public void setName(String name) {
+        fName = name;
+        hashCode = fName.hashCode();
     }
 
     /**
