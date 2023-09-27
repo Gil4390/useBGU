@@ -8,6 +8,7 @@
 
 /*
     multi_model ::= "multi_model" internal_model (internal_model)*
+                    ( 'inter-classes' (interGeneralClassifierDefinition)* )?
                     ( 'inter-associations' (associationDefinition)* )?
                     ( 'inter-constraints' (invariant | prePost)* )?
                     EOF
@@ -18,6 +19,9 @@ multi_model returns [ASTMultiModel n]
     'multi_model' mmName=IDENT {$n = new ASTMultiModel($mmName);}
     m=internal_model {$n.addModel($m.n);}
     (m=internal_model { $n.addModel($m.n); } )*
+    ('inter-classes'
+            (a=interGeneralClassifierDefinition[$n] )*
+    )?
     ('inter-associations'
         (a=interAssociationDefinition { $n.addInterAssociation($a.n); })*
     )?
@@ -99,6 +103,31 @@ generalClassifierDefinition[ASTModel n]
              { $n.addSignal($s.n); $s.n.setAnnotations($as.annotations); }
     )
        
+;
+
+/* ------------------------------------
+  interGeneralClassifierDefinition ::=
+    [ "abstract" ]
+   	 { classDefinition | interAssociationClassDefinition | signalDefinition }
+*/
+interGeneralClassifierDefinition[ASTModel n]
+@init{
+  boolean isAbstract = false;
+}
+:
+	as = annotationSet
+    ( 'abstract' { isAbstract = true; } )?
+    (
+        c  = classDefinition[isAbstract]
+             { $n.addClass($c.n); $c.n.setAnnotations($as.annotations); }
+
+      | ac = interAssociationClassDefinition[isAbstract]
+             { $n.addAssociationClass($ac.n); $ac.n.setAnnotations($as.annotations); }
+
+      | s  = signalDefinition[isAbstract]
+             { $n.addSignal($s.n); $s.n.setAnnotations($as.annotations); }
+    )
+
 ;
 
 /* ------------------------------------
@@ -195,6 +224,53 @@ associationClassDefinition[boolean isAbstract] returns [ASTAssociationClass n]
     )?
     'end'
     ;
+
+/*
+
+  interAssociationClassDefinition ::=
+
+*/
+interAssociationClassDefinition[boolean isAbstract] returns [ASTAssociationClass n]
+@init {List idList; Token t = null;}
+:
+    classKW = ('associationClass' | 'associationclass')
+    {
+    	if ($classKW.text.equals("associationClass")) {
+               reportWarning("the 'associationClass' keyword is deprecated and will " +
+                             "not be supported in the future, use 'associationclass' instead");
+            }
+    }
+
+    name=IDENT { $n = new ASTAssociationClass($name, isAbstract); }
+    ( LESS idListRes=idList { $n.addSuperClasses($idListRes.idList); } )?
+    ('between'
+    ae=interAssociationEnd { $n.addEnd($ae.n); }
+    ( ae=interAssociationEnd { $n.addEnd($ae.n); } )+
+    )?
+    ( 'attributes'
+      ( a=attributeDefinition { $n.addAttribute($a.n); } )*
+    )?
+    ( 'operations'
+      ( op=operationDefinition { $n.addOperation($op.n); } )*
+    )?
+    ( 'constraints'
+      (
+        inv=invariantClause { $n.addInvariantClause($inv.n); }
+      )*
+    )?
+    ( 'statemachines'
+      (
+        sm=stateMachine { $n.addStateMachine($sm.n); }
+      )*
+    )?
+
+    ( { t = input.LT(1); }
+      ( keyAggregation | keyComposition )
+      { $n.setKind(t); }
+    )?
+    'end'
+    ;
+
     
 /* ------------------------------------
   attributeDefinition ::= 
@@ -276,7 +352,7 @@ interInvariant returns [ASTConstraintDefinition n]
     'context'
     ( v=IDENT { $n.addVarName($v); }
        (',' v=IDENT  { $n.addVarName($v); } )* COLON )?
-    t=multiType { $n.setType($t.n); }
+    ( t=multiType { $n.setType($t.n); } | t=simpleType  { $n.setType($t.n); } )
     ( inv=invariantClause { $n.addInvariantClause($inv.n); } )* //+
     ;
 /* ------------------------------------
@@ -308,7 +384,7 @@ associationDefinition returns [ASTAssociation n]
 interAssociationEnd returns [ASTInterAssociationEnd n]
 :
 	as = annotationSet
-    modelName=IDENT AT clsName=IDENT LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
+    ( modelName=IDENT AT clsName=IDENT | clsName=IDENT ) LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
     ( keyRole rn=IDENT { $n.setRolename($rn); } )?
     (
         'ordered' { $n.setOrdered(); }

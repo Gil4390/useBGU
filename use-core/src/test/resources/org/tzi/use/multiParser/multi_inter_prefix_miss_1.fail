@@ -1,3 +1,1 @@
-multi_inter_prefix_miss_1.use:line 35:12 mismatched input '[' expecting @
-multi_inter_prefix_miss_1.use:line 35:21 missing @ at 'a1'
-multi_inter_prefix_miss_1.use:line 36:4 extraneous input 'Student' expecting [
+multi_inter_prefix_miss_1.use:35:4: Class `Employee' does not exist in this model.

@@ -1,0 +1,58 @@
+multi_model test5
+
+model model1
+
+class A
+attributes
+    number : Integer
+end
+
+
+model model2
+
+class B
+end
+
+class C
+end
+
+
+inter-classes
+class A
+end
+
+class B
+attributes
+    salary : Integer
+end
+
+inter-associations
+
+association A1 between
+    A[*] role a1
+    model1@A[*] role a2
+end
+
+association A2 between
+    model1@A[0..1] role a3
+    A[0..1] role a4
+end
+
+association A3 between
+    A[*] role a5
+    B[*] role a6
+end
+
+association B1 between
+    model2@B[0..1] role b1
+    model2@C[0..1] role b2
+end
+
+
+inter-constraints
+
+context A inv:
+    self.a2->forAll(a | a.number > 5)
+
+context A inv:
+    self.a6->forAll(b | b.salary > 50)

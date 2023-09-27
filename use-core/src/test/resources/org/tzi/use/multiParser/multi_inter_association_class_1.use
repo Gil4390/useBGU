@@ -1,0 +1,44 @@
+multi_model test5
+
+model model1
+
+class A
+attributes
+    number : Integer
+end
+
+class B
+end
+
+model model2
+
+class C
+end
+
+class D
+end
+
+
+inter-classes
+
+class E
+end
+
+class F
+end
+
+associationclass A between
+    model1@A[*] role a1
+    model2@C[*] role c1
+end
+
+associationclass B between
+    E[*] role e1
+    F[*] role f1
+end
+
+associationclass C between
+    model1@A[2] role a2
+    E[*] role e2
+end
+

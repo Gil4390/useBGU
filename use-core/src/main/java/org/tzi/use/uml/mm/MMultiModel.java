@@ -252,6 +252,13 @@ public class MMultiModel extends MModel{
                 }
             }
 
+            // generalizations
+            Iterator<MGeneralization> iterator = model.generalizationGraph().edgeIterator();
+            while (iterator.hasNext()){
+                MGeneralization gen = iterator.next();
+                result_model.addGeneralization(gen);
+            }
+
             // associations
             for (MAssociation mAssociation : model.associations()){
                 if(!(mAssociation instanceof MAssociationClass)) {

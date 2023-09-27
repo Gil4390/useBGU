@@ -1,0 +1,43 @@
+multi_model test5
+
+model model1
+
+class A
+attributes
+    number : Integer
+end
+
+
+model model2
+
+class B
+end
+
+class C
+end
+
+
+inter-classes
+class A
+attributes
+    salary : Integer
+end
+
+class B
+attributes
+    salary : Integer
+end
+
+inter-associations
+
+association A1 between
+    A[0..1] role supervisor
+    A[*] role supervising
+end
+
+
+inter-constraints
+
+context A inv:
+    self.supervising->forAll(e | e.salary < self.salary)
+

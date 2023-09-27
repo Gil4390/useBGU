@@ -29,8 +29,13 @@ public class ASTInterAssociationEnd extends ASTAssociationEnd{
 
     @Override
     public MAssociationEnd gen(Context ctx, int kind) throws SemanticException {
+        if(fModelName == null) {
+            //inter class
+            return super.gen(ctx,kind);
+        }
         // lookup class at association end in current model
         MClass cls = ctx.model().getClass( modelName() + "@" +  getClassName());
+
 
         if (cls == null )
             // this also renders the rest of the association useless

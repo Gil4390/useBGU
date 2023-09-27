@@ -5,29 +5,17 @@ import org.tzi.use.parser.AST;
 import org.tzi.use.parser.Context;
 import org.tzi.use.parser.MultiContext;
 import org.tzi.use.parser.SemanticException;
-import org.tzi.use.uml.mm.MClassInvariant;
-import org.tzi.use.uml.mm.MMultiModel;
+import org.tzi.use.uml.mm.*;
 
 import java.util.*;
 
-public class ASTMultiModel extends AST {
+public class ASTMultiModel extends ASTModel {
 
-    private final Token fName;
     private final List<ASTModel> fModels;
 
-    private final List<ASTAssociation> fInterAssoc;
-
-    private final List<ASTConstraintDefinition> fInterConstraints;
-
-    private final List<ASTPrePost> fInterPrePosts;
-
-
     public ASTMultiModel(Token name) {
-        fName = name;
+        super(name);
         fModels = new ArrayList<>();
-        fInterAssoc = new ArrayList<>();
-        fInterConstraints = new ArrayList<>();
-        fInterPrePosts = new ArrayList<>();
     }
 
     public void addModel(ASTModel model) {
@@ -56,31 +44,127 @@ public class ASTMultiModel extends AST {
             }
         }
 
-        for(ASTAssociation assoc : fInterAssoc) {
+        for(ASTClass c : fClasses) {
             try {
-                assoc.gen(multiCtx, mMultiModel);
+                MClass cls = c.genEmptyClass(multiCtx);
+                mMultiModel.addClass(cls);
             } catch (SemanticException e) {
+                multiCtx.reportError(e);
+            } catch (MInvalidModelException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        for(ASTConstraintDefinition inv : fInterConstraints) {
+        for ( ASTAssociationClass ac : fAssociationClasses) {
+            try {
+                // The association class can just be added as a class so far,
+                // because to keep the order of generating a model.
+                // The association class will be added as an association in step 3b.
+                MAssociationClass assocCls = ac.genEmptyAssocClass( multiCtx );
+                mMultiModel.addClass( assocCls );
+            } catch ( SemanticException ex ) {
+                multiCtx.reportError( ex );
+            } catch ( MInvalidModelException ex ) {
+                multiCtx.reportError( fName, ex );
+            }
+        }
+
+        for (ASTClass c : fClasses) {
+            c.genAttributesOperationSignaturesAndGenSpec(multiCtx);
+        }
+
+        for (ASTAssociationClass ac : fAssociationClasses) {
+            ac.genAttributesOperationSignaturesAndGenSpec( multiCtx );
+        }
+
+        for(ASTAssociation assoc : fAssociations) {
+            try {
+                assoc.gen(multiCtx, mMultiModel);
+            } catch (SemanticException e) {
+                multiCtx.reportError(e);
+            }
+        }
+
+        for (ASTClass c : fClasses) {
+            c.genStateMachinesAndStates(multiCtx);
+        }
+
+        for (ASTAssociationClass ac : fAssociationClasses) {
+            ac.genStateMachinesAndStates(multiCtx);
+        }
+
+        for (ASTAssociationClass ac : fAssociationClasses) {
+            try {
+                MAssociationClass assocClass = ac.genAssociation( multiCtx );
+                mMultiModel.addAssociation( assocClass );
+            } catch ( SemanticException ex ) {
+                multiCtx.reportError( ex );
+            } catch ( MInvalidModelException ex ) {
+                multiCtx.reportError( fName, ex );
+            }
+        }
+
+        for (ASTAssociationClass ac : fAssociationClasses) {
+            try {
+                ac.genAssociationFinal( multiCtx );
+            } catch ( MInvalidModelException ex ) {
+                multiCtx.reportError( fName, ex );
+            }
+        }
+
+        for (ASTAssociationClass a : fAssociationClasses) {
+            try {
+                a.genEndConstraints(multiCtx);
+            } catch (SemanticException ex) {
+                multiCtx.reportError(ex);
+            }
+        }
+
+        for (ASTClass c : fClasses) {
+            c.genOperationBodiesAndDerivedAttributes(multiCtx);
+        }
+
+        for (ASTAssociationClass ac : fAssociationClasses) {
+            ac.genOperationBodiesAndDerivedAttributes(multiCtx);
+        }
+
+        for (ASTClass c : fClasses) {
+            c.genConstraints(multiCtx);
+        }
+
+        for (ASTAssociationClass ac : fAssociationClasses) {
+            ac.genConstraints(multiCtx);
+        }
+
+        for(ASTConstraintDefinition inv : fConstraints) {
             inv.gen(multiCtx);
+        }
+
+        for (ASTClass c : fClasses) {
+            c.genStateMachineTransitions(multiCtx);
+        }
+
+        for (ASTAssociationClass ac : fAssociationClasses) {
+            ac.genStateMachineTransitions(multiCtx);
         }
 
         return mMultiModel;
     }
 
+    public void addInterClass(ASTClass cls) {
+        fClasses.add(cls);
+    }
+
     public void addInterAssociation(ASTAssociation assoc) {
-        fInterAssoc.add(assoc);
+        fAssociations.add(assoc);
     }
 
     public void addConstraint(ASTConstraintDefinition cons) {
-        fInterConstraints.add(cons);
+        fConstraints.add(cons);
     }
 
     public void addPrePost(ASTPrePost ppc) {
-        fInterPrePosts.add(ppc);
+        fPrePosts.add(ppc);
     }
 
     public String toString() {

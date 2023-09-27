@@ -446,6 +446,113 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
+    public void testCompileMultiModelInterClass1() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_class_1.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+            api.createObjects("A", "x1");
+            api.createObjects("B", "y1");
+            api.createObjects("model1@A", "x2");
+            api.createObjects("model2@B", "y2");
+
+            api.createLink("A1","x1","x2");
+            api.createLink("A2","x2","x1");
+            api.createLink("A3","x1","y1");
+
+            assertFalse(api.checkState());
+
+            api.setAttributeValue("x2","number","6");
+            api.setAttributeValue("y1","salary","60");
+
+            assertTrue(api.checkState());
+
+
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public void testCompileMultiModelInterClass2() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_class_2.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+            api.createObjects("A","a1","a2","a3");
+            api.createLink("A1","a1","a2");
+            api.createLink("A1","a2","a3");
+            api.setAttributeValue("a1","salary","100");
+            api.setAttributeValue("a2","salary","80");
+            api.setAttributeValue("a3","salary","90");
+
+            assertFalse(api.checkState());
+
+            api.setAttributeValue("a3","salary","70");
+
+            assertTrue(api.checkState(new PrintWriter(System.out)));
+
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public void testCompileMultiModelInterAssocClass1() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_association_class_1.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+            api.createObject("model1@A","a1");
+            api.createObject("model1@A","a2");
+            api.createObject("model2@C","c1");
+            api.createObject("E","e1");
+            api.createObject("F","f1");
+
+
+            api.createLinkObject("A","ac1","a1","c1");
+            api.createLinkObject("B","ac2","e1","f1");
+            api.createLinkObject("C","ac3","a1","e1");
+
+            assertFalse(api.checkState());
+
+            api.createLinkObject("C","ac4","a2","e1");
+
+            assertTrue(api.checkState());
+
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
     public void testCompileMultiModelInvariant() throws FileNotFoundException {
         MMultiModel multiModelResult = null;
 

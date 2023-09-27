@@ -5,20 +5,19 @@ import org.tzi.use.parser.Context;
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.ocl.type.Type;
 
-public class ASTMultiType extends ASTType{
+public class ASTMultiType extends ASTSimpleType{
 
     private Token fModelName;
-    private Token fClassName;
 
     public ASTMultiType(Token modelName, Token className) {
+        super(className);
         fModelName = modelName;
-        fClassName = className;
     }
 
     @Override
     public Type gen(Context ctx) throws SemanticException {
         String modelName = fModelName.getText();
-        String className = fClassName.getText();
+        String className = super.toString();
 
         Type res = ctx.model().getClassifier(modelName + "@" + className);
 
@@ -30,6 +29,6 @@ public class ASTMultiType extends ASTType{
     }
 
     public String toString() {
-        return fModelName.getText() + "@" + fClassName.getText();
+        return fModelName.getText() + "@" + super.toString();
     }
 }
