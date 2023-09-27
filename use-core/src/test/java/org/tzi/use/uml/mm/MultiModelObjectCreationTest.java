@@ -7,8 +7,10 @@ import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.sys.MSystem;
 
+import java.io.PrintWriter;
+
 public class MultiModelObjectCreationTest extends TestCase {
-//region object, link creation
+    //region object, link creation
     public void testCreateMultiModelWithSingleModelWithObjects() {
         try {
             MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelSingleModel();
@@ -160,9 +162,9 @@ public class MultiModelObjectCreationTest extends TestCase {
 
 
 
-//endregion
+    //endregion
 
-//region invariants
+    //region invariants
 
     public void testCreateMultiModelInv1() {
         try {
@@ -230,9 +232,9 @@ public class MultiModelObjectCreationTest extends TestCase {
     }
 
 
-//endregion
+    //endregion
 
-//region inter-links
+    //region inter-links
 
     public void testCreateMultiModelInterLinks() {
         try {
@@ -254,9 +256,9 @@ public class MultiModelObjectCreationTest extends TestCase {
         }
     }
 
-//endregion
+    //endregion
 
-//region inter-invariant
+    //region inter-invariant
 
     public void testCreateMultiModelSimpleConstraints1() {
         try {
@@ -615,6 +617,63 @@ public class MultiModelObjectCreationTest extends TestCase {
     }
 
 
-//endregion
+    //endregion
 
+
+    //region inter-class
+
+    public void testCreateMultiModelWithInterClass() {
+        try {
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelWithInterClass();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModel);
+            UseSystemApiUndoable systemApi = new UseSystemApiUndoable(multiApi);
+
+            systemApi.createObjects("A", "x1");
+            systemApi.createObjects("B", "y1");
+            systemApi.createObjects("model1@A", "x2");
+            systemApi.createObjects("model2@B", "y2");
+
+            systemApi.createLink("A1","x1","x2");
+            systemApi.createLink("A2","x1","y1");
+            systemApi.createLink("A3","x1","x1");
+
+            assertFalse(systemApi.checkState());
+
+            systemApi.setAttributeValue("x2","number","6");
+            systemApi.setAttributeValue("y1","salary","60");
+
+            assertTrue(systemApi.checkState());
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testCreateMultiModelWithInterAssociationClass() {
+        try {
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelWithInterAssociationClass();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModel);
+            UseSystemApiUndoable systemApi = new UseSystemApiUndoable(multiApi);
+
+            systemApi.createObject("model1@A","a1");
+            systemApi.createObject("model2@B","b1");
+            systemApi.createObject("model2@C","c1");
+            systemApi.createObject("A","a2");
+            systemApi.createObject("B","b2");
+
+
+            systemApi.createLinkObject("Ass1","ass1","a1","b1");
+            systemApi.createLinkObject("Ass2","ass2","a1","b2");
+            systemApi.createLinkObject("Ass3","ass3","a2","b2");
+            systemApi.createLinkObject("Ass4","ass4","b1","c1");
+
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    //endregion
 }

@@ -165,4 +165,16 @@ public class MultiModelCreationTest extends TestCase {
         assertTrue( multiModel.models().isEmpty() );
     }
 
+
+    public void testCreateMultiModelWithInterClass() {
+        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelWithInterClass();
+        assertEquals(5, multiModel.numOfClasses());
+        assertEquals(4, multiModel.numOfAssociations());
+    }
+
+    public void testCreateMultiModelWithInterAssociationClass() {
+        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelWithInterAssociationClass();
+        assertEquals(9, multiModel.numOfClasses());
+        assertEquals(4, multiModel.numOfAssociations());
+    }
 }

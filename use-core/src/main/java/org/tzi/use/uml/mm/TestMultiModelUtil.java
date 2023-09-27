@@ -939,4 +939,100 @@ public class TestMultiModelUtil {
     }
 
 
+    public MMultiModel createMultiModelWithInterClass() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            UseModelApi api2 = new UseModelApi("model2");
+            multiApi.addModel(api1.getModel());
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createClass("model1@A", false );
+            multiApi.createClass("model2@B", false );
+            multiApi.createClass("model2@C", false );
+
+
+            multiApi.createClass("A", false);
+            multiApi.createClass("B", false);
+
+            multiApi.createAttribute("model1@A", "number", "Integer");
+            multiApi.createAttribute("B", "salary", "Integer");
+
+            multiApi.createAssociation("A1",
+                    "A", "a1", "*", MAggregationKind.NONE,
+                    "model1@A", "a2", "*", MAggregationKind.NONE);
+
+            multiApi.createAssociation("A2",
+                    "A", "b1", "*", MAggregationKind.NONE,
+                    "B", "b2", "*", MAggregationKind.NONE);
+
+            multiApi.createAssociation("A3",
+                    "A", "aaa1", "*", MAggregationKind.NONE,
+                    "A", "aaa2", "*", MAggregationKind.NONE);
+
+            multiApi.createAssociation("A4",
+                    "model2@B", "bb1", "*", MAggregationKind.NONE,
+                    "model2@C", "cc1", "*", MAggregationKind.NONE);
+
+
+            multiApi.createInterInvariant("inv1", "A",
+                    "self.a2->forAll(a | a.number > 5)", false);
+
+            multiApi.createInterInvariant("inv2", "A",
+                    "self.b2->forAll(b | b.salary > 50)", false);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelWithInterAssociationClass() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            UseModelApi api2 = new UseModelApi("model2");
+            multiApi.addModel(api1.getModel());
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createClass("model1@A", false );
+            multiApi.createClass("model2@B", false );
+            multiApi.createClass("model2@C", false );
+
+
+            multiApi.createClass("A", false);
+            multiApi.createClass("B", false);
+
+            multiApi.createAttribute("model1@A", "number", "Integer");
+            multiApi.createAttribute("B", "salary", "Integer");
+
+            multiApi.createAssociationClass("Ass1", false,
+                    "model1@A", "ma1", "*", MAggregationKind.NONE,
+                    "model2@B", "mb1", "*", MAggregationKind.NONE);
+
+            multiApi.createAssociationClass("Ass2", false,
+                    "A", "ma2", "*", MAggregationKind.NONE,
+                    "model2@B", "mb2", "*", MAggregationKind.NONE);
+
+            multiApi.createAssociationClass("Ass3", false,
+                    "A", "ma3", "*", MAggregationKind.NONE,
+                    "B", "mb3", "*", MAggregationKind.NONE);
+
+            multiApi.createAssociationClass("Ass4", false,
+                    "model2@B", "mb4", "*", MAggregationKind.NONE,
+                    "model2@C", "mc4", "*", MAggregationKind.NONE);
+
+
+
+
+
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
 }

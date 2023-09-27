@@ -53,9 +53,6 @@ public class MMultiModel extends MModel{
         fModels.remove(modelName);
     }
 
-    public Collection<MAssociation> interAssociations() {
-        return this.fAssociations.values();
-    }
 
     public MAssociation getInterAssociations(String assocName) {
         return this.fAssociations.get(assocName);
@@ -93,10 +90,16 @@ public class MMultiModel extends MModel{
      * @return The total number of classes.
      */
     public int numOfClasses() {
-        return fModels.values()
-                .stream()
-                .mapToInt(model -> model.classes().size())
-                .sum();
+        return classes().size();
+    }
+
+    /**
+     * Calculates the total number of associations across all MModel objects.
+     *
+     * @return The total number of associations.
+     */
+    public int numOfAssociations() {
+        return associations().size();
     }
 
     /**
@@ -176,6 +179,22 @@ public class MMultiModel extends MModel{
     }
 
     @Override
+    public Collection<MClass> classes() {
+        Collection<MClass> classes = new ArrayList<>();
+        //regular classes
+        for (MModel model : fModels.values()){
+            classes.addAll(model.classes());
+        }
+        //inter-classes
+        classes.addAll(this.fClasses.values());
+        return classes;
+    }
+
+    public Collection<MClass> interClasses() {
+        return this.fClasses.values();
+    }
+
+    @Override
     public Collection<MAssociation> associations() {
         Collection<MAssociation> associations = new ArrayList<>();
         //regular associations
@@ -185,6 +204,10 @@ public class MMultiModel extends MModel{
         //inter-associations
         associations.addAll(this.fAssociations.values());
         return associations;
+    }
+
+    public Collection<MAssociation> interAssociations() {
+        return this.fAssociations.values();
     }
 
     @Override

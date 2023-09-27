@@ -57,7 +57,7 @@ public class MModel extends MModelElementImpl {
 
 	private Map<String, EnumType> fEnumTypes;
 
-	private Map<String, MClass> fClasses;
+	protected Map<String, MClass> fClasses;
 
 	protected Map<String, MAssociation> fAssociations;
 
