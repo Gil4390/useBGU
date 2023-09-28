@@ -25,16 +25,18 @@ public class ASTMultiModel extends ASTModel {
     public MMultiModel gen(MultiContext multiCtx) {
         MMultiModel mMultiModel = multiCtx.modelFactory().createMultiModel(fName.getText());
         mMultiModel.setFilename(multiCtx.filename());
-        multiCtx.setModel(mMultiModel);
+        multiCtx.setMultiModel(mMultiModel);
 
         Iterator<ASTModel> mIt = fModels.iterator();
         while(mIt.hasNext()) {
             ASTModel model = mIt.next();
-            Context ctx = new Context(multiCtx.filename(), multiCtx.getOut(), null, multiCtx.modelFactory());
-            multiCtx.setContext(model.toString(), ctx);
+            //Context ctx = new Context(multiCtx.filename(), multiCtx.getOut(), null, multiCtx.modelFactory());
+            //multiCtx.setContext(model.toString(), ctx);
+
+            multiCtx.modelFactory().setModelName(model.fName.getText() + "@");
             try{
-                mMultiModel.addModel(model.gen(ctx));
-                if (ctx.errorCount() > 0){
+                mMultiModel.addModel(model.gen(multiCtx));
+                if (multiCtx.errorCount() > 0){
                     return null;
                 }
             }
@@ -43,6 +45,8 @@ public class ASTMultiModel extends ASTModel {
                 mIt.remove();
             }
         }
+
+        multiCtx.modelFactory().setModelName("");
 
         for(ASTClass c : fClasses) {
             try {

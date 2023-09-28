@@ -35,4 +35,13 @@ public class MultiContext extends Context{
         return this.fMultiModelFactory;
     }
 
+
+    @Override
+    public void setModel(MModel model) {
+        return;
+    }
+
+    public void setMultiModel(MMultiModel multiModel){
+        super.setModel(multiModel);
+    }
 }

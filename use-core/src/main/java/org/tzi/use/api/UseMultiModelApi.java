@@ -135,6 +135,7 @@ public class UseMultiModelApi extends UseModelApi{
             className = name.split("@")[1];
 
             model = mMultiModel.getModel(modelName);
+            mFactory.setModelName(model + "@");
             if (model == null){
                 throw new UseApiException("Unknown model " + StringUtil.inQuotes(modelName));
             }
@@ -146,9 +147,9 @@ public class UseMultiModelApi extends UseModelApi{
         else{
             //inter-class
             model = this.mMultiModel;
+            mFactory.setModelName("");
             className = name;
         }
-
         MClass cls = mFactory.createClass(className, isAbstract);
 
         try {
@@ -187,6 +188,7 @@ public class UseMultiModelApi extends UseModelApi{
             String[][][] qualifier) throws UseApiException {
 
         MModel model = mMultiModel;
+        mFactory.setModelName("");
 
         String end1Name = classNames[0];
         String end2Name = classNames[1];
@@ -197,6 +199,7 @@ public class UseMultiModelApi extends UseModelApi{
             if (end1ModelName.equals(end2ModelName)) {
                 //regular association
                 model = mMultiModel.getModel(end1ModelName);
+                mFactory.setModelName(model + "@");
             }
         }
 
@@ -293,11 +296,13 @@ public class UseMultiModelApi extends UseModelApi{
                 throw new UseApiException("Association class model and the class ends models must be the same");
             }
             model = getModelSafe(assocModelName);
+            mFactory.setModelName(model + "@");
         }
         else{
             //Inter Association-Class
             assocClassName = associationClassName;
             model = this.mMultiModel;
+            mFactory.setModelName("");
         }
 
 
@@ -368,6 +373,7 @@ public class UseMultiModelApi extends UseModelApi{
 
         MClassInvariant mClassInvariant = null;
         try {
+            mFactory.setModelName(cls.model().name() + "@");
             mClassInvariant = mFactory.createClassInvariant(invName, null,
                     cls, invBody, isExistential);
 
@@ -499,9 +505,9 @@ public class UseMultiModelApi extends UseModelApi{
             throw new UseApiException("Unknown model " + StringUtil.inQuotes(modelName));
         }
 
-        MClass cls = model.getClass(className);
+        MClass cls = model.getClass(name);
         if (cls == null) {
-            throw new UseApiException("Unknown class " + StringUtil.inQuotes(className) +
+            throw new UseApiException("Unknown class " + StringUtil.inQuotes(name) +
                     " in model " + StringUtil.inQuotes(modelName));
         }
         return cls;
@@ -539,9 +545,9 @@ public class UseMultiModelApi extends UseModelApi{
             throw new UseApiException("Unknown model " + StringUtil.inQuotes(modelName));
         }
 
-        MAssociation cls = model.getAssociation(assocName);
+        MAssociation cls = model.getAssociation(name);
         if (cls == null) {
-            throw new UseApiException("Unknown association named " + StringUtil.inQuotes(assocName) +
+            throw new UseApiException("Unknown association named " + StringUtil.inQuotes(name) +
                     " in model " + StringUtil.inQuotes(modelName));
         }
         return cls;
@@ -582,9 +588,9 @@ public class UseMultiModelApi extends UseModelApi{
             throw new UseApiException("Unknown model " + StringUtil.inQuotes(modelName));
         }
 
-        MAssociationClass cls = model.getAssociationClass(assocClassName);
+        MAssociationClass cls = model.getAssociationClass(name);
         if (cls == null) {
-            throw new UseApiException("Unknown association class " + StringUtil.inQuotes(assocClassName) +
+            throw new UseApiException("Unknown association class " + StringUtil.inQuotes(name) +
                     " in model " + StringUtil.inQuotes(modelName));
         }
         return cls;

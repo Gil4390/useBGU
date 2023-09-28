@@ -545,20 +545,20 @@ public class TestMultiModelUtil {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
 
-            UseModelApi api1 = new UseModelApi("model1");
-            api1.createClass("Employee", false );
-            api1.createAttribute("Employee", "name", "String");
-            api1.createAttribute("Employee", "salary", "Integer");
-            api1.createAttribute("Employee", "ident", "Integer");
+            MModel model1 = multiApi.createModel("model1");
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
 
-            multiApi.addModel(api1.getModel());
+            multiApi.createClass("model1@Employee", false );
+            multiApi.createAttribute("model1@Employee", "name", "String");
+            multiApi.createAttribute("model1@Employee", "salary", "Integer");
+            multiApi.createAttribute("model1@Employee", "ident", "Integer");
 
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("Student", false );
-            api2.createAttribute("Student", "name", "String");
-            api2.createAttribute("Student", "grade", "Integer");
-            api2.createAttribute("Student", "salary", "Integer");
-            multiApi.addModel(api2.getModel());
+            multiApi.createClass("model2@Student", false );
+            multiApi.createAttribute("model2@Student", "name", "String");
+            multiApi.createAttribute("model2@Student", "grade", "Integer");
+            multiApi.createAttribute("model2@Student", "salary", "Integer");
 
             multiApi.createAssociation("Job",
                     "model2@Student" , "student" , "*", MAggregationKind.NONE,
