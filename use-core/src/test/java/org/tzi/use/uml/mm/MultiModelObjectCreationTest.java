@@ -168,7 +168,7 @@ public class MultiModelObjectCreationTest extends TestCase {
 
     public void testCreateMultiModelInv1() {
         try {
-            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInvSimple();
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInvSimple2();
 
             UseMultiModelApi multiApi = new UseMultiModelApi(multiModel);
             UseSystemApiUndoable systemApi = new UseSystemApiUndoable(multiApi);

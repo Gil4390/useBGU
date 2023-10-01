@@ -34,6 +34,7 @@ public class ASTMultiModel extends ASTModel {
             //multiCtx.setContext(model.toString(), ctx);
 
             multiCtx.modelFactory().setModelName(model.fName.getText() + "@");
+            mMultiModel.setCurrentModel(model.fName.getText());
             try{
                 mMultiModel.addModel(model.gen(multiCtx));
                 if (multiCtx.errorCount() > 0){
@@ -47,6 +48,7 @@ public class ASTMultiModel extends ASTModel {
         }
 
         multiCtx.modelFactory().setModelName("");
+        mMultiModel.setCurrentModel("");
 
         for(ASTClass c : fClasses) {
             try {

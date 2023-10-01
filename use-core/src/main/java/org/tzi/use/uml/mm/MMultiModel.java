@@ -19,11 +19,14 @@ import java.util.stream.Collectors;
  * holds inter-classes, inter-associations, inter-invariants, etc.
  */
 public class MMultiModel extends MModel{
+
+    private String currentModel;
     private Map<String, MModel> fModels; // <modelName, MModel>
 
     public MMultiModel(String name) {
         super(name);
         fModels = new TreeMap<>();
+        currentModel = "";
     }
 
 
@@ -71,6 +74,13 @@ public class MMultiModel extends MModel{
         return fModels.get(name);
     }
 
+    public void setCurrentModel(String currentModel) {
+        this.currentModel = currentModel;
+    }
+
+    public String getCurrentModel() {
+        return currentModel;
+    }
 
     /**
      * Returns a collection containing all models in this multiModel.
@@ -152,11 +162,15 @@ public class MMultiModel extends MModel{
 
     @Override
     public MClass getClass(String name) {
+        if (!currentModel.isEmpty()){
+            return fModels.get(currentModel).getClass(currentModel + "@" + name);
+        }
+
         if(name.contains("@")) {
             //regular class
             String modelName = name.split("@")[0];
             String clsName = name.split("@")[1];
-            return fModels.get(modelName).getClass(clsName);
+            return fModels.get(modelName).getClass(name);
         } else {
             //inter-class
             return super.getClass(name);
