@@ -20,10 +20,10 @@ public class MultiModelObjectCreationTest extends TestCase {
             UseSystemApi systemApi = UseSystemApi.create(system, false);
 
             // creation of an object (p1) of the class Person
-            systemApi.createObjects("PersonCompany@Person", "p1");
+            systemApi.createObjects("model1@Person", "p1");
 
             // creation of an object (c1) of the class Company
-            systemApi.createObjects("PersonCompany@Company", "c1");
+            systemApi.createObjects("model1@Company", "c1");
 
             Assert.assertEquals(2, system.state().numObjects());
             Assert.assertEquals(0, system.state().allLinks().size());
@@ -133,24 +133,24 @@ public class MultiModelObjectCreationTest extends TestCase {
 
             MSystem system = systemApi.getSystem();
 
-            // creation of an object (p1) of the class PersonCompany1@Person
-            systemApi.createObjects("PersonCompany1@Person", "p1");
-            // creation of an object (c1) of the class PersonCompany1@Company
-            systemApi.createObjects("PersonCompany1@Company", "c1");
+            // creation of an object (p1) of the class model1@Person
+            systemApi.createObjects("model1@Person", "p1");
+            // creation of an object (c1) of the class model1@Company
+            systemApi.createObjects("model1@Company", "c1");
             // creation of a link between p1 and c1 of an association
-            systemApi.createLink("PersonCompany1@Job", "p1", "c1");
+            systemApi.createLink("model1@Job", "p1", "c1");
 
-            // creation of an object (p2) of the class PersonCompany1@Person
-            systemApi.createObjects("PersonCompany2@Person", "p2");
-            // creation of an object (c2) of the class PersonCompany1@Company
-            systemApi.createObjects("PersonCompany2@Company", "c2");
+            // creation of an object (p2) of the class model2@Person
+            systemApi.createObjects("model2@Person", "p2");
+            // creation of an object (c2) of the class model2@Company
+            systemApi.createObjects("model2@Company", "c2");
 
             // creation of an object (p3) of the class PersonCompany1@Person
-            systemApi.createObjects("PersonCompany1@Person", "p3");
+            systemApi.createObjects("model1@Person", "p3");
             // creation of an object (c3) of the class PersonCompany1@Company
-            systemApi.createObjects("PersonCompany1@Company", "c3");
+            systemApi.createObjects("model1@Company", "c3");
             // creation of a link between p3 and c3 of an association
-            systemApi.createLink("PersonCompany1@Job", "p3", "c3");
+            systemApi.createLink("model1@Job", "p3", "c3");
 
             Assert.assertEquals(8, system.state().numObjects());
             Assert.assertEquals(2, system.state().allLinks().size());
@@ -665,7 +665,7 @@ public class MultiModelObjectCreationTest extends TestCase {
 
 
             systemApi.createLinkObject("Ass1","ass1","a1","b1");
-            systemApi.createLinkObject("Ass2","ass2","a1","b2");
+            systemApi.createLinkObject("Ass2","ass2","a2","b1");
             systemApi.createLinkObject("Ass3","ass3","a2","b2");
             systemApi.createLinkObject("Ass4","ass4","b1","c1");
 

@@ -36,12 +36,11 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelSingleModel() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            MModel model1 = multiApi.createModel("model1");
+            multiApi.addModel(model1);
 
-            UseModelApi api = new UseModelApi("PersonCompany");
-            api.createClass("Person", false );
-            api.createClass("Company", false );
-
-            multiApi.addModel(api.getModel());
+            multiApi.createClass("model1@Person", false );
+            multiApi.createClass("model1@Company", false );
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {
@@ -206,28 +205,29 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelThreeModels() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi" );
+            MModel model1 = multiApi.createModel("model1");
+            MModel model2 = multiApi.createModel("model2");
+            MModel model3 = multiApi.createModel("model3");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
+            multiApi.addModel(model3);
 
-            UseModelApi api1 = new UseModelApi("PersonCompany1");
-            api1.createClass("Person", false);
-            api1.createClass("Company", false);
-            api1.createAttribute("Company", "name", "String");
 
-            api1.createAssociationClass("Job", false,
-                    "Person" , "person" , "0..1", MAggregationKind.NONE,
-                    "Company", "company", "0..1", MAggregationKind.NONE);
+            multiApi.createClass("model1@Person", false);
+            multiApi.createClass("model1@Company", false);
+            multiApi.createAttribute("model1@Company", "name", "String");
 
-            api1.createAttribute( "Job", "salary", "Integer" );
-            multiApi.addModel(api1.getModel());
+            multiApi.createAssociationClass("model1@Job", false,
+                    "model1@Person" , "person" , "0..1", MAggregationKind.NONE,
+                    "model1@Company", "company", "0..1", MAggregationKind.NONE);
 
-            UseModelApi api2 = new UseModelApi("PersonCompany2");
-            api2.createClass("Person", false );
-            api2.createClass("Company", false );
-            multiApi.addModel(api2.getModel());
+            multiApi.createAttribute( "model1@Job", "salary", "Integer" );
 
-            UseModelApi api3 = new UseModelApi("PersonCompany3");
-            api3.createClass("Person", false );
-            api3.createClass("Company", false );
-            multiApi.addModel(api3.getModel());
+            multiApi.createClass("model2@Person", false );
+            multiApi.createClass("model2@Company", false );
+
+            multiApi.createClass("model3@Person", false );
+            multiApi.createClass("model3@Company", false );
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {
@@ -362,12 +362,8 @@ public class TestMultiModelUtil {
 
     public MMultiModel createMultiModelWithInvOclIsType() {
         try {
-            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
-
-            UseModelApi api1 = helper1();
-            api1.createInvariant("inv1", "Foo", "self.r1->exists(oclIsTypeOf(B))", false);
-
-            multiApi.addModel(api1.getModel());
+            UseMultiModelApi multiApi = helper1();
+            multiApi.createInvariant("inv1", "model1@Foo", "self.r1->exists(oclIsTypeOf(model1@B))", false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {
@@ -511,19 +507,18 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelInterConstraintVerySimple() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            MModel model1 = multiApi.createModel("model1");
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
 
-            UseModelApi api1 = new UseModelApi("model1");
-            api1.createClass("Employee", false );
-            api1.createAttribute("Employee", "name", "String");
-            api1.createAttribute("Employee", "salary", "Integer");
+            multiApi.createClass("model1@Employee", false );
+            multiApi.createAttribute("model1@Employee", "name", "String");
+            multiApi.createAttribute("model1@Employee", "salary", "Integer");
 
-            multiApi.addModel(api1.getModel());
-
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("Student", false );
-            api2.createAttribute("Student", "name", "String");
-            api2.createAttribute("Student", "grade", "Integer");
-            multiApi.addModel(api2.getModel());
+            multiApi.createClass("model2@Student", false );
+            multiApi.createAttribute("model2@Student", "name", "String");
+            multiApi.createAttribute("model2@Student", "grade", "Integer");
 
             multiApi.createAssociation("Job",
                     "model2@Student" , "student" , "0..1", MAggregationKind.NONE,
@@ -618,13 +613,13 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelInterConstraintSelfAssociation() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            MModel model1 = multiApi.createModel("model1");
+            multiApi.addModel(model1);
 
-            UseModelApi api1 = new UseModelApi("model1");
-            api1.createClass("Employee", false );
-            api1.createAttribute("Employee", "name", "String");
-            api1.createAttribute("Employee", "salary", "Integer");
+            multiApi.createClass("model1@Employee", false );
+            multiApi.createAttribute("model1@Employee", "name", "String");
+            multiApi.createAttribute("model1@Employee", "salary", "Integer");
 
-            multiApi.addModel(api1.getModel());
 
             multiApi.createAssociation("WorksFor",
                     "model1@Employee" , "supervisor" , "0..1", MAggregationKind.NONE,
@@ -670,55 +665,55 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelInterConstraintComplex2() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            MModel model1 = multiApi.createModel("model1");
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
 
-            UseModelApi api1 = new UseModelApi("model1");
-            api1.createClass("Employee", false );
-            api1.createAttribute("Employee", "name", "String");
-            api1.createAttribute("Employee", "salary", "Integer");
+            multiApi.createClass("model1@Employee", false );
+            multiApi.createAttribute("model1@Employee", "name", "String");
+            multiApi.createAttribute("model1@Employee", "salary", "Integer");
 
-            api1.createClass("Manager", false);
-            api1.createGeneralization("Manager", "Employee");
-            api1.createAttribute("Manager", "level", "String");
+            multiApi.createClass("model1@Manager", false);
+            multiApi.createGeneralization("model1@Manager", "model1@Employee");
+            multiApi.createAttribute("model1@Manager", "level", "String");
 
-            api1.createClass("Worker", false);
-            api1.createGeneralization("Worker", "Employee");
+            multiApi.createClass("model1@Worker", false);
+            multiApi.createGeneralization("model1@Worker", "model1@Employee");
 
-            api1.createClass("Company", false );
-            api1.createAttribute("Company", "name", "String");
-            api1.createAttribute("Company", "location", "String");
+            multiApi.createClass("model1@Company", false );
+            multiApi.createAttribute("model1@Company", "name", "String");
+            multiApi.createAttribute("model1@Company", "location", "String");
 
-            api1.createAssociation("Works",
-                    "Employee" , "workers" , "*", MAggregationKind.NONE,
-                    "Company", "company", "0..1", MAggregationKind.NONE);
+            multiApi.createAssociation("Works",
+                    "model1@Employee" , "workers" , "*", MAggregationKind.NONE,
+                    "model1@Company", "company", "0..1", MAggregationKind.NONE);
 
-            api1.createInvariant("PositiveSalary", "Employee", "self.salary > 0", false);
+            multiApi.createInvariant("PositiveSalary", "model1@Employee", "self.salary > 0", false);
 
-            multiApi.addModel(api1.getModel());
 
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("Student", false );
-            api2.createAttribute("Student", "name", "String");
-            api2.createAttribute("Student", "grade", "Integer");
-            api2.createAttribute("Student", "salary", "Integer");
+            multiApi.createClass("model2@Student", false );
+            multiApi.createAttribute("model2@Student", "name", "String");
+            multiApi.createAttribute("model2@Student", "grade", "Integer");
+            multiApi.createAttribute("model2@Student", "salary", "Integer");
 
-            api2.createClass("School", false );
-            api2.createAttribute("School", "name", "String");
-            api2.createAttribute("School", "location", "String");
+            multiApi.createClass("model2@School", false );
+            multiApi.createAttribute("model2@School", "name", "String");
+            multiApi.createAttribute("model2@School", "location", "String");
 
-            api2.createClass("Meeting", false );
-            api2.createAttribute("Meeting", "start_", "Integer");
-            api2.createAttribute("Meeting", "end_", "Integer");
+            multiApi.createClass("model2@Meeting", false );
+            multiApi.createAttribute("model2@Meeting", "start_", "Integer");
+            multiApi.createAttribute("model2@Meeting", "end_", "Integer");
 
-            api2.createAssociation("Studies",
-                    "Student" , "students" , "*", MAggregationKind.NONE,
-                    "School", "school", "0..1", MAggregationKind.NONE);
-            api2.createAssociation("meets",
-                    "Student", "std", "1..3", MAggregationKind.NONE,
-                    "Meeting" , "mt" , "0..*", MAggregationKind.NONE);
-            api2.createInvariant("validGrade", "Student", "self.grade >= 0 and self.grade <= 100", false);
+            multiApi.createAssociation("Studies",
+                    "model2@Student" , "students" , "*", MAggregationKind.NONE,
+                    "model2@School", "school", "0..1", MAggregationKind.NONE);
+            multiApi.createAssociation("meets",
+                    "model2@Student", "std", "1..3", MAggregationKind.NONE,
+                    "model2@Meeting" , "mt" , "0..*", MAggregationKind.NONE);
+            multiApi.createInvariant("validGrade", "model2@Student", "self.grade >= 0 and self.grade <= 100", false);
 
-            multiApi.addModel(api2.getModel());
-
+            //inter
 
             multiApi.createAssociation("supervising",
                     "model1@Employee", "supervisor", "1..2", MAggregationKind.NONE,
@@ -751,30 +746,33 @@ public class TestMultiModelUtil {
         }
     }
 
-    private static UseModelApi helper1() throws UseApiException {
-        UseModelApi api1 = new UseModelApi("model1");
-        api1.createClass("A", false );
-        api1.createAttribute("A", "attrA", "String");
 
-        api1.createClass("B", false);
-        api1.createGeneralization("B", "A");
-        api1.createAttribute("B", "attrB", "String");
+    private static UseMultiModelApi helper1() throws Exception {
+        UseMultiModelApi api1 = new UseMultiModelApi("multi");
+        MModel model1 = api1.createModel("model1");
+        api1.addModel(model1);
+        api1.createClass("model1@A", false );
+        api1.createAttribute("model1@A", "attrA", "String");
 
-        api1.createClass("C", false);
-        api1.createGeneralization("C", "B");
-        api1.createAttribute("C", "attrC", "String");
+        api1.createClass("model1@B", false);
+        api1.createGeneralization("model1@B", "model1@A");
+        api1.createAttribute("model1@B", "attrB", "String");
+
+        api1.createClass("model1@C", false);
+        api1.createGeneralization("model1@C", "model1@B");
+        api1.createAttribute("model1@C", "attrC", "String");
 
 
-        api1.createClass("Foo", false );
-        api1.createClass("Goo", false );
+        api1.createClass("model1@Foo", false );
+        api1.createClass("model1@Goo", false );
 
         api1.createAssociation("assoc1",
-                "A" , "r1" , "*", MAggregationKind.NONE,
-                "Foo", "r2", "*", MAggregationKind.NONE);
+                "model1@A" , "r1" , "*", MAggregationKind.NONE,
+                "model1@Foo", "r2", "*", MAggregationKind.NONE);
 
         api1.createAssociation("assoc2",
-                "Goo" , "g1" , "*", MAggregationKind.NONE,
-                "Foo", "g2", "*", MAggregationKind.NONE);
+                "model1@Goo" , "g1" , "*", MAggregationKind.NONE,
+                "model1@Foo", "g2", "*", MAggregationKind.NONE);
 
 
         return api1;
@@ -782,16 +780,13 @@ public class TestMultiModelUtil {
 
     public MMultiModel createMultiModelWithConstraintOclIsType() {
         try {
-            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            UseMultiModelApi multiApi = helper1();
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model2);
 
-            UseModelApi api1 = helper1();
-            api1.createInvariant("inv1", "Foo", "self.r1->exists(oclIsTypeOf(B))", false);
+            multiApi.createInvariant("inv1", "model1@Foo", "self.r1->exists(oclIsTypeOf(B))", false);
 
-            multiApi.addModel(api1.getModel());
-
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("Bar", false );
-            multiApi.addModel(api2.getModel());
+            multiApi.createClass("model2@Bar", false );
 
 
             multiApi.createAssociation("interAssoc1",
@@ -810,17 +805,13 @@ public class TestMultiModelUtil {
 
     public MMultiModel createMultiModelWithConstraintOclIsKind() {
         try {
-            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            UseMultiModelApi multiApi = helper1();
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model2);
 
-            UseModelApi api1 = helper1();
-            api1.createInvariant("inv1", "Foo", "self.r1->exists(oclIsKindOf(B))", false);
+            multiApi.createInvariant("inv1", "model1@Foo", "self.r1->exists(oclIsKindOf(model1@B))", false);
 
-            multiApi.addModel(api1.getModel());
-
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("Bar", false );
-            multiApi.addModel(api2.getModel());
-
+            multiApi.createClass("model2@Bar", false );
 
             multiApi.createAssociation("interAssoc1",
                     "model1@A", "a1", "*", MAggregationKind.NONE,
@@ -838,17 +829,13 @@ public class TestMultiModelUtil {
 
     public MMultiModel createMultiModelWithConstraintSelectByType() {
         try {
-            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            UseMultiModelApi multiApi = helper1();
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model2);
 
-            UseModelApi api1 = helper1();
-            api1.createInvariant("inv1", "Foo", "self.r1->selectByType(B)->size() >= 1", false);
+            multiApi.createInvariant("inv1", "model1@Foo", "self.r1->selectByType(B)->size() >= 1", false);
 
-            multiApi.addModel(api1.getModel());
-
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("Bar", false );
-            multiApi.addModel(api2.getModel());
-
+            multiApi.createClass("model2@Bar", false );
 
             multiApi.createAssociation("interAssoc1",
                     "model1@A", "a1", "*", MAggregationKind.NONE,
@@ -866,16 +853,13 @@ public class TestMultiModelUtil {
 
     public MMultiModel createMultiModelWithConstraintSelectByKind() {
         try {
-            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            UseMultiModelApi multiApi = helper1();
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model2);
 
-            UseModelApi api1 = helper1();
-            api1.createInvariant("inv1", "Foo", "self.r1->selectByKind(B)->size() >= 1", false);
+            multiApi.createInvariant("inv1", "model1@Foo", "self.r1->selectByKind(B)->size() >= 1", false);
 
-            multiApi.addModel(api1.getModel());
-
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("Bar", false );
-            multiApi.addModel(api2.getModel());
+            multiApi.createClass("model2@Bar", false );
 
 
             multiApi.createAssociation("interAssoc1",
@@ -895,33 +879,31 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelWithConstraintOclAsType() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+            MModel model1 = multiApi.createModel("model1");
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
 
-            UseModelApi api1 = new UseModelApi("model1");
-            api1.createClass("Person", false);
-            api1.createClass("Student", false);
-            api1.createClass("Teacher", false);
-            api1.createGeneralization("Student", "Person");
-            api1.createGeneralization("Teacher", "Person");
+            multiApi.createClass("model1@Person", false);
+            multiApi.createClass("model1@Student", false);
+            multiApi.createClass("model1@Teacher", false);
+            multiApi.createGeneralization("model1@Student", "model1@Person");
+            multiApi.createGeneralization("model1@Teacher", "model1@Person");
 
-            api1.createAttribute("Student", "ID", "String");
+            multiApi.createAttribute("model1@Student", "ID", "String");
 
-            api1.createClass("School", false);
+            multiApi.createClass("model1@School", false);
 
-            api1.createAssociation("PartOfSchool",
-                    "School", "school", "*", MAggregationKind.NONE,
-                    "Person", "people", "*", MAggregationKind.NONE);
+            multiApi.createAssociation("PartOfSchool",
+                    "model1@School", "school", "*", MAggregationKind.NONE,
+                    "model1@Person", "people", "*", MAggregationKind.NONE);
 
-            api1.createInvariant("inv1", "School",
+            multiApi.createInvariant("inv1", "model1@School",
                     "self.people->forAll(p | p.oclIsTypeOf(Student) implies p.oclAsType(Student).ID <> '')",
                     false);
 
-            multiApi.addModel(api1.getModel());
 
-
-
-            UseModelApi api2 = new UseModelApi("model2");
-            api2.createClass("University", false );
-            multiApi.addModel(api2.getModel());
+            multiApi.createClass("model2@University", false );
 
             multiApi.createAssociation("PartOfUni",
                     "model2@University", "university", "*", MAggregationKind.NONE,

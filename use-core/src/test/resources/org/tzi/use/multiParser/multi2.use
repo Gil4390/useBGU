@@ -11,8 +11,8 @@ attributes
 end
 
 association R between
-  A[*]
-  B[1]
+  A[*] role a
+  B[1] role b
 end
 
 constraints

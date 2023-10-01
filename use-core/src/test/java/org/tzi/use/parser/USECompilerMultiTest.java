@@ -8,10 +8,7 @@ import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
 import org.tzi.use.parser.use.USECompilerMulti;
-import org.tzi.use.uml.mm.MModel;
-import org.tzi.use.uml.mm.MMultiModel;
-import org.tzi.use.uml.mm.ModelFactory;
-import org.tzi.use.uml.mm.MultiModelFactory;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.expr.Evaluator;
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.value.Value;
@@ -638,7 +635,7 @@ public class USECompilerMultiTest extends TestCase {
 
         } catch (Exception e) {
             // This can be ignored
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 

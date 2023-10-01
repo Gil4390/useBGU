@@ -18,6 +18,10 @@ public class MultiModelFactory extends ModelFactory{
         return new MMultiModel(name);
     }
 
+    @Override
+    public MModel createModel(String name) {
+        return new MInternalModel(name);
+    }
 
     @Override
     public MClass createClass(String name, boolean isAbstract) {

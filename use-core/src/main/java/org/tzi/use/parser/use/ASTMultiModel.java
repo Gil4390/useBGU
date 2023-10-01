@@ -30,13 +30,14 @@ public class ASTMultiModel extends ASTModel {
         Iterator<ASTModel> mIt = fModels.iterator();
         while(mIt.hasNext()) {
             ASTModel model = mIt.next();
-            //Context ctx = new Context(multiCtx.filename(), multiCtx.getOut(), null, multiCtx.modelFactory());
+            MultiContext ctx = new MultiContext(multiCtx.filename(), multiCtx.getOut(), null, multiCtx.modelFactory());
+            ctx.setParentContext(multiCtx);
             //multiCtx.setContext(model.toString(), ctx);
 
             multiCtx.modelFactory().setModelName(model.fName.getText() + "@");
             mMultiModel.setCurrentModel(model.fName.getText());
             try{
-                mMultiModel.addModel(model.gen(multiCtx));
+                mMultiModel.addModel(model.gen(ctx));
                 if (multiCtx.errorCount() > 0){
                     return null;
                 }

@@ -72,6 +72,11 @@ public class UseMultiModelApi extends UseModelApi{
         return mMultiModel;
     }
 
+    @Override
+    public MModel createModel(String modelName) {
+        return mFactory.createModel(modelName);
+    }
+
     /**
      * Adds a model to the multi-model handled by this API instance.
      *
