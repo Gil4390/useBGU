@@ -162,4 +162,6 @@ public class MultiModelCreationTest extends TestCase {
         assertEquals(9, multiModel.numOfClasses());
         assertEquals(4, multiModel.numOfAssociations());
     }
+
+
 }

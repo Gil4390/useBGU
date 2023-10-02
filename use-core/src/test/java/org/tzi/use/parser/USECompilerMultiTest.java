@@ -70,7 +70,7 @@ public class USECompilerMultiTest extends TestCase {
     public void testMultiSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 21);
+        List<File> fileList = getFilesMatchingSuffix(".use", 22);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -631,6 +631,30 @@ public class USECompilerMultiTest extends TestCase {
             api.createLink("model2@Studies","s2","school1");
 
             assertTrue(api.checkState());
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            fail(e.getMessage());
+        }
+    }
+
+    public void testCompileMultiModelEmployeesFile() throws FileNotFoundException {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/Employees.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+
 
 
         } catch (Exception e) {

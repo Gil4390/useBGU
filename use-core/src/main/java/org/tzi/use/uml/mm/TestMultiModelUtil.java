@@ -318,6 +318,30 @@ public class TestMultiModelUtil {
             throw new Error( e );
         }
     }
+    public MMultiModel createMultiModelTwoModelsInvAllInstances() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            UseModelApi api2 = new UseModelApi("model2");
+            multiApi.addModel(api1.getModel());
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createClass("model1@Employee", false );
+            multiApi.createAttribute("model1@Employee", "name", "String");
+            multiApi.createAttribute("model1@Employee", "salary", "Integer");
+            multiApi.createInvariant("PositiveSalary", "model1@Employee", "model1@Employee.allInstances->forAll(e | e.salary > 0)", false);
+
+            multiApi.createClass("model2@Student", false );
+            multiApi.createAttribute("model2@Student", "name", "String");
+            multiApi.createAttribute("model2@Student", "grade", "Integer");
+            multiApi.createInvariant("ValidGrade", "model2@Student", "self.grade >= 0 and self.grade <= 100", false);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
 
     public MMultiModel createMultiModelTwoModelsInvSameName() {
         try {

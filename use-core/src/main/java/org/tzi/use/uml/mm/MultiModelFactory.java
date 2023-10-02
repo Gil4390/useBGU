@@ -25,7 +25,7 @@ public class MultiModelFactory extends ModelFactory{
 
     @Override
     public MClass createClass(String name, boolean isAbstract) {
-        return super.createClass(modelName + name, isAbstract);
+        return new MInternalClassImpl(modelName + name, isAbstract);
     }
 
     @Override

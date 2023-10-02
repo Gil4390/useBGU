@@ -236,6 +236,20 @@ public class MMultiModel extends MModel{
     }
 
     @Override
+    public MClassInvariant getClassInvariant(String name) {
+        String invName = name.split("::")[1];
+
+        if(invName.contains("@")) {
+            //regular inv
+            String modelName = invName.split("@")[0];
+            String clsName = invName.split("@")[1];
+            return fModels.get(modelName).getClassInvariant(name);
+        }
+        //inter inv
+        return super.getClassInvariant(name);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
