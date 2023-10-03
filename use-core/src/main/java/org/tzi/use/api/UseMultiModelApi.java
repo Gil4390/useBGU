@@ -4,20 +4,17 @@ import org.tzi.use.parser.SemanticException;
 import org.tzi.use.parser.SrcPos;
 import org.tzi.use.parser.Symtable;
 import org.tzi.use.parser.ocl.OCLCompiler;
-import org.tzi.use.parser.use.USECompiler;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.expr.ExpInvalidException;
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.expr.VarDecl;
+import org.tzi.use.uml.ocl.expr.VarDeclList;
 import org.tzi.use.uml.ocl.type.Type;
-import org.tzi.use.util.NullPrintWriter;
 import org.tzi.use.util.StringUtil;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
 
 /**
  * <p>This class encapsulates access to the USE multi model,
@@ -473,6 +470,103 @@ public class UseMultiModelApi extends UseModelApi{
         }
 
         return mGeneralization;
+    }
+
+
+    /**
+     * <p>Creates an operation signature with the name <code>operationName</code> for the class
+     * identified by <code>ownerName</code>.</p>
+     * <p>The return type of the operation is defined by the parameter <code>returnType</code>.
+     * It can be any built-in or already created user defined type.
+     * </p>
+     * <p>The parameters of the operation to create are specified by a two dimensional array.
+     * The first dimension defines the parameter position. The second dimension has exactly two entries:
+     * <ol>
+     *   <li> At index 0 the name of the parameter</li>
+     *   <li> At index 1 the type of the parameter</li>
+     * </ol>
+     * <p>
+     *      If the ownerName provided is of the form: <code> modelName@className </code>
+     *      then the operation is created inside the model named 'modelName'
+     *      The operation is created with the name operationName@modelName
+     * </p>
+     * <p>
+     *      If the ownerName does not contain an '@' then the class is created
+     *      as an 'inter-operation' inside the multi-model
+     * </p>
+     *
+     *
+     *
+     * @param ownerName The class name to create the operation for.
+     * @param operationName The name of the operation to create.
+     * @param parameter The operation parameters
+     * @param returnType The return type of the operation (can be <code>null</code>).
+     * @return The created <code>MOperation</code>.
+     * @throws UseApiException
+     */
+    @Override
+    public MOperation createOperation(String ownerName, String operationName, String[][] parameter, String returnType) throws UseApiException {
+
+        if (ownerName == null || ownerName.equals("")) {
+            throw new UseApiException("Owner name is required!");
+        }
+
+
+        if (ownerName.contains("@")){
+            //regular operation
+            String modelName = ownerName.split("@")[0];
+            String className = ownerName.split("@")[1];
+
+            MModel model = mMultiModel.getModel(modelName);
+
+            if (model == null){
+                throw new UseApiException("Unknown model " + StringUtil.inQuotes(modelName));
+            }
+
+            if (className == null || className.equals("")) {
+                throw new UseApiException("A class must be named");
+            }
+        }
+
+
+        if (operationName == null || operationName.equals("")) {
+            throw new UseApiException("Operation name is required!");
+        }
+
+        MClass owner = getClassSafe(ownerName);
+
+        VarDeclList vars = new VarDeclList(false);
+        for (String[] var : parameter) {
+            Type t = getType(var[1]);
+            vars.add(new VarDecl(var[0], t));
+        }
+
+        Type resultType = null;
+        if (returnType != null) {
+            resultType = getType(returnType);
+        }
+
+        return createOperationEx(owner, operationName, vars, resultType);
+    }
+
+    /**
+     * This method overrides the method in {@link UseModelApi} to
+     * handle the creation of MPrePostCondition, the only difference is
+     * the model in which the prepost is created in.
+     */
+    public MPrePostCondition createPrePostConditionEx(String name,
+                                                      MOperation op, boolean isPre, Expression condition)
+            throws UseApiException {
+
+        MPrePostCondition cond;
+        try {
+            cond = mFactory.createPrePostCondition(name, op, isPre, condition);
+            op.cls().model().addPrePostCondition(cond);
+        } catch (ExpInvalidException | MInvalidModelException ex) {
+            throw new UseApiException("Could not create pre-/postcondition.", ex);
+        }
+
+        return cond;
     }
 
     /**

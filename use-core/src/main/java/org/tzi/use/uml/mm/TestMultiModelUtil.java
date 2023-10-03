@@ -1041,4 +1041,39 @@ public class TestMultiModelUtil {
         }
     }
 
+
+    //region Operations
+
+    public MMultiModel createMultiModelWithOperations() {
+        try{
+            UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
+
+            UseModelApi api1 = new UseModelApi("model1");
+            UseModelApi api2 = new UseModelApi("model2");
+            multiApi.addModel(api1.getModel());
+            multiApi.addModel(api2.getModel());
+
+            multiApi.createClass( "model1@Person", false );
+            multiApi.createClass( "Person", false );
+
+            // adds an attribute
+            multiApi.createAttribute("model1@Person", "fName", "String" );
+            multiApi.createAttribute("Person", "fName", "String" );
+
+            // adds an operation
+            multiApi.createOperation( "model1@Person", "equalsName", new String[][] {new String[] {"name", "String"}}, "Boolean" );
+            multiApi.createOperation( "Person", "equalsName", new String[][] {new String[] {"name", "String"}}, "Boolean" );
+
+            // adds a void operation
+            multiApi.createOperation( "model1@Person", "init", new String[][] {new String[] {"name", "String"}}, null );
+            multiApi.createOperation( "Person", "init", new String[][] {new String[] {"name", "String"}}, null );
+
+            return multiApi.getMultiModel();
+        } catch ( Exception e ) {
+            throw new Error( e ) ;
+        }
+    }
+
+    //endregion
+
 }

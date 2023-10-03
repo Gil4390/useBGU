@@ -8,6 +8,7 @@
 
 /*
     multi_model ::= "multi_model" internal_model (internal_model)*
+                    ( 'inter-enums' (enumTypeDefinition)* )?
                     ( 'inter-classes' (interGeneralClassifierDefinition)* )?
                     ( 'inter-associations' (associationDefinition)* )?
                     ( 'inter-constraints' (invariant | prePost)* )?
@@ -19,6 +20,9 @@ multi_model returns [ASTMultiModel n]
     'multi_model' mmName=IDENT {$n = new ASTMultiModel($mmName);}
     m=internal_model {$n.addModel($m.n);}
     (m=internal_model { $n.addModel($m.n); } )*
+    ('inter-enums'
+            (e=enumTypeDefinition { $n.addEnumTypeDef($e.n); })*
+    )?
     ('inter-classes'
             (a=interGeneralClassifierDefinition[$n] )*
     )?
@@ -27,7 +31,7 @@ multi_model returns [ASTMultiModel n]
     )?
     ('inter-constraints'
         ( cons=interInvariant { $n.addConstraint($cons.n); }
-          | ppc=prePost { $n.addPrePost($ppc.n); }
+          | ppc=interPrePost { $n.addPrePost($ppc.n); }
         )*
     )?
     EOF
@@ -505,6 +509,24 @@ prePost returns [ASTPrePost n]
 :
     'context' classname=IDENT COLON_COLON opname=IDENT pl=paramList ( COLON rt=type )?
     { $n = new ASTPrePost($classname, $opname, $pl.paramList, $rt.n); }
+    ( ppc=prePostClause { n.addPrePostClause(ppc); } )+
+    ;
+
+/* ------------------------------------
+  interPrePost ::=
+    prePostContext prePostClause { prePostClause }
+
+  prePostContext :=
+    "context" id "::" id paramList [ ":" type ]
+*/
+interPrePost returns [ASTPrePost n]
+:
+    'context'
+    ((classname=IDENT COLON_COLON opname=IDENT pl=paramList ( COLON rt=type )?
+    { $n = new ASTPrePost($classname, $opname, $pl.paramList, $rt.n); })
+    |
+    (t=multiType COLON_COLON opname=IDENT pl=paramList ( COLON rt=type )?
+    { $n = new ASTPrePost(t.name(), $opname, $pl.paramList, $rt.n); }))
     ( ppc=prePostClause { n.addPrePostClause(ppc); } )+
     ;
 

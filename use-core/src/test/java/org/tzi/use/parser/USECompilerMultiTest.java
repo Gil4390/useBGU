@@ -70,7 +70,7 @@ public class USECompilerMultiTest extends TestCase {
     public void testMultiSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 22);
+        List<File> fileList = getFilesMatchingSuffix(".use", 24);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -322,7 +322,7 @@ public class USECompilerMultiTest extends TestCase {
         return result;
     }
 
-    public void testCompileMultiAddModelSpecification() throws FileNotFoundException {
+    public void testCompileMultiAddModelSpecification() {
         MMultiModel multiModelResult = null;
         MModel modelResult = null;
 
@@ -355,7 +355,7 @@ public class USECompilerMultiTest extends TestCase {
     }
 
 
-    public void testCompileMultiRemoveModelSpecification1() throws FileNotFoundException {
+    public void testCompileMultiRemoveModelSpecification1() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_add_model.use");
@@ -379,7 +379,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelInterAssoc() throws FileNotFoundException {
+    public void testCompileMultiModelInterAssoc() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_inter_assoc.use");
@@ -413,7 +413,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelInterAssoc2() throws FileNotFoundException {
+    public void testCompileMultiModelInterAssoc2() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_inter_assoc.use");
@@ -443,7 +443,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelInterClass1() throws FileNotFoundException {
+    public void testCompileMultiModelInterClass1() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_inter_class_1.use");
@@ -480,7 +480,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelInterClass2() throws FileNotFoundException {
+    public void testCompileMultiModelInterClass2() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_inter_class_2.use");
@@ -513,7 +513,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelInterAssocClass1() throws FileNotFoundException {
+    public void testCompileMultiModelInterAssocClass1() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_inter_association_class_1.use");
@@ -550,7 +550,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelInvariant() throws FileNotFoundException {
+    public void testCompileMultiModelInvariant() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_inter_const.use");
@@ -589,7 +589,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelInvariant2() throws FileNotFoundException {
+    public void testCompileMultiModelInvariant2() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/multi_inter_complex.use");
@@ -639,7 +639,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiModelEmployeesFile() throws FileNotFoundException {
+    public void testCompileMultiModelEmployeesFile() {
         MMultiModel multiModelResult = null;
 
         File multiFile = new File(TEST_PATH + "/Employees.use");
@@ -663,7 +663,7 @@ public class USECompilerMultiTest extends TestCase {
         }
     }
 
-    public void testCompileMultiRemoveModelSpecification2() throws FileNotFoundException {
+    public void testCompileMultiRemoveModelSpecification2() {
         MMultiModel multiModelResult = null;
         MModel modelResult = null;
 
@@ -702,6 +702,64 @@ public class USECompilerMultiTest extends TestCase {
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();
+        }
+    }
+
+
+    public void testCompileMultiModelOperations() {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_operations.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+        } catch (Exception e) {
+            // This can be ignored
+            fail(e.getMessage());
+        }
+    }
+
+    public void testCompileMultiModelEnums() {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH + "/multi_inter_Enum.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModelResult);
+            UseSystemApiUndoable api = new UseSystemApiUndoable(multiApi);
+
+            api.createObject("model1@A","a1");
+            api.createObject("model2@B","b1");
+            api.createObject("A","a2");
+
+            assertFalse(api.checkState());
+
+            api.setAttributeValue("a1", "c", "model1@Color::red");
+            api.setAttributeValue("b1", "c", "model2@Color::green");
+
+            api.setAttributeValue("a2", "c1", "model1@Color::red");
+            api.setAttributeValue("a2", "c2", "model2@Color::yellow");
+            api.setAttributeValue("a2", "c3", "Color::black");
+
+            assertTrue(api.checkState());
+
+        } catch (Exception e) {
+            // This can be ignored
+            fail(e.getMessage());
         }
     }
 

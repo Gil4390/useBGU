@@ -1,0 +1,67 @@
+multi_model multiOperations
+
+model model1
+
+class A
+operations
+  op1(p1 : Integer) : String
+    post: 'AAA' <> 'BBB'
+end
+
+
+model model2
+
+class B
+attributes
+  c : Integer
+end
+
+
+inter-classes
+class A
+operations
+  op1(p1 : Integer) : String
+    post: 'AAA' <> 'BBB'
+end
+
+inter-associations
+association R1 between
+  model1@A[*] role ma1
+  model2@B[1] role mb1
+end
+
+association R2 between
+  A[*] role a1
+  model2@B[1] role mb2
+end
+
+inter-constraints
+
+context a : model1@A
+  inv: a.mb1.c >= 0
+context a : A
+  inv: a.mb2.c >= 0
+
+
+context model1@A::op1(p1 : Integer) : String
+  pre:  p1.mod(2) = 0
+  pre:  mb1.c > 0
+  post: mb1.c@pre = 0
+  post: self@pre.mb1.c = 0
+  post: Set{1,2,3}->notEmpty
+  post: result = 'foo'
+
+context model1@A::op1(p1 : Integer) : String
+  post: true
+
+
+context A::op1(p1 : Integer) : String
+  pre:  p1.mod(2) = 0
+  pre:  mb2.c > 0
+  post: mb2.c@pre = 0
+  post: self@pre.mb2.c = 0
+  post: Set{1,2,3}->notEmpty
+  post: result = 'foo'
+
+context A::op1(p1 : Integer) : String
+  post: true

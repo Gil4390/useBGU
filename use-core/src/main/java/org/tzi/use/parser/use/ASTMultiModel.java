@@ -1,11 +1,11 @@
 package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
-import org.tzi.use.parser.AST;
-import org.tzi.use.parser.Context;
 import org.tzi.use.parser.MultiContext;
 import org.tzi.use.parser.SemanticException;
+import org.tzi.use.parser.ocl.ASTEnumTypeDefinition;
 import org.tzi.use.uml.mm.*;
+import org.tzi.use.uml.ocl.type.EnumType;
 
 import java.util.*;
 
@@ -50,6 +50,18 @@ public class ASTMultiModel extends ASTModel {
 
         multiCtx.modelFactory().setModelName("");
         mMultiModel.setCurrentModel("");
+
+        for (ASTEnumTypeDefinition e : fEnumTypeDefs) {
+            EnumType enm;
+            try {
+                enm = e.gen(multiCtx);
+                mMultiModel.addEnumType(enm);
+            } catch (SemanticException ex) {
+                multiCtx.reportError(ex);
+            } catch (MInvalidModelException ex) {
+                multiCtx.reportError(fName, ex);
+            }
+        }
 
         for(ASTClass c : fClasses) {
             try {
@@ -145,6 +157,14 @@ public class ASTMultiModel extends ASTModel {
 
         for(ASTConstraintDefinition inv : fConstraints) {
             inv.gen(multiCtx);
+        }
+
+        for (ASTPrePost ppc : fPrePosts) {
+            try {
+                ppc.gen(multiCtx);
+            } catch (SemanticException ex) {
+                multiCtx.reportError(ex);
+            }
         }
 
         for (ASTClass c : fClasses) {

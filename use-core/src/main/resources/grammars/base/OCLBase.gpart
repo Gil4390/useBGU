@@ -480,6 +480,7 @@ literal returns [ASTExpression n]
     | s=STRING { $n = new ASTStringLiteral($s); }
     | HASH enumLit=IDENT { $n = new ASTEnumLiteral($enumLit);}
     | enumName=IDENT '::' enumLit=IDENT { $n = new ASTEnumLiteral($enumName, $enumLit); }
+    | enumType=multiType '::' enumLit=IDENT { $n = new ASTEnumLiteral(enumType.name(), $enumLit); }
     | nColIt=collectionLiteral { $n = $nColIt.n; }
     | nEColIt=emptyCollectionLiteral { $n = $nEColIt.n; }
     | nUndLit=undefinedLiteral {$n = $nUndLit.n; }

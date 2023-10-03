@@ -1,0 +1,53 @@
+multi_model multiEnum
+
+model model1
+
+enum Color { red, blue }
+
+class A
+attributes
+  c : Color
+end
+
+constraints
+
+context A inv:
+  self.c = Color::red
+
+
+model model2
+
+enum Color { yellow, green }
+
+class B
+attributes
+  c : Color
+end
+
+constraints
+
+context B inv:
+  self.c = Color::green
+
+
+inter-enums
+
+enum Color { white, black }
+
+inter-classes
+
+class A
+attributes
+  c1 : model1@Color
+  c2 : model2@Color
+  c3 : Color
+end
+
+inter-constraints
+
+context A inv:
+  self.c1 = model1@Color::red
+context A inv:
+  self.c2 = model2@Color::yellow
+context A inv:
+  self.c3 = Color::black

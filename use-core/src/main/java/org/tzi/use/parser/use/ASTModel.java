@@ -43,11 +43,11 @@ import org.tzi.use.uml.ocl.type.EnumType;
  */
 public class ASTModel extends ASTAnnotatable {
     protected final Token fName;
-    private final List<ASTEnumTypeDefinition> fEnumTypeDefs;
+    protected final List<ASTEnumTypeDefinition> fEnumTypeDefs;
     protected final List<ASTClass> fClasses;
     protected final List<ASTAssociationClass> fAssociationClasses;
     protected final List<ASTAssociation> fAssociations;
-    private final List<ASTSignal> signals;
+    protected final List<ASTSignal> signals;
     protected final List<ASTConstraintDefinition> fConstraints;
     protected final List<ASTPrePost> fPrePosts;
 

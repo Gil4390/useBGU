@@ -161,6 +161,19 @@ public class MMultiModel extends MModel{
     }
 
     @Override
+    public EnumType enumType(String name) {
+        if(name.contains("@")) {
+            //regular enum
+            String modelName = name.split("@")[0];
+            String enumName = name.split("@")[1];
+            return fModels.get(modelName).enumType(enumName);
+        } else {
+            //inter-enum
+            return super.enumType(name);
+        }
+    }
+
+    @Override
     public MClass getClass(String name) {
         if (!currentModel.isEmpty()){
             return fModels.get(currentModel).getClass(currentModel + "@" + name);
@@ -288,43 +301,4 @@ public class MMultiModel extends MModel{
     }
 
 
-
-    public MModel toMModel() throws Exception {
-        String delimiter= "@";
-        MModel result_model = new MModel(name());
-
-        for (MModel model : fModels.values()) {
-            // regular classes
-            for (MClass mClass : model.classes()) {
-                if (mClass instanceof MClassImpl) {
-                    ((MClassImpl)mClass).setName(model.name() + delimiter + mClass.name());
-
-                    result_model.addClass(mClass);
-                }
-            }
-
-            // generalizations
-            Iterator<MGeneralization> iterator = model.generalizationGraph().edgeIterator();
-            while (iterator.hasNext()){
-                MGeneralization gen = iterator.next();
-                result_model.addGeneralization(gen);
-            }
-
-            // associations
-            for (MAssociation mAssociation : model.associations()){
-                if(!(mAssociation instanceof MAssociationClass)) {
-                    ((MAssociationImpl)mAssociation).setName(model.name() + delimiter + mAssociation.name());
-                    result_model.addAssociation(mAssociation);
-                }
-
-            }
-            // constraints
-            for (MClassInvariant mClassInv : model.classInvariants()){
-                mClassInv.setName(model.name() + delimiter + mClassInv.name());
-                result_model.addClassInvariant(mClassInv);
-            }
-        }
-
-        return result_model;
-    }
 }

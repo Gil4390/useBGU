@@ -163,5 +163,11 @@ public class MultiModelCreationTest extends TestCase {
         assertEquals(4, multiModel.numOfAssociations());
     }
 
+    public void testCreateMultiModelWithOperations() {
+        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelWithOperations();
+        assertEquals(2, multiModel.getClass("model1@Person").operations().size());
+        assertEquals(2, multiModel.getClass("Person").operations().size());
+    }
+
 
 }
