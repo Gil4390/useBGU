@@ -37,6 +37,175 @@ multi_model returns [ASTMultiModel n]
     EOF
     ;
 
+/* ------------------------------------
+  interGeneralClassifierDefinition ::=
+    [ "abstract" ]
+   	 { classDefinition | interAssociationClassDefinition | signalDefinition }
+*/
+interGeneralClassifierDefinition[ASTModel n]
+@init{
+  boolean isAbstract = false;
+}
+:
+	as = annotationSet
+    ( 'abstract' { isAbstract = true; } )?
+    (
+        c  = classDefinition[isAbstract]
+             { $n.addClass($c.n); $c.n.setAnnotations($as.annotations); }
+
+      | ac = interAssociationClassDefinition[isAbstract]
+             { $n.addAssociationClass($ac.n); $ac.n.setAnnotations($as.annotations); }
+
+      | s  = signalDefinition[isAbstract]
+             { $n.addSignal($s.n); $s.n.setAnnotations($as.annotations); }
+    )
+
+;
+
+
+/* ------------------------------------
+  interAssociationClassDefinition ::=
+    [ "abstract" ] "associationClass" id [ specialization ]
+    [ attributes ]
+    [ operations ]
+    [ constraints ]
+    [( "aggregation" | "composition" )] "between"
+    interAssociationEnd { interAssociationEnd }+
+    "end"
+
+  specialization ::= "<" idList
+  attributes ::= "attributes" { attributeDefinition }
+  operations ::= "operations" { operationDefinition }
+  constraints ::= "constraints" { invariantClause }
+*/
+interAssociationClassDefinition[boolean isAbstract] returns [ASTAssociationClass n]
+@init {List idList; Token t = null;}
+:
+    classKW = ('associationClass' | 'associationclass')
+    {
+    	if ($classKW.text.equals("associationClass")) {
+               reportWarning("the 'associationClass' keyword is deprecated and will " +
+                             "not be supported in the future, use 'associationclass' instead");
+            }
+    }
+
+    name=IDENT { $n = new ASTAssociationClass($name, isAbstract); }
+    ( LESS idListRes=idList { $n.addSuperClasses($idListRes.idList); } )?
+    ('between'
+    ae=interAssociationEnd { $n.addEnd($ae.n); }
+    ( ae=interAssociationEnd { $n.addEnd($ae.n); } )+
+    )?
+    ( 'attributes'
+      ( a=attributeDefinition { $n.addAttribute($a.n); } )*
+    )?
+    ( 'operations'
+      ( op=operationDefinition { $n.addOperation($op.n); } )*
+    )?
+    ( 'constraints'
+      (
+        inv=invariantClause { $n.addInvariantClause($inv.n); }
+      )*
+    )?
+    ( 'statemachines'
+      (
+        sm=stateMachine { $n.addStateMachine($sm.n); }
+      )*
+    )?
+
+    ( { t = input.LT(1); }
+      ( keyAggregation | keyComposition )
+      { $n.setKind(t); }
+    )?
+    'end'
+    ;
+
+
+/* ------------------------------------
+  interAssociationDefinition ::=
+    ( "association" | "aggregation" | "composition" )
+    id "between"
+    interAssociationEnd interAssociationEnd { interAssociationEnd }
+    "end"
+*/
+interAssociationDefinition returns [ASTAssociation n]
+@init{ Token t = null; }
+:
+	as = annotationSet
+    { t = input.LT(1); }
+    ( keyAssociation | keyAggregation | keyComposition )
+    name=IDENT { $n = new ASTAssociation(t, $name); $n.setAnnotations($as.annotations); }
+    'between'
+    ae=interAssociationEnd { $n.addEnd($ae.n); }
+    ( ae=interAssociationEnd { $n.addEnd($ae.n); } )+
+    'end'
+    ;
+
+
+/* ------------------------------------
+  interAssociationEnd ::=
+    modelId "@" clsId "[" multiplicity "]" [ "role" id ] ( "ordered" | "subsets" id | "union" | "redefines" )* [ ";" ]
+*/
+interAssociationEnd returns [ASTInterAssociationEnd n]
+:
+	as = annotationSet
+    ( modelName=IDENT AT clsName=IDENT | clsName=IDENT ) LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
+    ( keyRole rn=IDENT { $n.setRolename($rn); } )?
+    (
+        'ordered' { $n.setOrdered(); }
+      | 'subsets' sr=IDENT { $n.addSubsetsRolename($sr); }
+      | keyUnion { $n.setUnion(true); }
+      | 'redefines' rd=IDENT { $n.addRedefinesRolename($rd); }
+      | (keyDerived|keyDerive) ( LPAREN parameter = elemVarsDeclaration RPAREN)? EQUAL exp=expression { $n.setDerived($exp.n, $parameter.n); }
+      | keyQualifier qualifiers = paramList {$n.setQualifiers($qualifiers.paramList); }
+    )*
+    ( SEMI )?
+    ;
+
+
+/* ------------------------------------
+  interInvariant ::=
+    invariantContext invariantClause { invariantClause }
+
+  interInvariantContext :=
+    "context" [ id ":" ] multiType | simpleType
+*/
+interInvariant returns [ASTConstraintDefinition n]
+:
+    { $n = new ASTConstraintDefinition(); }
+    'context'
+    ( v=IDENT { $n.addVarName($v); }
+       (',' v=IDENT  { $n.addVarName($v); } )* COLON )?
+    ( t=multiType { $n.setType($t.n); } | t=simpleType  { $n.setType($t.n); } )
+    ( inv=invariantClause { $n.addInvariantClause($inv.n); } )* //+
+    ;
+
+
+/* ------------------------------------
+  interPrePost ::=
+    prePostContext prePostClause { prePostClause }
+
+  interPrePostContext :=
+    "context"
+    (id "::" id paramList [ ":" type ])
+    |
+    (multiType "::" id paramList [ ":" type ])
+*/
+interPrePost returns [ASTPrePost n]
+:
+    'context'
+    ((classname=IDENT COLON_COLON opname=IDENT pl=paramList ( COLON rt=type )?
+    { $n = new ASTPrePost($classname, $opname, $pl.paramList, $rt.n); })
+    |
+    (t=multiType COLON_COLON opname=IDENT pl=paramList ( COLON rt=type )?
+    { $n = new ASTPrePost(t.name(), $opname, $pl.paramList, $rt.n); }))
+    ( ppc=prePostClause { n.addPrePostClause(ppc); } )+
+    ;
+
+
+/*
+-------------------------end of new multi-model rules----------------------------------
+*/
+
 /*
     model ::= internal_model EOF
 */
@@ -107,31 +276,6 @@ generalClassifierDefinition[ASTModel n]
              { $n.addSignal($s.n); $s.n.setAnnotations($as.annotations); }
     )
        
-;
-
-/* ------------------------------------
-  interGeneralClassifierDefinition ::=
-    [ "abstract" ]
-   	 { classDefinition | interAssociationClassDefinition | signalDefinition }
-*/
-interGeneralClassifierDefinition[ASTModel n]
-@init{
-  boolean isAbstract = false;
-}
-:
-	as = annotationSet
-    ( 'abstract' { isAbstract = true; } )?
-    (
-        c  = classDefinition[isAbstract]
-             { $n.addClass($c.n); $c.n.setAnnotations($as.annotations); }
-
-      | ac = interAssociationClassDefinition[isAbstract]
-             { $n.addAssociationClass($ac.n); $ac.n.setAnnotations($as.annotations); }
-
-      | s  = signalDefinition[isAbstract]
-             { $n.addSignal($s.n); $s.n.setAnnotations($as.annotations); }
-    )
-
 ;
 
 /* ------------------------------------
@@ -229,53 +373,7 @@ associationClassDefinition[boolean isAbstract] returns [ASTAssociationClass n]
     'end'
     ;
 
-/*
 
-  interAssociationClassDefinition ::=
-
-*/
-interAssociationClassDefinition[boolean isAbstract] returns [ASTAssociationClass n]
-@init {List idList; Token t = null;}
-:
-    classKW = ('associationClass' | 'associationclass')
-    {
-    	if ($classKW.text.equals("associationClass")) {
-               reportWarning("the 'associationClass' keyword is deprecated and will " +
-                             "not be supported in the future, use 'associationclass' instead");
-            }
-    }
-
-    name=IDENT { $n = new ASTAssociationClass($name, isAbstract); }
-    ( LESS idListRes=idList { $n.addSuperClasses($idListRes.idList); } )?
-    ('between'
-    ae=interAssociationEnd { $n.addEnd($ae.n); }
-    ( ae=interAssociationEnd { $n.addEnd($ae.n); } )+
-    )?
-    ( 'attributes'
-      ( a=attributeDefinition { $n.addAttribute($a.n); } )*
-    )?
-    ( 'operations'
-      ( op=operationDefinition { $n.addOperation($op.n); } )*
-    )?
-    ( 'constraints'
-      (
-        inv=invariantClause { $n.addInvariantClause($inv.n); }
-      )*
-    )?
-    ( 'statemachines'
-      (
-        sm=stateMachine { $n.addStateMachine($sm.n); }
-      )*
-    )?
-
-    ( { t = input.LT(1); }
-      ( keyAggregation | keyComposition )
-      { $n.setKind(t); }
-    )?
-    'end'
-    ;
-
-    
 /* ------------------------------------
   attributeDefinition ::= 
     id ":" type [ ";" ]
@@ -322,43 +420,6 @@ operationDefinition returns [ASTOperation n]
     ( SEMI )?
     ;
 
-
-/* ------------------------------------
-  interAssociationDefinition ::=
-    ( "association" | "aggregation" | "composition" )
-    id "between"
-    interAssociationEnd interAssociationEnd { interAssociationEnd }
-    "end"
-*/
-interAssociationDefinition returns [ASTAssociation n]
-@init{ Token t = null; }
-:
-	as = annotationSet
-    { t = input.LT(1); }
-    ( keyAssociation | keyAggregation | keyComposition )
-    name=IDENT { $n = new ASTAssociation(t, $name); $n.setAnnotations($as.annotations); }
-    'between'
-    ae=interAssociationEnd { $n.addEnd($ae.n); }
-    ( ae=interAssociationEnd { $n.addEnd($ae.n); } )+
-    'end'
-    ;
-
-/* ------------------------------------
-  interInvariant ::=
-    invariantContext invariantClause { invariantClause }
-
-  invariantContext :=
-    "context" [ id ":" ] simpleType
-*/
-interInvariant returns [ASTConstraintDefinition n]
-:
-    { $n = new ASTConstraintDefinition(); }
-    'context'
-    ( v=IDENT { $n.addVarName($v); }
-       (',' v=IDENT  { $n.addVarName($v); } )* COLON )?
-    ( t=multiType { $n.setType($t.n); } | t=simpleType  { $n.setType($t.n); } )
-    ( inv=invariantClause { $n.addInvariantClause($inv.n); } )* //+
-    ;
 /* ------------------------------------
   associationDefinition ::= 
     ( "association" | "aggregation" | "composition" ) 
@@ -377,28 +438,6 @@ associationDefinition returns [ASTAssociation n]
     ae=associationEnd { $n.addEnd($ae.n); }
     ( ae=associationEnd { $n.addEnd($ae.n); } )+
     'end'
-    ;
-
-
-
-/* ------------------------------------
-  interAssociationEnd ::=
-    modelId "@" clsId "[" multiplicity "]" [ "role" id ] ( "ordered" | "subsets" id | "union" | "redefines" )* [ ";" ]
-*/
-interAssociationEnd returns [ASTInterAssociationEnd n]
-:
-	as = annotationSet
-    ( modelName=IDENT AT clsName=IDENT | clsName=IDENT ) LBRACK m=multiplicity RBRACK { $n = new ASTInterAssociationEnd($modelName, $clsName, $m.n); $n.setAnnotations($as.annotations); }
-    ( keyRole rn=IDENT { $n.setRolename($rn); } )?
-    (
-        'ordered' { $n.setOrdered(); }
-      | 'subsets' sr=IDENT { $n.addSubsetsRolename($sr); }
-      | keyUnion { $n.setUnion(true); }
-      | 'redefines' rd=IDENT { $n.addRedefinesRolename($rd); }
-      | (keyDerived|keyDerive) ( LPAREN parameter = elemVarsDeclaration RPAREN)? EQUAL exp=expression { $n.setDerived($exp.n, $parameter.n); }
-      | keyQualifier qualifiers = paramList {$n.setQualifiers($qualifiers.paramList); }
-    )*
-    ( SEMI )?
     ;
 
 
@@ -512,23 +551,6 @@ prePost returns [ASTPrePost n]
     ( ppc=prePostClause { n.addPrePostClause(ppc); } )+
     ;
 
-/* ------------------------------------
-  interPrePost ::=
-    prePostContext prePostClause { prePostClause }
-
-  prePostContext :=
-    "context" id "::" id paramList [ ":" type ]
-*/
-interPrePost returns [ASTPrePost n]
-:
-    'context'
-    ((classname=IDENT COLON_COLON opname=IDENT pl=paramList ( COLON rt=type )?
-    { $n = new ASTPrePost($classname, $opname, $pl.paramList, $rt.n); })
-    |
-    (t=multiType COLON_COLON opname=IDENT pl=paramList ( COLON rt=type )?
-    { $n = new ASTPrePost(t.name(), $opname, $pl.paramList, $rt.n); }))
-    ( ppc=prePostClause { n.addPrePostClause(ppc); } )+
-    ;
 
 /* ------------------------------------
   prePostClause :=

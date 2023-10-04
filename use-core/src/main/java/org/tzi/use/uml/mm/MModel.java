@@ -55,21 +55,21 @@ public class MModel extends MModelElementImpl {
 		int fInt = 1;
 	}
 
-	private Map<String, EnumType> fEnumTypes;
+	protected Map<String, EnumType> fEnumTypes;
 
 	protected Map<String, MClass> fClasses;
 
 	protected Map<String, MAssociation> fAssociations;
 
-	private DirectedGraph<MClassifier, MGeneralization> fGenGraph;
+	protected DirectedGraph<MClassifier, MGeneralization> fGenGraph;
 
 	protected Map<String, MClassInvariant> fClassInvariants;
 
-	private Map<String, MPrePostCondition> fPrePostConditions;
+	protected Map<String, MPrePostCondition> fPrePostConditions;
 
-	private String fFilename; // name of .use file
+	protected String fFilename; // name of .use file
 
-	private Map<String, MSignal> signals;
+	protected Map<String, MSignal> signals;
 
 	protected MModel(String name) {
 		super(name);

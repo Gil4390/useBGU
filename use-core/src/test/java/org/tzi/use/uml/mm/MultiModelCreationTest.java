@@ -14,11 +14,8 @@ public class MultiModelCreationTest extends TestCase {
 
     public void testCreateMultiModelWithSingleModel() {
         try {
-
             MMultiModel multiModel2 = TestMultiModelUtil.getInstance().createMultiModelSingleModel2();
             assertEquals(1, multiModel2.size());
-
-
         } catch (Exception e) {
             throw ( new Error( e ) );
         }
@@ -26,10 +23,8 @@ public class MultiModelCreationTest extends TestCase {
 
     public void testCreateMultiModelWithTwoModels() {
         try {
-
             MMultiModel multiModel2 = TestMultiModelUtil.getInstance().createMultiModelTwoModels2();
             assertEquals(2, multiModel2.size());
-
         } catch (Exception e) {
             throw ( new Error( e ) );
         }
@@ -37,10 +32,8 @@ public class MultiModelCreationTest extends TestCase {
 
     public void testCreateMultiModelTwoModelsAssociationClass() {
         try {
-
             MMultiModel multiModel2 = TestMultiModelUtil.getInstance().createMultiModelTwoModelsAssociationClass2();
             assertEquals(2, multiModel2.size());
-
         } catch (Exception e) {
             throw ( new Error( e ) );
         }
@@ -76,17 +69,6 @@ public class MultiModelCreationTest extends TestCase {
             throw ( new Error( e ) );
         }
     }
-
-//    public void testCreateMultiModelWithTwoModels_InvSameFail() {
-//        try {
-//            TestMultiModelUtil.getInstance().createMultiModelTwoModelsInvSameName2();
-//            fail("Same model name not handled!");
-//        } catch (Exception e) {
-//            assertEquals(e.getMessage(), "MultiModel already contains a model `PersonCompany1'.");
-//        }
-//    }
-
-
 
     //endregion
 
@@ -137,17 +119,13 @@ public class MultiModelCreationTest extends TestCase {
 
     //endregion
 
+    //region inter
     public void testCreateMultiModelWithInterAssociations() {
         MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInterAssociation();
         UseMultiModelApi api = new UseMultiModelApi(multimodel);
 
         assertEquals(1,api.getMultiModel().fAssociations.size());
 
-    }
-
-    public void testCreateMultiModelFromCompile() {
-        MMultiModel multiModel = TestMultiModelUtil.getInstance().createEmptyMultiModel();
-        assertTrue( multiModel.models().isEmpty() );
     }
 
 
@@ -169,5 +147,6 @@ public class MultiModelCreationTest extends TestCase {
         assertEquals(2, multiModel.getClass("Person").operations().size());
     }
 
+    //endregion
 
 }

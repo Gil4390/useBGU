@@ -400,7 +400,7 @@ public final class MSystemState {
 		return linkSet.hasLink(objects, qualifierValues);
 	}
 	
-	private static Pattern validObjectNamePattern = Pattern.compile("[$a-zA-Z_][a-zA-Z_0-9@]*");
+	private static Pattern validObjectNamePattern = Pattern.compile("[$a-zA-Z_][a-zA-Z_0-9]*");
 	
 	/**
 	 * Checks for a valid object name.

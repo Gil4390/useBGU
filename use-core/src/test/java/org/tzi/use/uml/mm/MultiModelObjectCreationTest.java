@@ -10,7 +10,8 @@ import org.tzi.use.uml.sys.MSystem;
 import java.io.PrintWriter;
 
 public class MultiModelObjectCreationTest extends TestCase {
-    //region object, link creation
+
+    //region object and link creation
     public void testCreateMultiModelWithSingleModelWithObjects() {
         try {
             MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelSingleModel();
@@ -137,8 +138,8 @@ public class MultiModelObjectCreationTest extends TestCase {
             systemApi.createObjects("model1@Person", "p1");
             // creation of an object (c1) of the class model1@Company
             systemApi.createObjects("model1@Company", "c1");
-            // creation of a link between p1 and c1 of an association
-            systemApi.createLink("model1@Job", "p1", "c1");
+
+            systemApi.createLinkObject("model1@Job", "j1", "p1", "c1");
 
             // creation of an object (p2) of the class model2@Person
             systemApi.createObjects("model2@Person", "p2");
@@ -149,8 +150,8 @@ public class MultiModelObjectCreationTest extends TestCase {
             systemApi.createObjects("model1@Person", "p3");
             // creation of an object (c3) of the class PersonCompany1@Company
             systemApi.createObjects("model1@Company", "c3");
-            // creation of a link between p3 and c3 of an association
-            systemApi.createLink("model1@Job", "p3", "c3");
+
+            systemApi.createLinkObject("model1@Job", "j3","p3", "c3");
 
             Assert.assertEquals(8, system.state().numObjects());
             Assert.assertEquals(2, system.state().allLinks().size());
@@ -159,8 +160,6 @@ public class MultiModelObjectCreationTest extends TestCase {
             throw ( new Error( e ) );
         }
     }
-
-
 
     //endregion
 
@@ -225,31 +224,6 @@ public class MultiModelObjectCreationTest extends TestCase {
             assertTrue(systemApi.checkState());
 
 
-
-        } catch (Exception e) {
-            throw ( new Error( e ) );
-        }
-    }
-
-
-    //endregion
-
-    //region inter-links
-
-    public void testCreateMultiModelInterLinks() {
-        try {
-            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInterAssociation();
-
-            UseMultiModelApi multiApi = new UseMultiModelApi(multiModel);
-            UseSystemApiUndoable systemApi = new UseSystemApiUndoable(multiApi);
-
-            MSystem system = systemApi.getSystem();
-
-            systemApi.createObjects("PersonCompany1@Person", "p1");
-            systemApi.createObjects("PersonCompany2@Company", "c1");
-            systemApi.createLink("Job","p1","c1");
-
-            assertEquals(1, system.state().allLinks().size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );
@@ -619,7 +593,6 @@ public class MultiModelObjectCreationTest extends TestCase {
 
     //endregion
 
-
     //region inter-class
 
     public void testCreateMultiModelWithInterClass() {
@@ -644,6 +617,26 @@ public class MultiModelObjectCreationTest extends TestCase {
             systemApi.setAttributeValue("y1","salary","60");
 
             assertTrue(systemApi.checkState());
+
+        } catch (Exception e) {
+            throw ( new Error( e ) );
+        }
+    }
+
+    public void testCreateMultiModelInterLinks() {
+        try {
+            MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModelsInterAssociation();
+
+            UseMultiModelApi multiApi = new UseMultiModelApi(multiModel);
+            UseSystemApiUndoable systemApi = new UseSystemApiUndoable(multiApi);
+
+            MSystem system = systemApi.getSystem();
+
+            systemApi.createObjects("PersonCompany1@Person", "p1");
+            systemApi.createObjects("PersonCompany2@Company", "c1");
+            systemApi.createLink("Job","p1","c1");
+
+            assertEquals(1, system.state().allLinks().size());
 
         } catch (Exception e) {
             throw ( new Error( e ) );
