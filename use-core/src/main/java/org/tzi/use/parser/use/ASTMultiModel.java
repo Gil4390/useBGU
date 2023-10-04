@@ -9,6 +9,14 @@ import org.tzi.use.uml.ocl.type.EnumType;
 
 import java.util.*;
 
+/**
+ * Node of the abstract syntax tree constructed by the parser.
+ *
+ * @author Gil Khais
+ * @author Amiel Saad
+ */
+
+
 public class ASTMultiModel extends ASTModel {
 
     private final List<ASTModel> fModels;
@@ -22,6 +30,11 @@ public class ASTMultiModel extends ASTModel {
         fModels.add(model);
     }
 
+    /**
+     * Generates all models related to the multi-model and inter-elements.
+     * @param multiCtx
+     * @return
+     */
     public MMultiModel gen(MultiContext multiCtx) {
         MMultiModel mMultiModel = multiCtx.modelFactory().createMultiModel(fName.getText());
         mMultiModel.setFilename(multiCtx.filename());

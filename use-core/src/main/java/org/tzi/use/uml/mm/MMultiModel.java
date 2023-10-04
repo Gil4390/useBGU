@@ -173,6 +173,10 @@ public class MMultiModel extends MModel{
         }
     }
 
+    /**
+     * Returns the specified class by the specified model, if there is
+     * no model name, it's an inter-class
+     */
     @Override
     public MClass getClass(String name) {
         if (!currentModel.isEmpty()){
@@ -195,16 +199,32 @@ public class MMultiModel extends MModel{
         return model.getClass(clsName);
     }
 
+    /**
+     * Returns the related association by model name
+     * @param modelName related model name
+     * @param assocName association name
+     * @return
+     */
     public MAssociation getAssociation(String modelName, String assocName){
         MModel model = this.getModel(modelName);
         return model.getAssociation(assocName);
     }
 
+    /**
+     * Returns the related invariant by model name
+     * @param modelName related model name
+     * @param invName invariant name
+     * @return
+     */
     public MClassInvariant getClassInvariant(String modelName, String invName){
         MModel model = this.getModel(modelName);
         return model.getClassInvariant(invName);
     }
 
+    /**
+     * Returns all classes in each model and all inter-classes
+     * @return
+     */
     @Override
     public Collection<MClass> classes() {
         Collection<MClass> classes = new ArrayList<>();
@@ -221,6 +241,10 @@ public class MMultiModel extends MModel{
         return this.fClasses.values();
     }
 
+    /**
+     * Returns all associations in each model and all inter-associations
+     * @return
+     */
     @Override
     public Collection<MAssociation> associations() {
         Collection<MAssociation> associations = new ArrayList<>();
@@ -237,6 +261,10 @@ public class MMultiModel extends MModel{
         return this.fAssociations.values();
     }
 
+    /**
+     * Returns all class invariants in each model and all inter-invariants
+     * @return
+     */
     @Override
     public Collection<MClassInvariant> classInvariants() {
         Collection<MClassInvariant> invariants = new ArrayList<>();
@@ -247,6 +275,13 @@ public class MMultiModel extends MModel{
         invariants.addAll(this.fClassInvariants.values());
         return invariants;
     }
+
+    /**
+     * Return class invariant by a given name and a model name, if no model
+     * name specified, returns the inter-invariant.
+     * @param name class invariant name
+     * @return
+     */
 
     @Override
     public MClassInvariant getClassInvariant(String name) {

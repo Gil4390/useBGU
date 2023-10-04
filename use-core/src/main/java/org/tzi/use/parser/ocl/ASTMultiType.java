@@ -6,6 +6,14 @@ import org.tzi.use.parser.Context;
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.ocl.type.Type;
 
+/**
+ *
+ * Node of the abstract syntax tree constructed by the parser.
+ *
+ * @author Gil Khais
+ * @author Amiel Saad
+ */
+
 public class ASTMultiType extends ASTSimpleType{
 
     private Token fModelName;

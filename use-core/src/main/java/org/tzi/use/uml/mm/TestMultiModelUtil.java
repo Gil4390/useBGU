@@ -387,7 +387,7 @@ public class TestMultiModelUtil {
     public MMultiModel createMultiModelWithInvOclIsType() {
         try {
             UseMultiModelApi multiApi = helper1();
-            multiApi.createInvariant("inv1", "model1@Foo", "self.r1->exists(oclIsTypeOf(model1@B))", false);
+            multiApi.createInvariant("inv1", "model1@Foo", "self.r1->exists(oclIsTypeOf(B))", false);
 
             return multiApi.getMultiModel();
         } catch (Exception e ) {

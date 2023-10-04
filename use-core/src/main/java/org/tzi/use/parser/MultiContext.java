@@ -15,10 +15,16 @@ public class MultiContext extends Context{
 
     private MultiContext parent;
     private MultiModelFactory fMultiModelFactory;
-    //private Map<String, Context> contextMap;
+
+    /**
+     *
+     * @param filename
+     * @param err
+     * @param globalBindings
+     * @param factory
+     */
     public MultiContext(String filename, PrintWriter err, VarBindings globalBindings, MultiModelFactory factory) {
         super(filename, err, globalBindings, factory);
-        //contextMap = new HashMap<>();
         fMultiModelFactory = factory;
         parent = null;
     }
@@ -27,13 +33,11 @@ public class MultiContext extends Context{
         this.parent = parent;
     }
 
-//    public void setContext(String modelName, Context ctx){
-//        contextMap.put(modelName, ctx);
-//    }
-//
-//    public Context getContext(String modelName) {
-//        return contextMap.get("(" + modelName + ")");
-//    }
+    /**
+     * reports all errors to the parent Context.
+     * @param t
+     * @param msg
+     */
 
     @Override
     public void reportError(Token t, String msg) {
@@ -65,12 +69,6 @@ public class MultiContext extends Context{
     public MultiModelFactory modelFactory() {
         return this.fMultiModelFactory;
     }
-
-//
-//    @Override
-//    public void setModel(MModel model) {
-//        return;
-//    }
 
     public void setMultiModel(MMultiModel multiModel){
         super.setModel(multiModel);

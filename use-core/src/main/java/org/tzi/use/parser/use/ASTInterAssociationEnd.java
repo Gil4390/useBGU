@@ -13,6 +13,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Node of the abstract syntax tree constructed by the parser.
+ *
+ * @author Gil Khais
+ * @author Amiel Saad
+ */
+
 public class ASTInterAssociationEnd extends ASTAssociationEnd{
 
     private Token fModelName;
@@ -22,11 +29,22 @@ public class ASTInterAssociationEnd extends ASTAssociationEnd{
         fModelName = modelName;
     }
 
+    /**
+     * The name of the related model
+     * @return
+     */
     public String modelName() {
         return fModelName.getText();
     }
 
-
+    /**
+     * Same functionality as parent class, only distinguish between an
+     * inter-class and regular-class.
+     * @param ctx
+     * @param kind
+     * @return
+     * @throws SemanticException
+     */
     @Override
     public MAssociationEnd gen(Context ctx, int kind) throws SemanticException {
         if(fModelName == null) {

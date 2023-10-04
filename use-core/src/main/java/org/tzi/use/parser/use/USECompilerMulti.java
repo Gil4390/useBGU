@@ -12,9 +12,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
+/**
+ * Compiler for USE Multi specifications.
+ *
+ * @author Gil Khais
+ * @author Amiel Saad
+ */
+
 public class USECompilerMulti {
 
     private USECompilerMulti() {}
+
+    /**
+     * Compiles a multi-model specification.
+     *
+     * @param  in the source to be compiled
+     * @param  inName name of the source stream
+     * @param  err output stream for error messages
+     * @param factory factory for object creation
+     * @return MMultiModel null if there were any errors
+     */
 
     public static MMultiModel compileMultiSpecification(InputStream in,
                                                         String inName,
