@@ -501,7 +501,7 @@ public class TestModelUtil {
      * and one association (Job) between Person and Company
      * @param modelName The model is created with the given name
      */
-    public MModel createModelWithGeneralization(String modelName) {
+    public MModel createModelWithGen(String modelName) {
         try {
             UseModelApi api1 = new UseModelApi(modelName);
             api1.createClass("Person", false );
@@ -585,7 +585,8 @@ public class TestModelUtil {
     /**
      * Model with 3 classes and 4 invariants.
      *
-     * based on the example from <a href="https://github.com/useocl/use/blob/master/manual/main.md">https://github.com/useocl/use/blob/master/manual/main.md</a>
+     * based on the example from
+     * <a href="https://github.com/useocl/use/blob/master/manual/main.md">https://github.com/useocl/use/blob/master/manual/main.md</a>
      *
      */
     public MModel createComplexModelWithConstraints(String modelName) {
