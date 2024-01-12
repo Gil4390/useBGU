@@ -335,5 +335,43 @@ public class MMultiModel extends MModel{
         return true;
     }
 
+    public MModel toMModel() throws Exception {
+        String delimiter= "@";
+        MModel result_model = new MModel(name());
+
+        for (MModel model : fModels.values()) {
+            // regular classes
+            for (MClass mClass : model.classes()) {
+                if (mClass instanceof MClassImpl) {
+                    ((MClassImpl)mClass).setName(model.name() + delimiter + mClass.name());
+
+                    result_model.addClass(mClass);
+                }
+            }
+
+            // generalizations
+            Iterator<MGeneralization> iterator = model.generalizationGraph().edgeIterator();
+            while (iterator.hasNext()){
+                MGeneralization gen = iterator.next();
+                result_model.addGeneralization(gen);
+            }
+
+            // associations
+            for (MAssociation mAssociation : model.associations()){
+                if(!(mAssociation instanceof MAssociationClass)) {
+                    ((MAssociationImpl)mAssociation).setName(model.name() + delimiter + mAssociation.name());
+                    result_model.addAssociation(mAssociation);
+                }
+
+            }
+            // constraints
+            for (MClassInvariant mClassInv : model.classInvariants()){
+                mClassInv.setName(model.name() + delimiter + mClassInv.name());
+                result_model.addClassInvariant(mClassInv);
+            }
+        }
+
+        return result_model;
+    }
 
 }

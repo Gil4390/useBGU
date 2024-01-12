@@ -33,24 +33,24 @@ import org.tzi.use.util.collections.CollectionUtil;
  */
 
 public abstract class MModelElementImpl implements MModelElement {
-	//TODO: Use delegation for Annotatable?
-	
-	private static Map<String, MutableInteger> fNameMap = new HashMap<String, MutableInteger>();
-	
-	private final String fName;
-	
-	/**
-	 * The hash code of an model elements does not change after loading,
-	 * therefore we don't need to calculate it every time.
-	 * 
-	 */
-    private final int hashCode;
-    
+    //TODO: Use delegation for Annotatable?
+
+    private static Map<String, MutableInteger> fNameMap = new HashMap<String, MutableInteger>();
+
+    private String fName;
+
+    /**
+     * The hash code of an model elements does not change after loading,
+     * therefore we don't need to calculate it every time.
+     *
+     */
+    private int hashCode;
+
     /**
      * Possible annotations of this model element.
      */
     private Map<String, MElementAnnotation> annotations = Collections.emptyMap();
-    
+
     // We don't want to allocate a new Integer object each time we
     // have to increment the value in a map.
     static class MutableInteger {
@@ -63,7 +63,7 @@ public abstract class MModelElementImpl implements MModelElement {
         fName = name;
         hashCode = fName.hashCode();
     }
-    
+
     /**
      * Creates a new model element with optional name. If the name is
      * null or empty a new name starting with <code>prefix</code> will
@@ -83,7 +83,7 @@ public abstract class MModelElementImpl implements MModelElement {
         fName = name;
         hashCode = fName.hashCode();
     }
-    
+
     /**
      * Returns the name of this model element.
      */
@@ -98,41 +98,41 @@ public abstract class MModelElementImpl implements MModelElement {
 
     @Override
     public Map<String, MElementAnnotation> getAllAnnotations() {
-    	return this.annotations;
+        return this.annotations;
     }
-    
+
     @Override
     public boolean isAnnotated() {
-    	return !this.annotations.isEmpty();
+        return !this.annotations.isEmpty();
     }
-    
+
     @Override
     public MElementAnnotation getAnnotation(String name) {
-    	if (this.annotations.containsKey(name)) {
-    		return this.annotations.get(name);
-    	} else {
-    		return null;
-    	}
+        if (this.annotations.containsKey(name)) {
+            return this.annotations.get(name);
+        } else {
+            return null;
+        }
     }
-    
+
     @Override
     public String getAnnotationValue(String annotationName, String attributeName) {
-    	MElementAnnotation ann = getAnnotation(annotationName);
-    	
-    	if (ann == null) return "";
-    	
-    	String value = ann.getAnnotationValue(attributeName); 
-    	return (value == null ? "" : value);
+        MElementAnnotation ann = getAnnotation(annotationName);
+
+        if (ann == null) return "";
+
+        String value = ann.getAnnotationValue(attributeName);
+        return (value == null ? "" : value);
     }
-    
+
     @Override
     public void addAnnotation(MElementAnnotation annotation) {
-    	this.annotations = CollectionUtil.initAsHashMap(this.annotations);
-    	this.annotations.put(annotation.getName(), annotation);
+        this.annotations = CollectionUtil.initAsHashMap(this.annotations);
+        this.annotations.put(annotation.getName(), annotation);
     }
-    
+
     @Override
-    public int hashCode() { 
+    public int hashCode() {
         return hashCode;
     }
 
@@ -142,18 +142,23 @@ public abstract class MModelElementImpl implements MModelElement {
      */
     @Override
     public boolean equals(Object obj) {
-    	if (obj == this )
+        if (obj == this )
             return true;
-    	if (obj == null)
-    		return false;
-    	
+        if (obj == null)
+            return false;
+
         if (hashCode != obj.hashCode())
-        	return false;
-                
+            return false;
+
         if (obj instanceof MModelElement)
             return fName.equals(((MModelElement) obj).name());
-        
+
         return false;
+    }
+
+    public void setName(String name) {
+        fName = name;
+        hashCode = fName.hashCode();
     }
 
     /**
