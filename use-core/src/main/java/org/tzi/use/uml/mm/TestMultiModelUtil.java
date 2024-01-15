@@ -105,6 +105,8 @@ public class TestMultiModelUtil {
             multiApi.createClass("PersonCompany2@Person", false);
             multiApi.createClass("PersonCompany2@Company", false);
 
+            multiApi.createAttribute("PersonCompany1@Person", "name", "String");
+
             return multiApi.getMultiModel();
         } catch (Exception e ) {
             throw new Error( e );

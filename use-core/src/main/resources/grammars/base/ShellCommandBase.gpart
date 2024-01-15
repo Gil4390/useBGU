@@ -86,6 +86,10 @@ singleLegacyStat returns [ASTStatement n]
   | 'set' e=expression aas = attAssignStat[$e.n] { $n = $aas.n; }
   | lis = lnkInsStat          { $n = $lis.n; }
   | lds = lnkDelStat          { $n = $lds.n; }
+  | lcrm = legacyCreateMulti  { $n = $lcrm.n; }
+  | lcam = legacyCreateAssignMulti  { $n = $lcam.n; }
+  | lcim = legacyCreateInsertMulti  { $n = $lcim.n; }
+  | lism = lnkInsStatMulti          { $n = $lism.n; }
 ;
 
 
@@ -280,4 +284,122 @@ legacyExecute returns [ASTStatement n]
     reportWarning("the execute command is not supported in this version"); 
     $n = new ASTEmptyStatement();
   }
+;
+
+////////////////////////////////////////////////////////////////////////////////
+// object creation without explicit variable binding
+//
+// syntax:
+// 'create' objectNames ':' modelName@className
+//
+// semantics:
+// for each object name a new object of class objectType is created
+////////////////////////////////////////////////////////////////////////////////
+legacyCreateMulti returns [ASTStatement n]
+:
+  'create'
+  objNames = identListMin1
+  COLON
+  objType = multiType
+
+  {
+    ASTSequenceStatement seq = new ASTSequenceStatement($start);
+
+    for (String objName : $objNames.n) {
+      seq.addStatement(
+        new ASTNewObjectStatement(
+          $start,
+          $objType.n,
+          new ASTStringLiteral(objName)));
+    }
+
+    $n = seq.simplify();
+  }
+;
+
+////////////////////////////////////////////////////////////////////////////////
+// object creation with explicit variable binding
+//
+// syntax:
+// 'assign' variableNames ':= create' modelName@className
+//
+// semantics:
+// for each variable name supplied, an object of class objectType and with a
+// unique object name is created and bound to that variable
+////////////////////////////////////////////////////////////////////////////////
+legacyCreateAssignMulti returns [ASTStatement n]
+:
+  'assign'
+  varNames = identListMin1
+  COLON_EQUAL
+  'create'
+  objType = multiType
+
+  {
+    ASTSequenceStatement seq = new ASTSequenceStatement($start);
+
+    for (String varName : $varNames.n) {
+      seq.addStatement(
+        new ASTVariableAssignmentStatement(
+          $start,
+          varName,
+          new ASTRValueNewObject($start, $objType.n)));
+    }
+
+    $n = seq.simplify();
+  }
+;
+
+////////////////////////////////////////////////////////////////////////////////
+// link object creation
+//
+// syntax:
+// 'create' name ':' modelName@className 'between' '(' participants ')'
+//
+// semantics:
+// creates a link object of type 'asClassName' with object name 'name'
+// between some participating objects defined by 'participants' and assigns the
+// created object to variable 'name'
+////////////////////////////////////////////////////////////////////////////////
+legacyCreateInsertMulti returns [ASTVariableAssignmentStatement n]
+:
+  'create'
+  name = IDENT
+  COLON
+  asClassName = multiType
+  'between'
+  LPAREN
+    participants = rValListMin2WithOptionalQualifiers
+  RPAREN
+
+  {
+    ASTNewLinkObjectStatement nlo =
+      new ASTNewLinkObjectStatement(
+        $start,
+        $asClassName.n,
+        $participants.participans,
+        $participants.qualifiers,
+        new ASTStringLiteral($name));
+
+    $n = new ASTVariableAssignmentStatement($start,
+      $name.text,
+      new ASTRValueNewLinkObject(nlo));
+  }
+;
+
+////////////////////////////////////////////////////////////////////////////////
+// multi-link insertion statement
+////////////////////////////////////////////////////////////////////////////////
+lnkInsStatMulti returns [ASTLinkInsertionStatement n]
+:
+  'insertMulti'
+  LPAREN
+    p = rValListMin2WithOptionalQualifiers
+  RPAREN
+  'into'
+  assName = IDENT
+  AT
+  modelName = IDENT
+
+  { $n = new ASTLinkInsertionStatement($start, $assName.text + "@" + $modelName.text, $p.participans, $p.qualifiers); }
 ;

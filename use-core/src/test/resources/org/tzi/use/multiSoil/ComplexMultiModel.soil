@@ -1,0 +1,24 @@
+!create m1:model1@Manager
+!set m1.salary := 1000
+
+!create m2:model1@Manager
+!set m2.salary := 1000
+
+!create s1:model2@Student
+!set s1.salary := 500
+!set s1.grade := 95
+
+!insert (m1,s1) into supervising
+
+
+!create school1:model2@School
+!set school1.name := 'BGU'
+
+!insertMulti (s1,school1) into model2@Studies
+!insert (m1,school1) into study
+
+!create meet1:model2@Meeting
+!insertMulti (s1,meet1) into model2@meets
+!insert (m2,meet1) into empMeets
+
+!set m2.level := 'B'

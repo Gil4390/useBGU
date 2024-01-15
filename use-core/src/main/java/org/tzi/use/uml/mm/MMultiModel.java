@@ -210,6 +210,19 @@ public class MMultiModel extends MModel{
         return model.getAssociation(assocName);
     }
 
+    @Override
+    public @Nullable MAssociation getAssociation(String name) {
+        if(name.contains("@")) {
+            //regular assoc
+            String modelName = name.split("@")[0];
+            String clsName = name.split("@")[1];
+            return fModels.get(modelName).getAssociation(clsName);
+        } else {
+            //inter-assoc
+            return super.getAssociation(name);
+        }
+    }
+
     /**
      * Returns the related invariant by model name
      * @param modelName related model name
