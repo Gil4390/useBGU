@@ -951,10 +951,16 @@ public class TestMultiModelUtil {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("Multi");
 
-            UseModelApi api1 = new UseModelApi("model1");
-            UseModelApi api2 = new UseModelApi("model2");
-            multiApi.addModel(api1.getModel());
-            multiApi.addModel(api2.getModel());
+//            UseModelApi api1 = new UseModelApi("model1");
+//            UseModelApi api2 = new UseModelApi("model2");
+//            multiApi.addModel(api1.getModel());
+//            multiApi.addModel(api2.getModel());
+
+            MModel model1 = multiApi.createModel("model1");
+            MModel model2 = multiApi.createModel("model2");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
+
 
             multiApi.createClass("model1@A", false );
             multiApi.createClass("model2@B", false );
@@ -965,7 +971,17 @@ public class TestMultiModelUtil {
             multiApi.createClass("B", false);
 
             multiApi.createAttribute("model1@A", "number", "Integer");
+            multiApi.createAttribute("model2@B", "number", "Integer");
+            multiApi.createAttribute("model2@C", "number", "Integer");
+            multiApi.createAttribute("A", "number", "Integer");
+            multiApi.createAttribute("B", "number", "Integer");
+
+            multiApi.createAttribute("model1@A", "salary", "Integer");
+            multiApi.createAttribute("model2@B", "salary", "Integer");
+            multiApi.createAttribute("model2@C", "salary", "Integer");
+            multiApi.createAttribute("A", "salary", "Integer");
             multiApi.createAttribute("B", "salary", "Integer");
+
 
             multiApi.createAssociation("A1",
                     "A", "a1", "*", MAggregationKind.NONE,

@@ -5,7 +5,7 @@
 !create a2:A
 !create b2:B
 
-!create ass1 : Ass1 between ( a1, b1 )
-!create ass2 : Ass2 between ( a2, b1 )
-!create ass3 : Ass3 between ( a2, b2 )
-!create ass4 : Ass4 between ( b1, c1 )
+!create linkObj1 : Ass1 between ( a1, b1 )
+!create linkObj2 : Ass2 between ( a2, b1 )
+!create linkObj3 : Ass3 between ( a2, b2 )
+!create linkObj4 : Ass4 between ( b1, c1 )

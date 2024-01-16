@@ -1,0 +1,14 @@
+!create a1:model1@A
+!create b1:model2@B
+!create c1:model2@C
+
+!create a2:A
+!create b2:B
+
+!set a1.number := 10
+!set a2.number := 20
+
+!insert ( a2, a1 ) into A1
+!insert ( a2, b2 ) into A2
+!insert ( a2, a2 ) into A3
+!insert ( b1, c1 ) into model2@A4

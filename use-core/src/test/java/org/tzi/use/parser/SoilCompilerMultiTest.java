@@ -89,6 +89,30 @@ public class SoilCompilerMultiTest extends TestCase {
 
     }
 
+    public void testMultiModel_InterObject() {
+        MMultiModel model = TestMultiModelUtil.getInstance().createMultiModelWithInterClass();
+        systemApi = UseSystemApi.create(model, true);
+
+        File soilFile = new File(TEST_PATH + "/InterClass.soil");
+
+        try (FileReader fileReader = new FileReader(soilFile);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+                if (line.isEmpty()) continue;
+                evaluateStatement(line.substring(1).trim());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Assert.assertEquals(5, systemApi.getSystem().state().numObjects());
+        Assert.assertEquals(4, systemApi.getSystem().state().allLinks().size());
+
+    }
+
     public void testComplexMultiModel() {
         MMultiModel model = TestMultiModelUtil.getInstance().createMultiModelInterConstraintComplex2();
         systemApi = UseSystemApi.create(model, true);
