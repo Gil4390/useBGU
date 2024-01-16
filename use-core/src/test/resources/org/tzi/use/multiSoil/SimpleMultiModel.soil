@@ -1,7 +1,7 @@
 !create p1:PersonCompany1@Person
 !create c1:PersonCompany1@Company
 
-!insert (p1,c1) into PersonCompany1@Job
+!insertMulti (p1,c1) into PersonCompany1@Job
 
 !create p2:PersonCompany2@Person
 !create c2:PersonCompany2@Company

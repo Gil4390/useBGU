@@ -397,9 +397,7 @@ lnkInsStatMulti returns [ASTLinkInsertionStatement n]
     p = rValListMin2WithOptionalQualifiers
   RPAREN
   'into'
-  assName = IDENT
-  AT
-  modelName = IDENT
+  objType = multiType
 
-  { $n = new ASTLinkInsertionStatement($start, $assName.text + "@" + $modelName.text, $p.participans, $p.qualifiers); }
+  { $n = new ASTLinkInsertionStatement($start, objType.name().getText(), $p.participans, $p.qualifiers); }
 ;
