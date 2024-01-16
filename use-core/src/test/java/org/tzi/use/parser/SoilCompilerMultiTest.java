@@ -80,13 +80,12 @@ public class SoilCompilerMultiTest extends TestCase {
                 if (line.isEmpty()) continue;
                 evaluateStatement(line.substring(1).trim());
             }
-
-            Assert.assertEquals(4, systemApi.getSystem().state().numObjects());
-            Assert.assertEquals(1, systemApi.getSystem().state().allLinks().size());
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        Assert.assertEquals(4, systemApi.getSystem().state().numObjects());
+        Assert.assertEquals(1, systemApi.getSystem().state().allLinks().size());
 
     }
 
@@ -113,6 +112,53 @@ public class SoilCompilerMultiTest extends TestCase {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    public void testMultiModel_LinkObjectsInInternalModel() {
+        MMultiModel model = TestMultiModelUtil.getInstance().createMultiModelTwoModelsAssociationClass2();
+        systemApi = UseSystemApi.create(model, true);
+
+        File soilFile = new File(TEST_PATH + "/AssociationClass.soil");
+
+        try (FileReader fileReader = new FileReader(soilFile);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+                if (line.isEmpty()) continue;
+                evaluateStatement(line.substring(1).trim());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Assert.assertEquals(3, systemApi.getSystem().state().numObjects());
+        Assert.assertEquals(1, systemApi.getSystem().state().allLinks().size());
+
+    }
+    public void testMultiModel_InterLinkObjects() {
+        MMultiModel model = TestMultiModelUtil.getInstance().createMultiModelWithInterAssociationClass();
+        systemApi = UseSystemApi.create(model, true);
+
+        File soilFile = new File(TEST_PATH + "/InterAssociationClass.soil");
+
+        try (FileReader fileReader = new FileReader(soilFile);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+                if (line.isEmpty()) continue;
+                evaluateStatement(line.substring(1).trim());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Assert.assertEquals(9, systemApi.getSystem().state().numObjects());
+        Assert.assertEquals(4, systemApi.getSystem().state().allLinks().size());
 
     }
 
