@@ -14,11 +14,11 @@
 !create school1:model2@School
 !set school1.name := 'BGU'
 
-!insertMulti (s1,school1) into model2@Studies
+!insert (s1,school1) into model2@Studies
 !insert (m1,school1) into study
 
 !create meet1:model2@Meeting
-!insertMulti (s1,meet1) into model2@meets
+!insert (s1,meet1) into model2@meets
 !insert (m2,meet1) into empMeets
 
 !set m2.level := 'B'

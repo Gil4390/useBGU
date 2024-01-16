@@ -195,9 +195,10 @@ lnkInsStat returns [ASTLinkInsertionStatement n]
     p = rValListMin2WithOptionalQualifiers
   RPAREN
   'into'
-  ass = IDENT
+  ( ass = IDENT { $n = new ASTLinkInsertionStatement($start, $ass.text, $p.participans, $p.qualifiers); }
+  | modelName=IDENT AT clsName=IDENT { $n = new ASTLinkInsertionStatement($start, $modelName.text +"@"+$clsName.text, $p.participans, $p.qualifiers); })
 
-  { $n = new ASTLinkInsertionStatement($start, $ass.text, $p.participans, $p.qualifiers); }
+
 ;
 
 rValListMin2WithOptionalQualifiers returns [List<ASTRValue> participans, List<List<ASTRValue>> qualifiers]
