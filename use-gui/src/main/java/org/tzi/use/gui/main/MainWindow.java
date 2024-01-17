@@ -48,10 +48,12 @@ import org.tzi.use.main.Session.EvaluatedStatement;
 import org.tzi.use.main.runtime.IRuntime;
 import org.tzi.use.main.shell.Shell;
 import org.tzi.use.parser.use.USECompiler;
+import org.tzi.use.parser.use.USECompilerMulti;
 import org.tzi.use.runtime.gui.impl.PluginActionProxy;
 import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.ModelFactory;
+import org.tzi.use.uml.mm.MultiModelFactory;
 import org.tzi.use.uml.mm.statemachines.MProtocolStateMachine;
 import org.tzi.use.uml.mm.statemachines.MStateMachine;
 import org.tzi.use.uml.sys.MObject;
@@ -170,7 +172,8 @@ public class MainWindow extends JFrame {
 		fToolBar.addSeparator();
 		
 		addToToolBar(fToolBar, fActionFileOpenSpec,  "Open specification");
-		addToToolBar(fToolBar, fActionFileReload,  "Reload current specification");
+        addToToolBar(fToolBar, fActionFileOpenMultiSpec,  "Open multi-model specification");
+        addToToolBar(fToolBar, fActionFileReload,  "Reload current specification");
 		
 		fActionFileReload.setEnabled(!Options.getRecentFiles().isEmpty());
 		
@@ -231,7 +234,9 @@ public class MainWindow extends JFrame {
         menu.setMnemonic('F');
 		fMenuBar.add(menu);
 
+        mi = menu.add(fActionFileOpenMultiSpec);
         mi = menu.add(fActionFileOpenSpec);
+
         mi.setAccelerator(KeyStroke
                 .getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
         mi.setMnemonic('O');
@@ -1000,6 +1005,7 @@ public class MainWindow extends JFrame {
     // Actions
 
     private final ActionFileOpenSpec fActionFileOpenSpec = new ActionFileOpenSpec();
+    private final ActionFileOpenMultiSpec fActionFileOpenMultiSpec = new ActionFileOpenMultiSpec();
 
     private final ActionFileRefreshSpec fActionFileReload = new ActionFileRefreshSpec();
     
@@ -1164,6 +1170,103 @@ public class MainWindow extends JFrame {
             	return true;
             } else {
             	return false;
+            }
+        }
+    }
+
+    private class ActionFileOpenMultiSpec extends AbstractAction {
+        private boolean wasUsed;
+
+        ActionFileOpenMultiSpec() {
+            super("Open multi specification...", getIcon("document-open-multi.png"));
+        }
+
+        protected ActionFileOpenMultiSpec(String title) {
+            super(title);
+        }
+
+        protected ActionFileOpenMultiSpec(String title, Icon icon) {
+            super(title, icon);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!validateOpenPossible()) return;
+
+            JFileChooser fChooser = new JFileChooser(Options.getLastDirectory().toFile());
+            ExtFileFilter filter = new ExtFileFilter("use", "USE specifications");
+            fChooser.setFileFilter(filter);
+            fChooser.setDialogTitle("Open multi specification");
+
+            if (wasUsed)
+                fChooser.setSelectedFile(Options.getRecentFile("use").toFile());
+
+            int returnVal = fChooser.showOpenDialog(MainWindow.this);
+            if (returnVal != JFileChooser.APPROVE_OPTION)
+                return;
+
+            Path path = fChooser.getCurrentDirectory().toPath();
+            Options.setLastDirectory(path);
+            Path f = fChooser.getSelectedFile().toPath();
+
+            compile(f);
+
+            Options.getRecentFiles().push(f.toAbsolutePath().toString());
+            wasUsed = true;
+        }
+
+        protected boolean validateOpenPossible() {
+            if (fSession.hasSystem() && fSession.system().isExecutingStatement()) {
+                JOptionPane
+                        .showMessageDialog(
+                                MainWindow.this,
+                                "The system is currently executing a statement.\nPlease end the execution before opening a new model.",
+                                "USE is executing",
+                                JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        protected boolean compile(final Path f) {
+            fLogPanel.clear();
+            showLogPanel();
+
+            fLogWriter.println("compiling multi specification " + f.toString() + "...");
+
+            MModel model = null;
+            try (InputStream iStream = Files.newInputStream(f)) {
+                model = USECompilerMulti.compileMultiSpecification(iStream, f.toAbsolutePath().toString(),
+                        fLogWriter, new MultiModelFactory());
+                fLogWriter.println("done.");
+            } catch (IOException ex) {
+                fLogWriter.println("File `" + f.toAbsolutePath().toString() + "' not found.");
+            }
+
+            final MSystem system;
+            if (model != null) {
+                fLogWriter.println(model.getStats());
+                // create system
+                system = new MSystem(model);
+            } else {
+                system = null;
+            }
+
+            // set new system (may be null if compilation failed)
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fSession.setSystem(system);
+                }
+            });
+
+            if (system != null) {
+                Options.getRecentFiles().push(f.toString());
+                Options.setLastDirectory(f.getParent());
+                return true;
+            } else {
+                return false;
             }
         }
     }
