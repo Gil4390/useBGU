@@ -1,0 +1,6 @@
+
+!create p1:PersonCompany1@Person
+!create c1:PersonCompany1@Company
+
+!create j1 : PersonCompany1@Job between ( p1, c1 )
+

@@ -1,0 +1,11 @@
+!create a1:model1@A
+!create b1:model2@B
+!create c1:model2@C
+
+!create a2:A
+!create b2:B
+
+!create linkObj1 : Ass1 between ( a1, b1 )
+!create linkObj2 : Ass2 between ( a2, b1 )
+!create linkObj3 : Ass3 between ( a2, b2 )
+!create linkObj4 : Ass4 between ( b1, c1 )
