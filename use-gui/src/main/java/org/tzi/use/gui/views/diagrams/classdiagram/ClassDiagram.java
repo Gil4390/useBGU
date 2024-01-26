@@ -326,6 +326,14 @@ public class ClassDiagram extends DiagramView
 		n.setMinWidth(minClassNodeWidth);
 		n.setMinHeight(minClassNodeHeight);
 
+		if (n.name().contains("@")){
+			int color = n.name().split("@")[0].hashCode()*694208575;
+			int R = (color & 0x000000FF);
+			int G = (color & 0x0000FF00) >> 8;
+			int B = (color & 0x00FF0000) >> 16;
+			n.setColor(new Color(R, G, B, 0x4F));
+		}
+
 		fGraph.add(n);
 		visibleData.fClassToNodeMap.put(cls, n);
 		fLayouter = null;
@@ -1789,5 +1797,9 @@ public class ClassDiagram extends DiagramView
 		} else {
 			return false;
 		}
+	}
+
+	public void setClassColor(String className){
+
 	}
 }
