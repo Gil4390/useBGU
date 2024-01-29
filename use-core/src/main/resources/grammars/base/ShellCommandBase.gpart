@@ -89,7 +89,6 @@ singleLegacyStat returns [ASTStatement n]
   | lcrm = legacyCreateMulti  { $n = $lcrm.n; }
   | lcam = legacyCreateAssignMulti  { $n = $lcam.n; }
   | lcim = legacyCreateInsertMulti  { $n = $lcim.n; }
-  //| lism = lnkInsStatMulti          { $n = $lism.n; }
 ;
 
 

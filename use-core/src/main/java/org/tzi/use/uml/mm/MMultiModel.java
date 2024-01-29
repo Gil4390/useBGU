@@ -41,6 +41,12 @@ public class MMultiModel extends MModel{
             throw new Exception("MultiModel already contains a model `"
                     + model.name() + "'.");
         fModels.put(model.name(), model);
+
+        this.fGenGraph.addAll(model.fGenGraph);
+        for (Iterator<MGeneralization> it = model.fGenGraph.edgeIterator(); it.hasNext(); ) {
+            MGeneralization gen = it.next();
+            this.fGenGraph.addEdge(gen);
+        }
     }
 
     /**
