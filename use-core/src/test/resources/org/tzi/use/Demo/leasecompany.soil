@@ -1,0 +1,57 @@
+//unsatisfied
+!create w1:Workers@Worker
+!create d1:Workers@Department
+!create agreement:RentalAgreement
+!create c1:Customers@Customer
+!create toyota:Cars@Car
+!create ps:PaymentService
+
+
+//satisfied
+!insert (w1,d1) into Workers@workInDepratment
+!insert (agreement,c1) into leasedBy
+!insert (agreement,w1) into mediateBy
+!insert (agreement,toyota) into leasedCar
+!insert (w1,ps) into payment
+
+//satisfy ManagerCannotSell invariant
+!create w2:Workers@Worker
+!insert (w2,d1) into Workers@workInDepratment
+!insert (w2,w1) into Workers@supervisedBy
+!insert (w2,ps) into payment
+
+//satisfy SmallerDate invariant
+!set agreement.start_date := 12
+!set agreement.end_date := 14
+
+//unsatisfy DifferentSerialNumber invariant
+!create toyota_corola:Cars@ElectricCar
+!set toyota_corola.serial_number := 12345
+!set toyota.serial_number := 12345
+
+//satisfy DifferentSerialNumber invariant
+!set toyota.serial_number := 123456
+
+//unsatisfy SameCar invariant
+!create w3:Workers@Worker
+!create agreement2:RentalAgreement
+!create c2:Customers@Customer
+
+!insert (w3,d1) into Workers@workInDepratment
+!insert (w2,w3) into Workers@supervisedBy
+!insert (w3,ps) into payment
+!insert (agreement2,c2) into leasedBy
+!insert (agreement2,w3) into mediateBy
+!insert (agreement2,toyota) into leasedCar
+
+!set agreement2.start_date := 13
+!set agreement2.end_date := 17
+
+//satify SameCar invariant
+!set agreement2.start_date := 15
+
+
+
+
+
+

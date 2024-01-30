@@ -1,0 +1,113 @@
+multi_model LeaseCompany
+
+model Cars
+
+class Car
+attributes
+  price : Integer
+  company_name : String
+  model_name : String
+  next_treatment_date : String
+  serial_number : Integer
+end
+
+class ElectricCar < Car
+attributes
+  battry_capacity : Integer
+end
+
+constraints
+context Car inv:
+  Car.allInstances()->forAll(c1, c2 | c1 <> c2 implies c1.serial_number <> c2.serial_number)
+
+
+
+model Customers
+
+class Customer
+attributes
+  name : String
+end
+
+class BuisnessCustomer < Customer
+attributes
+  company_name : String
+end
+
+
+model Workers
+
+class Worker
+attributes
+  name : String
+end
+
+class Department
+attributes
+  name : String
+end
+
+association workInDepratment between
+  Worker[1..*] role worker
+  Department[1] role department
+end
+
+association supervisedBy between
+  Worker[0..1] role supervisor
+  Worker[0..*] role workers
+end
+
+
+inter-classes
+
+class PaymentService
+end
+
+class RentalAgreement
+attributes
+  start_date : Integer
+  end_date : Integer
+end
+
+inter-associations
+
+association leasedBy between
+	RentalAgreement[1..*] role agreement
+	Customers@Customer[1] role customer
+end
+ 
+association mediateBy between
+	RentalAgreement[0..*] role agreement
+	Workers@Worker[1] role soldby
+end
+
+association leasedCar between
+	RentalAgreement[0..*] role agreement
+	Cars@Car[1] role car
+end
+
+association payment between
+	Workers@Worker[0..*] role seller
+	PaymentService[1] role service
+end
+
+
+inter-constraints
+
+context RentalAgreement
+
+  --a car cannot be rented by two customers at the same time
+  inv SameCar:
+    RentalAgreement.allInstances()->forAll(r1, r2 | (r1 <> r2 and r1.car.serial_number = r2.car.serial_number)
+    implies (r1.end_date < r2.start_date)  or (r2.end_date < r1.start_date) )
+  
+  --start rental date must be smaller than end rental date
+  inv SmallerDate:
+    self.start_date < self.end_date
+
+  --only simple workers can make sells
+  inv ManagerCannotSell:
+    self.soldby.workers->size() = 0 and self.soldby.supervisor <> null
+
+
+
