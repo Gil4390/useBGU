@@ -11,13 +11,20 @@ attributes
   serial_number : Integer
 end
 
+class GasCar < Car
+end
+
 class ElectricCar < Car
 attributes
   battry_capacity : Integer
 end
 
+class HybridCar < GasCar, ElectricCar
+end
+
 constraints
-context Car inv:
+context Car
+inv DifferentSerialNumber:
   Car.allInstances()->forAll(c1, c2 | c1 <> c2 implies c1.serial_number <> c2.serial_number)
 
 
@@ -27,6 +34,7 @@ model Customers
 class Customer
 attributes
   name : String
+  is_new_driver : Boolean
 end
 
 class BuisnessCustomer < Customer
@@ -57,11 +65,13 @@ association supervisedBy between
   Worker[0..*] role workers
 end
 
+constraints
+context Worker inv ManagerNotTransitive:
+  not Worker.allInstances()->exists(w | 
+    w.supervisor <> null and w.supervisor.supervisor <> null and 
+    w.supervisor.supervisor = self)
 
 inter-classes
-
-class PaymentService
-end
 
 class RentalAgreement
 attributes
@@ -86,9 +96,10 @@ association leasedCar between
 	Cars@Car[1] role car
 end
 
-association payment between
-	Workers@Worker[0..*] role seller
-	PaymentService[1] role service
+
+association permissionToDrive between
+	Customers@Customer[0..*] role driver
+	Cars@Car[0..*] role car
 end
 
 
@@ -108,6 +119,10 @@ context RentalAgreement
   --only simple workers can make sells
   inv ManagerCannotSell:
     self.soldby.workers->size() = 0 and self.soldby.supervisor <> null
+
+context Cars@Car
+  inv NewDriverCannotDriveElectric:
+    self.oclIsKindOf(Cars@ElectricCar) implies self.driver->forAll(d1 | d1.is_new_driver = false)
 
 
 
