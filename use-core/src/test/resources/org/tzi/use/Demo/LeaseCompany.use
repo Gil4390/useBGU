@@ -86,8 +86,8 @@ end
 
 
 association permissionToDrive between
-	Customers@Customer[0..*] role driver
-	Cars@Car[0..*] role car
+	Customers@Customer[0..*] role drivers
+	Cars@Car[0..*] role cars
 end
 
 
@@ -104,9 +104,13 @@ context RentalAgreement
   inv ManagerCannotSell:
     self.soldby.workers->size() = 0 and self.soldby.supervisor <> null
 
+  -- if a car was rented then it is in the list of cars of the customer
+  inv CarIsCustomerList:
+    self.customer.cars->exists(c | c = self.car)
+
 context Cars@Car
   inv NewDriverCannotDriveElectric:
-    self.oclIsKindOf(Cars@ElectricCar) implies self.driver->forAll(d1 | d1.is_new_driver = false)
+    self.oclIsKindOf(Cars@ElectricCar) implies self.drivers->forAll(d1 | d1.is_new_driver = false)
 
 
 
