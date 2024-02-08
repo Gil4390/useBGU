@@ -5,9 +5,6 @@ model Cars
 class Car
 attributes
   price : Integer
-  company_name : String
-  model_name : String
-  next_treatment_date : String
   serial_number : Integer
 end
 
@@ -18,15 +15,6 @@ class ElectricCar < Car
 attributes
   battry_capacity : Integer
 end
-
-class HybridCar < GasCar, ElectricCar
-end
-
-constraints
-context Car
-inv DifferentSerialNumber:
-  Car.allInstances()->forAll(c1, c2 | c1 <> c2 implies c1.serial_number <> c2.serial_number)
-
 
 
 model Customers
@@ -111,10 +99,6 @@ context RentalAgreement
   inv SameCar:
     RentalAgreement.allInstances()->forAll(r1, r2 | (r1 <> r2 and r1.car.serial_number = r2.car.serial_number)
     implies (r1.end_date < r2.start_date)  or (r2.end_date < r1.start_date) )
-  
-  --start rental date must be smaller than end rental date
-  inv SmallerDate:
-    self.start_date < self.end_date
 
   --only simple workers can make sells
   inv ManagerCannotSell:
