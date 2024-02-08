@@ -68,7 +68,7 @@ end
 constraints
 context Worker inv ManagerNotTransitive:
   not Worker.allInstances()->exists(w | 
-    w.supervisor <> null and w.supervisor.supervisor <> null and 
+    w.supervisor->notEmpty() and w.supervisor.supervisor->notEmpty() and
     w.supervisor.supervisor = self)
 
 inter-classes
