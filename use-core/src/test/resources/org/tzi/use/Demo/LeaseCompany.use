@@ -100,12 +100,9 @@ context RentalAgreement
     RentalAgreement.allInstances()->forAll(r1, r2 | (r1 <> r2 and r1.car.serial_number = r2.car.serial_number)
     implies (r1.end_date < r2.start_date)  or (r2.end_date < r1.start_date) )
 
-  --only simple workers can make sells
-  inv ManagerCannotSell:
-    self.soldby.workers->size() = 0 and self.soldby.supervisor <> null
 
   -- if a car was rented then it is in the list of cars of the customer
-  inv CarIsCustomerList:
+  inv CarInCustomerList:
     self.customer.cars->exists(c | c = self.car)
 
 context Cars@Car

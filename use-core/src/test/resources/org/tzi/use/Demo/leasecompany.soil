@@ -1,4 +1,4 @@
-//Object Diagram : Workers
+--Object Diagram : Workers
 --initial object diagram
 !create w1:Workers@Worker
 !create d1:Workers@Department
@@ -7,41 +7,37 @@
 !set d1.name := 'Sales'
 
 
-//Object Diagram : Customers
+--Object Diagram : Customers
 --initial object diagram
 !create c1:Customers@Customer
 !set c1.name := 'Avni'
 !set c1.is_new_driver := false
 
 
-//Object Diagram : Cars
+--Object Diagram : Cars
 --initial object diagram
 !create toyota:Cars@ElectricCar
 !set toyota.price := 5000
 !set toyota.serial_number := 123456
+!set toyota.battry_capacity := 1000
 
-
-//Object Diagram : MultiModel
+--Object Diagram : MultiModel
 --initial object diagram
 !create agreement:RentalAgreement
 !insert (agreement,c1) into leasedBy
 !insert (agreement,w1) into mediateBy
+
+
+--satisfy object diagrams
 !insert (agreement,toyota) into leasedCar
 !set agreement.start_date := 12
 !set agreement.end_date := 14
 
 
-//satisfy ManagerCannotSell invariant
+--satisfy CarInCustomerList invariant
+!insert (c1,toyota) into permissionToDrive
 
---Changes to Workers model object diagram
-!create w2:Workers@Worker
-!insert (w2,d1) into Workers@workInDepratment
-!insert (w2,w1) into Workers@supervisedBy
-!set w2.name := 'Moshe'
-
-
-//unsatisfy SameCar invariant
-
+--unsatisfy SameCar invariant
 --Changes to Workers model object diagram
 !create w3:Workers@Worker
 !insert (w3,d1) into Workers@workInDepratment
@@ -64,17 +60,17 @@
 !set c2.is_new_driver := false
 
 
-//satify SameCar invariant
+--satify SameCar invariant
 
 --Changes to MultiModel object diagram
 !set agreement2.start_date := 15
 
 
-//unsatisfy NewDriverCannotDriveElectric invariant
+--unsatisfy NewDriverCannotDriveElectric invariant
 --Changes to Customers model object diagram
 !set c2.is_new_driver := true
 
-//satisfy NewDriverCannotDriveElectric invariant
+--satisfy NewDriverCannotDriveElectric invariant
 --Changes to Customers model object diagram
 !set c2.is_new_driver := false
 
