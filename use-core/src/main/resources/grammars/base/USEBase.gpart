@@ -5,6 +5,72 @@
 
 // grammar start
 
+/*
+    multi_level_model ::= "MLM" ID (level)* EOF
+    level ::= "level" ID < ID
+                internal_model
+                mediator
+                "end"
+
+    mediator ::= "mediator" ID (mediator_element)* "end"
+
+    mediator_element ::= clabject_inst | assoc_inst
+
+    clabject_inst := "clabject_instantiation" ID ":" ID
+                          (attribute_rename)?
+
+    attribute_rename := "attribute_renaming" (ID ":" ID)*
+
+    assoc_inst := "association_instantiation" ID ":" ID
+                     "role_renaming"
+                         ID ":" ID
+                         ID ":" ID
+*/
+
+multi_level_model returns [ASTMultiLevelModel n]
+:
+    'MLM' mlmName=IDENT {$n = new ASTMultiLevelModel($mlmName);}
+    (l = level {$n.addLevel($l.n);} )*
+    EOF
+    ;
+
+
+level returns [ASTLevel n]
+:
+    'level' childLevel=IDENT LESS parentLevel=IDENT {$n = new ASTLevel($childLevel, $parentLevel);}
+    m = internal_model {$n.setModel($m.n);}
+    med = mediator {$n.setMediator($med.n);}
+    'end'
+    ;
+
+
+mediator returns [ASTMediator n]
+:
+    'mediator' medName=IDENT {$n = new ASTMediator($medName);}
+    ((medElem = clabject_instance {$n.addMediatorElement($medElem.n);}) |
+    (medElem = association_instance {$n.addMediatorElement($medElem.n);})
+    )*
+    'end'
+    ;
+
+clabject_instance returns [ASTClabjectInstance n]
+:
+    "clabject_instantiation" childClsName=IDENT COLON parentClsName=IDENT {$n = new ASTClabjectInstance($childClsLevel, $parentClsLevel)}
+    ("attribute_renaming"
+        (oldAtrName=IDENT COLON newAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, $newAtrName);})*
+    )?
+    'end'
+    ;
+
+association_instance returns [ASTAssociationInstance n]
+:
+    "association_instantiation" childAssocName=IDENT COLON parentAssocName=IDENT {$n = new ASTAssociationInstance($childClsLevel, $parentClsLevel)}
+    ("attribute_renaming"
+        oldRoleName1=IDENT COLON newRoleName1=IDENT {$n.addRoleRenaming1($oldRoleName1, $newRoleName1);}
+        oldRoleName2=IDENT COLON newRoleName2=IDENT {$n.addRoleRenaming2($oldRoleName2, $newRoleName2);}
+    )?
+    'end'
+    ;
 
 /*
     multi_model ::= "multi_model" internal_model (internal_model)*
