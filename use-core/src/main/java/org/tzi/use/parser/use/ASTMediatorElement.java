@@ -4,8 +4,8 @@ import org.antlr.runtime.Token;
 
 public class ASTMediatorElement extends ASTAnnotatable{
 
-    private final Token fChildName;
-    private final Token fParentName;
+    protected final Token fChildName;
+    protected final Token fParentName;
 
     public ASTMediatorElement(Token fChildName, Token fParentName) {
         this.fChildName = fChildName;

@@ -1,6 +1,10 @@
 package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
+import org.tzi.use.parser.MLMContext;
+import org.tzi.use.uml.mm.MLevel;
+import org.tzi.use.uml.mm.MMediator;
+import org.tzi.use.uml.mm.MModel;
 
 public class ASTLevel extends ASTAnnotatable {
 
@@ -23,4 +27,24 @@ public class ASTLevel extends ASTAnnotatable {
     public void setMediator(ASTMediator mediator) {
         this.fMediator = mediator;
     }
+
+    public MLevel gen(MLMContext mlmContext) {
+        MLevel mLevel = mlmContext.modelFactory().createLevel(fName.getText(),fParentName.getText());
+        mlmContext.setCurrentLevel(mLevel);
+        try{
+            MModel mModel = fModel.gen(mlmContext);
+            mLevel.setModel(mModel);
+        } catch(Exception e) {
+            mlmContext.reportError(fName,e);
+        }
+
+        try{
+            MMediator mMediator = fMediator.gen(mlmContext);
+            mLevel.setMediator(mMediator);
+        } catch(Exception e) {
+            mlmContext.reportError(fName,e);
+        }
+        return mLevel;
+    }
+
 }

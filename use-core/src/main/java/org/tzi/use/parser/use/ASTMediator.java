@@ -1,8 +1,12 @@
 package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
+import org.tzi.use.parser.MLMContext;
+import org.tzi.use.uml.mm.MClabjectInstance;
+import org.tzi.use.uml.mm.MMediator;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ASTMediator extends ASTAnnotatable{
@@ -17,5 +21,19 @@ public class ASTMediator extends ASTAnnotatable{
 
     public void addMediatorElement(ASTMediatorElement astMediatorElement){
         fMediatorElements.add(astMediatorElement);
+    }
+
+    public MMediator gen(MLMContext mlmContext) {
+        MMediator mMediator = mlmContext.modelFactory().createMediator(fName.getText());
+        Iterator<ASTMediatorElement> meIt = fMediatorElements.iterator();
+        while(meIt.hasNext()) {
+            ASTMediatorElement currentElement = meIt.next();
+            if(currentElement instanceof ASTClabjectInstance) {
+                MClabjectInstance clabjectInstance = ((ASTClabjectInstance) currentElement).gen(mlmContext);
+                mMediator.addClabjectInstance(clabjectInstance);
+            }
+
+        }
+        return mMediator;
     }
 }
