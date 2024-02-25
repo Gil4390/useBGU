@@ -24,4 +24,8 @@ public class MLevel {
         return this.fModel;
     }
 
+    public String name() {
+        return fName;
+    }
+
 }

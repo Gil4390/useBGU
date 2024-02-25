@@ -7,14 +7,14 @@ public class MMediator {
 
     private String fName;
 
-    private final List<MClabjectInstance> fClabjects;
+    private final List<MRestrictionClass> fClabjects;
 
     public MMediator(String name) {
         this.fName = name;
         fClabjects = new ArrayList<>();
     }
 
-    public void addClabjectInstance(MClabjectInstance clabject) {
+    public void addClabjectInstance(MRestrictionClass clabject) {
         fClabjects.add(clabject);
     }
 

@@ -27,13 +27,13 @@ import org.tzi.use.graph.DirectedEdge;
  * 
  * @author      Mark Richters 
  */
-public final class MGeneralization extends MModelElementImpl implements DirectedEdge<MClassifier> {
+public class MGeneralization extends MModelElementImpl implements DirectedEdge<MClassifier> {
 
 	@NonNull
-	private final MClassifier fParent;
+	protected final MClassifier fParent;
 
 	@NonNull
-	private final MClassifier fChild;
+	protected final MClassifier fChild;
 
     /** 
      * Creates a new generalization.
@@ -111,4 +111,8 @@ public final class MGeneralization extends MModelElementImpl implements Directed
 			return false;
 		}
 	}
+
+    public void validateInheritance() {
+
+    }
 }

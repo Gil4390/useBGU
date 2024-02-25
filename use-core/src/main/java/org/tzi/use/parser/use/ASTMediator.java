@@ -2,7 +2,7 @@ package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MLMContext;
-import org.tzi.use.uml.mm.MClabjectInstance;
+import org.tzi.use.uml.mm.MRestrictionClass;
 import org.tzi.use.uml.mm.MMediator;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class ASTMediator extends ASTAnnotatable{
         while(meIt.hasNext()) {
             ASTMediatorElement currentElement = meIt.next();
             if(currentElement instanceof ASTClabjectInstance) {
-                MClabjectInstance clabjectInstance = ((ASTClabjectInstance) currentElement).gen(mlmContext);
+                MRestrictionClass clabjectInstance = ((ASTClabjectInstance) currentElement).gen(mlmContext);
                 mMediator.addClabjectInstance(clabjectInstance);
             }
 

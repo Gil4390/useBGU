@@ -15,5 +15,13 @@ public class MMultiLevelModel extends MModel {
         fLevels.add(level);
     }
 
+    @Override
+    public void addGeneralization(MGeneralization gen) throws MInvalidModelException {
+        super.addGeneralization(gen);
+        gen.validateInheritance();
+    }
+
+
+
 
 }

@@ -2,7 +2,8 @@ package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MLMContext;
-import org.tzi.use.uml.mm.MClabjectInstance;
+import org.tzi.use.uml.mm.MAttribute;
+import org.tzi.use.uml.mm.MRestrictionClass;
 import org.tzi.use.uml.mm.MClassifier;
 import org.tzi.use.util.Pair;
 
@@ -24,13 +25,27 @@ public class ASTClabjectInstance extends ASTMediatorElement{
         fAttributeRenaming.add(p);
     }
 
-    public MClabjectInstance gen(MLMContext mlmContext) {
+    public MRestrictionClass gen(MLMContext mlmContext) throws Exception {
         MClassifier child = mlmContext.level().model().getClass(this.fChildName.getText());
-        //TODO: throw error if not exists
+        if(child == null) {
+            throw new Exception("Class: "+fChildName.getText() + ", in the level: "+mlmContext.level().name()+", doesn't exist.");
+        }
         MClassifier parent = mlmContext.parentLevel().model().getClass(this.fParentName.getText());
-        //TODO: throw error if not exists
-        MClabjectInstance mClabjectInstance = mlmContext.modelFactory().createClabjectInstance(child,parent);
-        //TODO: iterate attribute renaming
-        return mClabjectInstance;
+        if(parent == null) {
+            throw new Exception("Class: "+fChildName.getText() + ", in the level: "+mlmContext.parentLevel().name()+", doesn't exist.");
+        }
+
+        MRestrictionClass mRestrictionClass = mlmContext.modelFactory().createClabjectInstance(child,parent);
+
+        for(Pair<Token> attributePair : fAttributeRenaming) {
+            String oldAttribute = attributePair.first.getText();
+            MAttribute oldMAttribute = parent.attribute(oldAttribute,true);
+            if(oldMAttribute == null) {
+                throw new Exception("Parent class: "+ parent.name()+ ", doesn't contain an attribute with the name: "+oldAttribute);
+            }
+            mRestrictionClass.addAttributeRenaming(attributePair.second.getText(),oldMAttribute);
+
+        }
+        return mRestrictionClass;
     }
 }
