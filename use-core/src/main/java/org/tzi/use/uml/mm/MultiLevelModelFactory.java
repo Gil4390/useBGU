@@ -15,12 +15,12 @@ public class MultiLevelModelFactory extends ModelFactory {
         return new MMediator(name);
     }
 
-    public MRestrictionClass createClabjectInstance(MClassifier child, MClassifier parent) {
-        return new MRestrictionClass(child, parent);
+    public MClabjectInstance createClabjectInstance(MClassifier child, MClassifier parent) {
+        return new MClabjectInstance(child, parent);
     }
 
-    public MRestrictionAssociation createAssociationInstance(MClassifier child, MClassifier parent) {
-        return new MRestrictionAssociation(child, parent);
+    public MAssocLinkInstance createAssocLinkInstance(MClassifier child, MClassifier parent) {
+        return new MAssocLinkInstance(child, parent);
     }
 
 

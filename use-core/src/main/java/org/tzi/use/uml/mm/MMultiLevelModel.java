@@ -3,7 +3,7 @@ package org.tzi.use.uml.mm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MMultiLevelModel extends MModel {
+public class MMultiLevelModel extends MMultiModel {
 
     private final List<MLevel> fLevels;
     protected MMultiLevelModel(String name) {
@@ -11,8 +11,9 @@ public class MMultiLevelModel extends MModel {
         fLevels = new ArrayList<>();
     }
 
-    public void addLevel(MLevel level) {
+    public void addLevel(MLevel level) throws Exception {
         fLevels.add(level);
+        this.addModel(level.model());
     }
 
     @Override

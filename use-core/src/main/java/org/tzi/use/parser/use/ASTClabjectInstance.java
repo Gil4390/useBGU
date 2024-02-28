@@ -2,13 +2,12 @@ package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MLMContext;
-import org.tzi.use.uml.mm.MAttribute;
-import org.tzi.use.uml.mm.MRestrictionClass;
-import org.tzi.use.uml.mm.MClassifier;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ASTClabjectInstance extends ASTMediatorElement{
 
@@ -25,17 +24,17 @@ public class ASTClabjectInstance extends ASTMediatorElement{
         fAttributeRenaming.add(p);
     }
 
-    public MRestrictionClass gen(MLMContext mlmContext) throws Exception {
-        MClassifier child = mlmContext.level().model().getClass(this.fChildName.getText());
+    public MClabjectInstance gen(MLMContext mlmContext) throws Exception {
+        MClass child = mlmContext.level().model().getClass(this.fChildName.getText());
         if(child == null) {
             throw new Exception("Class: "+fChildName.getText() + ", in the level: "+mlmContext.level().name()+", doesn't exist.");
         }
-        MClassifier parent = mlmContext.parentLevel().model().getClass(this.fParentName.getText());
+        MClass parent = mlmContext.parentLevel().model().getClass(this.fParentName.getText());
         if(parent == null) {
             throw new Exception("Class: "+fChildName.getText() + ", in the level: "+mlmContext.parentLevel().name()+", doesn't exist.");
         }
 
-        MRestrictionClass mRestrictionClass = mlmContext.modelFactory().createClabjectInstance(child,parent);
+        MClabjectInstance mClabjectInstance = mlmContext.modelFactory().createClabjectInstance(child,parent);
 
         for(Pair<Token> attributePair : fAttributeRenaming) {
             String oldAttribute = attributePair.first.getText();
@@ -43,9 +42,27 @@ public class ASTClabjectInstance extends ASTMediatorElement{
             if(oldMAttribute == null) {
                 throw new Exception("Parent class: "+ parent.name()+ ", doesn't contain an attribute with the name: "+oldAttribute);
             }
-            mRestrictionClass.addAttributeRenaming(attributePair.second.getText(),oldMAttribute);
-
         }
-        return mRestrictionClass;
+        //TODO: fix implementation (doesnt look good)
+        for(MAttribute attribute : parent.attributes()) {
+            for(Pair<Token> pair : fAttributeRenaming) {
+                if(pair.first.getText().equals(attribute.name()) && pair.second == null) {
+                    mClabjectInstance.addRemovedAttribute(attribute);
+                    break;
+                } else if(pair.first.getText().equals(attribute.name())) {
+                    MAttributeRenaming attributeRenaming = new MAttributeRenaming(attribute, pair.second.getText());
+                    mClabjectInstance.addAttributeRenaming(attributeRenaming);
+                    break;
+                } else {
+                    MAttributeRenaming attributeRenaming = new MAttributeRenaming(attribute, attribute.name());
+                    mClabjectInstance.addAttributeRenaming(attributeRenaming);
+                    break;
+                }
+
+            }
+        }
+
+
+        return mClabjectInstance;
     }
 }

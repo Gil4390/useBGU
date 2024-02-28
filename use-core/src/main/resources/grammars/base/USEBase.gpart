@@ -19,7 +19,7 @@
     clabject_inst := "clabject_instantiation" ID ":" ID
                           (attribute_rename)?
 
-    attribute_rename := "attribute_renaming" (ID ":" ID)*
+    attribute_rename := "attribute_renaming" ( (ID ":" ID) | ("~" ID) ) *
 
     assoc_inst := "association_instantiation" ID ":" ID
                      "role_renaming"
@@ -57,7 +57,9 @@ clabject_instance returns [ASTClabjectInstance n]
 :
     "clabject_instantiation" childClsName=IDENT COLON parentClsName=IDENT {$n = new ASTClabjectInstance($childClsLevel, $parentClsLevel)}
     ("attribute_renaming"
-        (oldAtrName=IDENT COLON newAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, $newAtrName);})*
+        ( (oldAtrName=IDENT COLON newAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, $newAtrName);})
+        | ( '~' oldAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, null);} )
+        )*
     )?
     'end'
     ;
