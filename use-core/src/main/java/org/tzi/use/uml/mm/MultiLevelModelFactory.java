@@ -1,6 +1,6 @@
 package org.tzi.use.uml.mm;
 
-public class MultiLevelModelFactory extends ModelFactory {
+public class MultiLevelModelFactory extends MultiModelFactory {
 
 
     public MMultiLevelModel createMLM(String name) {

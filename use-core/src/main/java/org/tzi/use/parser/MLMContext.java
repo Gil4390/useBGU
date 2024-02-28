@@ -1,10 +1,7 @@
 package org.tzi.use.parser;
 
 import org.antlr.runtime.Token;
-import org.tzi.use.uml.mm.MLevel;
-import org.tzi.use.uml.mm.MMultiLevelModel;
-import org.tzi.use.uml.mm.ModelFactory;
-import org.tzi.use.uml.mm.MultiLevelModelFactory;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.VarBindings;
 
 import java.io.PrintWriter;
@@ -14,8 +11,8 @@ public class MLMContext extends Context {
 
     private MultiLevelModelFactory factory;
     private MLMContext parent;
-    private MLevel parentLevel;
-    private MLevel currentLevel;
+    private MModel parentModel;
+    private MModel currentModel;
 
 
     public MLMContext(String filename, PrintWriter err, VarBindings globalBindings, MultiLevelModelFactory factory) {
@@ -33,20 +30,20 @@ public class MLMContext extends Context {
         super.setModel(mlModel);
     }
 
-    public void setParentLevel(MLevel parentLevel) {
-        this.parentLevel = parentLevel;
+    public MModel getParentModel() {
+        return parentModel;
     }
 
-    public MLevel parentLevel() {
-        return this.parentLevel;
+    public void setParentModel(MModel parentModel) {
+        this.parentModel = parentModel;
     }
 
-    public void setCurrentLevel(MLevel level) {
-        this.currentLevel = level;
+    public MModel getCurrentModel() {
+        return currentModel;
     }
 
-    public MLevel level() {
-        return currentLevel;
+    public void setCurrentModel(MModel currentModel) {
+        this.currentModel = currentModel;
     }
 
     public MultiLevelModelFactory modelFactory() {

@@ -25,13 +25,13 @@ public class ASTClabjectInstance extends ASTMediatorElement{
     }
 
     public MClabjectInstance gen(MLMContext mlmContext) throws Exception {
-        MClass child = mlmContext.level().model().getClass(this.fChildName.getText());
+        MClass child = mlmContext.getCurrentModel().getClass(this.fChildName.getText());
         if(child == null) {
-            throw new Exception("Class: "+fChildName.getText() + ", in the level: "+mlmContext.level().name()+", doesn't exist.");
+            throw new Exception("Class: " + this.fChildName.getText() + ", in the Model: "+mlmContext.getCurrentModel().name()+", doesn't exist.");
         }
-        MClass parent = mlmContext.parentLevel().model().getClass(this.fParentName.getText());
+        MClass parent = mlmContext.getParentModel().getClass(this.fParentName.getText());
         if(parent == null) {
-            throw new Exception("Class: "+fChildName.getText() + ", in the level: "+mlmContext.parentLevel().name()+", doesn't exist.");
+            throw new Exception("Class: " + this.fParentName.getText() + ", in the Model: "+mlmContext.getParentModel().name()+", doesn't exist.");
         }
 
         MClabjectInstance mClabjectInstance = mlmContext.modelFactory().createClabjectInstance(child,parent);

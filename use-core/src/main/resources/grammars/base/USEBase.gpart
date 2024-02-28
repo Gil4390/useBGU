@@ -6,11 +6,10 @@
 // grammar start
 
 /*
-    multi_level_model ::= "MLM" ID (level)* EOF
-    level ::= "level" ID < ID
-                internal_model
-                mediator
-                "end"
+    multi_level_model ::= "MLM" ID
+                         multi_model
+                         (mediator)*
+                         EOF
 
     mediator ::= "mediator" ID (mediator_element)* "end"
 
@@ -30,7 +29,8 @@
 multi_level_model returns [ASTMultiLevelModel n]
 :
     'MLM' mlmName=IDENT {$n = new ASTMultiLevelModel($mlmName);}
-    (l = level {$n.addLevel($l.n);} )*
+    (mm = multi_model {$n.addMultiModel($mm.n);})
+    (med = mediator {$n.addMediator($med.n);})*
     EOF
     ;
 

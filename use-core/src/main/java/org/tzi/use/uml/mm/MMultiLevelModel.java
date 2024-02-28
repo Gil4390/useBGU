@@ -1,19 +1,24 @@
 package org.tzi.use.uml.mm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MMultiLevelModel extends MMultiModel {
 
-    private final List<MLevel> fLevels;
+    private MMultiModel fMultiModel;
+    private final List<MMediator> fMediators;
     protected MMultiLevelModel(String name) {
         super(name);
-        fLevels = new ArrayList<>();
+        fMediators = new ArrayList<>();
     }
 
-    public void addLevel(MLevel level) throws Exception {
-        fLevels.add(level);
-        this.addModel(level.model());
+    public void setMultiModel(MMultiModel multiModel) {
+        this.fMultiModel = multiModel;
+    }
+
+    public void addMediator(MMediator mediator) {
+        this.fMediators.add(mediator);
     }
 
     @Override
@@ -22,7 +27,11 @@ public class MMultiLevelModel extends MMultiModel {
         gen.validateInheritance();
     }
 
+    public boolean isValid(){
+        //BIG TODO
 
+        return false;
+    }
 
 
 }

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class MMultiModel extends MModel{
 
     private String currentModel;
-    private Map<String, MModel> fModels; // <modelName, MModel>
+    protected Map<String, MModel> fModels; // <modelName, MModel>
 
     public MMultiModel(String name) {
         super(name);

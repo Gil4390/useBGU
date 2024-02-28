@@ -24,6 +24,10 @@ public class ASTMediator extends ASTAnnotatable{
         fMediatorElements.add(astMediatorElement);
     }
 
+    public String getName(){
+        return fName.getText();
+    }
+
     public MMediator gen(MLMContext mlmContext) throws Exception {
         MMediator mMediator = mlmContext.modelFactory().createMediator(fName.getText());
         Iterator<ASTMediatorElement> meIt = fMediatorElements.iterator();

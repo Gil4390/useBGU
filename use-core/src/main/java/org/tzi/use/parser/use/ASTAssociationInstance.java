@@ -27,17 +27,17 @@ public class ASTAssociationInstance extends ASTMediatorElement{
     }
 
     public MAssocLinkInstance gen(MLMContext mlmContext) throws Exception {
-        MClassifier child = mlmContext.level().model().getAssociation(this.fChildName.getText());
+        MClassifier child = mlmContext.getCurrentModel().getAssociation(this.fChildName.getText());
         if(child == null) {
-            throw new Exception("Association: "+fChildName.getText() + ", in the level: "+mlmContext.level().name()+", doesn't exist.");
+            throw new Exception("Association: " + this.fChildName.getText() + ", in the Model: " + mlmContext.getCurrentModel().name() + ", doesn't exist.");
         }
-        MClassifier parent = mlmContext.parentLevel().model().getAssociation(this.fParentName.getText());
+        MClassifier parent = mlmContext.getParentModel().getAssociation(this.fParentName.getText());
         if(parent == null) {
-            throw new Exception("Association: "+fChildName.getText() + ", in the level: "+mlmContext.parentLevel().name()+", doesn't exist.");
+            throw new Exception("Association: " + this.fParentName.getText() + ", in the level: " + mlmContext.getParentModel().name() + ", doesn't exist.");
         }
         MAssocLinkInstance mAssocLinkInstance = mlmContext.modelFactory().createAssocLinkInstance(child,parent);
 
-        MAssociationEnd mEnd1 = mlmContext.level().model().getAssociation(fParentName.getText()).associationEnds().get(0);
+        MAssociationEnd mEnd1 = mlmContext.getCurrentModel().getAssociation(fParentName.getText()).associationEnds().get(0);
         if(fRoleRenamingEnd1.first != null) {
             if(Objects.equals(mEnd1.nameAsRolename(), fRoleRenamingEnd1.first.getText())) {
                 mAssocLinkInstance.addRoleRenaming(new MRoleRenaming(mEnd1, fRoleRenamingEnd1.second.getText()));
@@ -47,7 +47,7 @@ public class ASTAssociationInstance extends ASTMediatorElement{
 //            mRestrictionAssociation.addRoleMapping1(mEnd1.nameAsRolename(),mEnd1.nameAsRolename());
 //        }
 
-        MAssociationEnd mEnd2 = mlmContext.level().model().getAssociation(fParentName.getText()).associationEnds().get(1);
+        MAssociationEnd mEnd2 = mlmContext.getCurrentModel().getAssociation(fParentName.getText()).associationEnds().get(1);
         if(fRoleRenamingEnd2.first != null) {
             if(Objects.equals(mEnd2.nameAsRolename(), fRoleRenamingEnd2.first.getText())) {
                 mAssocLinkInstance.addRoleRenaming(new MRoleRenaming(mEnd2,fRoleRenamingEnd2.second.getText()));

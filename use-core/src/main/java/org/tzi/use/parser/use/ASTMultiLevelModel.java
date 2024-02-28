@@ -3,8 +3,7 @@ package org.tzi.use.parser.use;
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MLMContext;
 import org.tzi.use.parser.MultiContext;
-import org.tzi.use.uml.mm.MLevel;
-import org.tzi.use.uml.mm.MMultiLevelModel;
+import org.tzi.use.uml.mm.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,39 +12,60 @@ import java.util.List;
 public class ASTMultiLevelModel extends ASTAnnotatable{
 
     private final Token fName;
-    private final List<ASTLevel> fLevels;
+    private ASTMultiModel fMultiModel;
+    private final List<ASTMediator> fMediators;
     public ASTMultiLevelModel(Token name) {
         fName = name;
-        fLevels = new ArrayList<>();
+        fMediators = new ArrayList<>();
     }
 
-    public void addLevel(ASTLevel level) {
-        fLevels.add(level);
+    public void addMultiModel(ASTMultiModel multiModel){
+        this.fMultiModel = multiModel;
     }
+
+    public void addMediator(ASTMediator mediator){
+        this.fMediators.add(mediator);
+    }
+
 
     public MMultiLevelModel gen(MLMContext mlmContext) {
         MMultiLevelModel mMultiLevelModel = mlmContext.modelFactory().createMLM(fName.getText());
-//        mMultiModel.setFilename(multiCtx.filename());
+        mMultiLevelModel.setFilename(mlmContext.filename());
         mlmContext.setMLModel(mMultiLevelModel);
 
-        Iterator<ASTLevel> mlmIt = fLevels.iterator();
-        MLevel prevLevel = null;
-        while(mlmIt.hasNext()) {
+        try{
+            MultiContext multiCtx = new MultiContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
+            MMultiModel multiModel = fMultiModel.gen(multiCtx);
+            mMultiLevelModel.setMultiModel(multiModel);
+        }
+        catch (Exception e){
+            mlmContext.reportError(fName,e);
+        }
+
+
+        Iterator<ASTMediator> medIt = fMediators.iterator();
+        MModel prevModel = null;
+        while(medIt.hasNext()) {
+            ASTMediator mediator = medIt.next();
+
             MLMContext ctx = new MLMContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
             ctx.setMainContext(mlmContext);
-            ctx.setParentLevel(prevLevel);
-            ASTLevel level = mlmIt.next();
+            ctx.setParentModel(prevModel);
+
+            MModel currentModel = mMultiLevelModel.getModel(mediator.getName());
+            ctx.setCurrentModel(currentModel);
+
             try{
-                MLevel currentLevel = level.gen(ctx);
-                mMultiLevelModel.addLevel(currentLevel);
-                if (mlmContext.errorCount() > 0){
+                MMediator mMediator = mediator.gen(ctx);
+                mMultiLevelModel.addMediator(mMediator);
+                if (ctx.errorCount() > 0){
                     return null;
                 }
-                prevLevel = currentLevel;
+
+                prevModel = currentModel;
             }
             catch(Exception e) {
                 mlmContext.reportError(fName,e);
-                mlmIt.remove();
             }
         }
         return mMultiLevelModel;
