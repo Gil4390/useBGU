@@ -15,15 +15,13 @@ public class MultiLevelModelFactory extends MultiModelFactory {
         return new MMediator(name);
     }
 
-    public MClabjectInstance createClabjectInstance(MClassifier child, MClassifier parent) {
-        return new MClabjectInstance(child, parent);
+    public MClabject createClabjectInstance(MClassifier child, MClassifier parent) {
+        return new MClabject(child, parent);
     }
 
-    public MAssocLinkInstance createAssocLinkInstance(MClassifier child, MClassifier parent) {
-        return new MAssocLinkInstance(child, parent);
+    public MAssoclink createAssocLinkInstance(MAssociation child, MAssociation parent) {
+        return new MAssoclink(child, parent);
     }
 
-
-//    public MMLMClass createClass()
 
 }

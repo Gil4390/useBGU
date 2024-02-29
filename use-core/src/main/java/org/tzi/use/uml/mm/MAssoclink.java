@@ -3,14 +3,14 @@ package org.tzi.use.uml.mm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MAssocLinkInstance {
+public class MAssoclink {
 
-    private MClassifier fParent;
-    private MClassifier fChild;
+    private MAssociation fParent;
+    private MAssociation fChild;
 
     private final List<MRoleRenaming> fRoleRenaming;
 
-    public MAssocLinkInstance(MClassifier child, MClassifier parent) {
+    public MAssoclink(MAssociation child, MAssociation parent) {
         this.fParent = parent;
         this.fChild = child;
         fRoleRenaming = new ArrayList<>();
@@ -20,6 +20,12 @@ public class MAssocLinkInstance {
         fRoleRenaming.add(roleRenaming);
     }
 
+    public MAssociation parent(){
+        return fParent;
+    }
 
+    public MAssociation child(){
+        return fChild;
+    }
 
 }

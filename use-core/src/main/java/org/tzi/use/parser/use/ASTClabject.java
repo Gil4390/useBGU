@@ -7,13 +7,15 @@ import org.tzi.use.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class ASTClabjectInstance extends ASTMediatorElement{
+public class ASTClabject extends ASTAnnotatable{
 
+    private final Token fChildName;
+    private final Token fParentName;
     private final List<Pair<Token>> fAttributeRenaming;
-    public ASTClabjectInstance(Token fChildName, Token fParentName) {
-        super(fChildName, fParentName);
+    public ASTClabject(Token fChildName, Token fParentName) {
+        this.fChildName = fChildName;
+        this.fParentName = fParentName;
         fAttributeRenaming = new ArrayList<>();
     }
 
@@ -24,7 +26,7 @@ public class ASTClabjectInstance extends ASTMediatorElement{
         fAttributeRenaming.add(p);
     }
 
-    public MClabjectInstance gen(MLMContext mlmContext) throws Exception {
+    public MClabject gen(MLMContext mlmContext) throws Exception {
         MClass child = mlmContext.getCurrentModel().getClass(this.fChildName.getText());
         if(child == null) {
             throw new Exception("Class: " + this.fChildName.getText() + ", in the Model: "+mlmContext.getCurrentModel().name()+", doesn't exist.");
@@ -34,7 +36,7 @@ public class ASTClabjectInstance extends ASTMediatorElement{
             throw new Exception("Class: " + this.fParentName.getText() + ", in the Model: "+mlmContext.getParentModel().name()+", doesn't exist.");
         }
 
-        MClabjectInstance mClabjectInstance = mlmContext.modelFactory().createClabjectInstance(child,parent);
+        MClabject mClabject = mlmContext.modelFactory().createClabjectInstance(child,parent);
 
         for(Pair<Token> attributePair : fAttributeRenaming) {
             String oldAttribute = attributePair.first.getText();
@@ -47,15 +49,15 @@ public class ASTClabjectInstance extends ASTMediatorElement{
         for(MAttribute attribute : parent.attributes()) {
             for(Pair<Token> pair : fAttributeRenaming) {
                 if(pair.first.getText().equals(attribute.name()) && pair.second == null) {
-                    mClabjectInstance.addRemovedAttribute(attribute);
+                    mClabject.addRemovedAttribute(attribute);
                     break;
                 } else if(pair.first.getText().equals(attribute.name())) {
                     MAttributeRenaming attributeRenaming = new MAttributeRenaming(attribute, pair.second.getText());
-                    mClabjectInstance.addAttributeRenaming(attributeRenaming);
+                    mClabject.addAttributeRenaming(attributeRenaming);
                     break;
                 } else {
                     MAttributeRenaming attributeRenaming = new MAttributeRenaming(attribute, attribute.name());
-                    mClabjectInstance.addAttributeRenaming(attributeRenaming);
+                    mClabject.addAttributeRenaming(attributeRenaming);
                     break;
                 }
 
@@ -63,6 +65,6 @@ public class ASTClabjectInstance extends ASTMediatorElement{
         }
 
 
-        return mClabjectInstance;
+        return mClabject;
     }
 }

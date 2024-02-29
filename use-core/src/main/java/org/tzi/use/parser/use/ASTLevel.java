@@ -28,23 +28,23 @@ public class ASTLevel extends ASTAnnotatable {
         this.fMediator = mediator;
     }
 
-    public MLevel gen(MLMContext mlmContext) {
-        MLevel mLevel = mlmContext.modelFactory().createLevel(fName.getText(),fParentName.getText());
-        mlmContext.setCurrentLevel(mLevel);
-        try{
-            MModel mModel = fModel.gen(mlmContext);
-            mLevel.setModel(mModel);
-        } catch(Exception e) {
-            mlmContext.reportError(fName,e);
-        }
-
-        try{
-            MMediator mMediator = fMediator.gen(mlmContext);
-            mLevel.setMediator(mMediator);
-        } catch(Exception e) {
-            mlmContext.reportError(fName,e);
-        }
-        return mLevel;
-    }
+//    public MLevel gen(MLMContext mlmContext) {
+//        MLevel mLevel = mlmContext.modelFactory().createLevel(fName.getText(),fParentName.getText());
+//        mlmContext.setCurrentLevel(mLevel);
+//        try{
+//            MModel mModel = fModel.gen(mlmContext);
+//            mLevel.setModel(mModel);
+//        } catch(Exception e) {
+//            mlmContext.reportError(fName,e);
+//        }
+//
+//        try{
+//            MMediator mMediator = fMediator.gen(mlmContext);
+//            mLevel.setMediator(mMediator);
+//        } catch(Exception e) {
+//            mlmContext.reportError(fName,e);
+//        }
+//        return mLevel;
+//    }
 
 }

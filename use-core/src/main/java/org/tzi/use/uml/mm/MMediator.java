@@ -6,8 +6,8 @@ import java.util.List;
 public class MMediator {
 
     private String fName;
-    private final List<MClabjectInstance> fClabjects;
-    private final List<MAssocLinkInstance> fAssocLinks;
+    private final List<MClabject> fClabjects;
+    private final List<MAssoclink> fAssocLinks;
 //    private final List<MRestrictionClass> fClabjects;
 
     public MMediator(String name) {
@@ -16,13 +16,24 @@ public class MMediator {
         fAssocLinks = new ArrayList<>();
     }
 
-    public void addClabjectInstance(MClabjectInstance clabject) {
+    public void addClabjectInstance(MClabject clabject) {
         fClabjects.add(clabject);
     }
 
-    public void addAssocLinkInstance(MAssocLinkInstance assoclink) {
+    public void addAssocLinkInstance(MAssoclink assoclink) {
         fAssocLinks.add(assoclink);
     }
 
+    public String name(){
+        return fName;
+    }
+
+    public List<MClabject> clabjects(){
+        return fClabjects;
+    }
+
+    public List<MAssoclink> assocLinks(){
+        return fAssocLinks;
+    }
 
 }
