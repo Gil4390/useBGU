@@ -61,6 +61,8 @@ public class MMultiLevelModel extends MMultiModel {
                 }
             }
 
+            systemApi.checkState();
+
         }
 
         return true;

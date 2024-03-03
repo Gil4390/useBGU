@@ -6,7 +6,7 @@ import org.tzi.use.uml.ocl.value.VarBindings;
 
 import java.io.PrintWriter;
 
-public class MLMContext extends Context {
+public class MLMContext extends MultiContext {
 
 
     private MultiLevelModelFactory factory;

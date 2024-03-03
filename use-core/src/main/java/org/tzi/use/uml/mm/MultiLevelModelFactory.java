@@ -23,5 +23,8 @@ public class MultiLevelModelFactory extends MultiModelFactory {
         return new MAssoclink(child, parent);
     }
 
-
+    @Override
+    public MMultiModel createMultiModel(String name) {
+        return createMLM(name);
+    }
 }

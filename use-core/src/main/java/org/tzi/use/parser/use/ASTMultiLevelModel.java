@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ASTMultiLevelModel extends ASTAnnotatable{
+public class ASTMultiLevelModel extends ASTMultiModel{
 
-    private final Token fName;
+    //private final Token fName;
     private ASTMultiModel fMultiModel;
     private final List<ASTMediator> fMediators;
     public ASTMultiLevelModel(Token name) {
-        fName = name;
+        super(name);
         fMediators = new ArrayList<>();
     }
 
@@ -29,6 +29,7 @@ public class ASTMultiLevelModel extends ASTAnnotatable{
 
 
     public MMultiLevelModel gen(MLMContext mlmContext) {
+        MMultiLevelModel mmlm = (MMultiLevelModel) super.gen(mlmContext);
         MMultiLevelModel mMultiLevelModel = mlmContext.modelFactory().createMLM(fName.getText());
         mMultiLevelModel.setFilename(mlmContext.filename());
         mlmContext.setMLModel(mMultiLevelModel);
