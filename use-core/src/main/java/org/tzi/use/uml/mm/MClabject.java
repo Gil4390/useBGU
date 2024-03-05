@@ -34,4 +34,14 @@ public class MClabject {
     public MClassifier child(){
         return fChild;
     }
+
+    public List<MAttribute> getAttributes(){
+        //TODO
+        return null;
+    }
+
+    public List<MAttribute> getAllAttributes(){
+        //TODO
+        return null;
+    }
 }
