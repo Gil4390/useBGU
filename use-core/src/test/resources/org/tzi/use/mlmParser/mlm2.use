@@ -65,5 +65,6 @@ mediator CD
    assoclink cd1 : ab1
       role_renaming
         aa1 -> cc1
+        bb1 -> bb1
    end
 end

@@ -63,9 +63,9 @@ mediator returns [ASTMediator n]
 
 clabject returns [ASTClabject n]
 :
-    'clabject_instantiation' childClsName=IDENT COLON parentClsName=IDENT {$n = new ASTClabject(childClsName, parentClsName);}
-    ('attribute_renaming'
-        ( (oldAtrName=IDENT COLON newAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, $newAtrName);})
+    'clabject' childClsName=IDENT COLON parentClsName=IDENT {$n = new ASTClabject(childClsName, parentClsName);}
+    ('attributes'
+        ( (oldAtrName=IDENT '->' newAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, $newAtrName);})
         | ( '~' oldAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, null);} )
         )*
     )?
@@ -74,11 +74,11 @@ clabject returns [ASTClabject n]
 
 assoclink returns [ASTAssoclink n]
 :
-    'association_instantiation'
+    'assoclink'
     childAssocName=IDENT COLON parentAssocName=IDENT {$n = new ASTAssoclink(childAssocName, parentAssocName);}
-    ('attribute_renaming'
-        oldRoleName1=IDENT COLON newRoleName1=IDENT {$n.addRoleRenaming1($oldRoleName1, $newRoleName1);}
-        oldRoleName2=IDENT COLON newRoleName2=IDENT {$n.addRoleRenaming2($oldRoleName2, $newRoleName2);}
+    ('role_renaming'
+        (oldRoleName1=IDENT '->' newRoleName1=IDENT {$n.addRoleRenaming1($oldRoleName1, $newRoleName1);})
+        (oldRoleName2=IDENT '->' newRoleName2=IDENT {$n.addRoleRenaming2($oldRoleName2, $newRoleName2);})?
     )?
     'end'
     ;

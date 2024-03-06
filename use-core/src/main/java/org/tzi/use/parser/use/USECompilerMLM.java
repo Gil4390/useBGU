@@ -15,7 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
+/**
+ * Compiler for USE Multi specifications.
+ *
+ * @author Gil Khais
+ * @author Amiel Saad
+ */
+
 public class USECompilerMLM {
+
     private USECompilerMLM() {}
 
     /**
@@ -28,11 +36,11 @@ public class USECompilerMLM {
      * @return MMultiModel null if there were any errors
      */
 
-    public static MMultiModel compileMLMSpecification(InputStream in,
-                                                        String inName,
-                                                        PrintWriter err,
-                                                        MultiLevelModelFactory factory) {
-        MMultiLevelModel mlm = null;
+    public static MMultiLevelModel compileMLMSpecification(InputStream in,
+                                                           String inName,
+                                                           PrintWriter err,
+                                                           MultiLevelModelFactory factory) {
+        MMultiLevelModel multi_level_model = null;
         ParseErrorHandler errHandler = new ParseErrorHandler(inName, err);
 
         ANTLRInputStream aInput;
@@ -41,7 +49,7 @@ public class USECompilerMLM {
             aInput.name = inName;
         } catch (IOException e1) {
             err.println(e1.getMessage());
-            return mlm;
+            return multi_level_model;
         }
 
         USELexer lexer = new USELexer(aInput);
@@ -58,9 +66,9 @@ public class USECompilerMLM {
 
                 // Generate code
                 MLMContext ctx = new MLMContext(inName, err, null, factory);
-                mlm = astMultiLevelModel.gen(ctx);
+                multi_level_model = astMultiLevelModel.gen(ctx);
                 if (ctx.errorCount() > 0 )
-                    mlm = null;
+                    multi_level_model = null;
             }
         } catch (RecognitionException e) {
             err.println(parser.getSourceName() +":" +
@@ -70,6 +78,7 @@ public class USECompilerMLM {
         }
 
         err.flush();
-        return mlm;
+        return multi_level_model;
     }
+
 }

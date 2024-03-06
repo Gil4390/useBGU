@@ -43,7 +43,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             MModel currentModel = mMultiLevelModel.getModel(mediator.getName());
             ctx.setCurrentModel(currentModel);
 
-            try{
+            try {
                 MMediator mMediator = mediator.gen(ctx);
                 mMultiLevelModel.addMediator(mMediator);
                 if (ctx.errorCount() > 0){
