@@ -36,7 +36,7 @@ public class ASTClabject extends ASTAnnotatable{
             throw new Exception("Class: " + this.fParentName.getText() + ", in the Model: "+mlmContext.getParentModel().name()+", doesn't exist.");
         }
 
-        MClabject mClabject = mlmContext.modelFactory().createClabjectInstance(child,parent);
+        MClabject mClabject = mlmContext.modelFactory().createClabject(child,parent);
 
         for(Pair<Token> attributePair : fAttributeRenaming) {
             String oldAttribute = attributePair.first.getText();
@@ -52,11 +52,11 @@ public class ASTClabject extends ASTAnnotatable{
                     mClabject.addRemovedAttribute(attribute);
                     break;
                 } else if(pair.first.getText().equals(attribute.name())) {
-                    MAttributeRenaming attributeRenaming = new MAttributeRenaming(attribute, pair.second.getText());
+                    MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, pair.second.getText());
                     mClabject.addAttributeRenaming(attributeRenaming);
                     break;
                 } else {
-                    MAttributeRenaming attributeRenaming = new MAttributeRenaming(attribute, attribute.name());
+                    MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, attribute.name());
                     mClabject.addAttributeRenaming(attributeRenaming);
                     break;
                 }

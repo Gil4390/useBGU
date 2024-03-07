@@ -8,32 +8,32 @@ import java.util.Map;
 
 public class MMultiLevelModel extends MMultiModel {
 
-    private MMultiModel fMultiModel;
     private final Map<String, MMediator> fMediators;
     protected MMultiLevelModel(String name) {
         super(name);
         fMediators = new HashMap<>();
     }
 
-    public void setMultiModel(MMultiModel multiModel) {
-        this.fMultiModel = multiModel;
-    }
-
-    public void addMediator(MMediator mediator) {
+    public void addMediator(MMediator mediator) throws Exception {
+        if (fMediators.containsKey(mediator.name()))
+            throw new Exception("MLM already contains a mediator `"
+                    + mediator.name() + "'.");
         this.fMediators.put(mediator.name(), mediator);
     }
-
-    @Override
-    public void addGeneralization(MGeneralization gen) throws MInvalidModelException {
-        super.addGeneralization(gen);
-        gen.validateInheritance();
+    public void removeMediator(String name){
+        this.fMediators.remove(name);
     }
+
+    public MMediator getMediator(String name){
+        return fMediators.get(name);
+    }
+
 
     public boolean isValid(){
         //BIG TODO
 
 
-        for (MModel model : fMultiModel.models()){
+        for (MModel model : this.models()){
             MMediator mediator = fMediators.get(model.name());
             UseSystemApi systemApi = new UseSystemApiUndoable(model);
 

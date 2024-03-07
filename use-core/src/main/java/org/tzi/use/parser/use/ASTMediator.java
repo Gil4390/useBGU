@@ -5,6 +5,7 @@ import org.tzi.use.parser.MLMContext;
 import org.tzi.use.uml.mm.MAssoclink;
 import org.tzi.use.uml.mm.MClabject;
 import org.tzi.use.uml.mm.MMediator;
+import org.tzi.use.uml.mm.MModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,21 +13,23 @@ import java.util.List;
 public class ASTMediator extends ASTAnnotatable{
 
     private final Token fName;
-    private final List<ASTClabject> fClabjectInstances;
-    private final List<ASTAssoclink> fAssociationInstances;
+    private final Token fParentModelName;
+    private final List<ASTClabject> fClabjects;
+    private final List<ASTAssoclink> fAssoclinks;
 
-    public ASTMediator(Token fName) {
+    public ASTMediator(Token fName, Token fParentModelName) {
         this.fName = fName;
-        fClabjectInstances = new ArrayList<>();
-        fAssociationInstances = new ArrayList<>();
+        this.fParentModelName = fParentModelName;
+        fClabjects = new ArrayList<>();
+        fAssoclinks = new ArrayList<>();
     }
 
     public void addClabject(ASTClabject astClabject){
-        this.fClabjectInstances.add(astClabject);
+        this.fClabjects.add(astClabject);
     }
 
     public void addAssoclink(ASTAssoclink astAssocLink){
-        this.fAssociationInstances.add(astAssocLink);
+        this.fAssoclinks.add(astAssocLink);
     }
 
     public String getName(){
@@ -35,13 +38,21 @@ public class ASTMediator extends ASTAnnotatable{
 
     public MMediator gen(MLMContext mlmContext) throws Exception {
         MMediator mMediator = mlmContext.modelFactory().createMediator(fName.getText());
-        for (ASTClabject astClabject : fClabjectInstances) {
-            MClabject clabjectInstance = astClabject.gen(mlmContext);
-            mMediator.addClabjectInstance(clabjectInstance);
+        MModel parentModel = mlmContext.getParentModel();
+        //TODO ask amiel if this is correct
+        if (!parentModel.name().equals(fParentModelName.getText())){
+            throw new Exception("parent model name incorrect");
         }
-        for (ASTAssoclink astAssoclink : fAssociationInstances){
+        mMediator.setParentModel(parentModel);
+        mMediator.setCurrentModel(mlmContext.getCurrentModel());
+        //
+        for (ASTClabject astClabject : fClabjects) {
+            MClabject clabjectInstance = astClabject.gen(mlmContext);
+            mMediator.addClabject(clabjectInstance);
+        }
+        for (ASTAssoclink astAssoclink : fAssoclinks){
             MAssoclink assoclink = astAssoclink.gen(mlmContext);
-            mMediator.addAssocLinkInstance(assoclink);
+            mMediator.addAssocLink(assoclink);
         }
         return mMediator;
     }

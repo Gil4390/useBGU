@@ -5,6 +5,8 @@ import java.util.List;
 
 public class MClabject {
 
+    private final String fName;
+
     private MClassifier fParent;
     private MClassifier fChild;
 
@@ -13,6 +15,7 @@ public class MClabject {
 
 
     public MClabject(MClassifier child, MClassifier parent) {
+        fName = child.name();
         this.fParent = parent;
         this.fChild = child;
         this.fRemovedAttributes = new ArrayList<>();
@@ -43,5 +46,9 @@ public class MClabject {
     public List<MAttribute> getAllAttributes(){
         //TODO
         return null;
+    }
+
+    public String name() {
+        return fName;
     }
 }

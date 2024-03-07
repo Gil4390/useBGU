@@ -49,8 +49,8 @@ end
 
 
 
-mediator AB
+mediator AB < NONE
 end
 
-mediator CD
+mediator CD < AB
 end

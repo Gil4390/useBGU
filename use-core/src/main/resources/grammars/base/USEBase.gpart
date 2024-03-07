@@ -11,7 +11,7 @@
                          (mediator)*
                          EOF
 
-    mediator ::= "mediator" ID (mediator_element)* "end"
+    mediator ::= "mediator" ID < ID (mediator_element)* "end"
 
     mediator_element ::= clabject_inst | assoc_inst
 
@@ -54,7 +54,7 @@ multi_level_model returns [ASTMultiLevelModel n]
 
 mediator returns [ASTMediator n]
 :
-    'mediator' medName=IDENT {$n = new ASTMediator($medName);}
+    'mediator' medName=IDENT '<' parentModelName=IDENT {$n = new ASTMediator($medName, $parentModelName);}
     ((c = clabject {$n.addClabject($c.n);}) |
      (a = assoclink {$n.addAssoclink($a.n);})
     )*
