@@ -39,12 +39,16 @@ public class ASTMediator extends ASTAnnotatable{
     public MMediator gen(MLMContext mlmContext) throws Exception {
         MMediator mMediator = mlmContext.modelFactory().createMediator(fName.getText());
         MModel parentModel = mlmContext.getParentModel();
+        mMediator.setCurrentModel(mlmContext.getCurrentModel());
+
         //TODO ask amiel if this is correct
-        if (!parentModel.name().equals(fParentModelName.getText())){
+        if(fParentModelName.getText().equals("NONE")) {
+            return mMediator;
+        }
+        else if (!parentModel.name().equals(fParentModelName.getText())){
             throw new Exception("parent model name incorrect");
         }
         mMediator.setParentModel(parentModel);
-        mMediator.setCurrentModel(mlmContext.getCurrentModel());
         //
         for (ASTClabject astClabject : fClabjects) {
             MClabject clabjectInstance = astClabject.gen(mlmContext);

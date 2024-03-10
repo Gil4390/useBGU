@@ -66,7 +66,7 @@ clabject returns [ASTClabject n]
     'clabject' childClsName=IDENT COLON parentClsName=IDENT {$n = new ASTClabject(childClsName, parentClsName);}
     ('attributes'
         ( (oldAtrName=IDENT '->' newAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, $newAtrName);})
-        | ( '~' oldAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, null);} )
+        | ( '~' oldAtrName=IDENT {$n.addAttributeRemoving($oldAtrName);} )
         )*
     )?
     'end'
