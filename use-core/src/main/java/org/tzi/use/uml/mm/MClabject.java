@@ -30,6 +30,15 @@ public class MClabject {
         fRemovedAttributes.add(attribute);
     }
 
+    public MAttribute getRemovedAttribute(String name) {
+        for(MAttribute removedAttribute : fRemovedAttributes) {
+            if(removedAttribute.name().equals(name)) {
+                return removedAttribute;
+            }
+        }
+        return null;
+    }
+
     public MClassifier parent(){
         return fParent;
     }
