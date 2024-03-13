@@ -30,22 +30,7 @@ multi_level_model returns [ASTMultiLevelModel n]
 :
     'MLM' mlmName=IDENT {$n = new ASTMultiLevelModel($mlmName);}
 
-        m=internal_model {$n.addModel($m.n);}
-        (m=internal_model { $n.addModel($m.n); } )*
-        ('inter-enums'
-                (e=enumTypeDefinition { $n.addEnumTypeDef($e.n); })*
-        )?
-        ('inter-classes'
-                (a=interGeneralClassifierDefinition[$n] )*
-        )?
-        ('inter-associations'
-            (a=interAssociationDefinition { $n.addInterAssociation($a.n); })*
-        )?
-        ('inter-constraints'
-            ( cons=interInvariant { $n.addConstraint($cons.n); }
-              | ppc=interPrePost { $n.addPrePost($ppc.n); }
-            )*
-        )?
+    m=multi_model_core {$n.addMultiModel($m.n);}
 
     (med = mediator {$n.addMediator($med.n);})*
     EOF
@@ -91,10 +76,16 @@ assoclink returns [ASTAssoclink n]
                     ( 'inter-constraints' (invariant | prePost)* )?
                     EOF
 */
-
 multi_model returns [ASTMultiModel n]
 :
-    'multi_model' mmName=IDENT {$n = new ASTMultiModel($mmName);}
+    mm=multi_model_core {$n = $mm.n;}
+    EOF
+    ;
+
+multi_model_core returns [ASTMultiModel n]
+:
+    ({$n = new ASTMultiModel();})
+    ('multi_model' mmName=IDENT {$n = new ASTMultiModel($mmName);})?
     m=internal_model {$n.addModel($m.n);}
     (m=internal_model { $n.addModel($m.n); } )*
     ('inter-enums'
@@ -111,7 +102,6 @@ multi_model returns [ASTMultiModel n]
           | ppc=interPrePost { $n.addPrePost($ppc.n); }
         )*
     )?
-    EOF
     ;
 
 /* ------------------------------------

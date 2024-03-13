@@ -6,6 +6,9 @@ public class MultiLevelModelFactory extends MultiModelFactory {
     public MMultiLevelModel createMLM(String name) {
         return new MMultiLevelModel(name);
     }
+    public MMultiLevelModel createMLM(MMultiModel multiModel){
+        return new MMultiLevelModel(multiModel);
+    }
 
     public MLevel createLevel(String name, String parentName) {
         return new MLevel(name, parentName);

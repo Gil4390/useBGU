@@ -1,5 +1,6 @@
 package org.tzi.use.parser.use;
 
+import org.antlr.runtime.ClassicToken;
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MultiContext;
 import org.tzi.use.parser.SemanticException;
@@ -23,6 +24,11 @@ public class ASTMultiModel extends ASTModel {
 
     public ASTMultiModel(Token name) {
         super(name);
+        fModels = new ArrayList<>();
+    }
+
+    public ASTMultiModel() {
+        super(new ClassicToken(1,"MLM"));
         fModels = new ArrayList<>();
     }
 

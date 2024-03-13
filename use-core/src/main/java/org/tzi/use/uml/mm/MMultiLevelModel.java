@@ -2,6 +2,7 @@ package org.tzi.use.uml.mm;
 
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
+import org.tzi.use.uml.ocl.type.EnumType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,30 @@ public class MMultiLevelModel extends MMultiModel {
     private final Map<String, MMediator> fMediators;
     protected MMultiLevelModel(String name) {
         super(name);
+        fMediators = new HashMap<>();
+    }
+    protected  MMultiLevelModel(MMultiModel multiModel){
+        super(multiModel.name());
+        //steal all the fields from the multiModel
+        try {
+            for (EnumType enumType : multiModel.enumTypes()) {
+                this.addEnumType(enumType);
+            }
+            for (MModel model : multiModel.models()) {
+                this.addModel(model);
+            }
+            for (MClass mClass: multiModel.classes()) {
+                this.addClass(mClass);
+            }
+            for (MAssociation association : multiModel.associations()) {
+                this.addAssociation(association);
+            }
+            for (MClassInvariant invariant : multiModel.classInvariants()) {
+                this.addClassInvariant(invariant);
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         fMediators = new HashMap<>();
     }
 

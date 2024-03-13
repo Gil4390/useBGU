@@ -29,7 +29,18 @@ public class ASTMultiLevelModel extends ASTMultiModel{
 
 
     public MMultiLevelModel gen(MLMContext mlmContext) {
-        MMultiLevelModel mMultiLevelModel = (MMultiLevelModel) super.gen(mlmContext);
+        MMultiLevelModel mMultiLevelModel = null;
+        try{
+            MultiContext multiCtx = new MultiContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
+            MMultiModel multiModel = fMultiModel.gen(multiCtx);
+            mMultiLevelModel = mlmContext.modelFactory().createMLM(multiModel);
+            mMultiLevelModel.setFilename(mlmContext.filename());
+        }
+        catch (Exception e){
+            mlmContext.reportError(fName,e);
+        }
+
+
 
         Iterator<ASTMediator> medIt = fMediators.iterator();
         MModel prevModel = null;
