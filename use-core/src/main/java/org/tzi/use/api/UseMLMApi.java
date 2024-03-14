@@ -2,22 +2,24 @@ package org.tzi.use.api;
 
 import org.tzi.use.uml.mm.*;
 
+import java.util.List;
+
 public class UseMLMApi extends UseMultiModelApi{
 
     private MMultiLevelModel mMultiLevelModel;
     MultiLevelModelFactory mFactory = new MultiLevelModelFactory();
 
     /**
-     * Creates a new UseMultiModelApi instance with an empty multi-model named "unnamed".
-     * The new multi-model instance can be retrieved by {@link #getMultiModel()}.
+     * Creates a new UseMLMApi instance with an empty multi-level-model named "unnamed".
+     * The new multi-level-model instance can be retrieved by {@link #getMultiLevelModel()}.
      */
     public UseMLMApi() {
         mMultiLevelModel = mFactory.createMLM("unnamed");
     }
 
     /**
-     * Creates a new UseMultiModelApi instance with an empty multi-model named <code>name</code>.
-     * The new multi-model instance can be retrieved by {@link #getMultiModel()}.
+     * Creates a new UseMLMApi instance with an empty multi-level-model named <code>name</code>.
+     * The new multi-level-model instance can be retrieved by {@link #getMultiLevelModel()}.
      * @param name The name of the new model.
      */
     public UseMLMApi(String name) {
@@ -25,27 +27,42 @@ public class UseMLMApi extends UseMultiModelApi{
     }
 
     /**
-     * Creates a new UseMultiModelApi instance with
-     * the provided <code>multiModel</code> as the multi-model instance.
-     * This is useful if you want to modify an existing multi-model instance.
-     * @param mlm The multi-model to modify through this API instance.
+     * Creates a new UseMLMApi instance with
+     * the provided <code>multiLevelModel</code> as the multi-level-model instance.
+     * This is useful if you want to modify an existing multi-level-model instance.
+     * @param mlm The multi-level-model to modify through this API instance.
      */
     public UseMLMApi(MMultiLevelModel mlm) {
         mMultiLevelModel = mlm;
     }
 
     /**
-     * Returns the multi-model modified through this API instance.
-     * @return the multi-model handled by this API instance.
+     * Returns the multi-level-model modified through this API instance.
+     * @return the multi-level-model handled by this API instance.
      */
     public MMultiLevelModel getMultiLevelModel() {
         return mMultiLevelModel;
     }
 
-    public MMediator createMediator(String name) throws Exception {
-        //TODO set current and parent models
-        MMediator mediator = mFactory.createMediator(name);
+    /**
+     * This method is used to create a new Mediator object and add it to the multi-level model.
+     *
+     * @param mediatorName The name of the new mediator to be created.
+     * @param relatedModel The name of the related model based on which the current model and its parent model are retrieved.
+     * @return The newly created Mediator object.
+     * @throws Exception If the current model does not exist.
+     */
+    public MMediator createMediator(String mediatorName, String relatedModel) throws Exception {
+        MModel currentModel = mMultiLevelModel.getModel(relatedModel);
+        if (currentModel == null) {
+            throw new Exception("Model " + relatedModel + " is invalid");
+        }
+        MModel parentModel = mMultiLevelModel.getParentModel(relatedModel);
+
+        MMediator mediator = mFactory.createMediator(mediatorName);
         this.mMultiLevelModel.addMediator(mediator);
+        mediator.setCurrentModel(currentModel);
+        mediator.setParentModel(parentModel);
         return mediator;
     }
     public void removeMediator(String name){
@@ -111,8 +128,21 @@ public class UseMLMApi extends UseMultiModelApi{
         return assoclink;
     }
 
-    public MRoleRenaming createRoleRenaming(String parentName, String childName){
-        return null;
+    public MRoleRenaming createRoleRenaming(String mediatorName, String assoclinkName, String oldRoleName, String newRoleName){
+        MMediator mediator = this.getMediator(mediatorName);
+        MAssoclink assoclink = mediator.getAssoclink(assoclinkName);
+
+
+        List<MAssociationEnd> ends = assoclink.child().associationEnds();
+
+        MAssociationEnd end = ends.get(0);
+        if (end.name().equals(oldRoleName)) {
+            end = ends.get(1);
+        }
+
+        MRoleRenaming roleRenaming = mFactory.createRoleRenaming(end, newRoleName);
+        assoclink.addRoleRenaming(roleRenaming);
+        return roleRenaming;
     }
 
 

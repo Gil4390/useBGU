@@ -4,18 +4,23 @@ import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.ocl.type.EnumType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MMultiLevelModel extends MMultiModel {
 
+    private final List<MModel> fModelsList; //ordered list of models
     private final Map<String, MMediator> fMediators;
     protected MMultiLevelModel(String name) {
         super(name);
+        fModelsList = new ArrayList<>();
         fMediators = new HashMap<>();
     }
     protected  MMultiLevelModel(MMultiModel multiModel){
         super(multiModel.name());
+        fModelsList = new ArrayList<>();
         //steal all the fields from the multiModel
         try {
             for (EnumType enumType : multiModel.enumTypes()) {
@@ -39,6 +44,27 @@ public class MMultiLevelModel extends MMultiModel {
         fMediators = new HashMap<>();
     }
 
+    @Override
+    public void addModel(MModel model) throws Exception {
+        super.addModel(model);
+        fModelsList.add(model);
+
+    }
+
+    public MModel getParentModel(String name) throws Exception {
+        if (!fModels.containsKey(name)){
+            throw new Exception("Model `"+name+"' does not exist.");
+        }
+
+        MModel prevModel = null;
+        for (MModel model : fModelsList){
+            if (model.name().equals(name)){
+                return prevModel;
+            }
+            prevModel = model;
+        }
+        return prevModel;
+    }
     public void addMediator(MMediator mediator) throws Exception {
         if (fMediators.containsKey(mediator.name()))
             throw new Exception("MLM already contains a mediator `"
