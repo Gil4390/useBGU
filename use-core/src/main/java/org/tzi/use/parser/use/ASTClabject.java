@@ -71,20 +71,21 @@ public class ASTClabject extends ASTAnnotatable{
         //TODO: fix implementation (doesnt look good)
         //TODO: still adds the removed attribute, need to check why
         for(MAttribute attribute : parent.attributes()) {
+            boolean toInherit = true;
             for(Pair<Token> pair : fAttributeRenaming) {
-                if(pair.first.getText().equals(attribute.name()) && pair.second == null) {
-                    mClabject.addRemovedAttribute(attribute);
-                    break;
-                } else if(pair.first.getText().equals(attribute.name())) {
+                if(pair.first.getText().equals(attribute.name())) {
                     MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, pair.second.getText());
                     mClabject.addAttributeRenaming(attributeRenaming);
+                    toInherit = false;
                     break;
-                } else if(mClabject.getRemovedAttribute(pair.first.getText()) == null) {
-                    MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, attribute.name());
-                    mClabject.addAttributeRenaming(attributeRenaming);
+                } else if(mClabject.getRemovedAttribute(attribute.name()) != null) {
+                    toInherit = false;
                     break;
                 }
-
+            }
+            if(toInherit) {
+                MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, attribute.name());
+                mClabject.addAttributeRenaming(attributeRenaming);
             }
         }
 
