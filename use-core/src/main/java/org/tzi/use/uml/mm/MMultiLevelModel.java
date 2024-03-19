@@ -51,14 +51,14 @@ public class MMultiLevelModel extends MMultiModel {
 
     }
 
-    public MModel getParentModel(String name) throws Exception {
-        if (!fModels.containsKey(name)){
-            throw new Exception("Model `"+name+"' does not exist.");
+    public MModel getParentModel(String modelName) throws Exception {
+        if (!fModels.containsKey(modelName)){
+            throw new Exception("Model `"+modelName+"' does not exist.");
         }
 
         MModel prevModel = null;
         for (MModel model : fModelsList){
-            if (model.name().equals(name)){
+            if (model.name().equals(modelName)){
                 return prevModel;
             }
             prevModel = model;
@@ -81,8 +81,7 @@ public class MMultiLevelModel extends MMultiModel {
 
 
     public boolean isValid(){
-        //BIG TODO
-
+        //TODO
 
         for (MModel model : this.models()){
             MMediator mediator = fMediators.get(model.name());
