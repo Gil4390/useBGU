@@ -7,20 +7,18 @@
 
 /*
     multi_level_model ::= "MLM" ID
-                         multi_model
+                         multi_model_core
                          (mediator)*
                          EOF
 
-    mediator ::= "mediator" ID < ID (mediator_element)* "end"
+    mediator ::= "mediator" ID < ID (clabject | assoc)* "end"
 
-    mediator_element ::= clabject_inst | assoc_inst
-
-    clabject := "clabject_instantiation" ID ":" ID
+    clabject := "clabject" ID ":" ID
                           (attribute_rename)?
 
-    attribute_rename := "attribute_renaming" ( (ID ":" ID) | ("~" ID) ) *
+    attribute_rename := "attributes" ( (ID ":" ID) | ("~" ID) ) *
 
-    assoclink := "association_instantiation" ID ":" ID
+    assoclink := "association" ID ":" ID
                      "role_renaming"
                          ID ":" ID
                          ID ":" ID
