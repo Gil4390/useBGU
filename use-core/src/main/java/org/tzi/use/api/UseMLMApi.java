@@ -17,6 +17,10 @@ public class UseMLMApi extends UseMultiModelApi{
         mMultiLevelModel = mFactory.createMLM("unnamed");
     }
 
+    public UseMLMApi(MMultiModel multiModel) {
+        mMultiLevelModel = mFactory.createMLM(multiModel);
+    }
+
     /**
      * Creates a new UseMLMApi instance with an empty multi-level-model named <code>name</code>.
      * The new multi-level-model instance can be retrieved by {@link #getMultiLevelModel()}.
@@ -84,7 +88,7 @@ public class UseMLMApi extends UseMultiModelApi{
             throw new NullPointerException("Child " + childName + " is invalid");
         }
 
-        MClass parent = mediator.getParentModel().getClass(childName);
+        MClass parent = mediator.getParentModel().getClass(parentName);
         if (parent == null) {
             throw new NullPointerException("Parent " + parentName + " is invalid");
         }

@@ -10,4 +10,8 @@ public class MAttributeRenaming {
         this.newName = newAttributeName;
     }
 
+    public MAttribute attribute() {
+        return fAttribute;
+    }
+
 }

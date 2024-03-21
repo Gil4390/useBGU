@@ -79,6 +79,10 @@ public class MMultiLevelModel extends MMultiModel {
         return fMediators.get(name);
     }
 
+    public MClabject getClabject(String mediatorName, String clabjectName){
+        MMediator mediator = this.getMediator(mediatorName);
+        return mediator.getClabject(clabjectName);
+    }
 
     public boolean isValid(){
         //BIG TODO

@@ -2,6 +2,7 @@ package org.tzi.use.uml.mm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MClabject {
 
@@ -48,8 +49,7 @@ public class MClabject {
     }
 
     public List<MAttribute> getAttributes(){
-        //TODO
-        return null;
+        return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
 
     public List<MAttribute> getAllAttributes(){

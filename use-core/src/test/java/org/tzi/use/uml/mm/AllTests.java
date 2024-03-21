@@ -40,7 +40,7 @@ public class AllTests {
         test.addTestSuite( org.tzi.use.uml.mm.MultiModelCreationTest.class );
         test.addTestSuite( org.tzi.use.uml.mm.statemachines.MultiModelPropertiesTest.class );
         test.addTestSuite( org.tzi.use.uml.mm.MultiModelObjectCreationTest.class );
-
+        test.addTestSuite( org.tzi.use.uml.mm.MLMCreationTest.class );
         return test;
     }
 }
