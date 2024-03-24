@@ -111,6 +111,15 @@ public class UseMLMApi extends UseMultiModelApi{
         return attributeRenaming;
     }
 
+    public void removeAttribute(String mediatorName, String clabjectName, String oldAttrName){
+        MMediator mediator = this.getMediator(mediatorName);
+        MClabject clabject = mediator.getClabject(clabjectName);
+
+        MAttribute attr = clabject.child().attribute(oldAttrName, false);
+
+        clabject.addRemovedAttribute(attr);
+    }
+
     public MAssoclink createAssoclink(String mediatorName, String childName, String parentName){
         MMediator mediator = this.getMediator(mediatorName);
         if (mediator == null) {

@@ -41,7 +41,7 @@ public class TestMLMUtil {
             mlmApi.createMediator("Mediator1", personCompany1);
             mlmApi.createMediator("Mediator2", personCompany2);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Error( e );
         }
         return mlm;
     }
@@ -55,7 +55,7 @@ public class TestMLMUtil {
             mlmApi.createClabject("Mediator2",personCompany2 + delimiter + personClass, personCompany1 + delimiter +  personClass);
             mlmApi.createAttributeRenaming("Mediator2",personCompany2 + delimiter + personClass, "name", "newName");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Error( e );
         }
         return mlm;
     }
@@ -74,7 +74,17 @@ public class TestMLMUtil {
     }
 
     public MMultiLevelModel createMLMWithClabjects_AttributeRemoving() {
-        return null;
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels2());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("Mediator1", personCompany1);
+            mlmApi.createMediator("Mediator2", personCompany2);
+            mlmApi.createClabject("Mediator2",personCompany2 + delimiter + personClass, personCompany1 + delimiter +  personClass);
+            mlmApi.removeAttribute("Mediator2",personCompany2 + delimiter + personClass, "name");
+        } catch (Exception e) {
+            throw new Error( e );
+        }
+        return mlm;
     }
 
     public MMultiLevelModel createMLMWithEmptyAssoclinks_RoleRenaming() {

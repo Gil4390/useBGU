@@ -53,10 +53,18 @@ mediator AB < NONE
 end
 
 mediator CD < AB
-    clabject cls_C : cls_A
-    end
+   clabject cls_C : cls_A
+      attributes
+        a1 -> c1
+        ~a2
+   end
 
-    clabject cls_D : cls_B
-    end
+   clabject cls_D : cls_B
+   end
 
+   assoclink cd1 : ab1
+      role_renaming
+        aa1 -> cc1
+        bb1 -> bb1
+   end
 end
