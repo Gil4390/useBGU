@@ -1,65 +1,63 @@
 MLM ABCD
 
   model AB
-    class cls_A
+    class A
       attributes
         a1: String
         a2: String
     end
 
-    class cls_B
+    class B
       attributes
         b1: String
         b2: String
     end
 
     association ab1 between
-      cls_A[*] role aa1
-      cls_B[*] role bb1
+      A[*] role aa1
+      B[*] role bb1
     end
 
 
   model CD
-    class cls_C
+    class C
       attributes
         c: String
     end
 
-    class cls_D
+    class D
       attributes
         d: String
     end
 
     association cd1 between
-      cls_C[*] role cc1
-      cls_D[*] role dd1
+      C[*] role cc1
+      D[*] role dd1
     end
 
     association cd2 between
-      cls_C[*] role cc2
-      cls_D[*] role dd2
+      C[*] role cc2
+      D[*] role dd2
     end
 
 inter-associations
 association bd1 between
-      AB@cls_B[*] role bb3
-      CD@cls_D[*] role dd3
+      AB@B[*] role bb3
+      CD@D[*] role dd3
 end
-
-
 
 
 mediator AB < NONE
 end
 
 mediator CD < AB
-   clabject cls_C : cls_A
+   clabject C : A
       attributes
         a1 -> c1
         ~a2
    end
 
-   clabject cls_D : cls_B
+   clabject D : B
    end
 
 end

@@ -14,8 +14,8 @@ MLM ABCD
     end
 
     association ab1 between
-      A[*] role aa1
-      B[*] role bb1
+      A[1] role aa1
+      B[2] role bb1
     end
 
 
@@ -30,23 +30,19 @@ MLM ABCD
         d: String
     end
 
+    class E
+      attributes
+        e: String
+    end
+
     association cd1 between
       C[*] role cc1
       D[*] role dd1
     end
-
-    association cd2 between
-      C[*] role cc2
-      D[*] role dd2
+    association ce1 between
+      C[*] role cc1
+      E[*] role ee1
     end
-
-inter-associations
-association bd1 between
-      AB@B[*] role bb3
-      CD@D[*] role dd3
-end
-
-
 
 
 mediator AB < NONE
@@ -59,4 +55,18 @@ mediator CD < AB
     clabject D : B
     end
 
+    clabject E : B
+    end
+
+    assoclink cd1 : ab1
+      role_renaming
+        aa1 -> cc1
+        bb1 -> bb1
+    end
+
+    assoclink ce1 : ab1
+     role_renaming
+       aa1 -> cc1
+       bb1 -> ee1
+    end
 end
