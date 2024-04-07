@@ -1818,6 +1818,47 @@ public final class MSystemState {
 		return res;
 	}
 
+	public enum Legality {
+		Legal, Illegal, PartiallyLegal
+	}
+	public Legality checkLegalStructure(PrintWriter out, boolean reportAllErrors) {
+		//long start = System.currentTimeMillis();
+
+		Legality res = Legality.Legal;
+		out.println("checking structure...");
+		out.flush();
+
+		updateDerivedValues(true);
+
+		// check the whole/part hierarchy
+//		if (!checkWholePartLink(out)) {
+//			if (!reportAllErrors) return false;
+//			res = false;
+//		}
+
+		// check all associations
+		for (MAssociation assoc : fSystem.model().associations()) {
+			Legality res2 = checkLegalStructure(assoc, out, reportAllErrors);
+			if (res2 == Legality.Legal && res == Legality.Legal) {
+				res = Legality.Legal;
+			} else if (res2 == Legality.Illegal || res == Legality.Illegal) {
+				res = Legality.Illegal;
+			} else if (res2 == Legality.PartiallyLegal && res != Legality.Illegal) {
+				res = Legality.PartiallyLegal;
+			}
+			if (!reportAllErrors && res == Legality.Illegal) return Legality.Illegal;
+		}
+
+		out.flush();
+
+//		if (!Options.testMode) {
+//			long duration = System.currentTimeMillis() - start;
+//			out.println(String.format("checked structure in %,dms.", duration));
+//		}
+
+		return res;
+	}
+
 	/**
 	 * Checks model checks whether cardinalities of
 	 * association links match their declaration of multiplicities.
@@ -1840,6 +1881,30 @@ public final class MSystemState {
 			res = validateBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors) && res;
 			if (!res && !reportAllErrors) return res;
 			
+			res = validateBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors) && res;
+		}
+
+		out.flush();
+		return res;
+	}
+
+	public Legality checkLegalStructure(MAssociation assoc, PrintWriter out, boolean reportAllErrors) {
+		Legality res = Legality.Legal;
+
+		res = validateRedefines(assoc, out, reportAllErrors);
+
+		if (assoc.associationEnds().size() != 2) {
+			// check for n-ary links
+			res = naryAssociationsAreValid(out, assoc, reportAllErrors) && res;
+		} else {
+			// check both association ends
+			Iterator<MAssociationEnd> it2 = assoc.associationEnds().iterator();
+			MAssociationEnd aend1 = it2.next();
+			MAssociationEnd aend2 = it2.next();
+
+			res = validateBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors) && res;
+			if (!res && !reportAllErrors) return res;
+
 			res = validateBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors) && res;
 		}
 

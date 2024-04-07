@@ -615,6 +615,24 @@ public abstract class UseSystemApi {
 		return isValid;
 	}
 
+	public enum Legality {
+		LEGAL, ILLEGAL, PartiallyLegal
+	}
+
+	public Legality checkLegality(PrintWriter error){
+		boolean isValid;
+		// Check structure
+		isValid = system.state().checkStructure(error);
+		// Check Invariants
+		isValid = isValid && system.state().check(error, false, false, true, Collections.<String>emptyList());
+
+		if (isValid) {
+			return Legality.LEGAL;
+		} else {
+			return Legality.ILLEGAL;
+		}
+	}
+
 	/**
 	 * Evaluates the OCL expression <code>expression</code>
 	 * on the current system state and returns the result as
