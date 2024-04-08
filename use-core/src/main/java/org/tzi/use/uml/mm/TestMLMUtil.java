@@ -111,4 +111,52 @@ public class TestMLMUtil {
         return null;
     }
 
+
+    public MMultiLevelModel createMLM1() {
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels3());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("AB", "AB");
+            mlmApi.createMediator("CD", "CD");
+            mlmApi.createClabject("CD","CD@C", "AB@A");
+            mlmApi.createClabject("CD","CD@D", "AB@B");
+        } catch (Exception e) {
+            throw new Error( e );
+        }
+        return mlm;
+    }
+
+    public MMultiLevelModel createMLM2() {
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels3());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("AB", "AB");
+            mlmApi.createMediator("CD", "CD");
+            mlmApi.createClabject("CD","CD@C", "AB@A");
+            mlmApi.createClabject("CD","CD@D", "AB@B");
+
+            mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
+        } catch (Exception e) {
+            throw new Error( e );
+        }
+        return mlm;
+    }
+
+    public MMultiLevelModel createMLM3() {
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels4());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("AB", "AB");
+            mlmApi.createMediator("CD", "CD");
+            mlmApi.createClabject("CD","CD@C", "AB@A");
+            mlmApi.createClabject("CD","CD@D", "AB@B");
+
+            mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
+            mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
+        } catch (Exception e) {
+            throw new Error( e );
+        }
+        return mlm;
+    }
+
 }

@@ -1782,6 +1782,13 @@ public final class MSystemState {
 	public boolean checkStructure(PrintWriter out) {
 		return checkStructure(out, true);
 	}
+
+	public enum Legality {
+		Legal, Illegal, PartiallyLegal
+	}
+	public Legality checkLegalStructure(PrintWriter out) {
+		return checkLegalStructure(out, true);
+	}
 	
 	/**
 	 * Checks model inherent constraints, i.e., checks whether cardinalities of
@@ -1818,9 +1825,7 @@ public final class MSystemState {
 		return res;
 	}
 
-	public enum Legality {
-		Legal, Illegal, PartiallyLegal
-	}
+
 	public Legality checkLegalStructure(PrintWriter out, boolean reportAllErrors) {
 		//long start = System.currentTimeMillis();
 
@@ -1839,9 +1844,7 @@ public final class MSystemState {
 		// check all associations
 		for (MAssociation assoc : fSystem.model().associations()) {
 			Legality res2 = checkLegalStructure(assoc, out, reportAllErrors);
-			if (res2 == Legality.Legal && res == Legality.Legal) {
-				res = Legality.Legal;
-			} else if (res2 == Legality.Illegal || res == Legality.Illegal) {
+			if (res2 == Legality.Illegal || res == Legality.Illegal) {
 				res = Legality.Illegal;
 			} else if (res2 == Legality.PartiallyLegal && res != Legality.Illegal) {
 				res = Legality.PartiallyLegal;
@@ -1891,21 +1894,21 @@ public final class MSystemState {
 	public Legality checkLegalStructure(MAssociation assoc, PrintWriter out, boolean reportAllErrors) {
 		Legality res = Legality.Legal;
 
-		res = validateRedefines(assoc, out, reportAllErrors);
+		//res = validateRedefines(assoc, out, reportAllErrors);
 
 		if (assoc.associationEnds().size() != 2) {
 			// check for n-ary links
-			res = naryAssociationsAreValid(out, assoc, reportAllErrors) && res;
+			//res = naryAssociationsAreValid(out, assoc, reportAllErrors) && res;
 		} else {
 			// check both association ends
 			Iterator<MAssociationEnd> it2 = assoc.associationEnds().iterator();
 			MAssociationEnd aend1 = it2.next();
 			MAssociationEnd aend2 = it2.next();
 
-			res = validateBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors) && res;
-			if (!res && !reportAllErrors) return res;
+			//res = validateLegalBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors) && res;
+			//if (!res && !reportAllErrors) return res;
 
-			res = validateBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors) && res;
+			//res = validateLegalBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors) && res;
 		}
 
 		out.flush();
@@ -2030,6 +2033,60 @@ public final class MSystemState {
 			}
 		}
 		
+		return valid;
+	}
+
+	private Legality validateLegalBinaryAssociations(PrintWriter out, MAssociation assoc,
+											   MAssociationEnd aend1, MAssociationEnd aend2, boolean reportAllErrors) {
+		Legality valid = Legality.Legal;
+
+		// for each object of the association end's type get
+		// the number of links in which the object participates
+		MClass cls = aend1.cls();
+		Set<MObject> objects = objectsOfClassAndSubClasses(cls);
+
+		for (MObject obj : objects) {
+			Map<List<Value>,Set<MObject>> linkedObjects = getLinkedObjects(obj, aend1, aend2);
+
+
+
+			//check if num of object is in the range - legal
+
+			//check if num of obj is less the largest lower bound - partial
+
+			//check if num of obj is greater than the largest upper bound - illegal
+
+
+
+			if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
+				reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
+				if (!reportAllErrors) {
+					//return false;
+				} else {
+					//valid = false;
+					continue;
+				}
+			}
+
+			for(Map.Entry<List<Value>, Set<MObject>> entry : linkedObjects.entrySet()) {
+				if (!aend2.multiplicity().contains(entry.getValue().size())) {
+					reportMultiplicityViolation(out, assoc, aend1, aend2, obj, entry);
+					//valid = false;
+				}
+
+				if (!aend1.getSubsettedEnds().isEmpty()) {
+					if (!validateSubsets(out, obj, entry.getKey(), entry.getValue(), aend1)){
+						//valid = false;
+					}
+				}
+			}
+
+//			if (!reportAllErrors && !valid) {
+//				return valid;
+//			}
+		}
+
+
 		return valid;
 	}
 

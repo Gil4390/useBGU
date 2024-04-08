@@ -1,6 +1,7 @@
 package org.tzi.use.uml.mm;
 
 import junit.framework.TestCase;
+import org.tzi.use.uml.sys.MSystemState;
 
 public class MLMCreationTest extends TestCase {
 
@@ -30,6 +31,19 @@ public class MLMCreationTest extends TestCase {
 
         MAttribute renamedAtr =  multiLevelModel.getClass("PersonCompany2", "Person").attribute("name", false);
         assertNull(renamedAtr);
+    }
+
+    public void testValidMLM1(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM1();
+        assertFalse(mlm.checkState());
+    }
+    public void testValidMLM2(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM2();
+        assertFalse(mlm.checkState());
+    }
+    public void testValidMLM3(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM3();
+        assertTrue(mlm.checkState());
     }
 
 }

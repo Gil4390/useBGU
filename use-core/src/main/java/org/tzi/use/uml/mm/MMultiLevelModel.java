@@ -3,6 +3,7 @@ package org.tzi.use.uml.mm;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.ocl.type.EnumType;
+import org.tzi.use.uml.sys.MSystemState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,12 +85,12 @@ public class MMultiLevelModel extends MMultiModel {
         return mediator.getClabject(clabjectName);
     }
 
-    public boolean isValid(){
-        //TODO
-
+    public boolean checkState(){
+        boolean result = true;
+        MModel previousModel = fModelsList.get(0);
         for (MModel model : this.models()){
             MMediator mediator = fMediators.get(model.name());
-            UseSystemApi systemApi = new UseSystemApiUndoable(model);
+            UseSystemApi systemApi = new UseSystemApiUndoable(previousModel);
 
             //for each clabject, we create an object of the instance type
             for (MClabject clabject : mediator.clabjects()){
@@ -104,6 +105,7 @@ public class MMultiLevelModel extends MMultiModel {
 
             for (MAssoclink assoclink : mediator.assocLinks()){
                 try {
+                    //todo need to find the object name based on the assoclink
                     String obj1 =  assoclink.child().associationEnds().get(0).name();
                     String obj2 =  assoclink.child().associationEnds().get(1).name();
 
@@ -115,11 +117,54 @@ public class MMultiLevelModel extends MMultiModel {
                 }
             }
 
-            systemApi.checkState();
+            result = systemApi.checkState() && result;
+            previousModel = model;
+        }
+
+        return result;
+    }
+
+    public String checkLegalState(){
+        MSystemState.Legality result = MSystemState.Legality.Legal;
+        for (MModel model : this.models()){
+            MMediator mediator = fMediators.get(model.name());
+            UseSystemApi systemApi = new UseSystemApiUndoable(model);
+
+            //for each clabject, we create an object of the instance type
+            for (MClabject clabject : mediator.clabjects()){
+                try {
+                    systemApi.createObject(clabject.parent().name(), clabject.child().name());
+
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                    return "ILLEGAL";
+                }
+            }
+
+            for (MAssoclink assoclink : mediator.assocLinks()){
+                try {
+                    String obj1 =  assoclink.child().associationEnds().get(0).name();
+                    String obj2 =  assoclink.child().associationEnds().get(1).name();
+
+                    systemApi.createLink(assoclink.parent().name(), obj1, obj2);
+
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                    return "ILLEGAL";
+                }
+            }
+
+            MSystemState.Legality currRes = systemApi.checkLegality();
+            if (currRes.equals(MSystemState.Legality.Illegal)){
+                return "ILLEGAL";
+            }
+            else if (currRes.equals(MSystemState.Legality.PartiallyLegal) && result.equals(MSystemState.Legality.Legal)){
+                result = MSystemState.Legality.PartiallyLegal;
+            }
 
         }
 
-        return true;
+        return result.toString();
     }
 
 

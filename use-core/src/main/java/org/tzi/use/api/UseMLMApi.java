@@ -131,7 +131,7 @@ public class UseMLMApi extends UseMultiModelApi{
             throw new NullPointerException("Child " + childName + " is invalid");
         }
 
-        MAssociation parent  = mediator.getParentModel().getAssociation(childName);
+        MAssociation parent  = mediator.getParentModel().getAssociation(parentName);
         if (parent == null) {
             throw new NullPointerException("Parent " + parentName + " is invalid");
         }

@@ -29,10 +29,7 @@ import org.tzi.use.uml.ocl.expr.Evaluator;
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.expr.MultiplicityViolationException;
 import org.tzi.use.uml.ocl.value.Value;
-import org.tzi.use.uml.sys.MLink;
-import org.tzi.use.uml.sys.MLinkObject;
-import org.tzi.use.uml.sys.MObject;
-import org.tzi.use.uml.sys.MSystem;
+import org.tzi.use.uml.sys.*;
 import org.tzi.use.util.NullPrintWriter;
 import org.tzi.use.util.StringUtil;
 
@@ -593,6 +590,10 @@ public abstract class UseSystemApi {
     public boolean checkState() {
     	return checkState(NullPrintWriter.getInstance());
     }
+
+	public MSystemState.Legality checkLegality() {
+		return checkLegality(NullPrintWriter.getInstance());
+	}
     
     /**
 	 * <p>This method validates the current state of
@@ -615,22 +616,15 @@ public abstract class UseSystemApi {
 		return isValid;
 	}
 
-	public enum Legality {
-		LEGAL, ILLEGAL, PartiallyLegal
-	}
 
-	public Legality checkLegality(PrintWriter error){
-		boolean isValid;
+
+	public MSystemState.Legality checkLegality(PrintWriter error){
+		MSystemState.Legality isLegal;
 		// Check structure
-		isValid = system.state().checkStructure(error);
+		isLegal = system.state().checkLegalStructure(error);
 		// Check Invariants
-		isValid = isValid && system.state().check(error, false, false, true, Collections.<String>emptyList());
-
-		if (isValid) {
-			return Legality.LEGAL;
-		} else {
-			return Legality.ILLEGAL;
-		}
+		//isValid = isValid && system.state().check(error, false, false, true, Collections.<String>emptyList());
+		return isLegal;
 	}
 
 	/**
