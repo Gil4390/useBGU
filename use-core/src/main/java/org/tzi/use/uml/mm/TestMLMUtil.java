@@ -150,6 +150,7 @@ public class TestMLMUtil {
             mlmApi.createMediator("CD", "CD");
             mlmApi.createClabject("CD","CD@C", "AB@A");
             mlmApi.createClabject("CD","CD@D", "AB@B");
+            mlmApi.createClabject("CD","CD@E", "AB@B");
 
             mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
             mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");

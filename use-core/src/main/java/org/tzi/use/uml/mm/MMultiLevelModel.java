@@ -106,8 +106,9 @@ public class MMultiLevelModel extends MMultiModel {
             for (MAssoclink assoclink : mediator.assocLinks()){
                 try {
                     //todo need to find the object name based on the assoclink
-                    String obj1 =  assoclink.child().associationEnds().get(0).name();
-                    String obj2 =  assoclink.child().associationEnds().get(1).name();
+                    //String name1 = assoclink.child().associationEnds().get(0).cls().name();
+                    String obj1 =  assoclink.child().associationEnds().get(0).cls().name();
+                    String obj2 =  assoclink.child().associationEnds().get(1).cls().name();
 
                     systemApi.createLink(assoclink.parent().name(), obj1, obj2);
 
