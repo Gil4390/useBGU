@@ -173,6 +173,43 @@ public class TestMultiModelUtil {
         }
     }
 
+    public MMultiModel createMultiModelTwoModels5() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("ABCD");
+
+            MModel model1 = multiApi.createModel("AB");
+            MModel model2 = multiApi.createModel("CD");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
+
+            multiApi.createClass("AB@A", false);
+            multiApi.createClass("AB@B", false);
+            multiApi.createAssociation("ab1",
+                    "AB@A" , "aa1" , "1", MAggregationKind.NONE,
+                    "AB@B", "bb1", "2", MAggregationKind.NONE);
+
+
+            multiApi.createClass("CD@C", false);
+            multiApi.createClass("CD@D", false);
+            multiApi.createClass("CD@E", false);
+            multiApi.createClass("CD@F", false);
+
+            multiApi.createAssociation("cd1",
+                    "CD@C" , "cc1" , "*", MAggregationKind.NONE,
+                    "CD@D", "dd1", "*", MAggregationKind.NONE);
+            multiApi.createAssociation("ce1",
+                    "CD@C" , "cc2" , "*", MAggregationKind.NONE,
+                    "CD@E", "ee1", "*", MAggregationKind.NONE);
+            multiApi.createAssociation("cf1",
+                    "CD@C" , "cc3" , "*", MAggregationKind.NONE,
+                    "CD@F", "ff1", "*", MAggregationKind.NONE);
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
 
 
     public MMultiModel createMultiModelTwoModelsAssociationClass() {
