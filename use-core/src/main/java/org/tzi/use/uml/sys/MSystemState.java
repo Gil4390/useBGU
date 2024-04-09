@@ -1827,7 +1827,7 @@ public final class MSystemState {
 
 
 	public Legality checkLegalStructure(PrintWriter out, boolean reportAllErrors) {
-		//long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 
 		Legality res = Legality.Legal;
 		out.println("checking structure...");
@@ -1836,17 +1836,17 @@ public final class MSystemState {
 		updateDerivedValues(true);
 
 		// check the whole/part hierarchy
-//		if (!checkWholePartLink(out)) {
-//			if (!reportAllErrors) return false;
-//			res = false;
-//		}
+		if (!checkWholePartLink(out)) {
+			if (!reportAllErrors) return Legality.Illegal;
+			res = Legality.Illegal;
+		}
 
 		// check all associations
 		for (MAssociation assoc : fSystem.model().associations()) {
 			Legality res2 = checkLegalStructure(assoc, out, reportAllErrors);
 			if (res2 == Legality.Illegal || res == Legality.Illegal) {
 				res = Legality.Illegal;
-			} else if (res2 == Legality.PartiallyLegal && res != Legality.Illegal) {
+			} else if (res2 == Legality.PartiallyLegal) {
 				res = Legality.PartiallyLegal;
 			}
 			if (!reportAllErrors && res == Legality.Illegal) return Legality.Illegal;
@@ -1854,10 +1854,10 @@ public final class MSystemState {
 
 		out.flush();
 
-//		if (!Options.testMode) {
-//			long duration = System.currentTimeMillis() - start;
-//			out.println(String.format("checked structure in %,dms.", duration));
-//		}
+		if (!Options.testMode) {
+			long duration = System.currentTimeMillis() - start;
+			out.println(String.format("checked structure in %,dms.", duration));
+		}
 
 		return res;
 	}
@@ -1894,21 +1894,38 @@ public final class MSystemState {
 	public Legality checkLegalStructure(MAssociation assoc, PrintWriter out, boolean reportAllErrors) {
 		Legality res = Legality.Legal;
 
-		//res = validateRedefines(assoc, out, reportAllErrors);
+		boolean valid = validateRedefines(assoc, out, reportAllErrors);
+		if (!valid) res = Legality.Illegal;
 
 		if (assoc.associationEnds().size() != 2) {
 			// check for n-ary links
-			//res = naryAssociationsAreValid(out, assoc, reportAllErrors) && res;
+			Legality res1 = naryAssociationsAreLegal(out, assoc, reportAllErrors);
+			if (res1 == Legality.Illegal || res == Legality.Illegal) {
+				res = Legality.Illegal;
+			} else if (res1 == Legality.PartiallyLegal) {
+				res = Legality.PartiallyLegal;
+			}
 		} else {
 			// check both association ends
 			Iterator<MAssociationEnd> it2 = assoc.associationEnds().iterator();
 			MAssociationEnd aend1 = it2.next();
 			MAssociationEnd aend2 = it2.next();
 
-			//res = validateLegalBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors) && res;
-			//if (!res && !reportAllErrors) return res;
+			Legality res2 = validateLegalBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors);
+			if (res2 == Legality.Illegal || res == Legality.Illegal) {
+				res = Legality.Illegal;
+			} else if (res2 == Legality.PartiallyLegal) {
+				res = Legality.PartiallyLegal;
+			}
+			if (!reportAllErrors && res == Legality.Illegal) return Legality.Illegal;
 
-			//res = validateLegalBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors) && res;
+
+			Legality res3 = validateLegalBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors);
+			if (res3 == Legality.Illegal || res == Legality.Illegal) {
+				res = Legality.Illegal;
+			} else if (res3 == Legality.PartiallyLegal) {
+				res = Legality.PartiallyLegal;
+			}
 		}
 
 		out.flush();
@@ -1958,6 +1975,62 @@ public final class MSystemState {
 				}
 			}
 			if (!reportAllErrors && !valid) return valid;
+		}
+		return valid;
+	}
+
+	private Legality naryAssociationsAreLegal(PrintWriter out, MAssociation assoc, boolean reportAllErrors) {
+		Legality valid = Legality.Legal;
+		Set<MLink> links = linksOfAssociation(assoc).links();
+
+		for (MAssociationEnd selEnd : assoc.associationEnds()) {
+			List<MAssociationEnd> otherEnds = selEnd.getAllOtherAssociationEnds();
+			List<MClass> classes = new ArrayList<MClass>();
+
+			for (MAssociationEnd end : otherEnds) {
+				classes.add(end.cls());
+			}
+
+			Bag<MObject[]> crossProduct = getCrossProductOfInstanceSets(classes);
+
+			for (MObject[] tuple : crossProduct) {
+				int count = 0;
+
+				for (MLink link : links) {
+					boolean ok = true;
+					int index = 0;
+
+					for (MAssociationEnd end : otherEnds) {
+						if (link.linkEnd(end).object() != tuple[index]) {
+							ok = false;
+						}
+						++index;
+					}
+					if (ok)
+						++count;
+				}
+				if (!selEnd.multiplicity().contains(count)) {
+
+					int largestLowerBound = selEnd.multiplicity().getLargestLowerBound();
+					if (count < largestLowerBound){
+						//case 1: num of obj is less the largest lower bound - partial
+						valid = Legality.PartiallyLegal;
+					}
+					else{
+						//case 2: num of obj is greater than the largest upper bound - illegal
+						valid = Legality.Illegal;
+						out.println("Multiplicity constraint violation in association `"
+								+ assoc.name() + "':");
+						out.println("  Objects `" + StringUtil.fmtSeq(tuple, ", ")
+								+ "' are connected to " + count + " object"
+								+ ((count == 1) ? "" : "s") + " of class `"
+								+ selEnd.cls().name() + "'");
+						out.println("  but the multiplicity is specified as `"
+								+ selEnd.multiplicity() + "'.");
+					}
+				}
+			}
+			if (!reportAllErrors && valid == Legality.Illegal) return Legality.Illegal;
 		}
 		return valid;
 	}
@@ -2048,44 +2121,35 @@ public final class MSystemState {
 		for (MObject obj : objects) {
 			Map<List<Value>,Set<MObject>> linkedObjects = getLinkedObjects(obj, aend1, aend2);
 
-
-
-			//check if num of object is in the range - legal
-
-			//check if num of obj is less the largest lower bound - partial
-
-			//check if num of obj is greater than the largest upper bound - illegal
-
-
-
 			if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
-				reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
-				if (!reportAllErrors) {
-					//return false;
-				} else {
-					//valid = false;
-					continue;
-				}
+				//reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
+				valid = Legality.PartiallyLegal;
+				continue;
 			}
 
 			for(Map.Entry<List<Value>, Set<MObject>> entry : linkedObjects.entrySet()) {
 				if (!aend2.multiplicity().contains(entry.getValue().size())) {
-					reportMultiplicityViolation(out, assoc, aend1, aend2, obj, entry);
-					//valid = false;
+					int largestLowerBound = aend2.multiplicity().getLargestLowerBound();
+					if (entry.getValue().size() < largestLowerBound){
+						//case 1: num of obj is less the largest lower bound - partial
+						valid = Legality.PartiallyLegal;
+					}
+					else{
+						//case 2: num of obj is greater than the largest upper bound - illegal
+						reportMultiplicityViolation(out, assoc, aend1, aend2, obj, entry);
+						valid = Legality.Illegal;
+					}
 				}
 
 				if (!aend1.getSubsettedEnds().isEmpty()) {
 					if (!validateSubsets(out, obj, entry.getKey(), entry.getValue(), aend1)){
-						//valid = false;
+						valid = Legality.Illegal;
 					}
 				}
 			}
 
-//			if (!reportAllErrors && !valid) {
-//				return valid;
-//			}
+			if (!reportAllErrors && valid == Legality.Illegal) return Legality.Illegal;
 		}
-
 
 		return valid;
 	}

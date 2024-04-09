@@ -46,4 +46,27 @@ public class MLMCreationTest extends TestCase {
         assertTrue(mlm.checkState());
     }
 
+    public void testValidMLM4(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM4();
+        assertFalse(mlm.checkState());
+    }
+
+    public void testLegalMLM1(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM1();
+        assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
+    }
+    public void testLegalMLM2(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM2();
+        assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
+    }
+    public void testLegalMLM3(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM3();
+        assertEquals(MSystemState.Legality.Legal.toString(), mlm.checkLegalState());
+    }
+
+    public void testLegalMLM4(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM4();
+        assertEquals(MSystemState.Legality.Illegal.toString(), mlm.checkLegalState());
+    }
+
 }

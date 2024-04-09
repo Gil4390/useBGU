@@ -105,10 +105,8 @@ public class MMultiLevelModel extends MMultiModel {
 
             for (MAssoclink assoclink : mediator.assocLinks()){
                 try {
-                    //todo need to find the object name based on the assoclink
-                    //String name1 = assoclink.child().associationEnds().get(0).cls().name();
-                    String obj1 =  assoclink.child().associationEnds().get(0).cls().name();
-                    String obj2 =  assoclink.child().associationEnds().get(1).cls().name();
+                    String obj1 = assoclink.child().associationEnds().get(0).cls().name();
+                    String obj2 = assoclink.child().associationEnds().get(1).cls().name();
 
                     systemApi.createLink(assoclink.parent().name(), obj1, obj2);
 
@@ -127,9 +125,10 @@ public class MMultiLevelModel extends MMultiModel {
 
     public String checkLegalState(){
         MSystemState.Legality result = MSystemState.Legality.Legal;
+        MModel previousModel = fModelsList.get(0);
         for (MModel model : this.models()){
             MMediator mediator = fMediators.get(model.name());
-            UseSystemApi systemApi = new UseSystemApiUndoable(model);
+            UseSystemApi systemApi = new UseSystemApiUndoable(previousModel);
 
             //for each clabject, we create an object of the instance type
             for (MClabject clabject : mediator.clabjects()){
@@ -138,31 +137,31 @@ public class MMultiLevelModel extends MMultiModel {
 
                 }catch (Exception e){
                     System.out.println(e.getMessage());
-                    return "ILLEGAL";
+                    return MSystemState.Legality.Illegal.toString();
                 }
             }
 
             for (MAssoclink assoclink : mediator.assocLinks()){
                 try {
-                    String obj1 =  assoclink.child().associationEnds().get(0).name();
-                    String obj2 =  assoclink.child().associationEnds().get(1).name();
+                    String obj1 = assoclink.child().associationEnds().get(0).cls().name();
+                    String obj2 = assoclink.child().associationEnds().get(1).cls().name();
 
                     systemApi.createLink(assoclink.parent().name(), obj1, obj2);
 
                 }catch (Exception e){
                     System.out.println(e.getMessage());
-                    return "ILLEGAL";
+                    return MSystemState.Legality.Illegal.toString();
                 }
             }
 
             MSystemState.Legality currRes = systemApi.checkLegality();
             if (currRes.equals(MSystemState.Legality.Illegal)){
-                return "ILLEGAL";
+                return MSystemState.Legality.Illegal.toString();
             }
             else if (currRes.equals(MSystemState.Legality.PartiallyLegal) && result.equals(MSystemState.Legality.Legal)){
                 result = MSystemState.Legality.PartiallyLegal;
             }
-
+            previousModel = model;
         }
 
         return result.toString();

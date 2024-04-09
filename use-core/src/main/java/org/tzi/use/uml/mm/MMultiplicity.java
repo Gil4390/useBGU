@@ -209,5 +209,14 @@ public final class MMultiplicity {
     public String toString() {
         return StringUtil.fmtSeq(mRanges.iterator(), ",");
     }
+
+    public int getLargestLowerBound() {
+    	int largest = 0;
+    	for (Range r : mRanges) {
+    		if (r.fLower > largest)
+    			largest = r.fLower;
+    	}
+    	return largest;
+    }
 }
 

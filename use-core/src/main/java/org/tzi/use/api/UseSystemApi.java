@@ -619,12 +619,16 @@ public abstract class UseSystemApi {
 
 
 	public MSystemState.Legality checkLegality(PrintWriter error){
-		MSystemState.Legality isLegal;
+		MSystemState.Legality result;
 		// Check structure
-		isLegal = system.state().checkLegalStructure(error);
+		result = system.state().checkLegalStructure(error);
 		// Check Invariants
-		//isValid = isValid && system.state().check(error, false, false, true, Collections.<String>emptyList());
-		return isLegal;
+		boolean check = true;
+		//check = system.state().check(error, false, false, true, Collections.<String>emptyList());
+		if (!check){
+			result = MSystemState.Legality.Illegal;
+		}
+		return result;
 	}
 
 	/**
