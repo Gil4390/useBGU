@@ -67,6 +67,9 @@ mediator CD < AB
     clabject E : B
     end
 
+    clabject F : B
+    end
+
     assoclink cd1 : ab1
       role_renaming
         aa1 -> cc1

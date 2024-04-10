@@ -8,14 +8,14 @@ public class MClabject {
 
     private final String fName;
 
-    private MClassifier fParent;
-    private MClassifier fChild;
+    private MClass fParent;
+    private MClass fChild;
 
     private final List<MAttributeRenaming> fAttributeRenaming;
     private final List<MAttribute> fRemovedAttributes;
 
 
-    public MClabject(MClassifier child, MClassifier parent) {
+    public MClabject(MClass child, MClass parent) {
         fName = child.name();
         this.fParent = parent;
         this.fChild = child;

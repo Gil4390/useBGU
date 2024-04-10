@@ -2,10 +2,7 @@ package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MLMContext;
-import org.tzi.use.uml.mm.MAssoclink;
-import org.tzi.use.uml.mm.MClabject;
-import org.tzi.use.uml.mm.MMediator;
-import org.tzi.use.uml.mm.MModel;
+import org.tzi.use.uml.mm.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +53,27 @@ public class ASTMediator extends ASTAnnotatable{
         }
         for (ASTAssoclink astAssoclink : fAssoclinks){
             MAssoclink assoclink = astAssoclink.gen(mlmContext);
+
+            // check child association connects two classes that are defined as clabjects of the parent association classes
+            MClass childClass1 = mlmContext.getCurrentModel().getClass(assoclink.child().associationEnds().get(0).cls().name());
+            MClass childClass2 = mlmContext.getCurrentModel().getClass(assoclink.child().associationEnds().get(1).cls().name());
+            MClass parentClass1 = mlmContext.getParentModel().getClass(assoclink.parent().associationEnds().get(0).cls().name());
+            MClass parentClass2 = mlmContext.getParentModel().getClass(assoclink.parent().associationEnds().get(1).cls().name());
+
+            if (childClass1 == null || childClass2 == null || parentClass1 == null || parentClass2 == null) {
+                throw new Exception("Child class or parent class is not defined in the model");
+            }
+            MClabject clabject1 = mMediator.getClabject(childClass1.name());
+            MClabject clabject2 = mMediator.getClabject(childClass2.name());
+            if(clabject1 == null || clabject2 == null) {
+                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not defined as a clabject in the mediator: "+mMediator.name());
+            }
+
+            if (!clabject1.parent().equals(parentClass1) || !clabject2.parent().equals(parentClass2)) {
+                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not instantiating the appropriate class int the mediator: "+mMediator.name());
+            }
+
+
             mMediator.addAssocLink(assoclink);
         }
         return mMediator;
