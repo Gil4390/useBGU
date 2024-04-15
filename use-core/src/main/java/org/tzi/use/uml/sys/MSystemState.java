@@ -1679,6 +1679,135 @@ public final class MSystemState {
 		return valid;
 	}
 
+	public Legality checkLegality(PrintWriter out, boolean traceEvaluation,
+						 boolean showDetails, boolean allInvariants, final List<String> invNames) {
+		Legality valid = Legality.Legal;
+		Evaluator evaluator = new Evaluator();
+
+		// model inherent constraints: check whether cardinalities of
+		// association links match their declaration of multiplicities
+		valid = checkLegalStructure(out);
+
+		if (Options.EVAL_NUMTHREADS > 1)
+			out.println("checking invariants (using " + Options.EVAL_NUMTHREADS
+					+ " concurrent threads)...");
+		else
+			out.println("checking invariants...");
+
+		out.flush();
+		int numChecked = 0;
+		int numFailed = 0;
+		long tAll = System.currentTimeMillis();
+
+		ArrayList<MClassInvariant> invList = new ArrayList<MClassInvariant>();
+		ArrayList<Boolean> negatedList = new ArrayList<Boolean>();
+		ArrayList<Expression> exprList = new ArrayList<Expression>();
+		Collection<MClassInvariant> source;
+
+		if (invNames.isEmpty()) {
+			source = fSystem.model().classInvariants();
+		} else {
+			source = Collections2.filter(fSystem.model().classInvariants(),
+					new Predicate<MClassInvariant>() {
+						@Override
+						public boolean apply(MClassInvariant input) {
+							return invNames.contains(input.name());
+						}
+					});
+		}
+
+		for (MClassInvariant inv : source) {
+
+			// Ignore if deactivated and not all should be checked.
+			if (!allInvariants && !inv.isActive()) continue;
+
+			Expression expr = inv.expandedExpression();
+
+			if (inv.isNegated()) {
+				try {
+					Expression[] args = { expr };
+					Expression expr1 = ExpStdOp.create("not", args);
+					expr = expr1;
+				} catch (ExpInvalidException e) {
+					// This cannot happen, since in invariant is a boolean expression
+					// (checked by MClassInvariant constructor)
+				}
+				negatedList.add(Boolean.TRUE);
+			} else {
+				negatedList.add(Boolean.FALSE);
+			}
+			invList.add(inv);
+			exprList.add(expr);
+		}
+
+		// start (possibly concurrent) evaluation
+		Queue resultValues = evaluator.evalList(Options.EVAL_NUMTHREADS,
+				exprList, this);
+
+		// receive results
+		for (int i = 0; i < exprList.size(); i++) {
+			MClassInvariant inv = invList.get(i);
+			numChecked++;
+			String msg = "checking invariant (" + numChecked + ") `"
+					+ inv.cls().name() + "::" + inv.name() + "': ";
+			out.print(msg); // + inv.bodyExpression());
+			out.flush();
+			try {
+				Value v = (Value) resultValues.get();
+
+				// if value 'v' is null, the invariant can not be evaluated,
+				// therefore it is N/A (not available).
+				if (v == null) {
+					out.println("N/A");
+					// if there is a value, the invariant can always be
+					// evaluated and the
+					// result can be printed.
+				} else {
+					boolean ok = v.isDefined() && ((BooleanValue) v).isTrue();
+					if (ok)
+						out.println("OK."); // (" + timeStr +").");
+					else {
+						out.println("FAILED."); // (" + timeStr +").");
+						out.println("  -> " + v.toStringWithType());
+
+						// repeat evaluation with output of all subexpression
+						// results
+						if (traceEvaluation) {
+							out.println("Results of subexpressions:");
+							Expression expr = exprList.get(i);
+							evaluator.eval(expr, this, new VarBindings(), out);
+						}
+
+						// show instances violating the invariant by using
+						// the OCL expression C.allInstances->reject(self |
+						// <inv>)
+						if (showDetails) {
+							out.println("Instances of " + inv.cls().name()
+									+ " violating the invariant:");
+							Expression expr = inv
+									.getExpressionForViolatingInstances();
+							Value v1 = evaluator.eval(expr, this,
+									new VarBindings());
+							out.println("  -> " + v1.toStringWithType());
+						}
+						valid = Legality.Illegal;
+						numFailed++;
+					}
+				}
+			} catch (InterruptedException ex) {
+				Log.error("InterruptedException: " + ex.getMessage());
+			}
+		}
+
+		long t = System.currentTimeMillis() - tAll;
+		String timeStr = t % 1000 + "s";
+		timeStr = (t / 1000) + "." + StringUtil.leftPad(timeStr, 4, '0');
+		out.println("checked " + numChecked + " invariant"
+				+ ((numChecked == 1) ? "" : "s") + (Options.testMode ? "" : " in " + timeStr) + ", "
+				+ numFailed + " failure" + ((numFailed == 1) ? "" : "s") + '.');
+		out.flush();
+		return valid;
+	}
 	/**
 	 * Checks the whole/part hierarchy.
 	 */

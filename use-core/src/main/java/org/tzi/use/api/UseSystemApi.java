@@ -623,9 +623,8 @@ public abstract class UseSystemApi {
 		// Check structure
 		result = system.state().checkLegalStructure(error);
 		// Check Invariants
-		boolean check = true;
-		//check = system.state().check(error, false, false, true, Collections.<String>emptyList());
-		if (!check){
+		MSystemState.Legality check = system.state().checkLegality(error, false, false, true, Collections.<String>emptyList());
+		if (check == MSystemState.Legality.Illegal){
 			result = MSystemState.Legality.Illegal;
 		}
 		return result;
