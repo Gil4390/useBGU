@@ -51,22 +51,34 @@ public class MLMCreationTest extends TestCase {
         assertFalse(mlm.checkState());
     }
 
-    public void testLegalMLM1(){
+    public void testValidMLM_TwoMultiplicityRange_PartiallyLegal() {
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMTwoMultiplicityRange();
+        assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
+    }
+
+    public void testLegalMLM_NoAssocLink_PartiallyLegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM1();
         assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
     }
-    public void testLegalMLM2(){
+    public void testLegalMLM_OneAssocLink_PartiallyLegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM2();
         assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
     }
-    public void testLegalMLM3(){
+    public void testLegalMLM_TwoAssocLink_Legal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM3();
         assertEquals(MSystemState.Legality.Legal.toString(), mlm.checkLegalState());
     }
 
-    public void testLegalMLM4(){
+    public void testLegalMLM_ThreeAssocLink_Illegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM4();
         assertEquals(MSystemState.Legality.Illegal.toString(), mlm.checkLegalState());
     }
+
+    public void testLegalMLM_Constraint_Illegal(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithConstraint();
+        assertEquals(MSystemState.Legality.Illegal.toString(), mlm.checkLegalState());
+    }
+
+
 
 }
