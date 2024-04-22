@@ -40,6 +40,15 @@ public class MClabject {
         return null;
     }
 
+    public MAttributeRenaming getRenamedAttribute(String oldName) {
+        for(MAttributeRenaming removedAttribute : fAttributeRenaming) {
+            if(removedAttribute.attribute().name().equals(oldName)) {
+                return removedAttribute;
+            }
+        }
+        return null;
+    }
+
     public MClassifier parent(){
         return fParent;
     }

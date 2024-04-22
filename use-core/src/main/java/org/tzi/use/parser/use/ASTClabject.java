@@ -90,6 +90,30 @@ public class ASTClabject extends ASTAnnotatable{
         }
 
 
+        List<MAttribute> conflictingAttributes = new ArrayList<>();
+        //check if there is overlap between the attributes of the parent and the child
+        for(MAttribute childAttribute : child.allAttributes()) {
+            for(MAttribute parentAttribute : parent.allAttributes()) {
+                if(childAttribute.name().equals(parentAttribute.name())) {
+                    conflictingAttributes.add(childAttribute);
+                }
+            }
+        }
+        for (MAttribute attribute : conflictingAttributes) {
+            if (mClabject.getRemovedAttribute(attribute.name()) == null) {
+                throw new Exception("Attribute: " + attribute.name() + " is inherited from the parent class: " + parent.name() + " and is also present in the child class: " + child.name());
+            }
+            MAttributeRenaming attributeRenaming = mClabject.getRenamedAttribute(attribute.name());
+            if (attributeRenaming == null) {
+                throw new Exception("Attribute: " + attribute.name() + " is inherited from the parent class: " + parent.name() + " and is also present in the child class: " + child.name());
+            }
+            String newName = attributeRenaming.newName();
+            //check not in conflicting
+
+
+
+        }
+
         return mClabject;
     }
 }

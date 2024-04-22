@@ -14,4 +14,7 @@ public class MAttributeRenaming {
         return fAttribute;
     }
 
+    public String newName() {
+        return newName;
+    }
 }
