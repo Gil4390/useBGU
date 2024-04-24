@@ -6,7 +6,9 @@ import org.tzi.use.uml.mm.*;
 import org.tzi.use.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ASTClabject extends ASTAnnotatable{
 
@@ -44,6 +46,7 @@ public class ASTClabject extends ASTAnnotatable{
 
         MClabject mClabject = mlmContext.modelFactory().createClabject(child,parent);
 
+        //check that the attributes renaming exists in the parent class
         for(Pair<Token> attributePair : fAttributeRenaming) {
             String oldAttribute = attributePair.first.getText();
             MAttribute oldMAttribute = parent.attribute(oldAttribute,true);
@@ -51,7 +54,7 @@ public class ASTClabject extends ASTAnnotatable{
                 throw new Exception("Parent class: "+ parent.name()+ ", doesn't contain an attribute with the name: "+oldAttribute);
             }
         }
-
+        //check that the attributes removing exists in the parent class
         for(Token attribute : fAttributeRemoving) {
             String removedAttribute = attribute.getText();
             MAttribute removedMAttribute = parent.attribute(removedAttribute,true);
@@ -68,14 +71,23 @@ public class ASTClabject extends ASTAnnotatable{
                 }
             }
         }
+
+        Set<String> renamedAttributes = new HashSet<>();
+        for(MAttribute attribute : parent.allAttributes()) {
+            renamedAttributes.add(attribute.name());
+        }
         //TODO: fix implementation (doesnt look good)
         //TODO: still adds the removed attribute, need to check why
         for(MAttribute attribute : parent.attributes()) {
             boolean toInherit = true;
             for(Pair<Token> pair : fAttributeRenaming) {
                 if(pair.first.getText().equals(attribute.name())) {
+                    if (renamedAttributes.contains(pair.second.getText())) {
+                        throw new Exception("Attribute: " + pair.second.getText() + " is already in use");
+                    }
                     MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, pair.second.getText());
                     mClabject.addAttributeRenaming(attributeRenaming);
+                    renamedAttributes.add(pair.second.getText());
                     toInherit = false;
                     break;
                 } else if(mClabject.getRemovedAttribute(attribute.name()) != null) {
@@ -90,28 +102,35 @@ public class ASTClabject extends ASTAnnotatable{
         }
 
 
-        List<MAttribute> conflictingAttributes = new ArrayList<>();
+        Set<String> takenAttributes = new HashSet<>();
+        for(MAttribute attribute : parent.allAttributes()) {
+            takenAttributes.add(attribute.name());
+        }
+
         //check if there is overlap between the attributes of the parent and the child
         for(MAttribute childAttribute : child.allAttributes()) {
-            for(MAttribute parentAttribute : parent.allAttributes()) {
-                if(childAttribute.name().equals(parentAttribute.name())) {
-                    conflictingAttributes.add(childAttribute);
+            if(!takenAttributes.contains(childAttribute.name())){
+                takenAttributes.add(childAttribute.name());
+                continue;
+            }
+
+            //conflict, check if the attribute is removed or renamed
+            boolean conflict = true;
+            if (mClabject.getRemovedAttribute(childAttribute.name()) != null) {
+                continue;
+            }
+            MAttributeRenaming attributeRenaming = mClabject.getRenamedAttribute(childAttribute.name());
+            if (attributeRenaming != null) {
+                String newName = attributeRenaming.newName();
+                //check newName is not taken
+                if (!takenAttributes.contains(newName)) {
+                    takenAttributes.add(newName);
+                    conflict = false;
                 }
             }
-        }
-        for (MAttribute attribute : conflictingAttributes) {
-            if (mClabject.getRemovedAttribute(attribute.name()) == null) {
-                throw new Exception("Attribute: " + attribute.name() + " is inherited from the parent class: " + parent.name() + " and is also present in the child class: " + child.name());
+            if (conflict) {
+                throw new Exception("Attribute: " + childAttribute.name() + " is inherited from the parent class: " + parent.name() + " and is also present in the child class: " + child.name());
             }
-            MAttributeRenaming attributeRenaming = mClabject.getRenamedAttribute(attribute.name());
-            if (attributeRenaming == null) {
-                throw new Exception("Attribute: " + attribute.name() + " is inherited from the parent class: " + parent.name() + " and is also present in the child class: " + child.name());
-            }
-            String newName = attributeRenaming.newName();
-            //check not in conflicting
-
-
-
         }
 
         return mClabject;

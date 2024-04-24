@@ -1,0 +1,25 @@
+MLM ABCD
+
+  model AB
+    class A
+      attributes
+        name: String
+    end
+
+
+  model CD
+    class C
+      attributes
+        name: String
+    end
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+   clabject C : A
+     attributes
+       name -> lastName
+   end
+end

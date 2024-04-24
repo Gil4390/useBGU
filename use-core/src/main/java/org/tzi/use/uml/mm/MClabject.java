@@ -57,6 +57,14 @@ public class MClabject {
         return fChild;
     }
 
+    public List<MAttributeRenaming> getAttributeRenaming() {
+        return fAttributeRenaming;
+    }
+
+    public List<MAttribute> getRemovedAttributes() {
+        return fRemovedAttributes;
+    }
+
     public List<MAttribute> getAttributes(){
         return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
