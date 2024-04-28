@@ -235,7 +235,7 @@ public class TestMultiModelUtil {
             multiApi.createAssociation("r",
                     "AB@B","r1","*", MAggregationKind.NONE,
                     "AB@B","r2","*", MAggregationKind.NONE);
-            multiApi.createInvariant("CircularRelation", "AB@A", "self.bb1->forall(b1, b2 | ( b1.r2 <> b2 ) and ( b1 <> b2.r2) )", false);
+            multiApi.createInvariant("CircularRelation", "AB@A", "self.bb1->forAll( b1, b2 | ( b1.r2->forAll(c | c <> b2 ) ) )", false);
 
 
             multiApi.createClass("CD@C", false);
@@ -252,6 +252,79 @@ public class TestMultiModelUtil {
                     "CD@D","rd1","*", MAggregationKind.NONE,
                     "CD@E","re2","*", MAggregationKind.NONE);
 
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelTwoModelsWithAttributes() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("ABCD");
+
+            MModel model1 = multiApi.createModel("AB");
+            MModel model2 = multiApi.createModel("CD");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
+
+            multiApi.createClass("AB@A", false);
+            multiApi.createClass("AB@B", false);
+            multiApi.createAssociation("ab1",
+                    "AB@A" , "aa1" , "1", MAggregationKind.NONE,
+                    "AB@B", "bb1", "2", MAggregationKind.NONE);
+            multiApi.createAssociation("r",
+                    "AB@B","r1","*", MAggregationKind.NONE,
+                    "AB@B","r2","*", MAggregationKind.NONE);
+
+            multiApi.createClass("CD@C", false);
+            multiApi.createClass("CD@D", false);
+            multiApi.createClass("CD@E", false);
+            multiApi.createAssociation("cd1",
+                    "CD@C" , "cc1" , "*", MAggregationKind.NONE,
+                    "CD@D", "dd1", "*", MAggregationKind.NONE);
+            multiApi.createAssociation("ce1",
+                    "CD@C" , "cc2" , "*", MAggregationKind.NONE,
+                    "CD@E", "ee1", "*", MAggregationKind.NONE);
+
+            multiApi.createAttribute("AB@A", "name", "String");
+            multiApi.createAttribute("AB@A", "address", "String");
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
+    public MMultiModel createMultiModelTwoModelsWithAttributes2() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("ABCD");
+
+            MModel model1 = multiApi.createModel("AB");
+            MModel model2 = multiApi.createModel("CD");
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
+
+            multiApi.createClass("AB@A", false);
+            multiApi.createClass("AB@B", false);
+            multiApi.createAssociation("ab1",
+                    "AB@A" , "aa1" , "1", MAggregationKind.NONE,
+                    "AB@B", "bb1", "2", MAggregationKind.NONE);
+            multiApi.createAssociation("r",
+                    "AB@B","r1","*", MAggregationKind.NONE,
+                    "AB@B","r2","*", MAggregationKind.NONE);
+
+            multiApi.createClass("CD@C", false);
+            multiApi.createClass("CD@D", false);
+            multiApi.createClass("CD@E", false);
+            multiApi.createAssociation("cd1",
+                    "CD@C" , "cc1" , "*", MAggregationKind.NONE,
+                    "CD@D", "dd1", "*", MAggregationKind.NONE);
+            multiApi.createAssociation("ce1",
+                    "CD@C" , "cc2" , "*", MAggregationKind.NONE,
+                    "CD@E", "ee1", "*", MAggregationKind.NONE);
+
+            multiApi.createAttribute("AB@A", "name", "String");
+            multiApi.createAttribute("AB@A", "address", "String");
+            multiApi.createAttribute("CD@C", "newName", "String");
             return multiApi.getMultiModel();
         } catch (Exception e ) {
             throw new Error( e );
@@ -289,7 +362,6 @@ public class TestMultiModelUtil {
             throw new Error( e );
         }
     }
-
 
 
     public MMultiModel createMultiModelTwoModelsAssociationClass() {

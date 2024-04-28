@@ -79,6 +79,31 @@ public class MLMCreationTest extends TestCase {
         assertEquals(MSystemState.Legality.Illegal.toString(), mlm.checkLegalState());
     }
 
+    public void testLegalMLM_Constraint_Legal(){
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithConstraint2();
+        assertEquals(MSystemState.Legality.Legal.toString(), mlm.checkLegalState());
+    }
+
+    public void testMLM_AttributeRenaming() {
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithAttributeRenaming();
+        MClabject clabject = mlm.getClabject("CD", "CD@C");
+        String newName = clabject.getRenamedAttribute("name").newName();
+
+        assertEquals("newName", newName);
+    }
+    public void testMLM_AttributeRenaming_existingNewName() {
+        try{
+            MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithAttributeRenaming2();
+            fail("Should throw exception");
+        } catch(Exception e) {
+            assertEquals("Attribute: newName already exists", e.getMessage());
+        }
+
+
+    }
+
+
+
 
 
 }

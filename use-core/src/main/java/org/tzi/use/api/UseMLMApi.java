@@ -104,10 +104,7 @@ public class UseMLMApi extends UseMultiModelApi{
         MClabject clabject = mediator.getClabject(clabjectName);
         //TODO should we search in subclasses?
 
-        MAttribute attr = clabject.child().attribute(oldAttrName, false);
-
-        MAttributeRenaming attributeRenaming = mFactory.createAttributeRenaming(attr, newAttrName);
-        clabject.addAttributeRenaming(attributeRenaming);
+        MAttributeRenaming attributeRenaming = clabject.addAttributeRenamingApi(oldAttrName, newAttrName);
         return attributeRenaming;
     }
 

@@ -201,7 +201,7 @@ public class TestMLMUtil {
     }
 
     public MMultiLevelModel createMLMWithConstraint() {
-        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModelsTwoMultiplicity());
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels6());
         MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
         try {
             mlmApi.createMediator("AB", "AB");
@@ -216,6 +216,65 @@ public class TestMLMUtil {
 
         } catch (Exception e) {
             throw new Error( e );
+        }
+        return mlm;
+    }
+
+    public MMultiLevelModel createMLMWithConstraint2() {
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels6());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("AB", "AB");
+            mlmApi.createMediator("CD", "CD");
+            mlmApi.createClabject("CD","CD@C", "AB@A");
+            mlmApi.createClabject("CD","CD@D", "AB@B");
+            mlmApi.createClabject("CD","CD@E", "AB@B");
+
+            mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
+            mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
+
+        } catch (Exception e) {
+            throw new Error( e );
+        }
+        return mlm;
+    }
+
+    public MMultiLevelModel createMLMWithAttributeRenaming() {
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModelsWithAttributes());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("AB", "AB");
+            mlmApi.createMediator("CD", "CD");
+            mlmApi.createClabject("CD","CD@C", "AB@A");
+            mlmApi.createClabject("CD","CD@D", "AB@B");
+            mlmApi.createClabject("CD","CD@E", "AB@B");
+
+            mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
+            mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
+
+            mlmApi.createAttributeRenaming("CD", "CD@C", "name", "newName");
+        } catch (Exception e) {
+            throw new Error( e );
+        }
+        return mlm;
+    }
+
+    public MMultiLevelModel createMLMWithAttributeRenaming2() throws Exception {
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModelsWithAttributes2());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("AB", "AB");
+            mlmApi.createMediator("CD", "CD");
+            mlmApi.createClabject("CD","CD@C", "AB@A");
+            mlmApi.createClabject("CD","CD@D", "AB@B");
+            mlmApi.createClabject("CD","CD@E", "AB@B");
+
+            mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
+            mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
+
+            mlmApi.createAttributeRenaming("CD", "CD@C", "address", "newName");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
         return mlm;
     }
