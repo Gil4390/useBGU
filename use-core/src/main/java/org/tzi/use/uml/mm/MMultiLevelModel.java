@@ -163,8 +163,10 @@ public class MMultiLevelModel extends MMultiModel {
             }
             previousModel = model;
         }
-
-        return result.toString();
+        if (result.equals(MSystemState.Legality.PartiallyLegal)){
+            return MSystemState.Legality.Legal.toString();
+        }
+        else return result.toString();
     }
 
 

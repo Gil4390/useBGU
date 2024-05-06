@@ -53,16 +53,16 @@ public class MLMCreationTest extends TestCase {
 
     public void testValidMLM_TwoMultiplicityRange_PartiallyLegal() {
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMTwoMultiplicityRange();
-        assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
+        assertEquals(MSystemState.Legality.Legal.toString(), mlm.checkLegalState());
     }
 
     public void testLegalMLM_NoAssocLink_PartiallyLegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM1();
-        assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
+        assertEquals(MSystemState.Legality.Legal.toString(), mlm.checkLegalState());
     }
     public void testLegalMLM_OneAssocLink_PartiallyLegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM2();
-        assertEquals(MSystemState.Legality.PartiallyLegal.toString(), mlm.checkLegalState());
+        assertEquals(MSystemState.Legality.Legal.toString(), mlm.checkLegalState());
     }
     public void testLegalMLM_TwoAssocLink_Legal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM3();
