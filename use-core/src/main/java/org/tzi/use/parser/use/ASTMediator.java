@@ -3,9 +3,12 @@ package org.tzi.use.parser.use;
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MLMContext;
 import org.tzi.use.uml.mm.*;
+import org.tzi.use.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ASTMediator extends ASTAnnotatable{
 
@@ -46,9 +49,10 @@ public class ASTMediator extends ASTAnnotatable{
             throw new Exception("parent model name incorrect");
         }
         mMediator.setParentModel(parentModel);
-        //
+
         for (ASTClabject astClabject : fClabjects) {
             MClabject clabjectInstance = astClabject.gen(mlmContext);
+
             mMediator.addClabject(clabjectInstance);
         }
         for (ASTAssoclink astAssoclink : fAssoclinks){
@@ -77,5 +81,49 @@ public class ASTMediator extends ASTAnnotatable{
             mMediator.addAssocLink(assoclink);
         }
         return mMediator;
+    }
+
+    public void checkClabject(MLMContext mlmContext, MClabject clabject) throws Exception {
+
+
+        Set<String> renamedAttributes = new HashSet<>();
+        for(MAttribute attribute : parent.allAttributes()) {
+            renamedAttributes.add(attribute.name());
+        }
+
+
+
+        Set<String> takenAttributes = new HashSet<>();
+        for(MAttribute attribute : parent.allAttributes()) {
+            takenAttributes.add(attribute.name());
+        }
+
+        //check if there is overlap between the attributes of the parent and the child
+        for(MAttribute childAttribute : child.allAttributes()) {
+            if(!takenAttributes.contains(childAttribute.name())){
+                takenAttributes.add(childAttribute.name());
+                continue;
+            }
+
+            //conflict, check if the attribute is removed or renamed
+            boolean conflict = true;
+            if (mClabject.getRemovedAttribute(childAttribute.name()) != null) {
+                continue;
+            }
+            MAttributeRenaming attributeRenaming = mClabject.getRenamedAttribute(childAttribute.name());
+            if (attributeRenaming != null) {
+                String newName = attributeRenaming.newName();
+                //check newName is not taken
+                if (!takenAttributes.contains(newName)) {
+                    takenAttributes.add(newName);
+                    conflict = false;
+                }
+            }
+            if (conflict) {
+                throw new Exception("Attribute: " + childAttribute.name() + " is inherited from the parent class: " + parent.name() + " and is also present in the child class: " + child.name());
+            }
+        }
+
+        return mClabject;
     }
 }

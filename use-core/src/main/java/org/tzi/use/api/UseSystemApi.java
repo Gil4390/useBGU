@@ -621,7 +621,7 @@ public abstract class UseSystemApi {
 	public MSystemState.Legality checkLegality(PrintWriter error){
 		MSystemState.Legality result;
 		// Check structure
-		result = system.state().checkLegalStructure(error);
+		result = system.state().checkLegalStructure(NullPrintWriter.getInstance());
 		// Check Invariants
 		MSystemState.Legality check = system.state().checkLegality(error, false, false, true, Collections.<String>emptyList());
 		if (check == MSystemState.Legality.Illegal){

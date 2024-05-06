@@ -2,9 +2,13 @@ package org.tzi.use.uml.mm;
 
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
+import org.tzi.use.graph.DirectedGraph;
+import org.tzi.use.graph.DirectedGraphBase;
 import org.tzi.use.uml.ocl.type.EnumType;
 import org.tzi.use.uml.sys.MSystemState;
+import org.tzi.use.util.NullPrintWriter;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,14 +18,18 @@ public class MMultiLevelModel extends MMultiModel {
 
     private final List<MModel> fModelsList; //ordered list of models
     private final Map<String, MMediator> fMediators;
+    private final DirectedGraph<MClassifier, MClabject> fClabjectGraph;
     protected MMultiLevelModel(String name) {
         super(name);
         fModelsList = new ArrayList<>();
         fMediators = new HashMap<>();
+        fClabjectGraph = new DirectedGraphBase<>();
     }
-    protected  MMultiLevelModel(MMultiModel multiModel){
+    protected MMultiLevelModel(MMultiModel multiModel){
         super(multiModel.name());
         fModelsList = new ArrayList<>();
+        fClabjectGraph = new DirectedGraphBase<>();
+
         //steal all the fields from the multiModel
         try {
             for (EnumType enumType : multiModel.enumTypes()) {
@@ -30,13 +38,15 @@ public class MMultiLevelModel extends MMultiModel {
             for (MModel model : multiModel.models()) {
                 this.addModel(model);
             }
-            for (MClass mClass: multiModel.classes()) {
+            for (MClass mClass: multiModel.interClasses()) {
                 this.addClass(mClass);
             }
-            for (MAssociation association : multiModel.associations()) {
+            //look for inter associations
+            for (MAssociation association : multiModel.interAssociations()) {
                 this.addAssociation(association);
             }
-            for (MClassInvariant invariant : multiModel.classInvariants()) {
+            //look for inter invariants
+            for (MClassInvariant invariant : multiModel.interConstraints()) {
                 this.addClassInvariant(invariant);
             }
         }catch (Exception e){
@@ -49,6 +59,7 @@ public class MMultiLevelModel extends MMultiModel {
     public void addModel(MModel model) throws Exception {
         super.addModel(model);
         fModelsList.add(model);
+        fClabjectGraph.addAll(model.classes());
 
     }
 
@@ -84,6 +95,8 @@ public class MMultiLevelModel extends MMultiModel {
         MMediator mediator = this.getMediator(mediatorName);
         return mediator.getClabject(clabjectName);
     }
+
+
 
     public boolean checkState(){
         boolean result = true;
@@ -123,7 +136,11 @@ public class MMultiLevelModel extends MMultiModel {
         return result;
     }
 
-    public String checkLegalState(){
+    public String checkLegalState() {
+        return checkLegalState(NullPrintWriter.getInstance());
+    }
+
+    public String checkLegalState(PrintWriter error){
         MSystemState.Legality result = MSystemState.Legality.Legal;
         MModel previousModel = fModelsList.get(0);
         for (MModel model : this.models()){
@@ -136,7 +153,7 @@ public class MMultiLevelModel extends MMultiModel {
                     systemApi.createObject(clabject.parent().name(), clabject.child().name());
 
                 }catch (Exception e){
-                    System.out.println(e.getMessage());
+                    error.println(e.getMessage());
                     return MSystemState.Legality.Illegal.toString();
                 }
             }
@@ -149,12 +166,12 @@ public class MMultiLevelModel extends MMultiModel {
                     systemApi.createLink(assoclink.parent().name(), obj1, obj2);
 
                 }catch (Exception e){
-                    System.out.println(e.getMessage());
+                    error.println(e.getMessage());
                     return MSystemState.Legality.Illegal.toString();
                 }
             }
 
-            MSystemState.Legality currRes = systemApi.checkLegality();
+            MSystemState.Legality currRes = systemApi.checkLegality(error);
             if (currRes.equals(MSystemState.Legality.Illegal)){
                 return MSystemState.Legality.Illegal.toString();
             }

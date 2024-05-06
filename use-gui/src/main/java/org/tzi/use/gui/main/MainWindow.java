@@ -48,17 +48,16 @@ import org.tzi.use.main.Session.EvaluatedStatement;
 import org.tzi.use.main.runtime.IRuntime;
 import org.tzi.use.main.shell.Shell;
 import org.tzi.use.parser.use.USECompiler;
+import org.tzi.use.parser.use.USECompilerMLM;
 import org.tzi.use.parser.use.USECompilerMulti;
 import org.tzi.use.runtime.gui.impl.PluginActionProxy;
-import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MModel;
-import org.tzi.use.uml.mm.ModelFactory;
-import org.tzi.use.uml.mm.MultiModelFactory;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.mm.statemachines.MProtocolStateMachine;
 import org.tzi.use.uml.mm.statemachines.MStateMachine;
 import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.uml.sys.MSystemException;
+import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.uml.sys.events.StatementExecutedEvent;
 import org.tzi.use.uml.sys.events.tags.SystemStateChangedEvent;
 import org.tzi.use.uml.sys.events.tags.SystemStructureChangedEvent;
@@ -173,6 +172,7 @@ public class MainWindow extends JFrame {
 		
 		addToToolBar(fToolBar, fActionFileOpenSpec,  "Open specification");
         addToToolBar(fToolBar, fActionFileOpenMultiSpec,  "Open multi-model specification");
+        addToToolBar(fToolBar, fActionFileOpenMLMSpec,  "Open multi-level-model specification");
         addToToolBar(fToolBar, fActionFileReload,  "Reload current specification");
 		
 		fActionFileReload.setEnabled(!Options.getRecentFiles().isEmpty());
@@ -235,6 +235,7 @@ public class MainWindow extends JFrame {
 		fMenuBar.add(menu);
 
         mi = menu.add(fActionFileOpenMultiSpec);
+        mi = menu.add(fActionFileOpenMLMSpec);
         mi = menu.add(fActionFileOpenSpec);
 
         mi.setAccelerator(KeyStroke
@@ -312,6 +313,9 @@ public class MainWindow extends JFrame {
         fCbMenuItemCheckStructure.setMnemonic('h');
         fCbMenuItemCheckStructure.setSelected(false);
         menu.add(fCbMenuItemCheckStructure);
+
+        mi = menu.add(fActionStateCheckLegality);
+        mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0));
 
         menu.add(new JSeparator());
         JCheckBoxMenuItem fCbMenuItemCheckValidTransitions = new JCheckBoxMenuItem(
@@ -711,6 +715,15 @@ public class MainWindow extends JFrame {
         fLogWriter.flush();
     }
 
+    private void checkLegality() {
+        //MSystemState.Legality legality = fSession.system().state().checkLegalStructure(fLogWriter);
+        String result = ((MMultiLevelModel)fSession.system().model()).checkLegalState(fLogWriter);
+
+        fLogWriter.println("checking structure, "
+                + ((!result.equals("Illegal")) ? "ok." : "found errors."));
+        fLogWriter.flush();
+    }
+
     private void createStateMachineMenuEntries(Container menu){
     	int elems = 0;
     	if(fSession.hasSystem()){
@@ -826,6 +839,7 @@ public class MainWindow extends JFrame {
         boolean on = fSession.hasSystem();
         fActionStateCreateObject.setEnabled(on);
         fActionStateCheckStructure.setEnabled(on);
+        fActionStateCheckLegality.setEnabled(on);
         fActionDetermineStates.setEnabled(on);
         fActionCheckStateInvariants.setEnabled(on);
         fActionStateReset.setEnabled(on);
@@ -1006,6 +1020,7 @@ public class MainWindow extends JFrame {
 
     private final ActionFileOpenSpec fActionFileOpenSpec = new ActionFileOpenSpec();
     private final ActionFileOpenMultiSpec fActionFileOpenMultiSpec = new ActionFileOpenMultiSpec();
+    private final ActionFileOpenMLMSpec fActionFileOpenMLMSpec = new ActionFileOpenMLMSpec();
 
     private final ActionFileRefreshSpec fActionFileReload = new ActionFileRefreshSpec();
     
@@ -1033,6 +1048,7 @@ public class MainWindow extends JFrame {
     private final ActionStateEvalOCL fActionStateEvalOCL = new ActionStateEvalOCL();
 
     private final ActionStateCheckStructure fActionStateCheckStructure = new ActionStateCheckStructure();
+    private final ActionStateCheckLegality fActionStateCheckLegality = new ActionStateCheckLegality();
 
     private final ActionDetermineStates fActionDetermineStates = new ActionDetermineStates();
     
@@ -1239,6 +1255,103 @@ public class MainWindow extends JFrame {
             try (InputStream iStream = Files.newInputStream(f)) {
                 model = USECompilerMulti.compileMultiSpecification(iStream, f.toAbsolutePath().toString(),
                         fLogWriter, new MultiModelFactory());
+                fLogWriter.println("done.");
+            } catch (IOException ex) {
+                fLogWriter.println("File `" + f.toAbsolutePath().toString() + "' not found.");
+            }
+
+            final MSystem system;
+            if (model != null) {
+                fLogWriter.println(model.getStats());
+                // create system
+                system = new MSystem(model);
+            } else {
+                system = null;
+            }
+
+            // set new system (may be null if compilation failed)
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fSession.setSystem(system);
+                }
+            });
+
+            if (system != null) {
+                Options.getRecentFiles().push(f.toString());
+                Options.setLastDirectory(f.getParent());
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private class ActionFileOpenMLMSpec extends AbstractAction {
+        private boolean wasUsed;
+
+        ActionFileOpenMLMSpec() {
+            super("Open multi level specification...", getIcon("document-open-multi.png"));
+        }
+
+        protected ActionFileOpenMLMSpec(String title) {
+            super(title);
+        }
+
+        protected ActionFileOpenMLMSpec(String title, Icon icon) {
+            super(title, icon);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!validateOpenPossible()) return;
+
+            JFileChooser fChooser = new JFileChooser(Options.getLastDirectory().toFile());
+            ExtFileFilter filter = new ExtFileFilter("use", "USE specifications");
+            fChooser.setFileFilter(filter);
+            fChooser.setDialogTitle("Open multi level specification");
+
+            if (wasUsed)
+                fChooser.setSelectedFile(Options.getRecentFile("use").toFile());
+
+            int returnVal = fChooser.showOpenDialog(MainWindow.this);
+            if (returnVal != JFileChooser.APPROVE_OPTION)
+                return;
+
+            Path path = fChooser.getCurrentDirectory().toPath();
+            Options.setLastDirectory(path);
+            Path f = fChooser.getSelectedFile().toPath();
+
+            compile(f);
+
+            Options.getRecentFiles().push(f.toAbsolutePath().toString());
+            wasUsed = true;
+        }
+
+        protected boolean validateOpenPossible() {
+            if (fSession.hasSystem() && fSession.system().isExecutingStatement()) {
+                JOptionPane
+                        .showMessageDialog(
+                                MainWindow.this,
+                                "The system is currently executing a statement.\nPlease end the execution before opening a new model.",
+                                "USE is executing",
+                                JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        protected boolean compile(final Path f) {
+            fLogPanel.clear();
+            showLogPanel();
+
+            fLogWriter.println("compiling multi level specification " + f.toString() + "...");
+
+            MModel model = null;
+            try (InputStream iStream = Files.newInputStream(f)) {
+                model = USECompilerMLM.compileMLMSpecification(iStream, f.toAbsolutePath().toString(),
+                        fLogWriter, new MultiLevelModelFactory());
                 fLogWriter.println("done.");
             } catch (IOException ex) {
                 fLogWriter.println("File `" + f.toAbsolutePath().toString() + "' not found.");
@@ -1707,6 +1820,17 @@ public class MainWindow extends JFrame {
         @Override
 		public void actionPerformed(ActionEvent e) {
             checkStructure();
+        }
+    }
+
+    private class ActionStateCheckLegality extends AbstractAction {
+        ActionStateCheckLegality() {
+            super("Check legality now");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            checkLegality();
         }
     }
 
