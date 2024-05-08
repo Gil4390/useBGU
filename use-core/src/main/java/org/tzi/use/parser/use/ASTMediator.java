@@ -54,6 +54,7 @@ public class ASTMediator extends ASTAnnotatable{
             MClabject clabjectInstance = astClabject.gen(mlmContext);
 
             mMediator.addClabject(clabjectInstance);
+            mlmContext.model().addGeneralization(clabjectInstance);
         }
         for (ASTAssoclink astAssoclink : fAssoclinks){
             MAssoclink assoclink = astAssoclink.gen(mlmContext);
@@ -67,8 +68,8 @@ public class ASTMediator extends ASTAnnotatable{
             if (childClass1 == null || childClass2 == null || parentClass1 == null || parentClass2 == null) {
                 throw new Exception("Child class or parent class is not defined in the model");
             }
-            MClabject clabject1 = mMediator.getClabject(childClass1.name());
-            MClabject clabject2 = mMediator.getClabject(childClass2.name());
+            MClabject clabject1 = mMediator.getClabject("GEN_" + childClass1.name() + "_" + parentClass1.name());
+            MClabject clabject2 = mMediator.getClabject("GEN_" + childClass2.name() + "_" + parentClass2.name());
             if(clabject1 == null || clabject2 == null) {
                 throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not defined as a clabject in the mediator: "+mMediator.name());
             }
@@ -82,7 +83,7 @@ public class ASTMediator extends ASTAnnotatable{
         }
         return mMediator;
     }
-
+/*
     public void checkClabject(MLMContext mlmContext, MClabject clabject) throws Exception {
 
 
@@ -126,4 +127,6 @@ public class ASTMediator extends ASTAnnotatable{
 
         return mClabject;
     }
+
+ */
 }

@@ -96,6 +96,37 @@ public class MMultiLevelModel extends MMultiModel {
         return mediator.getClabject(clabjectName);
     }
 
+    @Override
+    public void addGeneralization(MGeneralization gen) throws MInvalidModelException {
+        super.addGeneralization(gen);
+        if (gen instanceof MClabject){
+            //checks for conflicts
+            MInternalClassImpl child = (MInternalClassImpl) gen.child();
+            MInternalClassImpl parent = (MInternalClassImpl) gen.parent();
+            List<MAttribute> childAttributes = child.allAttributes();
+            List<MAttribute> parentAttributes = parent.allAttributes();
+            for (MAttribute childAttr : childAttributes){
+                for (MAttribute parentAttr : parentAttributes) {
+                    if (childAttr.name().equals(parentAttr.name())){
+                        //conflict
+                        if (((MClabject) gen).getRemovedAttribute(parent.name()) != null){
+                            //attribute is removed
+                            continue;
+                        }
+                        else if (((MClabject) gen).getRenamedAttribute(parent.name()) != null){
+                            //attribute is renamed
+                            continue;
+                        }
+                        fGenGraph.removeEdge(gen);
+                        throw new MInvalidModelException("Attribute "+childAttr.name()+" is present in both parent and child classes");
+                    }
+                }
+            }
+
+        }
+
+    }
+
 
 
     public boolean checkState(){

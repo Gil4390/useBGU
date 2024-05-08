@@ -15,7 +15,7 @@ public class MLMCreationTest extends TestCase {
 
     public void testCreateMLMWithClabjects_AttributeRenaming() {
         MMultiLevelModel multiLevelModel = TestMLMUtil.getInstance().createMLMWithClabjects_AttributeRenaming();
-        MClabject clabject = multiLevelModel.getClabject("Mediator2", "PersonCompany2@Person");
+        MClabject clabject = multiLevelModel.getClabject("Mediator2", "GEN_PersonCompany2@Person_PersonCompany1@Person");
         assertEquals(1, clabject.getAttributes().size());
 
         MAttribute originalAtr = clabject.child().attribute("name", false);
@@ -26,7 +26,7 @@ public class MLMCreationTest extends TestCase {
 
     public void testCreateMLMWithClabjects_AttributeRemoving() {
         MMultiLevelModel multiLevelModel = TestMLMUtil.getInstance().createMLMWithClabjects_AttributeRenaming();
-        MClabject clabject = multiLevelModel.getClabject("Mediator2", "PersonCompany2@Person");
+        MClabject clabject = multiLevelModel.getClabject("Mediator2", "GEN_PersonCompany2@Person_PersonCompany1@Person");
         assertEquals(1, clabject.getAttributes().size());
 
         MAttribute renamedAtr =  multiLevelModel.getClass("PersonCompany2", "Person").attribute("name", false);
@@ -86,7 +86,7 @@ public class MLMCreationTest extends TestCase {
 
     public void testMLM_AttributeRenaming() {
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithAttributeRenaming();
-        MClabject clabject = mlm.getClabject("CD", "CD@C");
+        MClabject clabject = mlm.getClabject("CD", "GEN_CD@C_AB@A");
         String newName = clabject.getRenamedAttribute("name").newName();
 
         assertEquals("newName", newName);

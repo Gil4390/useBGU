@@ -101,7 +101,7 @@ public class ASTClabject extends ASTAnnotatable{
             }
         }
 
-
+/*
         Set<String> takenAttributes = new HashSet<>();
         for(MAttribute attribute : parent.allAttributes()) {
             takenAttributes.add(attribute.name());
@@ -132,7 +132,7 @@ public class ASTClabject extends ASTAnnotatable{
                 throw new Exception("Attribute: " + childAttribute.name() + " is inherited from the parent class: " + parent.name() + " and is also present in the child class: " + child.name());
             }
         }
-
+*/
         return mClabject;
     }
 }

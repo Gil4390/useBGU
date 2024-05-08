@@ -9,21 +9,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MClabject implements DirectedEdge<MClassifier> {
+public class MClabject extends MGeneralization {
 
-    private final String fName;
+    //private final String fName;
 
-    private MClass fParent;
-    private MClass fChild;
+    //private MClass fParent;
+    //private MClass fChild;
 
     private final List<MAttributeRenaming> fAttributeRenaming;
     private final List<MAttribute> fRemovedAttributes;
 
 
     public MClabject(MClass child, MClass parent) {
-        fName = child.name();
-        this.fParent = parent;
-        this.fChild = child;
+        super(child, parent);
+//        this.fParent = parent;
+//        this.fChild = child;
         this.fRemovedAttributes = new ArrayList<>();
         this.fAttributeRenaming = new ArrayList<>();
     }
@@ -74,14 +74,9 @@ public class MClabject implements DirectedEdge<MClassifier> {
         return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
 
-    public List<MAttribute> getAllAttributes(){
-        //TODO
-        return null;
-    }
-
-    public String name() {
-        return fName;
-    }
+//    public String name() {
+//        return fName;
+//    }
 
 
     public MAttributeRenaming addAttributeRenamingApi(String oldAttributeName, String newAttributeName) {
@@ -97,16 +92,16 @@ public class MClabject implements DirectedEdge<MClassifier> {
         return attributeRenaming;
     }
 
-    public Set<String> getParentAttributes() {
-        Set<String> result = new HashSet<>();
-        for(MAttribute attribute : fParent.attributes()) {
-            if(!fRemovedAttributes.contains(attribute) && fAttributeRenaming.stream().noneMatch(ar -> ar.attribute().equals(attribute)))
-                result.add(attribute.name());
-            else if(fAttributeRenaming.stream().anyMatch(ar -> ar.attribute().equals(attribute)))
-                result.add(fAttributeRenaming.stream().filter(ar -> ar.attribute().equals(attribute)).findFirst().get().newName());
-        }
-        return result;
-    }
+//    public Set<String> getParentAttributes() {
+//        Set<String> result = new HashSet<>();
+//        for(MAttribute attribute : fParent.attributes()) {
+//            if(!fRemovedAttributes.contains(attribute) && fAttributeRenaming.stream().noneMatch(ar -> ar.attribute().equals(attribute)))
+//                result.add(attribute.name());
+//            else if(fAttributeRenaming.stream().anyMatch(ar -> ar.attribute().equals(attribute)))
+//                result.add(fAttributeRenaming.stream().filter(ar -> ar.attribute().equals(attribute)).findFirst().get().newName());
+//        }
+//        return result;
+//    }
 
     @Override
     public @NonNull MClassifier source() {

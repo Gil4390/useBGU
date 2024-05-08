@@ -50,6 +50,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             MLMContext ctx = new MLMContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
             ctx.setMainContext(mlmContext);
             ctx.setParentModel(prevModel);
+            ctx.setModel(mMultiLevelModel);
 
             MModel currentModel = mMultiLevelModel.getModel(mediator.getName());
             ctx.setCurrentModel(currentModel);

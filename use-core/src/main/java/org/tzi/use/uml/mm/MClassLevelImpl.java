@@ -15,7 +15,7 @@ public class MClassLevelImpl extends MClassImpl {
         MClassifier parent = this.parents().iterator().next();
         MGeneralization edge = this.model.generalizationGraph().edgesBetween(this,parent).iterator().next();
         if( edge instanceof MRestrictionClass ) {
-            attribute = ((MRestrictionClass) edge).searchAttribute(name);
+            //attribute = ((MRestrictionClass) edge).searchAttribute(name);
         }
         return attribute;
     }
