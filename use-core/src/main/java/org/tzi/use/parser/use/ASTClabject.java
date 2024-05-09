@@ -72,34 +72,42 @@ public class ASTClabject extends ASTAnnotatable{
             }
         }
 
+        for(Pair<Token> pair : fAttributeRenaming) {
+            String oldAttribute = pair.first.getText();
+            MAttribute oldMAttribute = parent.attribute(oldAttribute,true);
+            String newAttribute = pair.second.getText();
+            MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(oldMAttribute, newAttribute);
+            mClabject.addAttributeRenaming(attributeRenaming);
+        }
+
         Set<String> renamedAttributes = new HashSet<>();
-        for(MAttribute attribute : parent.allAttributes()) {
-            renamedAttributes.add(attribute.name());
-        }
-        //TODO: fix implementation (doesnt look good)
-        //TODO: still adds the removed attribute, need to check why
-        for(MAttribute attribute : parent.attributes()) {
-            boolean toInherit = true;
-            for(Pair<Token> pair : fAttributeRenaming) {
-                if(pair.first.getText().equals(attribute.name())) {
-                    if (renamedAttributes.contains(pair.second.getText())) {
-                        throw new Exception("Attribute: " + pair.second.getText() + " is already in use");
-                    }
-                    MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, pair.second.getText());
-                    mClabject.addAttributeRenaming(attributeRenaming);
-                    renamedAttributes.add(pair.second.getText());
-                    toInherit = false;
-                    break;
-                } else if(mClabject.getRemovedAttribute(attribute.name()) != null) {
-                    toInherit = false;
-                    break;
-                }
-            }
-            if(toInherit) {
-                MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, attribute.name());
-                mClabject.addAttributeRenaming(attributeRenaming);
-            }
-        }
+//        for(MAttribute attribute : parent.allAttributes()) {
+//            renamedAttributes.add(attribute.name());
+//        }
+//        //TODO: fix implementation (doesnt look good)
+//        //TODO: still adds the removed attribute, need to check why
+//        for(MAttribute attribute : parent.attributes()) {
+//            boolean toInherit = true;
+//            for(Pair<Token> pair : fAttributeRenaming) {
+//                if(pair.first.getText().equals(attribute.name())) {
+//                    if (renamedAttributes.contains(pair.second.getText())) {
+//                        throw new Exception("Attribute: " + pair.second.getText() + " is already in use");
+//                    }
+//                    MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, pair.second.getText());
+//                    mClabject.addAttributeRenaming(attributeRenaming);
+//                    renamedAttributes.add(pair.second.getText());
+//                    toInherit = false;
+//                    break;
+//                } else if(mClabject.getRemovedAttribute(attribute.name()) != null) {
+//                    toInherit = false;
+//                    break;
+//                }
+//            }
+//            if(toInherit) {
+//                MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(attribute, attribute.name());
+//                mClabject.addAttributeRenaming(attributeRenaming);
+//            }
+//        }
 
 /*
         Set<String> takenAttributes = new HashSet<>();

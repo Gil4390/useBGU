@@ -1,1 +1,1 @@
-mlm7_attribute_renaming.use:1:4: Attribute: name is inherited from the parent class: AB@A and is also present in the child class: CD@C
+mlm7_attribute_renaming.use:1:4: Attribute name is present in both parent and child classes

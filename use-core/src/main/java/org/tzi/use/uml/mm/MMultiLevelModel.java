@@ -109,11 +109,11 @@ public class MMultiLevelModel extends MMultiModel {
                 for (MAttribute parentAttr : parentAttributes) {
                     if (childAttr.name().equals(parentAttr.name())){
                         //conflict
-                        if (((MClabject) gen).getRemovedAttribute(parent.name()) != null){
+                        if (((MClabject) gen).getRemovedAttribute(parentAttr.name()) != null){
                             //attribute is removed
                             continue;
                         }
-                        else if (((MClabject) gen).getRenamedAttribute(parent.name()) != null){
+                        else if (((MClabject) gen).getRenamedAttribute(parentAttr.name()) != null){
                             //attribute is renamed
                             continue;
                         }

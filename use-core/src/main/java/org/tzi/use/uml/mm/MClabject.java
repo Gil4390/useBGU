@@ -29,6 +29,12 @@ public class MClabject extends MGeneralization {
     }
 
     public void addAttributeRenaming(MAttributeRenaming attributeRenaming) {
+        Set<String> taken = fAttributeRenaming.stream().map(MAttributeRenaming::newName).collect(Collectors.toSet());
+        taken.addAll(((MInternalClassImpl)child()).allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet()));
+        taken.addAll(((MInternalClassImpl)parent()).allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet()));
+        if(taken.contains(attributeRenaming.newName())) {
+            throw new NullPointerException("Attribute: " + attributeRenaming.newName() + " already exists");
+        }
         fAttributeRenaming.add(attributeRenaming);
     }
 
