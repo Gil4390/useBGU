@@ -55,6 +55,7 @@ public class MMultiLevelModel extends MMultiModel {
     @Override
     public void addModel(MModel model) throws Exception {
         super.addModel(model);
+        model.classes().forEach(cls -> ((MInternalClassImpl)cls).setMultiModel(this));
         fModelsList.add(model);
 
     }
@@ -94,7 +95,6 @@ public class MMultiLevelModel extends MMultiModel {
 
     @Override
     public void addGeneralization(MGeneralization gen) throws MInvalidModelException {
-        super.addGeneralization(gen);
         if (gen instanceof MClabject){
             //checks for conflicts
             MInternalClassImpl child = (MInternalClassImpl) gen.child();
@@ -113,12 +113,13 @@ public class MMultiLevelModel extends MMultiModel {
                             //attribute is renamed
                             continue;
                         }
-                        fGenGraph.removeEdge(gen);
+                        //fGenGraph.removeEdge(gen);
                         throw new MInvalidModelException("Attribute "+childAttr.name()+" is present in both parent and child classes");
                     }
                 }
             }
         }
+        super.addGeneralization(gen);
 
     }
 

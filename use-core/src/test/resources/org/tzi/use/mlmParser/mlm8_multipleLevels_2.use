@@ -1,0 +1,38 @@
+MLM ABCD
+
+  model AB
+    class A
+      attributes
+        aa1: String
+        aa2: String
+    end
+
+  model CD
+    class C
+      attributes
+        cc: Integer
+    end
+
+  model EF
+    class E
+      attributes
+        ee: Integer
+    end
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+   clabject C : A
+   	    attributes
+            aa1->aa3
+            ~aa2
+   end
+end
+
+mediator EF < CD
+   clabject E : C
+   end
+end
+

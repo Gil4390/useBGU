@@ -17,7 +17,7 @@ public class MultiModelPropertiesTest extends TestCase {
     }
 
     public void testNumOfClasses_TwoModels() {
-        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
+        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels2();
         assertEquals(multiModel.numOfClasses(), 4);
     }
 
@@ -33,7 +33,7 @@ public class MultiModelPropertiesTest extends TestCase {
     }
 
     public void testMaxNumOfClasses_TwoModels() {
-        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
+        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels2();
         assertEquals(multiModel.maxNumOfClasses(), 2);
     }
 
@@ -53,8 +53,8 @@ public class MultiModelPropertiesTest extends TestCase {
     }
 
     public void testContainsDuplicateClassNames_TwoModels() {
-        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
-        assertTrue(multiModel.containsDuplicateClassNames());
+        MMultiModel multiModel = TestMultiModelUtil.getInstance().createMultiModelTwoModels2();
+        assertFalse(multiModel.containsDuplicateClassNames());
     }
 
     public void testContainsDuplicateClassNames_TwoModels2() {

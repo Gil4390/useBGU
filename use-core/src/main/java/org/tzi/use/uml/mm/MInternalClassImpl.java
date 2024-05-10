@@ -10,8 +10,14 @@ import java.util.*;
  */
 
 public class MInternalClassImpl extends MClassImpl{
+
+    private MMultiModel fMultiModel;
     MInternalClassImpl(String name, boolean isAbstract) {
         super(name, isAbstract);
+    }
+
+    public void setMultiModel(MMultiModel multi) {
+        this.fMultiModel = multi;
     }
 
     /**
@@ -29,17 +35,22 @@ public class MInternalClassImpl extends MClassImpl{
         return Character.toLowerCase(rolename.charAt(0)) + rolename.substring(1);
     }
 
-
+    public Set<MClass> allParents() {
+        if (fMultiModel == null)
+            return super.allParents();
+        return Collections.unmodifiableSet(fMultiModel.generalizationGraph().targetNodeClosureSet(MClass.class, this));
+    }
     @Override
     public List<MAttribute> allAttributes() {
 
+        if (fMultiModel == null) return super.allAttributes();
         // start with local attributes
         Set<MAttribute> result = new HashSet<>(attributes());
 
         // add attributes from all super classes
         // call recursively to get all attributes from all super classes
         for (MClass cls : allParents() ) {
-            Set<MGeneralization> edges = model.generalizationGraph().edgesBetween(cls, this);
+            Set<MGeneralization> edges = fMultiModel.generalizationGraph().edgesBetween(this, cls);
             if (edges.isEmpty()) continue;
             MGeneralization edge = edges.iterator().next();
             if (edge instanceof MClabject){

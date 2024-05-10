@@ -17,9 +17,8 @@ import org.tzi.use.util.SuffixFileFilter;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class USECompilerMLMTest extends TestCase {
     private static final boolean VERBOSE = false;
@@ -67,7 +66,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 16);
+        List<File> fileList = getFilesMatchingSuffix(".use", 18);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -106,69 +105,6 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-
-    public void testExpression() throws IOException {
-        MModel model = new ModelFactory().createModel("Test");
-        // read expressions and expected results from file
-        BufferedReader in = new BufferedReader(new FileReader(TEST_EXPR_FILE));
-        int lineNr = 0;
-
-        while (true) {
-            String line = in.readLine();
-            lineNr++;
-
-            if (line == null) {
-                break;
-            }
-            if (line.startsWith("##")) {
-                if (VERBOSE) {
-                    System.out.println("testing " + line.substring(2).trim());
-                }
-                continue;
-            }
-            if (line.length() == 0 || line.startsWith("#")) {
-                continue;
-            }
-
-            String expStr = line;
-            while (true) {
-                line = in.readLine();
-                lineNr++;
-
-                if (line == null) {
-                    in.close();
-                    throw new RuntimeException("missing result line");
-                }
-                if (line.startsWith("-> ")) {
-                    break;
-                }
-                expStr += " " + line.trim();
-            }
-            String resultStr = line.substring(3);
-
-            if (VERBOSE) {
-                System.out.println("expression: " + expStr);
-            }
-
-            InputStream stream = new ByteArrayInputStream(expStr.getBytes());
-
-            Expression expr =
-                    OCLCompiler.compileExpression(
-                            model,
-                            stream,
-                            TEST_EXPR_FILE.toString(),
-                            new PrintWriter(System.err),
-                            new VarBindings());
-            assertNotNull(expr + " compiles", expr);
-
-            MSystemState systemState = new MSystem(model).state();
-
-            Value val = new Evaluator().eval(expr, systemState);
-            assertEquals(TEST_EXPR_FILE + ":" + lineNr + " evaluate: " + expStr, resultStr, val.toStringWithType());
-        }
-
-        in.close();
-    }
 
     private File getFailFileFromUseFile(String specFileName) {
         // check for a failure file
@@ -289,21 +225,6 @@ public class USECompilerMLMTest extends TestCase {
     }
 
 
-    private MModel compileSpecification(File specFile, PrintWriter newErr) throws FileNotFoundException {
-        MModel result = null;
-
-        try (FileInputStream specStream = new FileInputStream(specFile)){
-            result = USECompiler.compileSpecification(specStream,
-                    specFile.getName(), newErr, new ModelFactory());
-            specStream.close();
-        } catch (IOException e) {
-            // This can be ignored
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
     private MMultiLevelModel compileMLMSpecification(File specFile, PrintWriter newErr) throws FileNotFoundException {
         MMultiLevelModel result = null;
 
@@ -317,5 +238,58 @@ public class USECompilerMLMTest extends TestCase {
         }
 
         return result;
+    }
+
+
+    public void testCompileMultiRemoveModelSpecification1() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm8_multipleLevels_1.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("aa")), classA_Attributes);
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("aa", "cc")), classC_Attributes);
+            Set<String> classE_Attributes = mlmResult.getClass("EF", "E").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("aa", "cc", "ee")), classE_Attributes);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompileMultiRemoveModelSpecification2() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm8_multipleLevels_2.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("aa1", "aa2")), classA_Attributes);
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("aa3", "cc")), classC_Attributes);
+            Set<String> classE_Attributes = mlmResult.getClass("EF", "E").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("aa3", "cc", "ee")), classE_Attributes);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
     }
 }

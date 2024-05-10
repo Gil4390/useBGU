@@ -29,13 +29,13 @@ public class TestMLMUtil {
     }
 
     public MMultiLevelModel createMLMSimple() {
-        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels());
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels2());
         MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
         return mlm;
     }
 
     public MMultiLevelModel createMLMWithEmptyMediator() {
-        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels());
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModels2());
         MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
         try {
             mlmApi.createMediator("Mediator1", personCompany1);

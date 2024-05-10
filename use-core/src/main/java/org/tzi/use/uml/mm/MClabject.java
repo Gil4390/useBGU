@@ -97,12 +97,12 @@ public class MClabject extends MGeneralization {
 
     @Override
     public @NonNull MClassifier source() {
-        return fParent;
+        return fChild;
     }
 
     @Override
     public @NonNull MClassifier target() {
-        return fChild;
+        return fParent;
     }
 
     @Override

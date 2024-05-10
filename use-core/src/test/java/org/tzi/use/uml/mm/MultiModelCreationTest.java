@@ -76,7 +76,7 @@ public class MultiModelCreationTest extends TestCase {
 
     public void testAddModelToMultiModel() {
         try{
-            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModels2();
             MModel modelToAdd = TestModelUtil.getInstance().createModelWithClassAndAssocs();
 
             UseMultiModelApi api = new UseMultiModelApi(multimodel);
@@ -90,7 +90,7 @@ public class MultiModelCreationTest extends TestCase {
 
     public void testRemoveModelFromMultiModel() {
         try{
-            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModels();
+            MMultiModel multimodel = TestMultiModelUtil.getInstance().createMultiModelTwoModels2();
 
             UseMultiModelApi api = new UseMultiModelApi(multimodel);
             api.removeModel(((MModel)api.getMultiModel().models().toArray()[0]).name());
