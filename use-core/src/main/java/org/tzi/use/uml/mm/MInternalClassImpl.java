@@ -1,5 +1,7 @@
 package org.tzi.use.uml.mm;
 
+import java.util.*;
+
 /**
  * MInternalClassImpl instances represent classes in a model related to multi-model.
  *
@@ -25,5 +27,41 @@ public class MInternalClassImpl extends MClassImpl{
             rolename = rolename.split("@")[1];
         }
         return Character.toLowerCase(rolename.charAt(0)) + rolename.substring(1);
+    }
+
+
+    @Override
+    public List<MAttribute> allAttributes() {
+
+        // start with local attributes
+        Set<MAttribute> result = new HashSet<>(attributes());
+
+        // add attributes from all super classes
+        // call recursively to get all attributes from all super classes
+        for (MClass cls : allParents() ) {
+            Set<MGeneralization> edges = model.generalizationGraph().edgesBetween(cls, this);
+            if (edges.isEmpty()) continue;
+            MGeneralization edge = edges.iterator().next();
+            if (edge instanceof MClabject){
+                List<MAttribute> parentAttributes = cls.allAttributes();
+
+                for (MAttribute removedAttribute : ((MClabject) edge).getRemovedAttributes()) {
+                    parentAttributes.remove(removedAttribute);
+                }
+
+                for (MAttributeRenaming renamedAttribute : ((MClabject) edge).getAttributeRenaming()) {
+                    MAttribute oldAttribute = renamedAttribute.attribute();
+                    parentAttributes.remove(oldAttribute);
+                    parentAttributes.add(new MAttribute(renamedAttribute.newName(), oldAttribute.type()));
+                }
+                result.addAll(parentAttributes);
+            }
+            else{
+                //regular generalization
+                result.addAll(cls.allAttributes());
+            }
+        }
+
+        return new ArrayList<>(result);
     }
 }

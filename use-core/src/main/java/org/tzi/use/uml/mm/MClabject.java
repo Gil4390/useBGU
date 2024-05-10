@@ -9,26 +9,25 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MClabject implements DirectedEdge<MClassifier> {
-
-    private final String fName;
-
-    private MClass fParent;
-    private MClass fChild;
+public class MClabject extends MGeneralization {
 
     private final List<MAttributeRenaming> fAttributeRenaming;
     private final List<MAttribute> fRemovedAttributes;
 
 
     public MClabject(MClass child, MClass parent) {
-        fName = child.name();
-        this.fParent = parent;
-        this.fChild = child;
+        super(child, parent);
         this.fRemovedAttributes = new ArrayList<>();
         this.fAttributeRenaming = new ArrayList<>();
     }
 
     public void addAttributeRenaming(MAttributeRenaming attributeRenaming) {
+        Set<String> taken = fAttributeRenaming.stream().map(MAttributeRenaming::newName).collect(Collectors.toSet());
+        taken.addAll(((MInternalClassImpl)child()).allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet()));
+        taken.addAll(((MInternalClassImpl)parent()).allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet()));
+        if(taken.contains(attributeRenaming.newName())) {
+            throw new NullPointerException("Attribute: " + attributeRenaming.newName() + " already exists");
+        }
         fAttributeRenaming.add(attributeRenaming);
     }
 
@@ -54,10 +53,12 @@ public class MClabject implements DirectedEdge<MClassifier> {
         return null;
     }
 
+    @NonNull
     public MClassifier parent(){
         return fParent;
     }
 
+    @NonNull
     public MClassifier child(){
         return fChild;
     }
@@ -74,15 +75,6 @@ public class MClabject implements DirectedEdge<MClassifier> {
         return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
 
-    public List<MAttribute> getAllAttributes(){
-        //TODO
-        return null;
-    }
-
-    public String name() {
-        return fName;
-    }
-
 
     public MAttributeRenaming addAttributeRenamingApi(String oldAttributeName, String newAttributeName) {
         MAttribute oldAttribute = fParent.attribute(oldAttributeName, false);
@@ -97,16 +89,11 @@ public class MClabject implements DirectedEdge<MClassifier> {
         return attributeRenaming;
     }
 
-    public Set<String> getParentAttributes() {
-        Set<String> result = new HashSet<>();
-        for(MAttribute attribute : fParent.attributes()) {
-            if(!fRemovedAttributes.contains(attribute) && fAttributeRenaming.stream().noneMatch(ar -> ar.attribute().equals(attribute)))
-                result.add(attribute.name());
-            else if(fAttributeRenaming.stream().anyMatch(ar -> ar.attribute().equals(attribute)))
-                result.add(fAttributeRenaming.stream().filter(ar -> ar.attribute().equals(attribute)).findFirst().get().newName());
-        }
-        return result;
+    @Override
+    public String name(){
+        return "CLABJECT_" + fChild.name() + "_" + fParent.name();
     }
+
 
     @Override
     public @NonNull MClassifier source() {
