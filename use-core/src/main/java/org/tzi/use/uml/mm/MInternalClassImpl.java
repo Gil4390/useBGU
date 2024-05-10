@@ -41,9 +41,6 @@ public class MInternalClassImpl extends MClassImpl{
         for (MClass cls : allParents() ) {
             Set<MGeneralization> edges = model.generalizationGraph().edgesBetween(cls, this);
             if (edges.isEmpty()) continue;
-            if (edges.size() != 1){
-                //throw new Exception("expected exactly one edge between " + cls.name() + " and " + this.name());
-            }
             MGeneralization edge = edges.iterator().next();
             if (edge instanceof MClabject){
                 List<MAttribute> parentAttributes = cls.allAttributes();

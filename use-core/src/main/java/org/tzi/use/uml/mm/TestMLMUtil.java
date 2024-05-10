@@ -54,7 +54,7 @@ public class TestMLMUtil {
             mlmApi.createMediator("Mediator2", personCompany2);
             mlmApi.createClabject("Mediator2",personCompany2 + delimiter + personClass, personCompany1 + delimiter +  personClass);
             mlmApi.createAttributeRenaming("Mediator2",
-                    "GEN_" + personCompany2 + delimiter + personClass + "_" + personCompany1 + delimiter +  personClass,
+                    "CLABJECT_" + personCompany2 + delimiter + personClass + "_" + personCompany1 + delimiter +  personClass,
                     "name", "newName");
         } catch (Exception e) {
             throw new Error( e );
@@ -83,7 +83,7 @@ public class TestMLMUtil {
             mlmApi.createMediator("Mediator2", personCompany2);
             mlmApi.createClabject("Mediator2",personCompany2 + delimiter + personClass, personCompany1 + delimiter +  personClass);
             mlmApi.removeAttribute("Mediator2",
-                    "GEN_" + personCompany2 + delimiter + personClass + "_" + personCompany1 + delimiter +  personClass,
+                    "CLABJECT_" + personCompany2 + delimiter + personClass + "_" + personCompany1 + delimiter +  personClass,
                     "name");
         } catch (Exception e) {
             throw new Error( e );
@@ -256,7 +256,7 @@ public class TestMLMUtil {
             mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
             mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
 
-            mlmApi.createAttributeRenaming("CD", "GEN_CD@C_AB@A", "name", "newName");
+            mlmApi.createAttributeRenaming("CD", "CLABJECT_CD@C_AB@A", "name", "newName");
         } catch (Exception e) {
             throw new Error( e );
         }
@@ -276,7 +276,7 @@ public class TestMLMUtil {
             mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
             mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
 
-            mlmApi.createAttributeRenaming("CD", "GEN_CD@C_AB@A", "address", "newName");
+            mlmApi.createAttributeRenaming("CD", "CLABJECT_CD@C_AB@A", "address", "newName");
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

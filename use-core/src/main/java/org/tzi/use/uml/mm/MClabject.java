@@ -11,19 +11,12 @@ import java.util.stream.Collectors;
 
 public class MClabject extends MGeneralization {
 
-    //private final String fName;
-
-    //private MClass fParent;
-    //private MClass fChild;
-
     private final List<MAttributeRenaming> fAttributeRenaming;
     private final List<MAttribute> fRemovedAttributes;
 
 
     public MClabject(MClass child, MClass parent) {
         super(child, parent);
-//        this.fParent = parent;
-//        this.fChild = child;
         this.fRemovedAttributes = new ArrayList<>();
         this.fAttributeRenaming = new ArrayList<>();
     }
@@ -60,10 +53,12 @@ public class MClabject extends MGeneralization {
         return null;
     }
 
+    @NonNull
     public MClassifier parent(){
         return fParent;
     }
 
+    @NonNull
     public MClassifier child(){
         return fChild;
     }
@@ -80,10 +75,6 @@ public class MClabject extends MGeneralization {
         return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
 
-//    public String name() {
-//        return fName;
-//    }
-
 
     public MAttributeRenaming addAttributeRenamingApi(String oldAttributeName, String newAttributeName) {
         MAttribute oldAttribute = fParent.attribute(oldAttributeName, false);
@@ -98,16 +89,11 @@ public class MClabject extends MGeneralization {
         return attributeRenaming;
     }
 
-//    public Set<String> getParentAttributes() {
-//        Set<String> result = new HashSet<>();
-//        for(MAttribute attribute : fParent.attributes()) {
-//            if(!fRemovedAttributes.contains(attribute) && fAttributeRenaming.stream().noneMatch(ar -> ar.attribute().equals(attribute)))
-//                result.add(attribute.name());
-//            else if(fAttributeRenaming.stream().anyMatch(ar -> ar.attribute().equals(attribute)))
-//                result.add(fAttributeRenaming.stream().filter(ar -> ar.attribute().equals(attribute)).findFirst().get().newName());
-//        }
-//        return result;
-//    }
+    @Override
+    public String name(){
+        return "CLABJECT_" + fChild.name() + "_" + fParent.name();
+    }
+
 
     @Override
     public @NonNull MClassifier source() {

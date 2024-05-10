@@ -18,17 +18,14 @@ public class MMultiLevelModel extends MMultiModel {
 
     private final List<MModel> fModelsList; //ordered list of models
     private final Map<String, MMediator> fMediators;
-    private final DirectedGraph<MClassifier, MClabject> fClabjectGraph;
     protected MMultiLevelModel(String name) {
         super(name);
         fModelsList = new ArrayList<>();
         fMediators = new HashMap<>();
-        fClabjectGraph = new DirectedGraphBase<>();
     }
     protected MMultiLevelModel(MMultiModel multiModel){
         super(multiModel.name());
         fModelsList = new ArrayList<>();
-        fClabjectGraph = new DirectedGraphBase<>();
 
         //steal all the fields from the multiModel
         try {
@@ -59,7 +56,6 @@ public class MMultiLevelModel extends MMultiModel {
     public void addModel(MModel model) throws Exception {
         super.addModel(model);
         fModelsList.add(model);
-        fClabjectGraph.addAll(model.classes());
 
     }
 
@@ -122,7 +118,6 @@ public class MMultiLevelModel extends MMultiModel {
                     }
                 }
             }
-
         }
 
     }
