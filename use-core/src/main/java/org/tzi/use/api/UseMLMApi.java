@@ -143,7 +143,7 @@ public class UseMLMApi extends UseMultiModelApi{
         MAssoclink assoclink = mediator.getAssoclink(assoclinkName);
 
 
-        List<MAssociationEnd> ends = assoclink.child().associationEnds();
+        List<MAssociationEnd> ends = ((MAssociation)assoclink.child()).associationEnds();
 
         MAssociationEnd end = ends.get(0);
         if (end.name().equals(oldRoleName)) {

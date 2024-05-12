@@ -118,6 +118,8 @@ public class MMultiLevelModel extends MMultiModel {
                     }
                 }
             }
+        } else if(gen instanceof MAssoclink) {
+            //TODO
         }
         super.addGeneralization(gen);
 
@@ -145,8 +147,8 @@ public class MMultiLevelModel extends MMultiModel {
 
             for (MAssoclink assoclink : mediator.assocLinks()){
                 try {
-                    String obj1 = assoclink.child().associationEnds().get(0).cls().name();
-                    String obj2 = assoclink.child().associationEnds().get(1).cls().name();
+                    String obj1 = ((MAssociation)assoclink.child()).associationEnds().get(0).cls().name();
+                    String obj2 = ((MAssociation)assoclink.child()).associationEnds().get(1).cls().name();
 
                     systemApi.createLink(assoclink.parent().name(), obj1, obj2);
 
@@ -187,8 +189,8 @@ public class MMultiLevelModel extends MMultiModel {
 
             for (MAssoclink assoclink : mediator.assocLinks()){
                 try {
-                    String obj1 = assoclink.child().associationEnds().get(0).cls().name();
-                    String obj2 = assoclink.child().associationEnds().get(1).cls().name();
+                    String obj1 = ((MAssociation)assoclink.child()).associationEnds().get(0).cls().name();
+                    String obj2 = ((MAssociation)assoclink.child()).associationEnds().get(1).cls().name();
 
                     systemApi.createLink(assoclink.parent().name(), obj1, obj2);
 

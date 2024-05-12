@@ -40,24 +40,26 @@ public class ASTAssoclink extends ASTAnnotatable{
         }
         MAssoclink mAssoclink = mlmContext.modelFactory().createAssoclink(child,parent);
 
-        MAssociationEnd mEnd1 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(0);
+        MAssociationEnd mEndP1 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(0);
+        MAssociationEnd mEndC1 = mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds().get(0);
         if(fRoleRenamingEnd1 == null) { // both roles isnt specified
-            mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEnd1, mEnd1.nameAsRolename()));
+            mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP1, mEndC1.nameAsRolename()));
         }
         else if(fRoleRenamingEnd1.first != null) {
-            if(Objects.equals(mEnd1.nameAsRolename(), fRoleRenamingEnd1.first.getText())) {
-                mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEnd1, fRoleRenamingEnd1.second.getText()));
+            if(Objects.equals(mEndP1.nameAsRolename(), fRoleRenamingEnd1.first.getText())) {
+                mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP1, fRoleRenamingEnd1.second.getText()));
             }
         }
 
 
-        MAssociationEnd mEnd2 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(1);
+        MAssociationEnd mEndP2 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(1);
+        MAssociationEnd mEndC2 = mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds().get(1);
         if(fRoleRenamingEnd2 == null) {
-            mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEnd2,mEnd2.nameAsRolename()));
+            mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2,mEndC2.nameAsRolename()));
         }
         else if(fRoleRenamingEnd2.first != null) {
-            if(Objects.equals(mEnd2.nameAsRolename(), fRoleRenamingEnd2.first.getText())) {
-                mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEnd2,fRoleRenamingEnd2.second.getText()));
+            if(Objects.equals(mEndP2.nameAsRolename(), fRoleRenamingEnd2.first.getText())) {
+                mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2,fRoleRenamingEnd2.second.getText()));
             }
         }
 

@@ -59,10 +59,10 @@ public class ASTMediator extends ASTAnnotatable{
             MAssoclink assoclink = astAssoclink.gen(mlmContext);
 
             // check child association connects two classes that are defined as clabjects of the parent association classes
-            MClass childClass1 = mlmContext.getCurrentModel().getClass(assoclink.child().associationEnds().get(0).cls().name());
-            MClass childClass2 = mlmContext.getCurrentModel().getClass(assoclink.child().associationEnds().get(1).cls().name());
-            MClass parentClass1 = mlmContext.getParentModel().getClass(assoclink.parent().associationEnds().get(0).cls().name());
-            MClass parentClass2 = mlmContext.getParentModel().getClass(assoclink.parent().associationEnds().get(1).cls().name());
+            MClass childClass1 = mlmContext.getCurrentModel().getClass(((MAssociation)assoclink.child()).associationEnds().get(0).cls().name());
+            MClass childClass2 = mlmContext.getCurrentModel().getClass(((MAssociation)assoclink.child()).associationEnds().get(1).cls().name());
+            MClass parentClass1 = mlmContext.getParentModel().getClass(((MAssociation)assoclink.parent()).associationEnds().get(0).cls().name());
+            MClass parentClass2 = mlmContext.getParentModel().getClass(((MAssociation)assoclink.parent()).associationEnds().get(1).cls().name());
 
             if (childClass1 == null || childClass2 == null || parentClass1 == null || parentClass2 == null) {
                 throw new Exception("Child class or parent class is not defined in the model");
@@ -79,6 +79,8 @@ public class ASTMediator extends ASTAnnotatable{
 
 
             mMediator.addAssocLink(assoclink);
+            mlmContext.model().addGeneralization(assoclink);
+
         }
         return mMediator;
     }

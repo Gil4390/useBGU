@@ -2,36 +2,41 @@ package org.tzi.use.uml.mm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class MAssoclink {
-    private final String fName;
-
-    private MAssociation fParent;
-    private MAssociation fChild;
+public class MAssoclink extends MGeneralization {
+//    private final String fName;
+//
+//    private MAssociation fParent;
+//    private MAssociation fChild;
 
     private final List<MRoleRenaming> fRoleRenaming;
 
     public MAssoclink(MAssociation child, MAssociation parent) {
-        this.fName = child.name();
-        this.fParent = parent;
-        this.fChild = child;
+        super(child, parent);
         fRoleRenaming = new ArrayList<>();
     }
 
     public void addRoleRenaming(MRoleRenaming roleRenaming) {
+        //check conflicts
+        Set<String> taken = fRoleRenaming.stream().map(MRoleRenaming::newName).collect(Collectors.toSet());
+        //taken.addAll(((MAssociationImpl)child()).associationEnds().stream().map(MAssociationEnd::nameAsRolename).collect(Collectors.toSet()));
+        taken.addAll(((MAssociationImpl)parent()).associationEnds().stream()
+                .filter(assocEnd -> !assocEnd.equals(roleRenaming.assocEnd()))
+                .map(MAssociationEnd::nameAsRolename)
+                //.filter(str -> !str.equals(parent().name()))
+                .collect(Collectors.toSet()));
+        //((MAssociation)child()).getAssociationEnd(roleRenaming.assocEnd().cls(), roleRenaming.assocEnd().name());
+        if(taken.contains(roleRenaming.newName())) {
+            throw new NullPointerException("Role: " + roleRenaming.newName() + " already exists" + " in association: " + roleRenaming.assocEnd().association().name());
+        }
         fRoleRenaming.add(roleRenaming);
     }
 
-    public MAssociation parent(){
-        return fParent;
-    }
-
-    public MAssociation child(){
-        return fChild;
-    }
-
+    @Override
     public String name() {
-        return fName;
+        return "ASSOCLINK" + fChild.name() + "_" + fParent.name();
     }
 
 }

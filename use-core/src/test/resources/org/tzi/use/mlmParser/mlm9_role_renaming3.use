@@ -1,0 +1,58 @@
+MLM ABCD
+
+  model AB
+    class A
+    end
+
+    class B
+    end
+
+    association ab1 between
+      A[*] role aa
+      B[*] role bb
+    end
+
+
+  model CD
+    class C
+    end
+
+    class D
+    end
+
+    class E
+    end
+
+    association cd1 between
+      C[*] role aa1
+      D[*] role bb1
+    end
+
+    association ce1 between
+      C[*] role aa2
+      E[*] role bb2
+    end
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+   clabject C : A
+   end
+
+   clabject D : B
+   end
+
+   clabject E : B
+   end
+
+   assoclink cd1 : ab1
+   end
+
+   assoclink ce1 : ab1
+      role_renaming
+        aa -> aa2
+        bb -> bb2
+   end
+end

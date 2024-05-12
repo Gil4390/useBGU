@@ -53,16 +53,6 @@ public class MClabject extends MGeneralization {
         return null;
     }
 
-    @NonNull
-    public MClassifier parent(){
-        return fParent;
-    }
-
-    @NonNull
-    public MClassifier child(){
-        return fChild;
-    }
-
     public List<MAttributeRenaming> getAttributeRenaming() {
         return fAttributeRenaming;
     }
@@ -92,21 +82,5 @@ public class MClabject extends MGeneralization {
     @Override
     public String name(){
         return "CLABJECT_" + fChild.name() + "_" + fParent.name();
-    }
-
-
-    @Override
-    public @NonNull MClassifier source() {
-        return fChild;
-    }
-
-    @Override
-    public @NonNull MClassifier target() {
-        return fParent;
-    }
-
-    @Override
-    public boolean isReflexive() {
-        return false;
     }
 }
