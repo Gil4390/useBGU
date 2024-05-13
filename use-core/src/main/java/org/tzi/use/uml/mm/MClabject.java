@@ -83,4 +83,14 @@ public class MClabject extends MGeneralization {
     public String name(){
         return "CLABJECT_" + fChild.name() + "_" + fParent.name();
     }
+
+    @Override
+    public boolean isReflexive() {
+        return false;
+    }
+
+    @Override
+    public void processWithVisitor(MMVisitor v) {
+        v.visitClabject(this);
+    }
 }

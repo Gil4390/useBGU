@@ -285,5 +285,15 @@ public class MMInstanceGenerator implements MMVisitor {
 	@Override
 	public void visitEnum(EnumType enumType) {
 		// NoOp		
-	}	
+	}
+
+    @Override
+    public void visitMediator(MMediator mMediator) {
+        //FIXME: implement
+    }
+
+    @Override
+    public void visitClabject(MClabject mClabject) {
+
+    }
 }

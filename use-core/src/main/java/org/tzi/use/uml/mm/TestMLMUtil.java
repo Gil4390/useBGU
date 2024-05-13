@@ -283,4 +283,26 @@ public class TestMLMUtil {
         return mlm;
     }
 
+    public MMultiLevelModel createMLMWithAttributeRenaming3()  {
+        UseMLMApi mlmApi = new UseMLMApi(TestMultiModelUtil.getInstance().createMultiModelTwoModelsWithAttributes3());
+        MMultiLevelModel mlm = mlmApi.getMultiLevelModel();
+        try {
+            mlmApi.createMediator("AB", "AB");
+            mlmApi.createMediator("CD", "CD");
+            mlmApi.createMediator("EF", "EF");
+
+            mlmApi.createClabject("CD","CD@C", "AB@A");
+            mlmApi.createClabject("EF","CD@E", "AB@B");
+
+            //Check if create and remove attributes works properly in the api
+            mlmApi.createAttributeRenaming("CD", "CLABJECT_CD@C_AB@A", "aa1", "aa3");
+            mlmApi.removeAttribute("CD", "CLABJECT_CD@C_AB@A", "cc");
+            mlmApi.createAttributeRenaming("EF", "CLABJECT_EF@E_CD@C", "cc", "aa1");
+
+        } catch (Exception e) {
+            throw new Error( e );
+        }
+        return mlm;
+    }
+
 }

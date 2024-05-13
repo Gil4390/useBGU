@@ -98,8 +98,14 @@ public class MLMCreationTest extends TestCase {
         } catch(Exception e) {
             assertEquals("Attribute: newName already exists", e.getMessage());
         }
+    }
 
+    public void testMLM_AttributeRenaming_ThreeLevels_1() {
+        MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithAttributeRenaming3();
+        MClabject clabject = mlm.getClabject("CD", "CLABJECT_CD@C_AB@A");
+        String newName = clabject.getRenamedAttribute("name").newName();
 
+        assertEquals("newName", newName);
     }
 
 

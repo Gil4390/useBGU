@@ -1291,7 +1291,7 @@ public class MainWindow extends JFrame {
         private boolean wasUsed;
 
         ActionFileOpenMLMSpec() {
-            super("Open multi level specification...", getIcon("document-open-multi.png"));
+            super("Open multi level specification...", getIcon("document-open-mlm.png"));
         }
 
         protected ActionFileOpenMLMSpec(String title) {
