@@ -93,6 +93,18 @@ public class MMultiLevelModel extends MMultiModel {
         return mediator.getClabject(clabjectName);
     }
 
+    public List<MClabject> clabjects() {
+        List<MClabject> clabjects = new ArrayList<>();
+        for (MMediator mediator : fMediators.values()){
+            clabjects.addAll(mediator.clabjects());
+        }
+        return clabjects;
+    }
+
+    public List<MMediator> mediators(){
+        return new ArrayList<>(fMediators.values());
+    }
+
     @Override
     public void addGeneralization(MGeneralization gen) throws MInvalidModelException {
         if (gen instanceof MClabject){

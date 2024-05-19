@@ -309,6 +309,32 @@ public class TestMultiModelUtil {
         }
     }
 
+    public MMultiModel createMultiModelTwoModelsWithAttributes3() {
+        try {
+            UseMultiModelApi multiApi = new UseMultiModelApi("ABCD");
+
+            MModel model1 = multiApi.createModel("AB");
+            MModel model2 = multiApi.createModel("CD");
+            MModel model3 = multiApi.createModel("EF");
+
+            multiApi.addModel(model1);
+            multiApi.addModel(model2);
+            multiApi.addModel(model3);
+
+            multiApi.createClass("AB@A", false);
+            multiApi.createClass("CD@C", false);
+            multiApi.createClass("EF@E", false);
+
+            multiApi.createAttribute("AB@A", "aa1", "String");
+            multiApi.createAttribute("CD@C", "cc", "String");
+            multiApi.createAttribute("EF@E", "cc", "Integer");
+
+            return multiApi.getMultiModel();
+        } catch (Exception e ) {
+            throw new Error( e );
+        }
+    }
+
     public MMultiModel createMultiModelTwoModelsTwoMultiplicity() {
         try {
             UseMultiModelApi multiApi = new UseMultiModelApi("ABCD");

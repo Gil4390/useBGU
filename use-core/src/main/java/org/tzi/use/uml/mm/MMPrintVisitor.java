@@ -492,6 +492,7 @@ public class MMPrintVisitor implements MMVisitor {
         	println();
         }
     }
+
     
     protected String getStatementVisitorString(MStatement statement) {
     	return statement.toConcreteSyntax(fIndent, fIndentStep);
@@ -584,4 +585,51 @@ public class MMPrintVisitor implements MMVisitor {
 		indent();
 		println(ws() + other("};"));
 	}
+
+    @Override
+    public void visitMediator(MMediator mMediator) {
+        visitAnnotations(mMediator);
+        indent();
+        println(keyword("mediator") + ws() + id(mMediator.name()) + ws() + keyword(":") +ws() + id(mMediator.parentModelName()) );
+        incIndent();
+        visitClabjectsAndAssoclinks(mMediator);
+        decIndent();
+        println(keyword("end"));
+    }
+
+    @Override
+    public void visitClabject(MClabject e) {
+        visitAnnotations(e);
+        indent();
+        println(keyword("clabject") + ws() + id(e.child().name()) + ws() + keyword(":") + ws() + id(e.parent().name()));
+
+        incIndent();
+
+        indent();
+        println(keyword("attributes"));
+        incIndent();
+        // visit attribute renamings
+        for (MAttributeRenaming attrRenaming : e.getAttributeRenaming()) {
+            indent();
+            println(id(attrRenaming.attribute().name()) + ws() + other("->") + ws() + id(attrRenaming.newName()));
+        }
+
+        // visit removed attributes
+        for (MAttribute attr : e.getRemovedAttributes()) {
+            indent();
+            println(other("~") + id(attr.name()));
+        }
+
+        decIndent();
+        decIndent();
+        indent();
+        println(keyword("end"));
+    }
+
+    public void visitClabjectsAndAssoclinks(MMediator mMediator) {
+        for (MClabject clabject : mMediator.clabjects()) {
+            clabject.processWithVisitor(this);
+        }
+    }
+
 }

@@ -65,13 +65,7 @@ import org.tzi.use.gui.views.diagrams.event.HighlightChangeEvent;
 import org.tzi.use.gui.views.diagrams.event.HighlightChangeListener;
 import org.tzi.use.gui.views.diagrams.event.ModelBrowserMouseHandling;
 import org.tzi.use.main.runtime.IRuntime;
-import org.tzi.use.uml.mm.MAssociation;
-import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MClassInvariant;
-import org.tzi.use.uml.mm.MModel;
-import org.tzi.use.uml.mm.MModelElement;
-import org.tzi.use.uml.mm.MOperation;
-import org.tzi.use.uml.mm.MPrePostCondition;
+import org.tzi.use.uml.mm.*;
 
 /** 
  * A ModelBrowser provides a tree view of classes, associations, and constraints
@@ -366,7 +360,11 @@ public class ModelBrowser extends JPanel
         final Collection<MPrePostCondition> sortedConditions = 
             fMbs.sortPrePostConditions(fModel.prePostConditions());
         addChildNodes( top, "Pre-/Postconditions", sortedConditions );
-        
+
+        final Collection<MMediator> sortedMediators =
+                fMbs.sortMediators( new ArrayList<MMediator>(((MMultiLevelModel)fModel).mediators() ));
+        addChildNodes( top, "Mediators", sortedMediators );
+
 		Set<Map.Entry<String, Collection<?>>> modelCollectionEntrySet = this.modelCollections.entrySet();
 				
 		for (Map.Entry<String, Collection<?>> modelCollectionMapEntry : modelCollectionEntrySet) {

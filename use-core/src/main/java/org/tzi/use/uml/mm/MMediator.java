@@ -2,7 +2,7 @@ package org.tzi.use.uml.mm;
 
 import java.util.*;
 
-public class MMediator {
+public class MMediator extends MModelElementImpl {
 
     private String fName;
 
@@ -12,6 +12,7 @@ public class MMediator {
     private final Map<String, MAssoclink> fAssocLinks;
 
     public MMediator(String name) {
+        super(name);
         this.fName = name;
         fClabjects = new HashMap<>();
         fAssocLinks = new HashMap<>();
@@ -51,6 +52,18 @@ public class MMediator {
 
     public String name(){
         return fName;
+    }
+
+    public String parentModelName() {
+        if(parentModel == null) {
+            return "NONE";
+        }
+        return parentModel.name();
+    }
+
+    @Override
+    public void processWithVisitor(MMVisitor v) {
+        v.visitMediator(this);
     }
 
     public Collection<MClabject> clabjects(){

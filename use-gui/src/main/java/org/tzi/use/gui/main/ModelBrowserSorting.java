@@ -30,13 +30,7 @@ import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
-import org.tzi.use.uml.mm.MAssociation;
-import org.tzi.use.uml.mm.MAssociationClass;
-import org.tzi.use.uml.mm.MAttribute;
-import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MClassInvariant;
-import org.tzi.use.uml.mm.MOperation;
-import org.tzi.use.uml.mm.MPrePostCondition;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.mm.statemachines.MStateMachine;
 import org.tzi.use.util.uml.sorting.AlphabeticalConditionByNameComparator;
 import org.tzi.use.util.uml.sorting.AlphabeticalConditionComparator;
@@ -217,6 +211,39 @@ public class ModelBrowserSorting  {
             }
         }
         return classes;
+    }
+
+    public Collection<MClabject> sortClabjects(Collection<MClabject> items) {
+        ArrayList<MClabject> clabjects = new ArrayList<MClabject>( items );
+
+        if (clabjects.size() > 0) {
+            switch (clsOrder) {
+                case CLS_ALPHABETIC:
+                    Collections.sort(clabjects, new AlphabeticalNamedElementComparator());
+                    break;
+//                case CLS_USE_ORDER:
+//                    Collections.sort(clabjects, new UseFileOrderComparator());
+//                    break;
+                default:
+                    break;
+            }
+        }
+        return clabjects;
+    }
+
+    public Collection<MMediator> sortMediators(Collection<MMediator> items) {
+        ArrayList<MMediator> mediators = new ArrayList<MMediator>( items );
+
+        if (mediators.size() > 0) {
+            switch (clsOrder) {
+                case CLS_ALPHABETIC:
+                    Collections.sort(mediators, new AlphabeticalNamedElementComparator());
+                    break;
+                default:
+                    break;
+            }
+        }
+        return mediators;
     }
     
     /**
