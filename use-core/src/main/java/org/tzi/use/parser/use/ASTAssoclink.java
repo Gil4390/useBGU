@@ -42,27 +42,40 @@ public class ASTAssoclink extends ASTAnnotatable{
 
         MAssociationEnd mEndP1 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(0);
         MAssociationEnd mEndC1 = mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds().get(0);
+        MAssociationEnd mEndP2 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(1);
+        MAssociationEnd mEndC2 = mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds().get(1);
         if(fRoleRenamingEnd1 == null) { // both roles isnt specified
             mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP1, mEndC1.nameAsRolename()));
+            mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2,mEndC2.nameAsRolename()));
         }
         else if(fRoleRenamingEnd1.first != null) {
             if(Objects.equals(mEndP1.nameAsRolename(), fRoleRenamingEnd1.first.getText())) {
                 mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP1, fRoleRenamingEnd1.second.getText()));
             }
-        }
-
-
-        MAssociationEnd mEndP2 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(1);
-        MAssociationEnd mEndC2 = mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds().get(1);
-        if(fRoleRenamingEnd2 == null) {
-            mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2,mEndC2.nameAsRolename()));
-        }
-        else if(fRoleRenamingEnd2.first != null) {
-            if(Objects.equals(mEndP2.nameAsRolename(), fRoleRenamingEnd2.first.getText())) {
-                mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2,fRoleRenamingEnd2.second.getText()));
+            else if (Objects.equals(mEndP2.nameAsRolename(), fRoleRenamingEnd1.first.getText())) {
+                mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2, fRoleRenamingEnd1.second.getText()));
             }
-        }
+            else{
+                throw new Exception("Role: " + fRoleRenamingEnd1.first.getText() + " doesn't exist in the association: " + fChildName.getText());
+            }
 
+
+            if(fRoleRenamingEnd2 == null) {
+                mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2,mEndC2.nameAsRolename()));
+            }
+            else if(fRoleRenamingEnd2.first != null) {
+                if(Objects.equals(mEndP2.nameAsRolename(), fRoleRenamingEnd2.first.getText())) {
+                    mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2,fRoleRenamingEnd2.second.getText()));
+                }
+                else if (Objects.equals(mEndP1.nameAsRolename(), fRoleRenamingEnd2.first.getText())) {
+                    mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP1,fRoleRenamingEnd2.second.getText()));
+                }
+                else{
+                    throw new Exception("Role: " + fRoleRenamingEnd2.first.getText() + " doesn't exist in the association: " + fChildName.getText());
+                }
+            }
+
+        }
         return mAssoclink;
     }
 
