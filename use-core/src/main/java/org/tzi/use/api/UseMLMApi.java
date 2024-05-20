@@ -138,22 +138,22 @@ public class UseMLMApi extends UseMultiModelApi{
         return assoclink;
     }
 
-    public MRoleRenaming createRoleRenaming(String mediatorName, String assoclinkName, String oldRoleName, String newRoleName){
-        MMediator mediator = this.getMediator(mediatorName);
-        MAssoclink assoclink = mediator.getAssoclink(assoclinkName);
-
-
-        List<MAssociationEnd> ends = ((MAssociation)assoclink.child()).associationEnds();
-
-        MAssociationEnd end = ends.get(0);
-        if (end.name().equals(oldRoleName)) {
-            end = ends.get(1);
-        }
-
-        MRoleRenaming roleRenaming = mFactory.createRoleRenaming(end, newRoleName);
-        assoclink.addRoleRenaming(roleRenaming);
-        return roleRenaming;
-    }
+//    public MRoleRenaming createRoleRenaming(String mediatorName, String assoclinkName, String oldRoleName, String newRoleName){
+//        MMediator mediator = this.getMediator(mediatorName);
+//        MAssoclink assoclink = mediator.getAssoclink(assoclinkName);
+//
+//
+//        List<MAssociationEnd> ends = ((MAssociation)assoclink.child()).associationEnds();
+//
+//        MAssociationEnd end = ends.get(0);
+//        if (end.name().equals(oldRoleName)) {
+//            end = ends.get(1);
+//        }
+//
+//        MRoleRenaming roleRenaming = mFactory.createRoleRenaming(end, newRoleName);
+//        assoclink.addRoleRenaming(roleRenaming);
+//        return roleRenaming;
+//    }
 
 
 

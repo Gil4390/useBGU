@@ -1,8 +1,6 @@
 package org.tzi.use.uml.mm;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MAssoclink extends MGeneralization {
@@ -20,17 +18,25 @@ public class MAssoclink extends MGeneralization {
 
     public void addRoleRenaming(MRoleRenaming roleRenaming) {
         //check conflicts
-        Set<String> taken = fRoleRenaming.stream().map(MRoleRenaming::newName).collect(Collectors.toSet());
-        //taken.addAll(((MAssociationImpl)child()).associationEnds().stream().map(MAssociationEnd::nameAsRolename).collect(Collectors.toSet()));
-        taken.addAll(((MAssociationImpl)parent()).associationEnds().stream()
-                .filter(assocEnd -> !assocEnd.equals(roleRenaming.assocEnd()))
-                .map(MAssociationEnd::nameAsRolename)
-                //.filter(str -> !str.equals(parent().name()))
-                .collect(Collectors.toSet()));
-        //((MAssociation)child()).getAssociationEnd(roleRenaming.assocEnd().cls(), roleRenaming.assocEnd().name());
-        if(taken.contains(roleRenaming.newName())) {
-            throw new NullPointerException("Role: " + roleRenaming.newName() + " already exists" + " in association: " + roleRenaming.assocEnd().association().name());
+        if (!roleRenaming.assocEndC().name().equals(roleRenaming.newName())){
+            MClassImpl originalClass = (MClassImpl) roleRenaming.assocEndC().cls();
+            MClassImpl secondClass = (MClassImpl) roleRenaming.assocEndC().association().associationEnds().stream().filter(e -> !e.cls().name().equals(originalClass.name())).collect(Collectors.toList()).get(0).cls();
+            Map<String, MNavigableElement> ends = secondClass.navigableEnds();
+            Set<String> takenNames = new HashSet<>();
+            for (MNavigableElement end : ends.values()) {
+                Map<String, MNavigableElement> ends2 = ((MClassImpl)end.cls()).navigableEnds();
+                for (MNavigableElement end2 : ends2.values()) {
+                    if (end2.cls().name().equals(secondClass.name())){
+                        takenNames.add(end.nameAsRolename());
+                    }
+                }
+            }
+            if (takenNames.contains(roleRenaming.newName())) {
+                throw new NullPointerException("Role: " + roleRenaming.newName() + " already exists" + " in association: " + roleRenaming.assocEndC().association().name());
+            }
         }
+
+
         fRoleRenaming.add(roleRenaming);
     }
 
