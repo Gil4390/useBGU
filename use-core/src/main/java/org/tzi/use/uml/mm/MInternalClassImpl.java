@@ -75,4 +75,15 @@ public class MInternalClassImpl extends MClassImpl{
 
         return new ArrayList<>(result);
     }
+
+    public Map<String, MNavigableElement> navigableEnds() {
+        Map<String, MNavigableElement> res = new TreeMap<String, MNavigableElement>();
+        res.putAll(super.navigableEnds());
+
+        // recursively add association ends in superclasses
+        for (MClass superclass : allParents() ) {
+            res.putAll(superclass.navigableEnds());
+        }
+        return res;
+    }
 }

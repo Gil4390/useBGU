@@ -228,4 +228,14 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
 
+    public void getNameOfAssocEnd(MAssociationEnd mEndP1) throws Exception {
+        MAssociationEnd end = mEndP1;
+        MAssociation assoc = end.association();
+        MModel currentModel = assoc.model();
+        MModel parentModel = getParentModel(currentModel.name());
+        MAssoclink assoclink = getMediator(parentModel.name()).getAssoclink(assoc.name());
+
+        MClassImpl originalClass = (MClassImpl) end.cls();
+
+    }
 }

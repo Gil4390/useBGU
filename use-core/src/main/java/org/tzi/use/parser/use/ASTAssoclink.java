@@ -44,17 +44,19 @@ public class ASTAssoclink extends ASTAnnotatable{
         MAssociationEnd mEndC1 = mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds().get(0);
         MAssociationEnd mEndP2 = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds().get(1);
         MAssociationEnd mEndC2 = mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds().get(1);
+        //((MMultiLevelModel)mlmContext.model()).getNameOfAssocEnd(mEndP1);
         boolean isEnd1 = false;
         if(fRoleRenamingEnd1 == null) { // both roles isnt specified
             mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP1, mEndC1, mEndC1.nameAsRolename()));
             mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2, mEndC2, mEndC2.nameAsRolename()));
         }
         else if(fRoleRenamingEnd1.first != null) {
-            if(Objects.equals(mEndP1.nameAsRolename(), fRoleRenamingEnd1.first.getText())) {
+            String originalName1 = fRoleRenamingEnd1.first.getText();
+            if(mEndP1.nameAsRolename().equals(originalName1)) {
                 mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP1, mEndC1, fRoleRenamingEnd1.second.getText()));
                 isEnd1 = true;
             }
-            else if (Objects.equals(mEndP2.nameAsRolename(), fRoleRenamingEnd1.first.getText())) {
+            else if (mEndP2.nameAsRolename().equals(originalName1)) {
                 mAssoclink.addRoleRenaming(mlmContext.modelFactory().createRoleRenaming(mEndP2, mEndC2, fRoleRenamingEnd1.second.getText()));
                 isEnd1 = false;
             }
