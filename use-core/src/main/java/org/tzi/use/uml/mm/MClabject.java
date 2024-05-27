@@ -66,19 +66,6 @@ public class MClabject extends MGeneralization {
     }
 
 
-    public MAttributeRenaming addAttributeRenamingApi(String oldAttributeName, String newAttributeName) {
-        MAttribute oldAttribute = fParent.attribute(oldAttributeName, false);
-        if (oldAttribute == null) {
-            throw new NullPointerException("Attribute: " + oldAttributeName + " is invalid");
-        }
-        if (fChild.attribute(newAttributeName, false) != null) {
-            throw new NullPointerException("Attribute: " + newAttributeName + " already exists");
-        }
-        MAttributeRenaming attributeRenaming = new MAttributeRenaming(oldAttribute, newAttributeName);
-        fAttributeRenaming.add(attributeRenaming);
-        return attributeRenaming;
-    }
-
     @Override
     public String name(){
         return "CLABJECT_" + fChild.name() + "_" + fParent.name();
