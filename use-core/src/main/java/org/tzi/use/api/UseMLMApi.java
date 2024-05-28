@@ -136,10 +136,23 @@ public class UseMLMApi extends UseMultiModelApi{
 
     public MAttributeRenaming createAttributeRenaming(String mediatorName, String clabjectName, String oldAttrName, String newAttrName){
         MMediator mediator = this.getMediator(mediatorName);
+        if (mediator == null) {
+            throw new NullPointerException("Mediator " + mediatorName + " is invalid");
+        }
         MClabject clabject = mediator.getClabject(clabjectName);
-        //TODO should we search in subclasses?
-
-        MAttributeRenaming attributeRenaming = clabject.addAttributeRenamingApi(oldAttrName, newAttrName);
+        if (clabject == null) {
+            throw new NullPointerException("Clabject " + clabjectName + " is invalid");
+        }
+        MClassifier parentCls = clabject.parent();
+        if (parentCls == null) {
+            throw new NullPointerException("Parent class is invalid");
+        }
+        MAttribute oldAttribute = parentCls.attribute(oldAttrName, true);
+        if (oldAttribute == null) {
+            throw new NullPointerException("Attribute " + oldAttrName + " is invalid");
+        }
+        MAttributeRenaming attributeRenaming = new MAttributeRenaming(oldAttribute, newAttrName);
+        clabject.addAttributeRenaming(attributeRenaming);
         return attributeRenaming;
     }
 

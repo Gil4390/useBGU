@@ -292,7 +292,7 @@ public class TestMLMUtil {
             mlmApi.createMediator("EF", "EF");
 
             mlmApi.createClabject("CD","CD@C", "AB@A");
-            mlmApi.createClabject("EF","CD@E", "AB@B");
+            mlmApi.createClabject("EF","EF@E", "CD@C");
 
             //Check if create and remove attributes works properly in the api
             mlmApi.createAttributeRenaming("CD", "CLABJECT_CD@C_AB@A", "aa1", "aa3");

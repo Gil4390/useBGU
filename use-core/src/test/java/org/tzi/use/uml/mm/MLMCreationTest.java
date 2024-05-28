@@ -103,9 +103,9 @@ public class MLMCreationTest extends TestCase {
     public void testMLM_AttributeRenaming_ThreeLevels_1() {
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithAttributeRenaming3();
         MClabject clabject = mlm.getClabject("CD", "CLABJECT_CD@C_AB@A");
-        String newName = clabject.getRenamedAttribute("name").newName();
+        String newName = clabject.getRenamedAttribute("aa1").newName();
 
-        assertEquals("newName", newName);
+        assertEquals("aa3", newName);
     }
 
 
