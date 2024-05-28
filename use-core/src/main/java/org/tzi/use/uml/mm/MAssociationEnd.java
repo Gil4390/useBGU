@@ -38,7 +38,7 @@ import org.tzi.use.util.collections.CollectionUtil;
  *
  * @author  Mark Richters
  */
-public final class MAssociationEnd extends MModelElementImpl implements MNavigableElement {
+public class MAssociationEnd extends MModelElementImpl implements MNavigableElement {
 
     private MAssociation fAssociation; // Owner of this association end
     private MClass fClass;  // associated class

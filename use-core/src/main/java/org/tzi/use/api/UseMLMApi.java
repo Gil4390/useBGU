@@ -1,6 +1,7 @@
 package org.tzi.use.api;
 
 import org.tzi.use.uml.mm.*;
+import org.tzi.use.util.StringUtil;
 
 import java.util.List;
 
@@ -47,6 +48,40 @@ public class UseMLMApi extends UseMultiModelApi{
     public MMultiLevelModel getMultiLevelModel() {
         return mMultiLevelModel;
     }
+
+
+
+    @Override
+    public MClass getClassSafe(String name) throws UseApiException {
+        if (!name.contains("@")){
+            //inter-class
+            MClass cls = mMultiLevelModel.getClass(name);
+            if (cls == null) {
+                throw new UseApiException("Unknown class " + StringUtil.inQuotes(name));
+            }
+            return cls;
+        }
+
+        //regular class
+        String modelName = name.split("@")[0];
+        String className = name.split("@")[1];
+
+        MModel model = mMultiLevelModel.getModel(modelName);
+        if (model == null){
+            throw new UseApiException("Unknown model " + StringUtil.inQuotes(modelName));
+        }
+
+        MClass cls = model.getClass(name);
+        if (cls == null) {
+            throw new UseApiException("Unknown class " + StringUtil.inQuotes(name) +
+                    " in model " + StringUtil.inQuotes(modelName));
+        }
+        return cls;
+    }
+
+
+
+
 
     /**
      * This method is used to create a new Mediator object and add it to the multi-level model.

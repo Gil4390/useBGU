@@ -1,5 +1,9 @@
 package org.tzi.use.uml.mm;
 
+import org.tzi.use.uml.ocl.expr.VarDecl;
+
+import java.util.List;
+
 public class MultiLevelModelFactory extends MultiModelFactory {
 
 
@@ -27,7 +31,7 @@ public class MultiLevelModelFactory extends MultiModelFactory {
     }
 
     public MRoleRenaming createRoleRenaming(MAssociationEnd endp, MAssociationEnd endc, String newName){
-        return new MRoleRenaming(endp, endc, newName);
+        return new MRoleRenaming((MInternalAssociationEnd)endp, (MInternalAssociationEnd)endc, newName);
     }
 
     public MAssoclink createAssoclink(MAssociation child, MAssociation parent) {
@@ -37,5 +41,15 @@ public class MultiLevelModelFactory extends MultiModelFactory {
     @Override
     public MMultiModel createMultiModel(String name) {
         return createMLM(name);
+    }
+
+    @Override
+    public MAssociationEnd createAssociationEnd(MClass cls,
+                                                String rolename,
+                                                MMultiplicity mult,
+                                                int kind,
+                                                boolean isOrdered,
+                                                List<VarDecl> qualifiers) {
+        return new MInternalAssociationEnd(cls, rolename, mult, kind, isOrdered, qualifiers);
     }
 }

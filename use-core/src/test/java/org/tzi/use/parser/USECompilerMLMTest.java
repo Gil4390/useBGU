@@ -1,6 +1,7 @@
 package org.tzi.use.parser;
 
 import junit.framework.TestCase;
+import org.tzi.use.api.UseMLMApi;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
@@ -66,7 +67,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 23);
+        List<File> fileList = getFilesMatchingSuffix(".use", 24);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -305,6 +306,28 @@ public class USECompilerMLMTest extends TestCase {
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
 
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompileMultiRemoveModelSpecification4() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseMLMApi api = new UseMLMApi(mlmResult);
+
+            System.out.println(api.getClassSafe("CD@C").navigableEnds());
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();

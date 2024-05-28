@@ -1,6 +1,7 @@
 package org.tzi.use.uml.mm;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * MInternalClassImpl instances represent classes in a model related to multi-model.
@@ -76,7 +77,23 @@ public class MInternalClassImpl extends MClassImpl{
         return new ArrayList<>(result);
     }
 
+//    public Map<String, MNavigableElement> navigableEnds() {
+//        Map<String, MNavigableElement> res = new TreeMap<String, MNavigableElement>();
+//        res.putAll(super.navigableEnds());
+//
+//        // recursively add association ends in superclasses
+//        for (MClass superclass : allParents() ) {
+//            res.putAll(superclass.navigableEnds());
+//        }
+//
+//
+//        return res;
+//    }
+
     public Map<String, MNavigableElement> navigableEnds() {
+        if (fMultiModel == null)
+            return super.navigableEnds();
+
         Map<String, MNavigableElement> res = new TreeMap<String, MNavigableElement>();
         res.putAll(super.navigableEnds());
 
@@ -84,6 +101,37 @@ public class MInternalClassImpl extends MClassImpl{
         for (MClass superclass : allParents() ) {
             res.putAll(superclass.navigableEnds());
         }
+
+//        List<MAssociation> assocLinksAssociations =((MMultiLevelModel)this.fMultiModel).getMediator(this.model.name()).assocLinks()
+//                .stream().map(assocLink -> (MAssociation)assocLink.child()).collect(Collectors.toList()); //{cd1}
+//
+//
+//        List<MAssociation> cAssocLinksAssociations = this.associations().stream()
+//                .filter(assocLinksAssociations::contains).collect(Collectors.toList()); //{cd1}
+//
+//        //super.navigableEnds() // {dd, dd2, bb}
+//        List<MAssociationEnd> ends = super.navigableEnds().values().stream().map(end -> (MAssociationEnd)end)
+//                .filter(end -> cAssocLinksAssociations.contains(end.association())).collect(Collectors.toList()); //{dd}
+
+        List<String> oldRoleName = new ArrayList<>();
+        List<String> newRoleName = new ArrayList<>();
+
+        Collection<MAssoclink> assoclinks = ((MMultiLevelModel)this.fMultiModel).getMediator(this.model.name()).assocLinks();
+        for (MAssoclink assocLink : assoclinks){
+            oldRoleName.add((assocLink.parent().name()));
+            newRoleName.add((assocLink.child().name()));
+        }
+
+        for (String end : res.keySet()){
+            if (oldRoleName.contains(end)){
+                res.put(newRoleName.get(oldRoleName.indexOf(end)), res.get(end));
+                res.remove(end);
+            }
+//            // end = {dd}
+//            MAssoclink al = end.assocLink;
+//            result.add(al.getOriginalEnd(end)); //{bb}
+        }
+
         return res;
     }
 }

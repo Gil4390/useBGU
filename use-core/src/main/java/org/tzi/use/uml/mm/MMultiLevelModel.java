@@ -9,10 +9,8 @@ import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.util.NullPrintWriter;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MMultiLevelModel extends MMultiModel {
 
@@ -228,14 +226,21 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
 
-    public void getNameOfAssocEnd(MAssociationEnd mEndP1) throws Exception {
+    public String getNameOfAssocEnd(MAssociationEnd mEndP1) throws Exception {
         MAssociationEnd end = mEndP1;
         MAssociation assoc = end.association();
         MModel currentModel = assoc.model();
         MModel parentModel = getParentModel(currentModel.name());
-        MAssoclink assoclink = getMediator(parentModel.name()).getAssoclink(assoc.name());
-
-        MClassImpl originalClass = (MClassImpl) end.cls();
-
+        if (parentModel == null){
+            return end.name();
+        }
+        MAssoclink assoclink = getMediator(currentModel.name()).getAssoclink("ASSOCLINK_" + assoc.name() + "_");
+        String name = end.name();
+        for (MRoleRenaming roleRenaming : assoclink.getRoleRenaming()){
+            if (roleRenaming.assocEndC().name().equals(name)){
+                return roleRenaming.newName();
+            }
+        }
+        return name;
     }
 }

@@ -31,7 +31,7 @@ public class UseMultiModelApi extends UseModelApi{
     /**
      * The instance of the encapsulated multi-model.
      */
-    private MMultiModel mMultiModel;
+    protected MMultiModel mMultiModel;
     MultiModelFactory mFactory = new MultiModelFactory();
 
     /**

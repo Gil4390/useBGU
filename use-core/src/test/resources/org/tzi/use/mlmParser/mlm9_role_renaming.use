@@ -35,6 +35,10 @@ MLM ABCD
       D[*] role dd1
     end
 
+    association cd2 between
+      C[*] role cc2
+      D[*] role dd2
+    end
 
 mediator AB < NONE
 end
