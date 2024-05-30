@@ -242,7 +242,7 @@ public class USECompilerMLMTest extends TestCase {
     }
 
 
-    public void testCompileMultiRemoveModelSpecification1() {
+    public void testCompile_mlm8_multipleLevels_1_Specification() {
         MMultiLevelModel mlmResult = null;
 
         File multiFile = new File(TEST_PATH + "/mlm8_multipleLevels_1.use");
@@ -268,7 +268,7 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompileMultiRemoveModelSpecification2() {
+    public void testCompile_mlm8_multipleLevels_2_Specification() {
         MMultiLevelModel mlmResult = null;
 
         File multiFile = new File(TEST_PATH + "/mlm8_multipleLevels_2.use");
@@ -294,7 +294,7 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompileMultiRemoveModelSpecification3() {
+    public void testCompile_mlm9_role_renaming5_Specification() {
         MMultiLevelModel mlmResult = null;
 
         File multiFile = new File(TEST_PATH + "/mlm9_role_renaming5.use");
@@ -313,7 +313,7 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompileMultiRemoveModelSpecification4() {
+    public void testCompile_mlm9_role_renaming_Specification() {
         MMultiLevelModel mlmResult = null;
 
         File multiFile = new File(TEST_PATH + "/mlm9_role_renaming.use");
@@ -326,6 +326,32 @@ public class USECompilerMLMTest extends TestCase {
             specStream1.close();
 
             UseMLMApi api = new UseMLMApi(mlmResult);
+
+            System.out.println(api.getClassSafe("CD@C").navigableEnds());
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm9_role_renaming3_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming3.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseMLMApi api = new UseMLMApi(mlmResult);
+
+            assertEquals("{bb1=bb1, bb3=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
 
             System.out.println(api.getClassSafe("CD@C").navigableEnds());
         } catch (Exception e) {
