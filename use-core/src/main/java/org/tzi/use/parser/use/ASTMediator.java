@@ -15,17 +15,24 @@ public class ASTMediator extends ASTAnnotatable{
     private final Token fName;
     private final Token fParentModelName;
     private final List<ASTClabject> fClabjects;
+
+    private final List<Token> fRemovedAssociations;
     private final List<ASTAssoclink> fAssoclinks;
 
     public ASTMediator(Token fName, Token fParentModelName) {
         this.fName = fName;
         this.fParentModelName = fParentModelName;
         fClabjects = new ArrayList<>();
+        fRemovedAssociations = new ArrayList<>();
         fAssoclinks = new ArrayList<>();
     }
 
     public void addClabject(ASTClabject astClabject){
         this.fClabjects.add(astClabject);
+    }
+
+    public void addRemovedAssociation(Token removedAssociation){
+        this.fRemovedAssociations.add(removedAssociation);
     }
 
     public void addAssoclink(ASTAssoclink astAssocLink){
@@ -55,6 +62,33 @@ public class ASTMediator extends ASTAnnotatable{
             mMediator.addClabject(clabjectInstance);
             mlmContext.model().addGeneralization(clabjectInstance);
         }
+
+        List<MAssociation> inheritedAssociations = new ArrayList<>();
+
+        for (MAssociation association : parentModel.associations()){
+            //add all associations in parent class check that it's associated classes are clabjects of the parent model
+            if (association.associatedClasses().stream()
+                    .allMatch(c -> mMediator.clabjects().stream().map(MClabject::parent).anyMatch(p -> p.equals(c)))){
+                inheritedAssociations.add(association);
+            }
+            inheritedAssociations.add(association);
+        }
+        for (Token removedAssociation : fRemovedAssociations){
+            MAssociation association = parentModel.getAssociation(removedAssociation.getText());
+            if (association == null){
+                throw new Exception("Association `"+removedAssociation.getText()+"' does not exist.");
+            }
+            inheritedAssociations.remove(association);
+        }
+
+        for (MAssociation inheritedAssociation : inheritedAssociations){
+            mMediator.addInheritedAssociation(inheritedAssociation);
+        }
+
+        //assoclinks can be ether new or redefined
+        //new assoclinks childName will not be in the current model's associations
+        //redefined assoclinks childName will be in the current model's associations
+
         for (ASTAssoclink astAssoclink : fAssoclinks){
             MAssoclink assoclink = astAssoclink.gen(mlmContext);
 

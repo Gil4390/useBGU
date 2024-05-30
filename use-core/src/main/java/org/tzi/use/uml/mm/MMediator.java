@@ -9,12 +9,15 @@ public class MMediator extends MModelElementImpl {
     private MModel currentModel;
     private MModel parentModel;
     private final Map<String, MClabject> fClabjects;
+
+    private final Map<String, MAssociation> fInheritedAssociations;
     private final Map<String, MAssoclink> fAssocLinks;
 
     public MMediator(String name) {
         super(name);
         this.fName = name;
         fClabjects = new HashMap<>();
+        fInheritedAssociations = new HashMap<>();
         fAssocLinks = new HashMap<>();
     }
 
@@ -40,6 +43,10 @@ public class MMediator extends MModelElementImpl {
 
     public MClabject getClabject(String name){
         return this.fClabjects.get(name);
+    }
+
+    public void addInheritedAssociation(MAssociation association) {
+        fInheritedAssociations.put(association.name(), association);
     }
 
     public void addAssocLink(MAssoclink assoclink) {
@@ -68,6 +75,10 @@ public class MMediator extends MModelElementImpl {
 
     public Collection<MClabject> clabjects(){
         return fClabjects.values();
+    }
+
+    public Collection<MAssociation> inheritedAssociations(){
+        return fInheritedAssociations.values();
     }
 
     public Collection<MAssoclink> assocLinks(){

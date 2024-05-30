@@ -11,7 +11,11 @@
                          (mediator)*
                          EOF
 
-    mediator ::= "mediator" ID < ID (clabject | assoc)* "end"
+    mediator ::= "mediator" ID < ID
+            (associations
+                (~assocName)+
+            )?
+            (clabject | assoc)* "end"
 
     clabject := "clabject" ID ":" ID
                           (attribute_rename)?
@@ -38,6 +42,9 @@ multi_level_model returns [ASTMultiLevelModel n]
 mediator returns [ASTMediator n]
 :
     'mediator' medName=IDENT '<' parentModelName=IDENT {$n = new ASTMediator($medName, $parentModelName);}
+    (associations
+        ( '~' assocName=IDENT {$n.addRemovedAssociation($assocName);} )+
+    )?
     ((c = clabject {$n.addClabject($c.n);}) |
      (a = assoclink {$n.addAssoclink($a.n);})
     )*
