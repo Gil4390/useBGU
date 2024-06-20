@@ -35,8 +35,4 @@ public class MInternalAssociationEnd extends MAssociationEnd{
     public String getOriginalName(){
         return super.name();
     }
-
-    public boolean isRenamed(){
-        return newName != null && !newName.equals(super.name());
-    }
 }
