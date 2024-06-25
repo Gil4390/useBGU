@@ -51,7 +51,6 @@ public class ASTMediator extends ASTAnnotatable{
 
         for (ASTClabject astClabject : fClabjects) {
             MClabject clabjectInstance = astClabject.gen(mlmContext);
-
             mMediator.addClabject(clabjectInstance);
             mlmContext.model().addGeneralization(clabjectInstance);
         }
@@ -81,6 +80,9 @@ public class ASTMediator extends ASTAnnotatable{
             mMediator.addAssocLink(assoclink);
             mlmContext.model().addGeneralization(assoclink);
 
+        }
+        for(ASTClabject astClabject : fClabjects){
+            astClabject.genClabjectRoles(mlmContext);
         }
         return mMediator;
     }

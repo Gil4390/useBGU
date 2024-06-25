@@ -30,8 +30,12 @@ public class MultiLevelModelFactory extends MultiModelFactory {
         return new MAttributeRenaming(attr, newName);
     }
 
-    public MRoleRenaming createRoleRenaming(MAssociationEnd endp, MAssociationEnd endc, String newName){
-        return new MRoleRenaming((MInternalAssociationEnd)endp, (MInternalAssociationEnd)endc, newName);
+    public MRoleRenaming createRoleRenaming(MAssociationEnd endp,String newName){
+        return new MRoleRenaming((MInternalAssociationEnd)endp, newName);
+    }
+
+    public MRoleBinding createRoleBinding(MAssociationEnd childAssociationEnd, MAssociationEnd parentAssociationEnd){
+        return new MRoleBinding(childAssociationEnd, parentAssociationEnd);
     }
 
     public MAssoclink createAssoclink(MAssociation child, MAssociation parent) {

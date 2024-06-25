@@ -15,11 +15,11 @@
 
     clabject := "clabject" ID ":" ID
                           (attribute_rename)?
+                          (roles_rename)?
 
     attribute_rename := "attributes" ( (ID ":" ID) | ("~" ID) ) *
 
     assoclink := "association" ID ":" ID
-                     "role_renaming"
                          ID ":" ID
                          ID ":" ID
 */
@@ -52,6 +52,11 @@ clabject returns [ASTClabject n]
         | ( '~' oldAtrName=IDENT {$n.addAttributeRemoving($oldAtrName);} )
         )*
     )?
+    ('roles'
+        ( (oldRoleName=IDENT '->' newRoleName=IDENT {$n.addRoleRenaming($oldRoleName, $newRoleName);})
+        | ( '~' oldRoleName=IDENT {$n.addRoleRemoving($oldRoleName);} )
+        )*
+    )?
     'end'
     ;
 
@@ -59,10 +64,10 @@ assoclink returns [ASTAssoclink n]
 :
     'assoclink'
     childAssocName=IDENT COLON parentAssocName=IDENT {$n = new ASTAssoclink(childAssocName, parentAssocName);}
-    ('role_renaming'
-        (oldRoleName1=IDENT '->' newRoleName1=IDENT {$n.addRoleRenaming1($oldRoleName1, $newRoleName1);})
-        (oldRoleName2=IDENT '->' newRoleName2=IDENT {$n.addRoleRenaming2($oldRoleName2, $newRoleName2);})?
-    )?
+    (
+        (childRoleName1=IDENT '->' parentRoleName1=IDENT {$n.addRoleBinding1($childRoleName1, $parentRoleName1);})
+        (childRoleName2=IDENT '->' parentRoleName2=IDENT {$n.addRoleBinding2($childRoleName2, $parentRoleName2);})
+    )
     'end'
     ;
 

@@ -226,21 +226,21 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
 
-    public String getNameOfAssocEnd(MAssociationEnd mEndP1) throws Exception {
-        MAssociationEnd end = mEndP1;
-        MAssociation assoc = end.association();
-        MModel currentModel = assoc.model();
-        MModel parentModel = getParentModel(currentModel.name());
-        if (parentModel == null){
-            return end.name();
-        }
-        MAssoclink assoclink = getMediator(currentModel.name()).getAssoclink("ASSOCLINK_" + assoc.name() + "_");
-        String name = end.name();
-        for (MRoleRenaming roleRenaming : assoclink.getRoleRenaming()){
-            if (roleRenaming.assocEndC().name().equals(name)){
-                return roleRenaming.newName();
-            }
-        }
-        return name;
-    }
+//    public String getNameOfAssocEnd(MAssociationEnd mEndP1) throws Exception {
+//        MAssociationEnd end = mEndP1;
+//        MAssociation assoc = end.association();
+//        MModel currentModel = assoc.model();
+//        MModel parentModel = getParentModel(currentModel.name());
+//        if (parentModel == null){
+//            return end.name();
+//        }
+//        MAssoclink assoclink = getMediator(currentModel.name()).getAssoclink("ASSOCLINK_" + assoc.name() + "_");
+//        String name = end.name();
+//        for (MRoleRenaming roleRenaming : assoclink.getRoleRenaming()){
+//            if (roleRenaming.assocEndC().name().equals(name)){
+//                return roleRenaming.newName();
+//            }
+//        }
+//        return name;
+//    }
 }

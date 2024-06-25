@@ -360,4 +360,51 @@ public class USECompilerMLMTest extends TestCase {
             fail("Unexpected exception");
         }
     }
+
+    public void testCompile_mlm10_clabject_role_renaming1_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm10_role_renaming.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseMLMApi api = new UseMLMApi(mlmResult);
+
+            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
+            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm10_clabject_role_renaming2_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm10_role_renaming2.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseMLMApi api = new UseMLMApi(mlmResult);
+
+//            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
+//            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 public class MInternalAssociationEnd extends MAssociationEnd{
     String newName;
+    private MClass renamedClass;
     public MInternalAssociationEnd(MClass cls, String rolename, MMultiplicity mult, int kind, boolean isOrdered, List<VarDecl> qualifiers) {
         super(cls, rolename, mult, kind, isOrdered, qualifiers);
     }
@@ -14,8 +15,9 @@ public class MInternalAssociationEnd extends MAssociationEnd{
         super(cls, rolename, mult, kind, isOrdered, isExplicitNavigable);
     }
 
-    public void setNewName(String newName){
+    public void setNewName(String newName, MClass renamedClass){
         this.newName = newName;
+        this.renamedClass = renamedClass;
     }
 
     public String name(){
@@ -36,7 +38,7 @@ public class MInternalAssociationEnd extends MAssociationEnd{
         return super.name();
     }
 
-    public boolean isRenamed(){
-        return newName != null && !newName.equals(super.name());
+    public boolean isRenamed(MClass cls){
+        return newName != null && renamedClass.equals(cls) && !newName.equals(super.name());
     }
 }

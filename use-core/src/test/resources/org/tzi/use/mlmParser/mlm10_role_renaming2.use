@@ -1,0 +1,73 @@
+MLM ABCD
+
+  model AB
+    class A
+    attributes
+      a : String
+      a3 : String
+    end
+
+    class B
+    end
+
+    association ab1 between
+      A[*] role aa1
+      B[*] role bb1
+    end
+
+    association ab2 between
+      A[*] role aa2
+      B[*] role bb2
+    end
+
+    association ab3 between
+      A[*] role aa3
+      B[*] role bb3
+    end
+
+  model CD
+    class C
+    end
+
+    class D
+    end
+
+    class E
+    end
+
+    association cd1 between
+      C[*] role cc1
+      D[*] role dd1
+    end
+
+    association cd2 between
+      C[*] role cc2
+      D[*] role dd2
+    end
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+    clabject C : A
+        attributes
+            a-> aa
+            ~a3
+        roles
+            bb1 -> ee5
+
+    end
+    clabject D : B
+    end
+
+
+    assoclink cd1 : ab1
+        dd1 -> bb1
+        cc1 -> aa1
+
+    end
+
+end
+
+
+

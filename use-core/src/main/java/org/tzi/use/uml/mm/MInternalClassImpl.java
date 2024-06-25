@@ -101,7 +101,7 @@ public class MInternalClassImpl extends MClassImpl{
             }
         }
 
-        res.entrySet().removeIf(entry -> parentEnds.containsKey(entry.getKey()));
+        //res.entrySet().removeIf(entry -> parentEnds.containsKey(entry.getKey()));
 
         Set<String> keysToRemove = new HashSet<>();
         Map<String, MNavigableElement> newEntries = new HashMap<>();
@@ -112,7 +112,7 @@ public class MInternalClassImpl extends MClassImpl{
             MNavigableElement endElement = entry.getValue();
             if (endElement instanceof MInternalAssociationEnd) {
                 MInternalAssociationEnd internalEnd = (MInternalAssociationEnd) endElement;
-                if (internalEnd.isRenamed()) {
+                if (internalEnd.isRenamed(this)) {
                     keysToRemove.add(entry.getKey());
                     newEntries.put(internalEnd.newName, endElement);
                 }
