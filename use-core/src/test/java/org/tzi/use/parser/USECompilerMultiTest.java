@@ -3,10 +3,12 @@ package org.tzi.use.parser;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.tzi.use.api.UseMultiModelApi;
+import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
+import org.tzi.use.parser.use.USECompilerMLM;
 import org.tzi.use.parser.use.USECompilerMulti;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.expr.Evaluator;
@@ -28,6 +30,7 @@ public class USECompilerMultiTest extends TestCase {
     private static final boolean VERBOSE = false;
 
     private static File TEST_PATH;
+    private static File TEST_PATH_PAPER;
     private static File TEST_PATH_REGULAR;
     private static File EXAMPLES_PATH;
     private static File TEST_EXPR_FILE;
@@ -35,6 +38,7 @@ public class USECompilerMultiTest extends TestCase {
     static {
         try {
             TEST_PATH = new File(ClassLoader.getSystemResource("org/tzi/use/multiParser").toURI());
+            TEST_PATH_PAPER = new File(ClassLoader.getSystemResource("org/tzi/use/mlmPaper").toURI());
             TEST_PATH_REGULAR = new File(ClassLoader.getSystemResource("org/tzi/use/parser").toURI());
             EXAMPLES_PATH = new File(ClassLoader.getSystemResource("examples").toURI());
             TEST_EXPR_FILE = new File(ClassLoader.getSystemResource("org/tzi/use/parser/test_expr.in").toURI());
@@ -760,6 +764,33 @@ public class USECompilerMultiTest extends TestCase {
         } catch (Exception e) {
             // This can be ignored
             fail(e.getMessage());
+        }
+    }
+
+    public void testCompile_multi_figure3_Specification() {
+        MMultiModel multiModelResult = null;
+
+        File multiFile = new File(TEST_PATH_PAPER + "/multi-model-figure-3-test.use");
+        StringOutputStream errStr = new StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            multiModelResult = USECompilerMulti.compileMultiSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiModelFactory());
+            specStream1.close();
+
+            MSystem system = new MSystem( multiModelResult );
+
+            UseSystemApi systemApi = UseSystemApi.create(system, false);
+
+            boolean res = systemApi.checkState();
+             systemApi.checkState();
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
         }
     }
 

@@ -107,4 +107,4 @@ inter-constraints
 context Computer_product@Application inv PCInstallation:
     syst.hardw->
     select(h | h.oclIsTypeOf(Computer_product@Computer) )->
-    collect(c | c.maintained)->includesAll(self.installed.pc)
+    collect(c | c.oclAsType(Computer_product@Computer).maintained)->includesAll(self.installed.pc)
