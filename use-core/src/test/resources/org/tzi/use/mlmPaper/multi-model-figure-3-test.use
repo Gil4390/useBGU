@@ -2,6 +2,8 @@ multi_model ABCD
 
   model Computer_product
     class Hardware
+      attributes
+        testDate: Integer
     end
 
     class Computer < Hardware
@@ -38,19 +40,21 @@ multi_model ABCD
       Hardware[0..*] role parent
     end
 
-    --constraints
-    --context Application inv ApplSysCompat:
-    --  self.syst.hardw->includesAll(self.hardw)
+    constraints
+    context Application inv ApplSysCompat:
+      self.syst.hardw->includesAll(self.hardw)
 
 
   model PC
 
     class Device
+      attributes
+        manuDate: Integer
     end
 
     class PC
       attributes
-        maker: String
+        testDate: Integer
     end
 
     class Desktop < PC
@@ -87,9 +91,9 @@ multi_model ABCD
       PCOS[1..*] role os
     end
 
-    --constraints
-    --context Device inv DeviceDates:
-    --  self.parent->forAll(p | p.handler.testDate > manuDate)
+    constraints
+    context Device inv DeviceDates:
+      self.parent.testDate->forAll(d| d > manuDate)
 
 
 inter-associations
