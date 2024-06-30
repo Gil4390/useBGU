@@ -1,0 +1,113 @@
+multi_model ABCD
+
+  model Computer_product
+    class Hardware
+    end
+
+    class Computer < Hardware
+      attributes
+        maker: String
+    end
+
+    class Peripheral < Hardware
+    end
+
+    class Software
+    end
+
+    class System < Software
+      attributes
+        protected: Boolean
+    end
+
+    class Application < Software
+    end
+
+    association hardwSoftw between
+      Hardware[0..*] role hardw
+      Software[0..*] role softw
+    end
+
+    association compatibility between
+      System[1..*] role syst
+      Application[1..*] role appl
+    end
+
+    association contain between
+      Hardware[0..*] role part
+      Hardware[0..*] role parent
+    end
+
+    constraints
+    context Application inv ApplSysCompat:
+      self.syst.hardw->includesAll(self.hardw)
+
+
+  model PC
+
+    class Device
+    end
+
+    class PC
+      attributes
+        maker: String
+    end
+
+    class Desktop < PC
+    end
+
+    class Laptop < PC
+    end
+
+    class PCAppl
+    end
+
+    class PCOS
+      attributes
+        openSource: Boolean
+    end
+
+    association pcCon between
+      Device[0..*] role part
+      PC[0..*] role parent
+    end
+
+    association pcAppl between
+      PC[0..*] role hardw
+      PCAppl[0..*] role softw
+    end
+
+    association pcCompat between
+      PCAppl[0..*] role appl
+      PCOS[0..*] role syst
+    end
+
+    association pcOs between
+      PC[0..*] role pc
+      PCOS[1..*] role os
+    end
+
+    context Device inv DeviceDates:
+      self.parent->forAll(p | p.handler.testDate > manuDate)
+
+
+inter-associations
+association connection between
+    Computer_product@Computer[1] role handler
+    PC@PC[1] role maintained
+end
+
+association installation between
+    Computer_product@Application[1] role installer
+    PC@PCOS[1..*] role installed
+end
+
+inter-constraints
+context Computer_product.Application 
+  inv PCInstallation:
+    self.syst.hardw
+    ->select(h | h.oclIsTypeOf(Computer_product.Computer)
+      and self.installed->exists(pco | pco.pc->includes(h.maintained)) )
+    ->notEmpty() 
+
+    

@@ -361,9 +361,12 @@ public class ModelBrowser extends JPanel
             fMbs.sortPrePostConditions(fModel.prePostConditions());
         addChildNodes( top, "Pre-/Postconditions", sortedConditions );
 
-        final Collection<MMediator> sortedMediators =
+        if(fModel instanceof MMultiLevelModel) {
+            final Collection<MMediator> sortedMediators =
                 fMbs.sortMediators( new ArrayList<MMediator>(((MMultiLevelModel)fModel).mediators() ));
-        addChildNodes( top, "Mediators", sortedMediators );
+            addChildNodes( top, "Mediators", sortedMediators );
+        }
+
 
 		Set<Map.Entry<String, Collection<?>>> modelCollectionEntrySet = this.modelCollections.entrySet();
 				
