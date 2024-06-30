@@ -38,9 +38,9 @@ multi_model ABCD
       Hardware[0..*] role parent
     end
 
-    constraints
-    context Application inv ApplSysCompat:
-      self.syst.hardw->includesAll(self.hardw)
+    --constraints
+    --context Application inv ApplSysCompat:
+    --  self.syst.hardw->includesAll(self.hardw)
 
 
   model PC
