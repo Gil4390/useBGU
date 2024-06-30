@@ -42,6 +42,15 @@ public class MMediator extends MModelElementImpl {
         return this.fClabjects.get(name);
     }
 
+    public MClabject getClabject(MClass child, MClass parent){
+        for(MClabject clabject : fClabjects.values()){
+            if(clabject.child().equals(child) && clabject.parent().equals(parent)){
+                return clabject;
+            }
+        }
+        return null;
+    }
+
     public void addAssocLink(MAssoclink assoclink) {
         fAssocLinks.put(assoclink.name(), assoclink);
     }

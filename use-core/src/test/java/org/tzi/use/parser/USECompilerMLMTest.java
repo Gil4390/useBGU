@@ -25,6 +25,8 @@ public class USECompilerMLMTest extends TestCase {
     private static final boolean VERBOSE = false;
 
     private static File TEST_PATH;
+    private static File TEST_PATH_PAPER;
+
     private static File TEST_PATH_REGULAR;
     private static File EXAMPLES_PATH;
     private static File TEST_EXPR_FILE;
@@ -32,6 +34,7 @@ public class USECompilerMLMTest extends TestCase {
     static {
         try {
             TEST_PATH = new File(ClassLoader.getSystemResource("org/tzi/use/mlmParser").toURI());
+            TEST_PATH_PAPER = new File(ClassLoader.getSystemResource("org/tzi/use/mlmPaper").toURI());
             TEST_PATH_REGULAR = new File(ClassLoader.getSystemResource("org/tzi/use/parser").toURI());
             EXAMPLES_PATH = new File(ClassLoader.getSystemResource("examples").toURI());
             TEST_EXPR_FILE = new File(ClassLoader.getSystemResource("org/tzi/use/parser/test_expr.in").toURI());
@@ -398,6 +401,29 @@ public class USECompilerMLMTest extends TestCase {
 
             UseMLMApi api = new UseMLMApi(mlmResult);
 
+//            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
+//            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_clabject_figure_3_test_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH_PAPER + "/mlm-figure-1-test.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseMLMApi api = new UseMLMApi(mlmResult);
+            System.out.println(api);
 //            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
 //            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
         } catch (Exception e) {

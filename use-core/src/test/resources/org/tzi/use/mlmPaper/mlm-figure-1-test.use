@@ -1,6 +1,6 @@
-multi_model ABCD
+MLM ABCD
 
-  model Computer_product
+model Computer_product
     class Hardware
     end
 
@@ -38,19 +38,17 @@ multi_model ABCD
       Hardware[0..*] role parent
     end
 
-    constraints
-    context Application inv ApplSysCompat:
-      self.syst.hardw->includesAll(self.hardw)
+    --constraints
+    --context Application inv ApplSysCompat:
+    --  self.syst.hardw->includesAll(self.hardw)
 
 
-  model PC
+model PC
 
     class Device
     end
 
     class PC
-      attributes
-        maker: String
     end
 
     class Desktop < PC
@@ -103,8 +101,48 @@ association installation between
     PC@PCOS[1..*] role installed
 end
 
-inter-constraints
-context Computer_product@Application inv PCInstallation:
-    syst.hardw->
-    select(h | h.oclIsTypeOf(Computer_product@Computer) )->
-    collect(c | c.oclAsType(Computer_product@Computer).maintained)->includesAll(self.installed.pc)
+--inter-constraints
+--context Computer_product@Application inv PCInstallation:
+--    syst.hardw->
+--    select(h | h.oclIsTypeOf(Computer_product@Computer) )->
+--    collect(c | c.maintained)->includesAll(self.installed.pc)
+
+
+mediator Computer_product < NONE
+end
+
+mediator PC < Computer_product
+
+   clabject Device : Peripheral
+   end
+
+   clabject PC : Computer
+   end
+
+   clabject PCOS : System
+   end
+
+   clabject PCAppl : Application
+   end
+
+   assoclink pcCon : contain
+        parent->parent
+        part->part
+   end
+
+   assoclink pcAppl : hardwSoftw
+        softw->softw
+        hardw->hardw
+   end
+
+   assoclink pcOs : hardwSoftw
+        os->softw
+        pc->hardw
+   end
+
+   assoclink pcCompat : compatibility
+        appl->appl
+        syst->syst
+   end
+
+end
