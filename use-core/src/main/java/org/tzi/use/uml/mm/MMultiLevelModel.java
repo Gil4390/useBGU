@@ -38,7 +38,7 @@ public class MMultiLevelModel extends MMultiModel {
             }
             //look for inter associations
             for (MAssociation association : multiModel.interAssociations()) {
-                this.addAssociation(association);
+                this.fAssociations.put(association.name(), association);
             }
             //look for inter invariants
             for (MClassInvariant invariant : multiModel.interConstraints()) {
@@ -49,6 +49,8 @@ public class MMultiLevelModel extends MMultiModel {
         }
         fMediators = new HashMap<>();
     }
+
+
 
     @Override
     public void addModel(MModel model) throws Exception {
