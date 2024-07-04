@@ -2,6 +2,8 @@ MLM ABCD
 
 model Computer_product
     class Hardware
+      attributes
+        testDate: Integer
     end
 
     class Computer < Hardware
@@ -38,14 +40,14 @@ model Computer_product
       Hardware[0..*] role parent
     end
 
-    --constraints
-    --context Application inv ApplSysCompat:
-    --  self.syst.hardw->includesAll(self.hardw)
-
-
-model PC
+    constraints
+    context Application inv ApplSysCompat:
+      self.syst.hardw->includesAll(self.hardw)
+ model PC
 
     class Device
+      attributes
+        manuDate: Integer
     end
 
     class PC
@@ -87,8 +89,7 @@ model PC
 
     --constraints
     --context Device inv DeviceDates:
-    --  self.parent->forAll(p | p.handler.testDate > manuDate)
-
+      --self.parent.testDate->forAll(d| d > manuDate)
 
 inter-associations
 association connection between
@@ -96,17 +97,17 @@ association connection between
     PC@PC[1] role maintained
 end
 
+
 association installation between
     Computer_product@Application[1] role installer
     PC@PCOS[1..*] role installed
 end
 
---inter-constraints
---context Computer_product@Application inv PCInstallation:
---    syst.hardw->
---    select(h | h.oclIsTypeOf(Computer_product@Computer) )->
---    collect(c | c.maintained)->includesAll(self.installed.pc)
-
+inter-constraints
+context Computer_product@Application inv PCInstallation:
+    syst.hardw->
+    select(h | h.oclIsTypeOf(Computer_product@Computer) )->
+    collect(c | c.oclAsType(Computer_product@Computer).maintained)->includesAll(self.installed.pc)
 
 mediator Computer_product < NONE
 end
