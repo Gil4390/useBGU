@@ -42,7 +42,7 @@ multi_level_model returns [ASTMultiLevelModel n]
 mediator returns [ASTMediator n]
 :
     'mediator' medName=IDENT '<' parentModelName=IDENT {$n = new ASTMediator($medName, $parentModelName);}
-    (associations
+    ('associations'
         ( '~' assocName=IDENT {$n.addRemovedAssociation($assocName);} )+
     )?
     ((c = clabject {$n.addClabject($c.n);}) |

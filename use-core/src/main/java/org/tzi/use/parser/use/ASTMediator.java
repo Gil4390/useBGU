@@ -101,15 +101,15 @@ public class ASTMediator extends ASTAnnotatable{
             if (childClass1 == null || childClass2 == null || parentClass1 == null || parentClass2 == null) {
                 throw new Exception("Child class or parent class is not defined in the model");
             }
-            MClabject clabject1 = mMediator.getClabject("CLABJECT_" + childClass1.name() + "_" + parentClass1.name());
-            MClabject clabject2 = mMediator.getClabject("CLABJECT_" + childClass2.name() + "_" + parentClass2.name());
-            if(clabject1 == null || clabject2 == null) {
-                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not defined as a clabject in the mediator: "+mMediator.name());
-            }
-
-            if (!clabject1.parent().equals(parentClass1) || !clabject2.parent().equals(parentClass2)) {
-                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not instantiating the appropriate class int the mediator: "+mMediator.name());
-            }
+//            MClabject clabject1 = mMediator.getClabject("CLABJECT_" + childClass1.name() + "_" + parentClass1.name());
+//            MClabject clabject2 = mMediator.getClabject("CLABJECT_" + childClass2.name() + "_" + parentClass2.name());
+//            if(clabject1 == null || clabject2 == null) {
+//                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not defined as a clabject in the mediator: "+mMediator.name());
+//            }
+//
+//            if (!clabject1.parent().equals(parentClass1) || !clabject2.parent().equals(parentClass2)) {
+//                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not instantiating the appropriate class int the mediator: "+mMediator.name());
+//            }
 
 
             mMediator.addAssocLink(assoclink);

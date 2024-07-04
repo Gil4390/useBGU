@@ -91,7 +91,7 @@ public class MInternalClassImpl extends MClassImpl{
 //    }
 
     public Map<String, MNavigableElement> navigableEnds() {
-        if (fMultiModel == null)
+        if (fMultiModel == null || ((MMultiLevelModel)this.fMultiModel).getMediator(this.model.name()) == null)
             return super.navigableEnds();
 
         Map<String, MNavigableElement> res = new TreeMap<String, MNavigableElement>();
@@ -101,17 +101,6 @@ public class MInternalClassImpl extends MClassImpl{
         for (MClass superclass : allParents() ) {
             res.putAll(superclass.navigableEnds());
         }
-
-//        List<MAssociation> assocLinksAssociations =((MMultiLevelModel)this.fMultiModel).getMediator(this.model.name()).assocLinks()
-//                .stream().map(assocLink -> (MAssociation)assocLink.child()).collect(Collectors.toList()); //{cd1}
-//
-//
-//        List<MAssociation> cAssocLinksAssociations = this.associations().stream()
-//                .filter(assocLinksAssociations::contains).collect(Collectors.toList()); //{cd1}
-//
-//        //super.navigableEnds() // {dd, dd2, bb}
-//        List<MAssociationEnd> ends = super.navigableEnds().values().stream().map(end -> (MAssociationEnd)end)
-//                .filter(end -> cAssocLinksAssociations.contains(end.association())).collect(Collectors.toList()); //{dd}
 
         List<String> oldRoleName = new ArrayList<>();
         List<String> newRoleName = new ArrayList<>();
@@ -127,9 +116,6 @@ public class MInternalClassImpl extends MClassImpl{
                 res.put(newRoleName.get(oldRoleName.indexOf(end)), res.get(end));
                 res.remove(end);
             }
-//            // end = {dd}
-//            MAssoclink al = end.assocLink;
-//            result.add(al.getOriginalEnd(end)); //{bb}
         }
 
         return res;
