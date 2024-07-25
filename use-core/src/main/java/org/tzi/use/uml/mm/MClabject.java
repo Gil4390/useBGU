@@ -78,6 +78,11 @@ public class MClabject extends MGeneralization {
     }
 
     @Override
+    public String toString(){
+        return name();
+    }
+
+    @Override
     public boolean isReflexive() {
         return false;
     }
