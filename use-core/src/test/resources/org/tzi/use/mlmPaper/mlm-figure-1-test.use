@@ -87,9 +87,9 @@ model Computer_product
       PCOS[1..*] role os
     end
 
-    --constraints
-    --context Device inv DeviceDates:
-      --self.parent.testDate->forAll(d| d > manuDate)
+    constraints
+    context Device inv DeviceDates:
+      self.parent.testDate->forAll(d| d > manuDate)
 
 inter-associations
 association connection between
@@ -118,9 +118,17 @@ mediator PC < Computer_product
    end
 
    clabject PC : Computer
+        attributes
+            ~relatedStandard
+        roles
+            softw -> os
    end
 
    clabject PCOS : System
+        attributes
+            protected -> openSource
+        roles
+            hardw -> pc
    end
 
    clabject PCAppl : Application

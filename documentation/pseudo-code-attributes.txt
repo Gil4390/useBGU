@@ -1,0 +1,32 @@
+function allAttributes()
+    // Start with local attributes
+    init result = set containing local attributes
+
+    // Add attributes from all super classes
+    foreach parent in allParents()
+        edge = edge between this class and parent class from the MultiModel generalization graph
+
+        if edge doesnt exists, continue to the next parent class
+
+        if edge is an instance of MClabject
+            parent_attributes = get all attributes from the parent class
+
+            foreach removed_attribute in edge.removedAttributes()
+                parent_attriibutes.remove(removed_attribute)
+
+            foreach renamed_attribute in edge.renamedAttributes()
+                old_attribute = get the old attribute from the renamed_attribute
+                parent_attributes.remove(old_attribute)
+
+                // Add a new attribute to parent attributes with the new name and old type
+                new_attribute = new MAttribute(renamed_attribute.newName, old_attriibute.type)
+                parent_attributes.add(new_attribute)
+                
+            result.addAll(parent_attributes)
+        else
+            // Regular generalization
+            result.addAll(parent.allAttributes())
+
+    return result as a list
+
+

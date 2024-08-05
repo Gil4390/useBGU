@@ -2,6 +2,7 @@ package org.tzi.use.parser;
 
 import junit.framework.TestCase;
 import org.tzi.use.api.UseMLMApi;
+import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
@@ -357,6 +358,31 @@ public class USECompilerMLMTest extends TestCase {
             assertEquals("{bb1=bb1, bb3=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
 
             System.out.println(api.getClassSafe("CD@C").navigableEnds());
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm9_role_renaming2_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming2.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseMLMApi api = new UseMLMApi(mlmResult);
+            System.out.println("Started Debugging");
+            System.out.println(mlmResult.checkState());
+//            assertEquals("{bb1=bb1, bb3=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
+
+//            System.out.println(api.getClassSafe("CD@C").navigableEnds());
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();
