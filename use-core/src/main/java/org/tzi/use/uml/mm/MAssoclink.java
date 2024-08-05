@@ -24,4 +24,8 @@ public class MAssoclink extends MGeneralization {
         return "ASSOCLINK_" + fChild.name() + "_" + fParent.name();
     }
 
+    @Override
+    public String toString(){
+        return name();
+    }
 }
