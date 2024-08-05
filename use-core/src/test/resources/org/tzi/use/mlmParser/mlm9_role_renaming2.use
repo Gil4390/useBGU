@@ -14,7 +14,7 @@ MLM ABCD
     end
 
     association ab1 between
-      A[1] role aa1
+      A[*] role aa1
       B[*] role bb1
     end
 
@@ -40,6 +40,11 @@ MLM ABCD
       inv GG:
         self.dd1->forAll( it | it.d = 'd')
 
+
+inter-constraints
+context CD@C
+  inv GG2:
+    self.bb1->forAll( it | it.b1 = 'b')
 
 mediator AB < NONE
 end

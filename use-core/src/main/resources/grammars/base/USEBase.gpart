@@ -17,11 +17,13 @@
                           (attribute_rename)?
                           (roles_rename)?
 
-    attribute_rename := "attributes" ( (ID ":" ID) | ("~" ID) ) *
+    attribute_rename := "attributes" ( (ID "->" ID) | ("~" ID) ) *
+
+    roles_rename := "roles" ( (ID "->" ID) | ("~" ID) ) *
 
     assoclink := "association" ID ":" ID
-                         ID ":" ID
-                         ID ":" ID
+                         ID "->" ID
+                         ID "->" ID
 */
 
 multi_level_model returns [ASTMultiLevelModel n]

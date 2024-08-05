@@ -64,6 +64,7 @@ public class USECompilerMulti {
                 // Generate code
                 MultiContext ctx = new MultiContext(inName, err, null, factory);
                 multi_model = astMultiModel.gen(ctx);
+                astMultiModel.genInterConstraints(ctx);
                 if (ctx.errorCount() > 0 )
                     multi_model = null;
             }

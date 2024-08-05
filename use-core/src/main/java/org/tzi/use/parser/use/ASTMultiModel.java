@@ -174,9 +174,9 @@ public class ASTMultiModel extends ASTModel {
             ac.genConstraints(multiCtx);
         }
 
-        for(ASTConstraintDefinition inv : fConstraints) {
-            inv.gen(multiCtx);
-        }
+//        for(ASTConstraintDefinition inv : fConstraints) {
+//            inv.gen(multiCtx);
+//        }
 
         for (ASTPrePost ppc : fPrePosts) {
             try {
@@ -195,6 +195,12 @@ public class ASTMultiModel extends ASTModel {
         }
 
         return mMultiModel;
+    }
+
+    public void genInterConstraints(MultiContext multiCtx){
+        for(ASTConstraintDefinition inv : fConstraints) {
+            inv.gen(multiCtx);
+        }
     }
 
     public void addInterClass(ASTClass cls) {

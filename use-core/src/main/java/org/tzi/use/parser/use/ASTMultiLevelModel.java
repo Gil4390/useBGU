@@ -68,6 +68,10 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 mlmContext.reportError(fName,e);
             }
         }
+
+        mlmContext.setModel(mMultiLevelModel);
+        fMultiModel.genInterConstraints(mlmContext);
+
         return mMultiLevelModel;
     }
 
