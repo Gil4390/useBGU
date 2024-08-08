@@ -43,8 +43,8 @@ model Computer_product
     constraints
     context Application inv ApplSysCompat:
       self.syst.hardw->includesAll(self.hardw)
- model PC
 
+model PC
     class Device
       attributes
         manuDate: Integer
@@ -87,9 +87,9 @@ model Computer_product
       PCOS[1..*] role os
     end
 
-    constraints
-    context Device inv DeviceDates:
-      self.parent.testDate->forAll(d| d > manuDate)
+--    constraints
+--    context Device inv DeviceDates:
+--      self.parent.testDate->forAll(d| d > manuDate)
 
 inter-associations
 association connection between
@@ -118,8 +118,8 @@ mediator PC < Computer_product
    end
 
    clabject PC : Computer
-        attributes
-            ~relatedStandard
+--        attributes
+--            ~relatedStandard
         roles
             softw -> os
    end

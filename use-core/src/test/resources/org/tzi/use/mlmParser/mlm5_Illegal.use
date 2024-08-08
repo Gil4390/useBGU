@@ -71,19 +71,16 @@ mediator CD < AB
     end
 
     assoclink cd1 : ab1
-      role_renaming
         aa1 -> cc1
         bb1 -> bb1
     end
 
     assoclink ce1 : ab1
-     role_renaming
        aa1 -> cc1
        bb1 -> ee1
     end
 
     assoclink cf1 : ab1
-     role_renaming
        aa1 -> cc1
        bb1 -> ff1
     end

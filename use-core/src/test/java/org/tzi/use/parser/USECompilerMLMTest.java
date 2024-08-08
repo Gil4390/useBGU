@@ -355,7 +355,7 @@ public class USECompilerMLMTest extends TestCase {
 
             UseMLMApi api = new UseMLMApi(mlmResult);
 
-            assertEquals("{bb1=bb1, bb3=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
+            assertEquals("{bb=bb, bb1=bb1, bb2=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
 
             System.out.println(api.getClassSafe("CD@C").navigableEnds());
         } catch (Exception e) {

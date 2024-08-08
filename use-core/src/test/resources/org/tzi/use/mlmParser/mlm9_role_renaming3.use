@@ -38,21 +38,22 @@ mediator AB < NONE
 end
 
 mediator CD < AB
-   clabject C : A
-   end
+    clabject C : A
+    end
 
-   clabject D : B
-   end
+    clabject D : B
+    end
 
-   clabject E : B
-   end
+    clabject E : B
+    end
 
-   assoclink cd1 : ab1
-   end
+    assoclink cd1 : ab1
+        aa -> aa1
+        bb -> bb1
+    end
 
-   assoclink ce1 : ab1
-      role_renaming
+    assoclink ce1 : ab1
         aa -> aa2
-        bb -> bb3
-   end
+        bb -> bb2
+    end
 end

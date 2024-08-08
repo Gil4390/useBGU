@@ -44,15 +44,14 @@ mediator AB < NONE
 end
 
 mediator CD < AB
-   clabject C : A
-   end
+    clabject C : A
+    end
 
-   clabject D : B
-   end
+    clabject D : B
+    end
 
-   assoclink cd1 : ab1
-      roles
+    assoclink cd1 : ab1
         aa1 -> aa1
         bb1 -> bb1
-   end
+    end
 end
