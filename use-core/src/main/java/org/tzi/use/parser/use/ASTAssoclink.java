@@ -8,6 +8,7 @@ import org.tzi.use.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ASTAssoclink extends ASTAnnotatable{
@@ -53,13 +54,20 @@ public class ASTAssoclink extends ASTAnnotatable{
         List<MAssociationEnd> allEnds = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds();
         allEnds.addAll(mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds());
 
-        MAssociationEnd mEndC1 = allEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd1)).findFirst().orElseThrow();
-        MAssociationEnd mEndP1 = allEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd1)).findFirst().orElseThrow();
-        MAssociationEnd mEndC2 = allEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd2)).findFirst().orElseThrow();
-        MAssociationEnd mEndP2 = allEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd2)).findFirst().orElseThrow();
+        Optional<MAssociationEnd> mEndC1 = allEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd1)).findFirst();
+        if (mEndC1.isEmpty()) throw new Exception("End " + childRoleNameEnd1 + " not found.");
 
-        mAssoclink.addRoleBinding(mlmContext.modelFactory().createRoleBinding(mEndC1, mEndP1));
-        mAssoclink.addRoleBinding(mlmContext.modelFactory().createRoleBinding(mEndC2, mEndP2));
+        Optional<MAssociationEnd> mEndP1 = allEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd1)).findFirst();
+        if (mEndP1.isEmpty()) throw new Exception("End " + parentRoleNameEnd1 + " not found.");
+
+        Optional<MAssociationEnd> mEndC2 = allEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd2)).findFirst();
+        if (mEndC2.isEmpty()) throw new Exception("End " + childRoleNameEnd2 + " not found.");
+
+        Optional<MAssociationEnd> mEndP2 = allEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd2)).findFirst();
+        if (mEndP2.isEmpty()) throw new Exception("End " + parentRoleNameEnd2 + " not found.");
+
+        mAssoclink.addRoleBinding(mlmContext.modelFactory().createRoleBinding(mEndC1.get(), mEndP1.get()));
+        mAssoclink.addRoleBinding(mlmContext.modelFactory().createRoleBinding(mEndC2.get(), mEndP2.get()));
 
         return mAssoclink;
     }

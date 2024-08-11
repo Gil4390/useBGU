@@ -50,8 +50,8 @@ mediator CD < AB
    end
 
    assoclink cd1 : ab1
-      role_renaming
-        bb -> x
+        aa -> cc
+        bb -> dd
    end
 end
 
@@ -63,7 +63,7 @@ mediator EF < CD
    end
 
    assoclink ef1 : cd1
-      role_renaming
-        x -> y
+        cc -> ee
+        dd -> ff
    end
 end
