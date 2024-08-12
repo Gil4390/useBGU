@@ -126,38 +126,32 @@ public class MInternalClassImpl extends MClassImpl{
         res.putAll(newEntries);
 
 
+        Set<String> keysToRemove2 = new HashSet<>();
+        List<Map.Entry<String, MNavigableElement>> entries = new ArrayList<>(res.entrySet());
 
-//        List<MAssociation> assocLinksAssociations =((MMultiLevelModel)this.fMultiModel).getMediator(this.model.name()).assocLinks()
-//                .stream().map(assocLink -> (MAssociation)assocLink.child()).collect(Collectors.toList()); //{cd1}
-//
-//
-//        List<MAssociation> cAssocLinksAssociations = this.associations().stream()
-//                .filter(assocLinksAssociations::contains).collect(Collectors.toList()); //{cd1}
-//
-//        //super.navigableEnds() // {dd, dd2, bb}
-//        List<MAssociationEnd> ends = super.navigableEnds().values().stream().map(end -> (MAssociationEnd)end)
-//                .filter(end -> cAssocLinksAssociations.contains(end.association())).collect(Collectors.toList()); //{dd}
-//
-//        List<String> oldRoleName = new ArrayList<>();
-//        List<String> newRoleName = new ArrayList<>();
-//
-//        Collection<MAssoclink> assoclinks = ((MMultiLevelModel)this.fMultiModel).getMediator(this.model.name()).assocLinks();
-//        for (MAssoclink assocLink : assoclinks){
-//            oldRoleName.add((assocLink.parent().name()));
-//            newRoleName.add((assocLink.child().name()));
-//        }
-//
-//        for (String end : res.keySet()){
-//            if (oldRoleName.contains(end)){
-//                res.put(newRoleName.get(oldRoleName.indexOf(end)), res.get(end));
-//                res.remove(end);
-//            }
-////            // end = {dd}
-////            MAssoclink al = end.assocLink;
-////            result.add(al.getOriginalEnd(end)); //{bb}
-//        }
+        for (int i = 0; i < entries.size(); i++) {
+            Map.Entry<String, MNavigableElement> entry1 = entries.get(i);
+            MNavigableElement end1 = entry1.getValue();
+            MAssociation assoc1 = end1.association();
+
+            for (int j = i + 1; j < entries.size(); j++) {
+                Map.Entry<String, MNavigableElement> entry2 = entries.get(j);
+                MNavigableElement end2 = entry2.getValue();
+                MAssociation assoc2 = end2.association();
+
+                if (!this.fMultiModel.fGenGraph.edgesBetween(assoc1, assoc2).isEmpty()) {
+                    if (parentEnds.containsValue(end1)) {
+                        keysToRemove2.add(entry1.getKey());
+                    } else {
+                        keysToRemove2.add(entry2.getKey());
+                    }
+                    break; // No need to continue checking other pairs for entry1
+                }
+            }
+        }
 
 
+        keysToRemove2.forEach(res::remove);
 
         return res;
     }
@@ -165,7 +159,7 @@ public class MInternalClassImpl extends MClassImpl{
 
     @Override
     public boolean isSubClassOf(MClassifier otherClassifier, boolean excludeThis) {
-        if (fMultiModel == null) return Iterators.contains(this.generalizationHierachie(!excludeThis).iterator(), otherClassifier);
+        if (fMultiModel == null) return super.isSubClassOf(otherClassifier, excludeThis);
 
         /*  in order to account for the entire gen graph
             the method in org/tzi/use/uml/mm/MClassifierImpl.java:415
