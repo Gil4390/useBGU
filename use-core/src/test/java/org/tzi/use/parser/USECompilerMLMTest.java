@@ -317,6 +317,26 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+    public void testCompile_mlm9_role_renaming6_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming6.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+            assertEquals("{dd=dd, dd2=bb}", mlmResult.getClass("CD", "C").navigableEnds().toString());
+            System.out.println(mlmResult.getClass("CD", "C").navigableEnds());
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
     public void testCompile_mlm9_role_renaming_Specification() {
         MMultiLevelModel mlmResult = null;
 

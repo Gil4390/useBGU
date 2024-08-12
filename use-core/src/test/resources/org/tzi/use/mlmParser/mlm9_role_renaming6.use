@@ -1,0 +1,49 @@
+MLM ABCD
+
+  model AB
+    class A
+    end
+
+    class B
+    attributes
+        b_integer : Integer
+    end
+
+    association ab1 between
+      A[*] role aa
+      B[*] role bb
+    end
+
+
+  model CD
+    class C
+    end
+
+    class D
+    end
+
+    association cd1 between
+      C[*] role cc
+      D[*] role dd
+    end
+
+
+inter-constraints
+context CD@C inv:
+    self.dd2->forAll(d | d.b_integer > 0)
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+   clabject C : A
+        roles
+            bb -> dd2
+   end
+
+   clabject D : B
+   end
+
+end
+
+
