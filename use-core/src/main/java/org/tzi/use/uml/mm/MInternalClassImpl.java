@@ -139,6 +139,16 @@ public class MInternalClassImpl extends MClassImpl{
                 MNavigableElement end2 = entry2.getValue();
                 MAssociation assoc2 = end2.association();
 
+                if (!this.fMultiModel.fGenGraph.edgesBetween(assoc1, assoc2).isEmpty()) {
+                    if (parentEnds.containsValue(end1)) {
+                        keysToRemove2.add(entry1.getKey());
+                    } else {
+                        keysToRemove2.add(entry2.getKey());
+                    }
+                    break; // No need to continue checking other pairs for entry1
+                }
+            }
+        }
 
 
         keysToRemove2.forEach(res::remove);
@@ -149,7 +159,7 @@ public class MInternalClassImpl extends MClassImpl{
 
 //    @Override
 //    public boolean isSubClassOf(MClassifier otherClassifier, boolean excludeThis) {
-//        if (fMultiModel == null) return Iterators.contains(this.generalizationHierachie(!excludeThis).iterator(), otherClassifier);
+//        if (fMultiModel == null) return super.isSubClassOf(otherClassifier, excludeThis);
 //
 //        /*  in order to account for the entire gen graph
 //            the method in org/tzi/use/uml/mm/MClassifierImpl.java:415
