@@ -5,6 +5,8 @@ MLM ABCD
     end
 
     class B
+    attributes
+        b_integer : Integer
     end
 
     association ab1 between
@@ -20,31 +22,28 @@ MLM ABCD
     class D
     end
 
-    class E
-    end
-
     association cd1 between
-      C[*] role aa1
-      D[*] role bb1
+      C[*] role cc
+      D[*] role dd
     end
 
-    association ce1 between
-      C[*] role aa2
-      E[*] role bb2
-    end
 
+inter-constraints
+context CD@C inv:
+    self.dd2->forAll(d | d.b_integer > 0)
 
 mediator AB < NONE
 end
 
 mediator CD < AB
-    clabject C : A
-    end
+   clabject C : A
+        roles
+            bb -> dd2
+   end
 
-    clabject D : B
-    end
-
-    clabject E : B
-    end
+   clabject D : B
+   end
 
 end
+
+

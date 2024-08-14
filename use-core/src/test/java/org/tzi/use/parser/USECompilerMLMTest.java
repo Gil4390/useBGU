@@ -1,8 +1,10 @@
 package org.tzi.use.parser;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.tzi.use.api.UseMLMApi;
 import org.tzi.use.api.UseSystemApi;
+import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.ocl.OCLCompiler;
 import org.tzi.use.parser.use.USECompiler;
@@ -298,25 +300,6 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm9_role_renaming5_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming5.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
     public void testCompile_mlm9_role_renaming_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -333,6 +316,38 @@ public class USECompilerMLMTest extends TestCase {
 
             System.out.println(api.getClassSafe("CD@C").navigableEnds());
 
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm9_role_renaming2_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming2.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            systemApi.createObject("CD@C", "c1");
+            systemApi.createObject("AB@B", "b1");
+            systemApi.createLink("AB@ab1", "c1", "b1");
+
+
+            systemApi.setAttributeValue("b1", "b1", "'x'");
+            Assert.assertFalse(systemApi.checkState());
+
+            systemApi.setAttributeValue("b1", "b1", "'b'");
+            Assert.assertTrue(systemApi.checkState());
 
         } catch (Exception e) {
             // This can be ignored
@@ -365,10 +380,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm9_role_renaming2_Specification() {
+    public void testCompile_mlm9_role_renaming4_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming2.use");
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming4.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -378,11 +393,49 @@ public class USECompilerMLMTest extends TestCase {
             specStream1.close();
 
             UseMLMApi api = new UseMLMApi(mlmResult);
-            System.out.println("Started Debugging");
-            System.out.println(mlmResult.checkState());
-//            assertEquals("{bb1=bb1, bb3=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
 
-//            System.out.println(api.getClassSafe("CD@C").navigableEnds());
+            assertEquals("{bb1=bb1, bb2=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
+
+            System.out.println(api.getClassSafe("CD@C").navigableEnds());
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm9_role_renaming5_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming5.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm9_role_renaming6_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming6.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+            assertEquals("{dd=dd, dd2=bb}", mlmResult.getClass("CD", "C").navigableEnds().toString());
+            System.out.println(mlmResult.getClass("CD", "C").navigableEnds());
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();
