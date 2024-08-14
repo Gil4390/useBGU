@@ -47,6 +47,8 @@ public class MMultiModel extends MModel{
             MGeneralization gen = it.next();
             this.fGenGraph.addEdge(gen);
         }
+
+        model.fGenGraph = this.fGenGraph;
     }
 
     /**
@@ -59,7 +61,16 @@ public class MMultiModel extends MModel{
         if (!fModels.containsKey(modelName))
             throw new Exception("MultiModel does not contain a model `" + modelName + "'.");
 
+        MModel model = fModels.get(modelName);
+
         fModels.remove(modelName);
+        for (MClass cls : model.classes()){
+            this.generalizationGraph().remove(cls);
+        }
+        for (MAssociation assoc : model.associations()){
+            this.generalizationGraph().remove(assoc);
+        }
+
     }
 
 

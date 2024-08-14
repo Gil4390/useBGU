@@ -163,21 +163,21 @@ public class MInternalClassImpl extends MClassImpl{
     }
 
 
-    @Override
-    public boolean isSubClassOf(MClassifier otherClassifier, boolean excludeThis) {
-        if (fMultiModel == null) return Iterators.contains(this.generalizationHierachie(!excludeThis).iterator(), otherClassifier);
-
-        /*  in order to account for the entire gen graph
-            the method in org/tzi/use/uml/mm/MClassifierImpl.java:415
-            should look in the gen graph of the MLM and not the internal model
-         */
-        MModel originalModel = model;
-        setModel(fMultiModel);
-
-        boolean result = super.isSubClassOf(otherClassifier, excludeThis);
-
-        setModel(originalModel);
-
-        return result;
-    }
+//    @Override
+//    public boolean isSubClassOf(MClassifier otherClassifier, boolean excludeThis) {
+//        if (fMultiModel == null) return Iterators.contains(this.generalizationHierachie(!excludeThis).iterator(), otherClassifier);
+//
+//        /*  in order to account for the entire gen graph
+//            the method in org/tzi/use/uml/mm/MClassifierImpl.java:415
+//            should look in the gen graph of the MLM and not the internal model
+//         */
+//        MModel originalModel = model;
+//        setModel(fMultiModel);
+//
+//        boolean result = super.isSubClassOf(otherClassifier, excludeThis);
+//
+//        setModel(originalModel);
+//
+//        return result;
+//    }
 }
