@@ -156,22 +156,23 @@ public class MInternalClassImpl extends MClassImpl{
         return res;
     }
 
+    @Override
+    public MAttribute attribute(String name, boolean searchInherited) {
+        if (fMultiModel == null) return super.attribute(name, searchInherited);
 
-//    @Override
-//    public boolean isSubClassOf(MClassifier otherClassifier, boolean excludeThis) {
-//        if (fMultiModel == null) return super.isSubClassOf(otherClassifier, excludeThis);
-//
-//        /*  in order to account for the entire gen graph
-//            the method in org/tzi/use/uml/mm/MClassifierImpl.java:415
-//            should look in the gen graph of the MLM and not the internal model
-//         */
-//        MModel originalModel = model;
-//        setModel(fMultiModel);
-//
-//        boolean result = super.isSubClassOf(otherClassifier, excludeThis);
-//
-//        setModel(originalModel);
-//
-//        return result;
-//    }
+        MAttribute res = super.attribute(name, searchInherited);
+        if (res != null) return res;
+
+        Set<MClass> allParents = allParents();
+        Set<MClass> parents = parents();
+        MClassifier parent = this.parents().iterator().next();
+        MGeneralization edge = this.model.generalizationGraph().edgesBetween(this,parent).iterator().next();
+
+        if (edge instanceof MClabject){
+            if (((MClabject) edge).getAttributes().containsKey(name)){
+                return ((MClabject) edge).getAttributes().get(name);
+            }
+        }
+        return null;
+    }
 }

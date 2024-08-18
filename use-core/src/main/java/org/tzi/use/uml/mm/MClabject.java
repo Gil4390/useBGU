@@ -3,10 +3,7 @@ package org.tzi.use.uml.mm;
 import org.eclipse.jdt.annotation.NonNull;
 import org.tzi.use.graph.DirectedEdge;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MClabject extends MGeneralization {
@@ -67,8 +64,13 @@ public class MClabject extends MGeneralization {
         return fRemovedAttributes;
     }
 
-    public List<MAttribute> getAttributes(){
-        return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
+    public Map<String, MAttribute> getAttributes(){
+        Map<String, MAttribute> attributes = new HashMap<>();
+        fAttributeRenaming.forEach((attributeRenaming) -> {
+            attributes.put(attributeRenaming.newName(), attributeRenaming.attribute());
+        });
+        return attributes;
+        //return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
 
 

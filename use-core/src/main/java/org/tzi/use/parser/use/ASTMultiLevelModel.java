@@ -33,11 +33,15 @@ public class ASTMultiLevelModel extends ASTMultiModel{
         try{
             MultiContext multiCtx = new MultiContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
             MMultiModel multiModel = fMultiModel.gen(multiCtx);
+            if (multiModel == null){
+                throw new Exception("error parsing multi model");
+            }
             mMultiLevelModel = mlmContext.modelFactory().createMLM(multiModel);
             mMultiLevelModel.setFilename(mlmContext.filename());
         }
         catch (Exception e){
             mlmContext.reportError(fName,e);
+            return null;
         }
 
 
