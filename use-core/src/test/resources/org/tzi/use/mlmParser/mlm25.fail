@@ -1,2 +1,1 @@
-mlm21.use:41:13: Undefined operation named `bb1' in expression `CD@C.bb1()'.
-mlm21.use:1:4: error parsing multi model
+mlm25.use:42:9: Undefined operation named `a1' in expression `CD@C.a1()'.

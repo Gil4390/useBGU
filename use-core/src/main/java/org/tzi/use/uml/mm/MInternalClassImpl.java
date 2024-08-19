@@ -156,22 +156,44 @@ public class MInternalClassImpl extends MClassImpl{
         return res;
     }
 
+    //return the clabject edge that connects this class with the class from the upper level
+    // will return null if the clabject doesn't exist
+    private MClabject getClabjectEdge(){
+        Set<MClass> parents = parents();
+        if (parents.isEmpty()) return null;
+        //need to find the parent that's not in the current level
+        Iterator<MClass> iterator = parents.iterator();
+        MClassifier parent = iterator.next();
+        if (parent.model().equals(this.model())){
+            if (!iterator.hasNext()){
+                return null;
+            }
+            parent = iterator.next();
+        }
+        MGeneralization edge = this.model.generalizationGraph().edgesBetween(this,parent).iterator().next();
+
+        return (MClabject) edge;
+    }
     @Override
     public MAttribute attribute(String name, boolean searchInherited) {
         if (fMultiModel == null) return super.attribute(name, searchInherited);
 
         MAttribute res = super.attribute(name, searchInherited);
-        if (res != null) return res;
+        if (res != null){
+            //check if the attribute is removed by the clabject
 
-        Set<MClass> allParents = allParents();
-        Set<MClass> parents = parents();
-        MClassifier parent = this.parents().iterator().next();
-        MGeneralization edge = this.model.generalizationGraph().edgesBetween(this,parent).iterator().next();
-
-        if (edge instanceof MClabject){
-            if (((MClabject) edge).getAttributes().containsKey(name)){
-                return ((MClabject) edge).getAttributes().get(name);
+            MClabject clabject = getClabjectEdge();
+            if (clabject == null){
+                return res;
             }
+            if (clabject.getRemovedAttribute(name) == null && clabject.getRenamedAttribute(name) == null){
+                return res;
+            }
+
+        }
+        MClabject clabject = getClabjectEdge();
+        if (clabject != null && getClabjectEdge().getAttributes().containsKey(name)){
+            return getClabjectEdge().getAttributes().get(name);
         }
         return null;
     }

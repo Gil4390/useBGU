@@ -105,15 +105,23 @@ mediator PC < Computer_Product
    end
 
    assoclink pcCon : contain
+        parent->parent
+        part->part
    end
 
    assoclink pcAppl : hardwSoftw
+        softw->softw
+        hardw->hardw
    end
 
    assoclink pcOs : hardwSoftw
+        os->softw
+        pc->hardw
    end
 
    assoclink pcCompat : compatibility
+        appl->appl
+        syst->syst
    end
 
 end

@@ -1,0 +1,77 @@
+MLM ABCD
+
+  model AB
+    class A
+      attributes
+        a1: Integer
+    end
+
+    class B
+      attributes
+        b1: String
+    end
+
+    class X
+      attributes
+        x1: String
+    end
+
+    association ab1 between
+      A[*] role aa1
+      B[*] role bb1
+    end
+
+    association xb1 between
+      X[*] role xx1
+      B[*] role bb2
+    end
+
+
+  model CD
+    class C
+      attributes
+        c1: String
+    end
+
+    class D
+      attributes
+        d1: String
+    end
+
+    class Y
+      attributes
+        y1: String
+    end
+
+    association cd1 between
+      C[*] role cc1
+      D[*] role dd1
+    end
+
+    association yd1 between
+      Y[*] role yy1
+      D[*] role dd2
+    end
+
+
+--inter-constraints
+--context CD@C
+--  inv i1:
+--    self.a1 > 5
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+  clabject C : A
+  end
+
+  clabject D : B
+  end
+
+  clabject Y : X
+  end
+
+end
+

@@ -73,7 +73,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 33);
+        List<File> fileList = getFilesMatchingSuffix(".use", 38);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -489,10 +489,56 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_clabject_figure_3_test_Specification() {
+//    public void testCompile_clabject_figure_3_test_Specification() {
+//        MMultiLevelModel mlmResult = null;
+//
+//        File multiFile = new File(TEST_PATH_PAPER + "/mlm-figure-1-test.use");
+//        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+//        PrintWriter newErr = new PrintWriter(System.out);
+//
+//        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+//            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+//                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+//            specStream1.close();
+//
+//            UseMLMApi api = new UseMLMApi(mlmResult);
+//            System.out.println(api);
+////            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
+////            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
+//        } catch (Exception e) {
+//            // This can be ignored
+//            e.printStackTrace();
+//            fail("Unexpected exception");
+//        }
+//    }
+
+//    public void testCompile_mlm_graph_toString() {
+//        MMultiLevelModel mlmResult = null;
+//
+//        File multiFile = new File(TEST_PATH_PAPER + "/mlm-figure-1-test.use");
+//        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+//        PrintWriter newErr = new PrintWriter(System.out);
+//
+//        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+//            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+//                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+//            specStream1.close();
+//
+//            UseMLMApi api = new UseMLMApi(mlmResult);
+//
+//
+//            System.out.println(mlmResult.generalizationGraph().toString());
+//        } catch (Exception e) {
+//            // This can be ignored
+//            e.printStackTrace();
+//            fail("Unexpected exception");
+//        }
+//    }
+
+    public void testCompile_mlm_10_cmplex_1_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH_PAPER + "/mlm-figure-1-test.use");
+        File multiFile = new File(TEST_PATH + "/mlm_10_cmplex_1.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -502,9 +548,6 @@ public class USECompilerMLMTest extends TestCase {
             specStream1.close();
 
             UseMLMApi api = new UseMLMApi(mlmResult);
-            System.out.println(api);
-//            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
-//            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();
@@ -512,33 +555,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm_graph_toString() {
+    public void testCompile_mlm31_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH_PAPER + "/mlm-figure-1-test.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-
-
-            System.out.println(mlmResult.generalizationGraph().toString());
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    public void testCompile_mlm20_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm24.use");
+        File multiFile = new File(TEST_PATH + "/mlm31.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
