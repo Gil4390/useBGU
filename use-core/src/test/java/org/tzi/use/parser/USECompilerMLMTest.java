@@ -73,7 +73,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 39);
+        List<File> fileList = getFilesMatchingSuffix(".use", 45);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -555,10 +555,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm28Specification() {
+    public void testCompile_mlm29Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm28.use");
+        File multiFile = new File(TEST_PATH + "/mlm29.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -678,9 +678,9 @@ public class USECompilerMLMTest extends TestCase {
             specStream1.close();
 
             UseMLMApi api = new UseMLMApi(mlmResult);
-            System.out.println(api.getClassSafe("EF@E").navigableEnds().toString());
             assertFalse(api.getClassSafe("CD@C").navigableEnds().containsKey("bb1"));
-            assertFalse(api.getClassSafe("CD@C").navigableEnds().containsKey("dd1"));
+            assertTrue(api.getClassSafe("CD@C").navigableEnds().containsKey("dd1"));
+            assertFalse(api.getClassSafe("EF@E").navigableEnds().containsKey("dd1"));
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();

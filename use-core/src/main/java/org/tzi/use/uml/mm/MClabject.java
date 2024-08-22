@@ -80,6 +80,14 @@ public class MClabject extends MGeneralization {
         //return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
 
+    public List<MRoleRenaming> getRenamedRoles() {
+        return fRoleRenaming;
+    }
+
+    public List<MAssociationEnd> getRemovedRoles() {
+        return fRemovedRoles;
+    }
+
 
     @Override
     public String name(){

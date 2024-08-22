@@ -85,48 +85,108 @@ public class MInternalClassImpl extends MClassImpl{
         return new ArrayList<>(result);
     }
 
+//    public Map<String, MNavigableElement> navigableEnds() {
+//        if (fMultiModel == null)
+//            return super.navigableEnds();
+//        Map<String, MNavigableElement> res = new TreeMap<String, MNavigableElement>();
+//        res.putAll(super.navigableEnds());
+//
+//        // recursively add association ends in superclasses
+//        for (MClass superclass : allParents() ) {
+//            res.putAll(superclass.navigableEnds());
+//        }
+//        Map<String, MNavigableElement> parentEnds = new TreeMap<String, MNavigableElement>();
+//        if (this.parents() != null && !this.parents().isEmpty()){
+//            MClass parentClass = this.parents().iterator().next();
+//            if (parentClass != null) {
+//                parentEnds.putAll(parentClass.navigableEnds());
+//            }
+//        }
+//
+//
+//        //handle role renaming
+//        Set<String> keysToRemove = new HashSet<>();
+//        Map<String, MNavigableElement> newEntries = new HashMap<>();
+//
+//        Iterator<Map.Entry<String, MNavigableElement>> iterator = res.entrySet().iterator();
+//        while (iterator.hasNext()) {
+//            Map.Entry<String, MNavigableElement> entry = iterator.next();
+//            MNavigableElement endElement = entry.getValue();
+//            if (endElement instanceof MInternalAssociationEnd) {
+//                MInternalAssociationEnd internalEnd = (MInternalAssociationEnd) endElement;
+//                if (internalEnd.isRenamed(this)) {
+//                    keysToRemove.add(entry.getKey());
+//                    newEntries.put(internalEnd.newName, endElement);
+//                } else if(internalEnd.isEndRemoved()){
+//                    keysToRemove.add(entry.getKey());
+//                }
+//            }
+//        }
+//        keysToRemove.forEach(res::remove);
+//        res.putAll(newEntries);
+//
+//        //handle ends that are redefined in assoclinks
+//        Set<String> keysToRemove2 = new HashSet<>();
+//        List<Map.Entry<String, MNavigableElement>> entries = new ArrayList<>(res.entrySet());
+//
+//        for (int i = 0; i < entries.size(); i++) {
+//            Map.Entry<String, MNavigableElement> entry1 = entries.get(i);
+//            MNavigableElement end1 = entry1.getValue();
+//            MAssociation assoc1 = end1.association();
+//
+//            for (int j = i + 1; j < entries.size(); j++) {
+//                Map.Entry<String, MNavigableElement> entry2 = entries.get(j);
+//                MNavigableElement end2 = entry2.getValue();
+//                MAssociation assoc2 = end2.association();
+//
+//                if (!this.fMultiModel.fGenGraph.edgesBetween(assoc1, assoc2).isEmpty()) {
+//                    if (parentEnds.containsValue(end1)) {
+//                        keysToRemove2.add(entry1.getKey());
+//                    } else {
+//                        keysToRemove2.add(entry2.getKey());
+//                    }
+//                    break; // No need to continue checking other pairs for entry1
+//                }
+//            }
+//        }
+//
+//
+//        keysToRemove2.forEach(res::remove);
+//
+//        return res;
+//    }
+    @Override
     public Map<String, MNavigableElement> navigableEnds() {
         if (fMultiModel == null)
             return super.navigableEnds();
-        Map<String, MNavigableElement> res = new TreeMap<String, MNavigableElement>();
-        res.putAll(super.navigableEnds());
+        Map<String, MNavigableElement> res = new TreeMap<>(navigableElements());
 
         // recursively add association ends in superclasses
-        for (MClass superclass : allParents() ) {
-            res.putAll(superclass.navigableEnds());
-        }
-        Map<String, MNavigableElement> parentEnds = new TreeMap<String, MNavigableElement>();
-        if (this.parents() != null && !this.parents().isEmpty()){
-            MClass parentClass = this.parents().iterator().next();
-            if (parentClass != null) {
-                parentEnds.putAll(parentClass.navigableEnds());
-            }
-        }
+        for (MClass superclass : parents() ) {
+            Set<MGeneralization> edges = fMultiModel.generalizationGraph().edgesBetween(this, superclass);
+            if (edges.isEmpty()) continue;
+            MGeneralization edge = edges.iterator().next();
+            if (edge instanceof MClabject) {
+                Map<String, MNavigableElement> parentEnds = new TreeMap<>(superclass.navigableEnds());
 
-        //res.entrySet().removeIf(entry -> parentEnds.containsKey(entry.getKey()));
-
-        Set<String> keysToRemove = new HashSet<>();
-        Map<String, MNavigableElement> newEntries = new HashMap<>();
-
-        Iterator<Map.Entry<String, MNavigableElement>> iterator = res.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, MNavigableElement> entry = iterator.next();
-            MNavigableElement endElement = entry.getValue();
-            if (endElement instanceof MInternalAssociationEnd) {
-                MInternalAssociationEnd internalEnd = (MInternalAssociationEnd) endElement;
-                if (internalEnd.isRenamed(this)) {
-                    keysToRemove.add(entry.getKey());
-                    newEntries.put(internalEnd.newName, endElement);
-                } else if(internalEnd.isEndRemoved()){
-                    keysToRemove.add(entry.getKey());
+                // remove the roles that were removed or renamed by the clabject
+                for (MNavigableElement removedEnd : ((MClabject) edge).getRemovedRoles()) {
+                    parentEnds.remove(removedEnd.nameAsRolename());
                 }
+
+                for (MRoleRenaming renamedEnd : ((MClabject) edge).getRenamedRoles()) {
+                    parentEnds.remove(renamedEnd.assocEnd().name());
+                    parentEnds.put(renamedEnd.newName(), renamedEnd.assocEnd());
+                }
+                res.putAll(parentEnds);
+            }
+            else{
+                res.putAll(superclass.navigableEnds());
             }
         }
 
-        keysToRemove.forEach(res::remove);
-        res.putAll(newEntries);
 
-
+        //handle ends that are redefined in assoclinks
         Set<String> keysToRemove2 = new HashSet<>();
         List<Map.Entry<String, MNavigableElement>> entries = new ArrayList<>(res.entrySet());
 
@@ -141,7 +201,7 @@ public class MInternalClassImpl extends MClassImpl{
                 MAssociation assoc2 = end2.association();
 
                 if (!this.fMultiModel.fGenGraph.edgesBetween(assoc1, assoc2).isEmpty()) {
-                    if (parentEnds.containsValue(end1)) {
+                    if(!navigableElements().containsKey(end1.nameAsRolename())){
                         keysToRemove2.add(entry1.getKey());
                     } else {
                         keysToRemove2.add(entry2.getKey());
@@ -181,7 +241,7 @@ public class MInternalClassImpl extends MClassImpl{
 
         MAttribute res = super.attribute(name, searchInherited);
         if (res != null){
-            //check if the attribute is removed by the clabject
+            //check if the attribute is removed or renamed by the clabject
 
             MClabject clabject = getClabjectEdge();
             if (clabject == null){
@@ -198,4 +258,15 @@ public class MInternalClassImpl extends MClassImpl{
         }
         return null;
     }
+
+//    public MNavigableElement navigableEnd(String rolename) {
+//        if (fMultiModel == null)
+//            return super.navigableEnd(rolename);
+//        MNavigableElement res = super.navigableEnds().get( rolename );
+//
+//        if (res )
+//
+//        return res;
+//    }
+
 }

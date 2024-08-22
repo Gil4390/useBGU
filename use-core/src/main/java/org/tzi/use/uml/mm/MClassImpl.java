@@ -298,6 +298,10 @@ public class MClassImpl extends MClassifierImpl implements MClass {
         return navigableEnds().get( rolename );
     }
 
+    public Map<String, MNavigableElement> navigableElements(){
+        return fNavigableElements;
+    }
+
     /**
      * Returns a map of all association ends that can be reached from
      * this class by navigation.

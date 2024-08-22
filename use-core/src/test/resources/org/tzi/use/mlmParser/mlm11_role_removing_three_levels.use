@@ -40,6 +40,7 @@ MLM ABCD
         E[*] role ee1
         F[*] role ff1
       end
+      
 inter-constraints
 context EF@E inv:
     self.bb1->forAll(b | b.b1 = 'test')
