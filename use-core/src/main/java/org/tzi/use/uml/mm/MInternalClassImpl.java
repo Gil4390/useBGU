@@ -88,7 +88,6 @@ public class MInternalClassImpl extends MClassImpl{
     public Map<String, MNavigableElement> navigableEnds() {
         if (fMultiModel == null)
             return super.navigableEnds();
-
         Map<String, MNavigableElement> res = new TreeMap<String, MNavigableElement>();
         res.putAll(super.navigableEnds());
 
@@ -118,6 +117,8 @@ public class MInternalClassImpl extends MClassImpl{
                 if (internalEnd.isRenamed(this)) {
                     keysToRemove.add(entry.getKey());
                     newEntries.put(internalEnd.newName, endElement);
+                } else if(internalEnd.isEndRemoved()){
+                    keysToRemove.add(entry.getKey());
                 }
             }
         }

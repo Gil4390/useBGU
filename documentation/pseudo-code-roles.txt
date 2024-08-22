@@ -1,0 +1,29 @@
+function navigableEnds()
+    init res = new TreeMap
+    add all entries from super.navigableEnds() to res
+
+    init parent_ends = new TreeMap
+    if this.parents() is not null and not empty
+        parent_class = get the first parent from this.parents()
+        if parent_class is not null
+            add all entries from parent_class.navigableEnds() to parent_ends
+
+    // Contains all the names of the renamed roles
+    init keys_to_remove = new HashSet
+
+    // Contains all the entries of an end element with its new name
+    init new_entries = new HashMap
+
+    foreach entry in res.entrySet()
+        end_element = entry.getValue()
+        end_element_name = entry.getKey()
+        if end_element is an instance of MInternalAssociationEnd
+            if end_element is renamed in this context
+                keys_to_remove.add(end_element_name)
+                new_entries.put(end_element.newName, end_element)
+
+    foreach key in keys_to_remove
+        remove the entry from res with that key
+
+    add all entries from new_entries to res
+    return res

@@ -121,5 +121,16 @@ public class ASTClabject extends ASTAnnotatable{
             MRoleRenaming roleRenaming = mlmContext.modelFactory().createRoleRenaming(oldAssocEnd,newRoleName);
             fClabject.addRoleRenaming(roleRenaming);
         }
+
+        for(Token removedRoleToken : fRoleRemoving) {
+            String removedRole = removedRoleToken.getText();
+            MAssociationEnd removedAssocEnd = (MAssociationEnd) parent.navigableEnd(removedRole);
+
+            if(removedAssocEnd == null) {
+                throw new NullPointerException("Role: "+removedRole+" is not defined in the parent class: "+parent.name());
+            }
+            ((MInternalAssociationEnd)removedAssocEnd).setEndRemoved(true);
+            fClabject.addRemovedRole(removedAssocEnd);
+        }
     }
 }
