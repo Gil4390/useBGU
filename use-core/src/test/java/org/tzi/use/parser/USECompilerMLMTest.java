@@ -73,7 +73,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 38);
+        List<File> fileList = getFilesMatchingSuffix(".use", 39);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -555,10 +555,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm31_Specification() {
+    public void testCompile_mlm28Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm31.use");
+        File multiFile = new File(TEST_PATH + "/mlm28.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
