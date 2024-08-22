@@ -2,10 +2,10 @@ package org.tzi.use.uml.mm;
 
 public class MRoleRenaming {
 
-    private MInternalAssociationEnd fAssocEnd;
+    private MAssociationEnd fAssocEnd;
     private String newName;
 
-    public MRoleRenaming(MInternalAssociationEnd aendp, String newName) {
+    public MRoleRenaming(MAssociationEnd aendp, String newName) {
         this.fAssocEnd = aendp;
         this.newName = newName;
     }

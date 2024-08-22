@@ -117,7 +117,6 @@ public class ASTClabject extends ASTAnnotatable{
                 throw new NullPointerException("Role: "+newRoleName+" is already defined in the child class: "+child.name());
             }
 
-            ((MInternalAssociationEnd)oldAssocEnd).setNewName(newRoleName, child);
             MRoleRenaming roleRenaming = mlmContext.modelFactory().createRoleRenaming(oldAssocEnd,newRoleName);
             fClabject.addRoleRenaming(roleRenaming);
         }
@@ -129,7 +128,6 @@ public class ASTClabject extends ASTAnnotatable{
             if(removedAssocEnd == null) {
                 throw new NullPointerException("Role: "+removedRole+" is not defined in the parent class: "+parent.name());
             }
-            ((MInternalAssociationEnd)removedAssocEnd).setEndRemoved(true);
             fClabject.addRemovedRole(removedAssocEnd);
         }
     }

@@ -31,7 +31,7 @@ public class MultiLevelModelFactory extends MultiModelFactory {
     }
 
     public MRoleRenaming createRoleRenaming(MAssociationEnd endp,String newName){
-        return new MRoleRenaming((MInternalAssociationEnd)endp, newName);
+        return new MRoleRenaming(endp, newName);
     }
 
     public MRoleBinding createRoleBinding(MAssociationEnd childAssociationEnd, MAssociationEnd parentAssociationEnd){
@@ -47,13 +47,4 @@ public class MultiLevelModelFactory extends MultiModelFactory {
         return createMLM(name);
     }
 
-    @Override
-    public MAssociationEnd createAssociationEnd(MClass cls,
-                                                String rolename,
-                                                MMultiplicity mult,
-                                                int kind,
-                                                boolean isOrdered,
-                                                List<VarDecl> qualifiers) {
-        return new MInternalAssociationEnd(cls, rolename, mult, kind, isOrdered, qualifiers);
-    }
 }
