@@ -4,7 +4,7 @@ MLM ABCD
     class A
       attributes
         a1: String
-        a2: String
+        a2: Integer
     end
 
     class B
@@ -35,23 +35,21 @@ MLM ABCD
       D[*] role dd1
     end
 
-    association cd2 between
-      C[*] role cc2
-      D[*] role dd2
-    end
+    constraints
+    context C
+      inv i1:
+        self.a1 > 5
+
 
 mediator AB < NONE
 end
 
 mediator CD < AB
-    clabject C : A
-    end
+   clabject C : A
+   end
 
-    clabject D : B
-    end
+   clabject D : B
+   end
 
-    assoclink cd1 : ab1
-        aa1 -> aa1
-        bb1 -> bb1
-    end
 end
+

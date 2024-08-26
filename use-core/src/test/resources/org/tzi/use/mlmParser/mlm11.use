@@ -35,16 +35,34 @@ MLM ABCD
       D[*] role dd1
     end
 
-    constraints
-    context C
-      inv GG:
-        self.dd1->forAll( it | it.d = 'd')
+  model EF
+    class E
+      attributes
+        e: String
+    end
+
+    class F
+      attributes
+        f: String
+    end
+
+    association ef1 between
+      E[*] role ee1
+      F[*] role ff1
+    end
 
 
 inter-constraints
-context CD@C
-  inv GG2:
+context EF@E
+  inv i1:
     self.bb1->forAll( it | it.b1 = 'b')
+  inv i2:
+    self.a2 > 5
+  inv i3:
+    self.dd1->forAll( it | it.d = 'd')
+  inv i4:
+    self.c = 'c'
+
 
 mediator AB < NONE
 end
@@ -55,6 +73,13 @@ mediator CD < AB
 
    clabject D : B
    end
+end
 
+mediator EF < CD
+   clabject E : C
+   end
+
+   clabject F : D
+   end
 end
 

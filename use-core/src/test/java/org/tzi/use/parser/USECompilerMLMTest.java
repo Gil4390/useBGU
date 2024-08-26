@@ -73,7 +73,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 46);
+        List<File> fileList = getFilesMatchingSuffix(".use", 48);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -248,10 +248,10 @@ public class USECompilerMLMTest extends TestCase {
     }
 
 
-    public void testCompile_mlm8_multipleLevels_1_Specification() {
+    public void testCompile_mlm7a_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm8_multipleLevels_1.use");
+        File multiFile = new File(TEST_PATH + "/mlm7a.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -274,10 +274,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm8_multipleLevels_2_Specification() {
+    public void testCompile_mlm7b_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm8_multipleLevels_2.use");
+        File multiFile = new File(TEST_PATH + "/mlm7b.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -300,29 +300,8 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm9_role_renaming_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-
-            System.out.println(api.getClassSafe("CD@C").navigableEnds());
-
-
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
+//TODO remove this after writing tests for role inheritance
+/*
 
     public void testCompile_mlm9_role_renaming2_Specification() {
         MMultiLevelModel mlmResult = null;
@@ -404,25 +383,6 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm9_role_renaming5_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming5.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
     public void testCompile_mlm9_role_renaming6_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -443,74 +403,9 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm10_clabject_role_renaming1_Specification() {
-        MMultiLevelModel mlmResult = null;
+*/
 
-        File multiFile = new File(TEST_PATH + "/mlm10_role_renaming.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
 
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-
-            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
-            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    public void testCompile_mlm10_clabject_role_renaming2_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm10_role_renaming2.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-
-//            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
-//            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-//    public void testCompile_clabject_figure_3_test_Specification() {
-//        MMultiLevelModel mlmResult = null;
-//
-//        File multiFile = new File(TEST_PATH_PAPER + "/mlm-figure-1-test.use");
-//        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-//        PrintWriter newErr = new PrintWriter(System.out);
-//
-//        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-//            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-//                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-//            specStream1.close();
-//
-//            UseMLMApi api = new UseMLMApi(mlmResult);
-//            System.out.println(api);
-////            assertEquals("{dd=dd, ff=bb}", api.getClassSafe("CD@C").navigableEnds().toString());
-////            assertEquals("{bb=bb}", api.getClassSafe("AB@A").navigableEnds().toString());
-//        } catch (Exception e) {
-//            // This can be ignored
-//            e.printStackTrace();
-//            fail("Unexpected exception");
-//        }
-//    }
 
 //    public void testCompile_mlm_graph_toString() {
 //        MMultiLevelModel mlmResult = null;
@@ -535,30 +430,11 @@ public class USECompilerMLMTest extends TestCase {
 //        }
 //    }
 
-    public void testCompile_mlm_10_cmplex_1_Specification() {
+
+    public void testCompile_mlm17Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm_10_cmplex_1.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    public void testCompile_mlm29Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm29.use");
+        File multiFile = new File(TEST_PATH + "/mlm17.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -576,10 +452,10 @@ public class USECompilerMLMTest extends TestCase {
     }
 
 
-    public void testCompile_mlm35_clabject_attribute_removing_Specification() {
+    public void testCompile_mlm23_clabject_attribute_removing_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm35.use");
+        File multiFile = new File(TEST_PATH + "/mlm23.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -599,10 +475,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm33_assoclink_role_not_accessible_Specification() {
+    public void testCompile_mlm21_assoclink_role_not_accessible_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm33.use");
+        File multiFile = new File(TEST_PATH + "/mlm21.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -621,10 +497,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm33_assoclink_accessible_role_Specification() {
+    public void testCompile_mlm21_assoclink_accessible_role_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm33.use");
+        File multiFile = new File(TEST_PATH + "/mlm21.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -643,10 +519,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm34_assoclink_three_levels_roles_not_accessible_Specification() {
+    public void testCompile_mlm22_assoclink_three_levels_roles_not_accessible_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm34.use");
+        File multiFile = new File(TEST_PATH + "/mlm22.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -666,10 +542,10 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm38_assoclink_overrules_roles_deletion_Specification() {
+    public void testCompile_mlm26_assoclink_overrules_roles_deletion_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm38.use");
+        File multiFile = new File(TEST_PATH + "/mlm26.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 

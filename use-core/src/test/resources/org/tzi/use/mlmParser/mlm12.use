@@ -4,22 +4,30 @@ MLM ABCD
     class A
       attributes
         a1: Integer
+        a2: Integer
     end
 
-    association aa1 between
-      A[*] role aaa1
-      A[*] role aaa2
+    class B
+      attributes
+        b1: String
+        b2: String
     end
+
+    association ab1 between
+      A[*] role aa1
+      B[*] role bb1
+    end
+
 
   model CD
     class C
       attributes
-        c1: String
+        c: String
     end
 
     class D
       attributes
-        d1: String
+        d: String
     end
 
     association cd1 between
@@ -28,10 +36,10 @@ MLM ABCD
     end
 
 
---inter-constraints
---context CD@C
---  inv i1:
---    self.a1 > 5
+inter-constraints
+context CD@C
+  inv i1:
+    self.c5 > 5
 
 
 mediator AB < NONE
@@ -39,14 +47,11 @@ end
 
 mediator CD < AB
   clabject C : A
+    attributes
+      a1 -> c5
   end
 
-  clabject D : A
-  end
-
-  assoclink cd1 : aa1
-      cc1->aaa1
-      dd1->aaa2
+  clabject D : B
   end
 
 end

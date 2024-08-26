@@ -4,11 +4,13 @@ MLM ABCD
     class A
       attributes
         a1: String
+        a2: Integer
     end
 
     class B
       attributes
         b1: String
+        b2: String
     end
 
     association ab1 between
@@ -33,20 +35,24 @@ MLM ABCD
       D[*] role dd1
     end
 
+
 inter-constraints
-context CD@C inv:
-    self.bb1->forAll(b|b.b1 = 'test')
+context CD@C
+  inv i1:
+    self.bb1->forAll( it | it.b1 = 'b')
+  inv i2:
+    self.a2 > 5
+
 
 mediator AB < NONE
 end
 
 mediator CD < AB
-    clabject C : A
-        roles
-            ~bb1
-    end
+   clabject C : A
+   end
 
-    clabject D : B
-    end
+   clabject D : B
+   end
 
 end
+
