@@ -248,6 +248,207 @@ public class USECompilerMLMTest extends TestCase {
     }
 
 
+    public void testCompile_mlm1_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm1.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            //empty mediators, classes should behave like in a multi-model
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
+            Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+
+            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
+            Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("aa1", "dd3")), classB_Roles);
+
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("c")), classC_Attributes);
+            Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("d")), classD_Attributes);
+
+            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("dd1", "dd2")), classC_Roles);
+            Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3")), classD_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm2_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm2.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
+            Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+
+            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
+            Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("aa1", "dd3")), classB_Roles);
+
+            //classes C & D should inherit the roles and attributes from A & B
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("c", "a1", "a2")), classC_Attributes);
+            Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
+
+            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("dd1", "dd2", "bb1")), classC_Roles);
+            Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "aa1", "dd3")), classD_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm3_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm3.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
+            Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+
+            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
+            Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("aa1", "dd3")), classB_Roles);
+
+            //classes C & D should inherit the roles and attributes from A & B with renaming and removing of attributes
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("c", "c1")), classC_Attributes);
+            Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
+
+            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("dd1", "dd2", "bb1")), classC_Roles);
+            Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "aa1", "dd3")), classD_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm3b_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm3b.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
+            Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+
+            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb1", "bb2")), classA_Roles);
+            Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("aa1", "aa2", "dd3")), classB_Roles);
+
+            //classes C & D should inherit the roles and attributes from A & B with renaming and removing of attributes and roles
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("c", "c1")), classC_Attributes);
+            Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
+
+            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("dd1", "dd2", "bb3")), classC_Roles);
+            Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "aa1", "aa2", "dd3")), classD_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+
+    public void testCompile_mlm4_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm4.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
+            Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+
+            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
+            Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("aa1", "dd3")), classB_Roles);
+
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("c", "c1")), classC_Attributes);
+            Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
+
+            //the association cd1 is defined as assoclink of ab1
+            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("dd1", "dd2")), classC_Roles);
+            Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "dd3")), classD_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
     public void testCompile_mlm7a_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -312,7 +513,6 @@ public class USECompilerMLMTest extends TestCase {
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
 
-
             UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
             systemApi.createObject("CD@C", "c1");
             systemApi.createObject("AB@B", "b1");
@@ -326,118 +526,15 @@ public class USECompilerMLMTest extends TestCase {
             systemApi.setAttributeValue("b1", "b1", "'b'");
             Assert.assertTrue(systemApi.checkState());
 
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-//TODO remove this after writing tests for role inheritance
-/*
-
-    public void testCompile_mlm9_role_renaming2_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming2.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-
-            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
-            systemApi.createObject("CD@C", "c1");
-            systemApi.createObject("AB@B", "b1");
-            systemApi.createLink("AB@ab1", "c1", "b1");
-
-
-            systemApi.setAttributeValue("b1", "b1", "'x'");
+            systemApi.setAttributeValue("c1", "a2", "0");
             Assert.assertFalse(systemApi.checkState());
 
-            systemApi.setAttributeValue("b1", "b1", "'b'");
-            Assert.assertTrue(systemApi.checkState());
-
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();
             fail("Unexpected exception");
         }
     }
-
-    public void testCompile_mlm9_role_renaming3_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming3.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-
-            assertEquals("{bb=bb, bb1=bb1, bb2=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
-
-            System.out.println(api.getClassSafe("CD@C").navigableEnds());
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    public void testCompile_mlm9_role_renaming4_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming4.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-
-            assertEquals("{bb1=bb1, bb2=bb2}", api.getClassSafe("CD@C").navigableEnds().toString());
-
-            System.out.println(api.getClassSafe("CD@C").navigableEnds());
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    public void testCompile_mlm9_role_renaming6_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm9_role_renaming6.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-            assertEquals("{dd=dd, dd2=bb}", mlmResult.getClass("CD", "C").navigableEnds().toString());
-            System.out.println(mlmResult.getClass("CD", "C").navigableEnds());
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-*/
-
 
 
 //    public void testCompile_mlm_graph_toString() {
@@ -463,6 +560,31 @@ public class USECompilerMLMTest extends TestCase {
 //        }
 //    }
 
+    public void testCompile_mlm20_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm20.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("aaa1", "aaa2")), classA_Roles);
+            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("dd1")), classC_Roles);
+            Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("cc1")), classD_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
 
 
     public void testCompile_mlm23_clabject_attribute_removing_Specification() {

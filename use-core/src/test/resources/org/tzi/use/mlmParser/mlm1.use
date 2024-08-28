@@ -41,12 +41,10 @@ MLM ABCD
     end
 
 inter-associations
-association bd1 between
+  association bd1 between
       AB@B[*] role bb3
       CD@D[*] role dd3
 end
-
-
 
 
 mediator AB < NONE
