@@ -54,12 +54,6 @@ MLM ABCD
     end
 
 
---inter-constraints
---context CD@C
---  inv i1:
---    self.a1 > 5
-
-
 mediator AB < NONE
 end
 

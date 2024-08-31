@@ -44,7 +44,7 @@ public class MMediator extends MModelElementImpl {
 
     public MClabject getClabject(MClass child, MClass parent){
         for(MClabject clabject : fClabjects.values()){
-            if(clabject.child().equals(child) && clabject.parent().equals(parent)){
+            if(clabject.child().equals(child) && clabject.parent().isSubClassOf(parent)){
                 return clabject;
             }
         }

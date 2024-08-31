@@ -51,7 +51,7 @@ public class ASTAssoclink extends ASTAnnotatable{
         String parentRoleNameEnd2 = fRoleBindingEnd2.second.getText();
 
 
-        List<MAssociationEnd> allEnds = mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds();
+        List<MAssociationEnd> allEnds = new ArrayList<>(mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds());
         allEnds.addAll(mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds());
 
         Optional<MAssociationEnd> mEndC1 = allEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd1)).findFirst();
