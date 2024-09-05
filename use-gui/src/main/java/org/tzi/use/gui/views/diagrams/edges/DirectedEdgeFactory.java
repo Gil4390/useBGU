@@ -60,6 +60,30 @@ public class DirectedEdgeFactory {
                                  SolidDirectedLine.class, sourceX, sourceY,
                                  targetX, targetY );
     }
+
+    /**
+     * Creates an UML clabject edge between the given coordinates
+     *
+     * @param sourceX
+     *            X coordinate of source point
+     * @param sourceY
+     *            Y coordinate of source point
+     * @param targetX
+     *            X coordinate of target point
+     * @param targetY
+     *            Y coordinate of target point
+     * @return UML clabject edge
+     * @throws Exception
+     */
+    public static I_DirectedEdge createClabject( final int sourceX,
+                                                    final int sourceY,
+                                                    final int targetX,
+                                                    final int targetY )
+            throws Exception {
+        return new DirectedEdge( DirectedGraphicFactory.TRIANGLE,
+                DashedDirectedLine.class, sourceX, sourceY,
+                targetX, targetY );
+    }
     
     /**
      * Creates an UML implementation edge between the given coordinates with
@@ -411,6 +435,32 @@ public class DirectedEdgeFactory {
                                                   final int targetY )
     throws Exception {
         return createInheritance( sourceX, sourceY, targetX, targetY ).draw( graphic );
+    }
+
+    /**
+     * Creates and draws an UML clabject edge between the given coordinates
+     * into the given graphic
+     *
+     * @param graphic
+     *            graphic to draw into
+     * @param sourceX
+     *            X coordinate of source point
+     * @param sourceY
+     *            Y coordinate of source point
+     * @param targetX
+     *            X coordinate of target point
+     * @param targetY
+     *            Y coordinate of target point
+     * @return UML clabject edge
+     * @throws Exception
+     */
+    public static I_DirectedEdge drawClabject( final Graphics graphic,
+                                                  final int sourceX,
+                                                  final int sourceY,
+                                                  final int targetX,
+                                                  final int targetY )
+            throws Exception {
+        return createClabject( sourceX, sourceY, targetX, targetY ).draw( graphic );
     }
     
     /**

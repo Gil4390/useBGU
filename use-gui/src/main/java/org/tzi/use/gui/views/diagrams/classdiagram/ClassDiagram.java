@@ -88,18 +88,7 @@ import org.tzi.use.gui.views.diagrams.event.HighlightChangeEvent;
 import org.tzi.use.gui.views.diagrams.event.HighlightChangeListener;
 import org.tzi.use.gui.views.selection.classselection.ClassSelection;
 import org.tzi.use.gui.xmlparser.LayoutTags;
-import org.tzi.use.uml.mm.MAssociation;
-import org.tzi.use.uml.mm.MAssociationClass;
-import org.tzi.use.uml.mm.MAssociationClassImpl;
-import org.tzi.use.uml.mm.MAssociationEnd;
-import org.tzi.use.uml.mm.MAttribute;
-import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MClassifier;
-import org.tzi.use.uml.mm.MGeneralization;
-import org.tzi.use.uml.mm.MModel;
-import org.tzi.use.uml.mm.MModelElement;
-import org.tzi.use.uml.mm.MNamedElementComparator;
-import org.tzi.use.uml.mm.MOperation;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.mm.commonbehavior.communications.MSignal;
 import org.tzi.use.uml.mm.statemachines.MProtocolStateMachine;
 import org.tzi.use.uml.mm.statemachines.MStateMachine;
@@ -760,7 +749,9 @@ public class ClassDiagram extends DiagramView
 		}
 
 		GeneralizationEdge e = GeneralizationEdge.create(lookup.get(child), lookup.get(parent), this);
-
+		if(gen instanceof MClabject) {
+			e.setClabjectEdge(true);
+		}
 		fGraph.addEdge(e);
 		visibleData.fGenToGeneralizationEdge.put(gen, e);
 		fLayouter = null;

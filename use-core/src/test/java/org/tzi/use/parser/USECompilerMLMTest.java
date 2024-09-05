@@ -536,6 +536,41 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+    public void testCompile_mlm12_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm12.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            systemApi.createObject("CD@C", "c1");
+            systemApi.createObject("AB@B", "b1");
+            systemApi.createLink("AB@ab1", "c1", "b1");
+
+            systemApi.setAttributeValue("c1", "c5", "10");
+
+//            systemApi.setAttributeValue("b1", "b1", "'x'");
+//            Assert.assertFalse(systemApi.checkState());
+//
+//            systemApi.setAttributeValue("b1", "b1", "'b'");
+//            Assert.assertTrue(systemApi.checkState());
+//
+//            systemApi.setAttributeValue("c1", "a2", "0");
+            Assert.assertTrue(systemApi.checkState());
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
 
 //    public void testCompile_mlm_graph_toString() {
 //        MMultiLevelModel mlmResult = null;

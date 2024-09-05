@@ -36,6 +36,8 @@ import org.tzi.use.gui.views.diagrams.waypoints.WayPoint;
  */
 public final class GeneralizationEdge extends EdgeBase {
 
+    private boolean isClabjectEdge = false;
+
     protected GeneralizationEdge( PlaceableNode child, PlaceableNode parent, 
                                DiagramView diagram ) {
         super( child, parent, "Inheritance", diagram.getOptions(), true);
@@ -84,6 +86,13 @@ public final class GeneralizationEdge extends EdgeBase {
                                                              (int) n2.getCenter().getY(),
                                                              false);
                         n1 = n2;
+                    } else if(isClabjectEdge) {
+                        	// draw the last line segment, as an inheritance
+                            DirectedEdgeFactory.drawClabject( g, (int) n1.getCenter().getX(),
+                                                                    (int) n1.getCenter().getY(),
+                                                                    (int) n2.getCenter().getX(),
+                                                                    (int) n2.getCenter().getY() );
+
                     } else {
                     	// draw the last line segment, as an inheritance
                         DirectedEdgeFactory.drawInheritance( g, (int) n1.getCenter().getX(), 
@@ -104,5 +113,9 @@ public final class GeneralizationEdge extends EdgeBase {
     public static GeneralizationEdge create( PlaceableNode child, PlaceableNode parent, DiagramView diagram ) {
     	GeneralizationEdge edge = new GeneralizationEdge(child, parent, diagram);
     	return edge;
+    }
+
+    public void setClabjectEdge(boolean isClabjectEdge) {
+        this.isClabjectEdge = isClabjectEdge;
     }
 }
