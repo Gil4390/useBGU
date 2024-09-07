@@ -553,15 +553,11 @@ public class USECompilerMLMTest extends TestCase {
             systemApi.createObject("AB@B", "b1");
             systemApi.createLink("AB@ab1", "c1", "b1");
 
-            systemApi.setAttributeValue("c1", "c5", "10");
+            systemApi.setAttributeValue("c1", "c5", "3");
 
-//            systemApi.setAttributeValue("b1", "b1", "'x'");
-//            Assert.assertFalse(systemApi.checkState());
-//
-//            systemApi.setAttributeValue("b1", "b1", "'b'");
-//            Assert.assertTrue(systemApi.checkState());
-//
-//            systemApi.setAttributeValue("c1", "a2", "0");
+            Assert.assertFalse(systemApi.checkState());
+
+            systemApi.setAttributeValue("c1", "c5", "10");
             Assert.assertTrue(systemApi.checkState());
 
         } catch (Exception e) {

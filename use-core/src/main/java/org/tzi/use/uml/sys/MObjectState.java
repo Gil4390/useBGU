@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.tzi.use.uml.mm.MAttribute;
+import org.tzi.use.uml.mm.MInternalAttribute;
 import org.tzi.use.uml.mm.statemachines.MProtocolStateMachine;
 import org.tzi.use.uml.mm.statemachines.MState;
 import org.tzi.use.uml.mm.statemachines.MStateMachine;
@@ -155,11 +156,25 @@ public final class MObjectState {
     public Value attributeValue(MAttribute attr) {
         Value val = fAttrSlots.get(attr);
         
-        if (val == null )
+        if (val == null ){
+			for (MAttribute a : fAttrSlots.keySet()) {
+				if (a instanceof MInternalAttribute){
+					MInternalAttribute ia = (MInternalAttribute) a;
+					if (attr instanceof MInternalAttribute){
+						if (ia.equals(attr)) {
+							return fAttrSlots.get(ia);
+						}
+					}
+					if (ia.getOriginalAttribute().equals(attr)) {
+						return fAttrSlots.get(ia);
+					}
+				}
+			}
 			throw new IllegalArgumentException("Attribute `" + attr
 					+ "' does not exist in object `" + fObject.name() + "'.");
-        
-        return val;
+		}
+
+		return val;
     }
     
     /**
@@ -181,12 +196,20 @@ public final class MObjectState {
 	 *                attr is not part of this object or types don't match.
      */
     public void setAttributeValue(MAttribute attr, Value newVal) {
+		for (MAttribute a : fAttrSlots.keySet()) {
+			if (a instanceof MInternalAttribute){
+				MInternalAttribute ia = (MInternalAttribute) a;
+				if (ia.getOriginalAttribute().equals(attr)) {
+					attr = ia;
+				}
+			}
+		}
         Value oldVal = fAttrSlots.get(attr);
         
         if (oldVal == null )
 			throw new IllegalArgumentException("Attribute `" + attr
 					+ "' does not exist in object `" + fObject.name() + "'.");
-        
+
         if (! newVal.type().conformsTo(attr.type()) )
 			throw new IllegalArgumentException("Expected type `" + attr.type()
 					+ "' for attribute `" + attr.name() + "', found type `"

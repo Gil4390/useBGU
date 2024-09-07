@@ -30,7 +30,7 @@ import com.google.common.base.Optional;
  * @author  Mark Richters
  * @author  Lars Hamann
  */
-public final class MAttribute extends MModelElementImpl implements UseFileLocatable {
+public class MAttribute extends MModelElementImpl implements UseFileLocatable {
     private MClass fOwner;
     private final Type fType;
 
