@@ -1,0 +1,44 @@
+model Computer_product
+    class Hardware
+      attributes
+        testDate: Integer
+    end
+
+    class Computer < Hardware
+      attributes
+        maker: String
+    end
+
+    class Peripheral < Hardware
+    end
+
+    class Software
+    end
+
+    class System < Software
+      attributes
+        protected: Boolean
+    end
+
+    class Application < Software
+    end
+
+    association hardwSoftw between
+      Hardware[0..*] role hardw
+      Software[0..*] role softw
+    end
+
+    association compatibility between
+      System[1..*] role syst
+      Application[1..*] role appl
+    end
+
+    association contain between
+      Hardware[0..*] role part
+      Hardware[0..*] role parent
+    end
+
+    constraints
+    context Application inv ApplSysCompat:
+      self.syst.hardw->includesAll(self.hardw)
+
