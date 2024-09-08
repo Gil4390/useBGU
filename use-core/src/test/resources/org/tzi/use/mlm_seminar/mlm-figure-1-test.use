@@ -9,6 +9,7 @@ model Computer_product
     class Computer < Hardware
       attributes
         maker: String
+        relatedStandard: String
     end
 
     class Peripheral < Hardware
@@ -78,8 +79,8 @@ model PC
     end
 
     association pcCompat between
-      PCAppl[0..*] role appl
       PCOS[0..*] role syst
+      PCAppl[0..*] role appl
     end
 
     association pcOs between
@@ -118,17 +119,11 @@ mediator PC < Computer_product
    end
 
    clabject PC : Computer
---        attributes
---            ~relatedStandard
-        roles
-            softw -> os
+        attributes
+            ~relatedStandard
    end
 
    clabject PCOS : System
-        attributes
-            protected -> openSource
-        roles
-            hardw -> pc
    end
 
    clabject PCAppl : Application
@@ -150,8 +145,8 @@ mediator PC < Computer_product
    end
 
    assoclink pcCompat : compatibility
-        appl->appl
         syst->syst
+        appl->appl
    end
 
 end

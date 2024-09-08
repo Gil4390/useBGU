@@ -71,11 +71,11 @@ public class ASTMediator extends ASTAnnotatable{
             MClabject clabject2 = mMediator.getClabject(childClass2, parentClass2);
 
             if(clabject1 == null || clabject2 == null) {
-                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not defined as a clabject in the mediator: "+mMediator.name());
+                throw new Exception("Assoclink creation failed: " + "Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not defined as a clabject in the mediator: "+mMediator.name());
             }
 
             if (!clabject1.parent().isSubClassOf(parentClass1) || !clabject2.parent().isSubClassOf(parentClass2)) {
-                throw new Exception("Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not instantiating the appropriate class in the mediator: "+mMediator.name());
+                throw new Exception("Assoclink creation failed: " + "Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not instantiating the appropriate class in the mediator: "+mMediator.name());
             }
 
 
