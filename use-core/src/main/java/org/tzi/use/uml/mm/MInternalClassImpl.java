@@ -151,7 +151,7 @@ public class MInternalClassImpl extends MClassImpl{
 
     //return the clabject edge that connects this class with the class from the upper level
     // will return null if the clabject doesn't exist
-    private MClabject getClabjectEdge(){
+    public MClabject getClabjectEdge(){
         Set<MClass> parents = parents();
         if (parents.isEmpty()) return null;
         //need to find the parent that's not in the current level
