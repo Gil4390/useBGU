@@ -121,6 +121,8 @@ mediator PC < Computer_product
    clabject PC : Computer
         attributes
             ~relatedStandard
+        roles
+            ~maintained
    end
 
    clabject PCOS : System

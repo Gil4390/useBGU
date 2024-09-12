@@ -28,6 +28,7 @@ public class USECompilerMLMTest extends TestCase {
     private static final boolean VERBOSE = false;
 
     private static File TEST_PATH;
+    private static File TEST_PATH_SEMINAR;
     private static File TEST_PATH_PAPER;
 
     private static File TEST_PATH_REGULAR;
@@ -37,6 +38,7 @@ public class USECompilerMLMTest extends TestCase {
     static {
         try {
             TEST_PATH = new File(ClassLoader.getSystemResource("org/tzi/use/mlmParser").toURI());
+            TEST_PATH_SEMINAR = new File(ClassLoader.getSystemResource("org/tzi/use/mlm_seminar").toURI());
             TEST_PATH_PAPER = new File(ClassLoader.getSystemResource("org/tzi/use/mlmPaper").toURI());
             TEST_PATH_REGULAR = new File(ClassLoader.getSystemResource("org/tzi/use/parser").toURI());
             EXAMPLES_PATH = new File(ClassLoader.getSystemResource("examples").toURI());
@@ -73,7 +75,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 49);
+        List<File> fileList = getFilesMatchingSuffix(".use", 39);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -742,6 +744,70 @@ public class USECompilerMLMTest extends TestCase {
             UseMLMApi api = new UseMLMApi(mlmResult);
             assertFalse(api.getClassSafe("CD@C").navigableEnds().containsKey("bb1"));
             assertTrue(api.getClassSafe("CD@C").navigableEnds().containsKey("dd1"));
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm27_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm27.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            systemApi.createObject("AB@B", "b1");
+            systemApi.createObject("CD@D", "d1");
+            systemApi.createLink("bd1", "b1", "d1");
+
+            Assert.assertTrue(systemApi.checkState(newErr));
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+
+    public void testCompile_mlm_figure_1_test_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH_SEMINAR + "/mlm-figure-1-test.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            systemApi.createObject("Computer_product@System", "sys1");
+            systemApi.createObject("Computer_product@Application", "app1");
+            systemApi.createObject("Computer_product@Computer", "comp1");
+            systemApi.createObject("PC@PC", "pc1");
+            systemApi.createObject("PC@PCOS", "pcos1");
+
+            systemApi.createLink("Computer_product@compatibility", "sys1", "app1");
+            systemApi.createLink("Computer_product@hardwSoftw", "comp1", "sys1");
+
+            systemApi.createLink("Computer_product@compatibility", "pcos1", "app1");
+            systemApi.createLink("installation", "app1", "pcos1");
+
+            systemApi.createLink("PC@pcOs", "pc1", "pcos1");
+            systemApi.createLink("connection", "comp1", "pc1");
+
+            Assert.assertTrue(systemApi.checkState(newErr));
+
         } catch (Exception e) {
             // This can be ignored
             e.printStackTrace();

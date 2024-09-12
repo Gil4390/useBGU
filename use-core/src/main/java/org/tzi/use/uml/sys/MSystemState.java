@@ -2209,6 +2209,15 @@ public final class MSystemState {
 			Map<List<Value>,Set<MObject>> linkedObjects = getLinkedObjects(obj, aend1, aend2);
 			
 			if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
+				MClass cls2 = aend2.cls();
+				if (cls2 instanceof MInternalClassImpl){
+					MClabject clabject = ((MInternalClassImpl) cls2).getClabjectEdge();
+					if (clabject != null){
+						if (clabject.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
+							continue;
+						}
+					}
+				}
 				reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
 				if (!reportAllErrors) {
 					return false;
