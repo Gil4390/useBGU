@@ -16,11 +16,14 @@
     clabject := "clabject" ID ":" ID
                           (attribute_rename)?
                           (roles_rename)?
+                          (constraints-inheritance)?
 
     attribute_rename := "attributes" ( (ID "->" ID) | ("~" ID) ) *
 
     roles_rename := "roles" ( (ID "->" ID) | ("~" ID) ) *
 
+    constraints-inheritance := "constraints" (~ID)*
+ 
     assoclink := "association" ID ":" ID
                          ID "->" ID
                          ID "->" ID
