@@ -3,13 +3,23 @@ model AB
 class A
 end
 
+class A1
+end
+
 class B < A
 end
 
+class C
+end
+
+association bc1 between
+    B[1] role b1
+    C[1] role c1
+end
 
 association bd1 between
     A[1] role a1
-    B[1] role b1
+    A1[1] role c1
 end
 
 

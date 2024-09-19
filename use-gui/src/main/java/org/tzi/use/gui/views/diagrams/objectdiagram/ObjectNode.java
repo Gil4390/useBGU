@@ -250,10 +250,20 @@ public class ObjectNode extends PlaceableNode implements SortChangeListener, Obj
 			fillColor = fOpt.getGREYED_FILL_COLOR();
 			lineColor = fOpt.getGREYED_LINE_COLOR();
 		}
+		if (!isSelected() && this.fObject.cls().name().contains("@")){
+			int color = this.fObject.cls().name().split("@")[0].hashCode()*1005 + 8539;
+			int R = (color & 0x000000FF);
+			int G = (color & 0x0000FF00) >> 8;
+			int B = (color & 0x00FF0000) >> 16;
+			fillColor = new Color(R, G, B, 0x4F);
+		}
+
 		g.setColor(fillColor);
 		g.fill(currentBounds);
 		g.setColor(lineColor);
 		g.draw(currentBounds);
+
+
 
 		x = (currentBounds.getCenterX() - labelWidth / 2);
 		y = (int) currentBounds.getY() + g.getFontMetrics().getAscent() + 2;

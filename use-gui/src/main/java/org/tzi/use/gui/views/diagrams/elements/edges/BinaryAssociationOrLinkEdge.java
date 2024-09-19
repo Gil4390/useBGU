@@ -19,7 +19,7 @@
 
 package org.tzi.use.gui.views.diagrams.elements.edges;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
@@ -85,6 +85,8 @@ public class BinaryAssociationOrLinkEdge extends AssociationOrLinkPartEdge {
      * The represented association end.
      */
     MAssociationEnd fSourceEnd;
+
+	boolean isInterAssoc = false;
 
     /**
      * Internal constructor
@@ -424,9 +426,15 @@ public class BinaryAssociationOrLinkEdge extends AssociationOrLinkPartEdge {
         } else {
             g.setColor( fOpt.getEDGE_COLOR() );
         }
-        
+
+		Stroke previousStroke = g.getStroke();
+        if(isInterAssoc) {
+			//change the thickness of the line
+			g.setStroke(new BasicStroke(3.0f));
+		}
         drawEdge( g );
-                
+
+		g.setStroke(previousStroke);
         g.setColor( fOpt.getEDGE_COLOR() );
     }
 
@@ -502,5 +510,9 @@ public class BinaryAssociationOrLinkEdge extends AssociationOrLinkPartEdge {
 			NewObjectDiagram diagram, MLink link) {
 		BinaryAssociationOrLinkEdge edge = new BinaryAssociationOrLinkEdge(source, target, sourceEnd, targetEnd, diagram, link);
 		return edge;
+	}
+
+	public void setAsInterAssoc() {
+		isInterAssoc = true;
 	}
 }

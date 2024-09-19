@@ -19,12 +19,8 @@
 
 package org.tzi.use.uml.mm;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.tzi.use.util.collections.CollectionUtil;
@@ -316,8 +312,23 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
 				}
 			}
 		}
+		List<MAssociation> assocList = classes[0].associations().stream()
+				.filter(ass -> ass.associationEnds().containsAll(Arrays.asList(classes[0], classes[1]))).collect(Collectors.toList());
+				 // You should handle the case where no association is found
+		for(MAssociation assoc : assocList) {
+			MGeneralization assoclink = this.model.generalizationGraph().edgesBetween(this,assoc).iterator().next();
+			if(assoclink instanceof MAssoclink || (assoclink == null)) {
+				continue;
+			}
+			if(assoclink.fParent.equals(this)) {
+				return false;
+			}
+		}
+
         return true;
     }
+
+
 
 	@Override
 	public void addSubsets(@NonNull MAssociation asso) {

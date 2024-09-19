@@ -316,7 +316,7 @@ public class ClassDiagram extends DiagramView
 		n.setMinHeight(minClassNodeHeight);
 
 		if (n.name().contains("@")){
-			int color = n.name().split("@")[0].hashCode()*8575000;
+			int color = n.name().split("@")[0].hashCode()*1005 + 8539;
 			int R = (color & 0x000000FF);
 			int G = (color & 0x0000FF00) >> 8;
 			int B = (color & 0x00FF0000) >> 16;
@@ -584,7 +584,9 @@ public class ClassDiagram extends DiagramView
 			// binary association
 			BinaryAssociationOrLinkEdge e = createBinaryAssociationOrLinkEdge(source, target, assocEnd1, assocEnd2,
 					this, assoc);
-
+			if(!assoc.name().contains("@")) {
+				e.setAsInterAssoc();
+			}
 			fGraph.addEdge(e);
 			visibleData.fBinaryAssocToEdgeMap.put(assoc, e);
 			fLayouter = null;
@@ -1687,7 +1689,7 @@ public class ClassDiagram extends DiagramView
 			n.resetOperationColor();
 
 			if (n.name().contains("@")){
-				int color = n.name().split("@")[0].hashCode()*8575000;
+				int color = n.name().split("@")[0].hashCode()*1005 + 8539;
 				int R = (color & 0x000000FF);
 				int G = (color & 0x0000FF00) >> 8;
 				int B = (color & 0x00FF0000) >> 16;

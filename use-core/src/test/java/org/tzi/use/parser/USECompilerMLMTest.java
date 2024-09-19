@@ -599,6 +599,32 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+    public void testCompile_mlm17_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm17.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb5", "dd1")), classC_Roles);
+
+            Set<String> classE_Roles = mlmResult.getClass("EF", "E").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb9", "dd1","ff1")), classE_Roles);
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
 
 //    public void testCompile_mlm_graph_toString() {
 //        MMultiLevelModel mlmResult = null;
@@ -649,7 +675,7 @@ public class USECompilerMLMTest extends TestCase {
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)) {
             mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
@@ -819,6 +845,41 @@ public class USECompilerMLMTest extends TestCase {
             mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
+
+
+
+            Set<String> class_Hardware_Roles = mlmResult.getClass("Computer_product", "Hardware").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("part","parent","softw")), class_Hardware_Roles);
+
+            Set<String> class_Peripheral_Roles = mlmResult.getClass("Computer_product", "Peripheral").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("part","parent","softw")), class_Peripheral_Roles);
+
+            Set<String> class_Computer_Roles = mlmResult.getClass("Computer_product", "Computer").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("part","parent","softw","maintained")), class_Computer_Roles);
+
+            Set<String> class_Software_Roles = mlmResult.getClass("Computer_product", "Software").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("hardw")), class_Software_Roles);
+
+            Set<String> class_System_Roles = mlmResult.getClass("Computer_product", "System").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("hardw","appl")), class_System_Roles);
+
+            Set<String> class_Application_Roles = mlmResult.getClass("Computer_product", "Application").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("installed","syst","hardw")), class_Application_Roles);
+
+            Set<String> class_PC_Roles = mlmResult.getClass("PC", "PC").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("part","softw","handler","os")), class_PC_Roles);
+
+            Set<String> class_Device_Roles = mlmResult.getClass("PC", "Device").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("parent","softw")), class_Device_Roles);
+
+            Set<String> class_PCAppl_Roles = mlmResult.getClass("PC", "PCAppl").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("hardw","syst","installed")), class_PCAppl_Roles);
+
+            Set<String> class_PCOS_Roles = mlmResult.getClass("PC", "PCOS").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("installer","pc","appl")), class_PCOS_Roles);
+
+
+
 
             UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
             systemApi.createObject("Computer_product@System", "sys1");
