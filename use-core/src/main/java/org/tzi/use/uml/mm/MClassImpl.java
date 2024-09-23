@@ -54,7 +54,7 @@ public class MClassImpl extends MClassifierImpl implements MClass {
     private Map<String, MOperation> fVTableOperations;
         
     // other classes reachable by associations 
-    private Map<String, MNavigableElement> fNavigableElements;
+    protected Map<String, MNavigableElement> fNavigableElements;
 
     /**
      * All owned PSM
@@ -296,10 +296,6 @@ public class MClassImpl extends MClassifierImpl implements MClass {
      */
     public MNavigableElement navigableEnd(String rolename) {
         return navigableEnds().get( rolename );
-    }
-
-    public Map<String, MNavigableElement> navigableElements(){
-        return fNavigableElements;
     }
 
     /**

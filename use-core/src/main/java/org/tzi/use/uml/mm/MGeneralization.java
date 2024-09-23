@@ -112,7 +112,4 @@ public class MGeneralization extends MModelElementImpl implements DirectedEdge<M
 		}
 	}
 
-    public void validateInheritance() {
-
-    }
 }

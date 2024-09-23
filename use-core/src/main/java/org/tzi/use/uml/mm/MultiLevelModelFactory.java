@@ -14,10 +14,6 @@ public class MultiLevelModelFactory extends MultiModelFactory {
         return new MMultiLevelModel(multiModel);
     }
 
-    public MLevel createLevel(String name, String parentName) {
-        return new MLevel(name, parentName);
-    }
-
     public MMediator createMediator(String name) {
         return new MMediator(name);
     }
