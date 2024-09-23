@@ -47,7 +47,7 @@ public class MultiModelFactory extends ModelFactory{
      */
     @Override
     public MAssociation createAssociation(String name) {
-        return super.createAssociation(modelName + name);
+        return new MInternalAssociationImpl(modelName + name);
     }
 
 

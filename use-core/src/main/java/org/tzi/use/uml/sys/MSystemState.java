@@ -1679,14 +1679,14 @@ public final class MSystemState {
 		return valid;
 	}
 
-	public Legality checkLegality(PrintWriter out, boolean traceEvaluation,
-						 boolean showDetails, boolean allInvariants, final List<String> invNames) {
-		Legality valid = Legality.Legal;
+	public Definedness checkWellDefinedness(PrintWriter out, boolean traceEvaluation,
+											boolean showDetails, boolean allInvariants, final List<String> invNames) {
+		Definedness valid = Definedness.WellDefined;
 		Evaluator evaluator = new Evaluator();
 
 		// model inherent constraints: check whether cardinalities of
 		// association links match their declaration of multiplicities
-		valid = checkLegalStructure(out);
+		valid = checkWellDefinedStructure(out);
 
 		if (Options.EVAL_NUMTHREADS > 1)
 			out.println("checking invariants (using " + Options.EVAL_NUMTHREADS
@@ -1790,7 +1790,7 @@ public final class MSystemState {
 									new VarBindings());
 							out.println("  -> " + v1.toStringWithType());
 						}
-						valid = Legality.Illegal;
+						valid = Definedness.NotWellDefined;
 						numFailed++;
 					}
 				}
@@ -1912,11 +1912,11 @@ public final class MSystemState {
 		return checkStructure(out, true);
 	}
 
-	public enum Legality {
-		Legal, Illegal, PartiallyLegal
+	public enum Definedness {
+		WellDefined, NotWellDefined, PartiallyDefined
 	}
-	public Legality checkLegalStructure(PrintWriter out) {
-		return checkLegalStructure(out, true);
+	public Definedness checkWellDefinedStructure(PrintWriter out) {
+		return checkWellDefinedStructure(out, true);
 	}
 	
 	/**
@@ -1955,10 +1955,10 @@ public final class MSystemState {
 	}
 
 
-	public Legality checkLegalStructure(PrintWriter out, boolean reportAllErrors) {
+	public Definedness checkWellDefinedStructure(PrintWriter out, boolean reportAllErrors) {
 		long start = System.currentTimeMillis();
 
-		Legality res = Legality.Legal;
+		Definedness res = Definedness.WellDefined;
 		out.println("checking structure...");
 		out.flush();
 
@@ -1966,19 +1966,19 @@ public final class MSystemState {
 
 		// check the whole/part hierarchy
 		if (!checkWholePartLink(out)) {
-			if (!reportAllErrors) return Legality.Illegal;
-			res = Legality.Illegal;
+			if (!reportAllErrors) return Definedness.NotWellDefined;
+			res = Definedness.NotWellDefined;
 		}
 
 		// check all associations
 		for (MAssociation assoc : fSystem.model().associations()) {
-			Legality res2 = checkLegalStructure(assoc, out, reportAllErrors);
-			if (res2 == Legality.Illegal || res == Legality.Illegal) {
-				res = Legality.Illegal;
-			} else if (res2 == Legality.PartiallyLegal) {
-				res = Legality.PartiallyLegal;
+			Definedness res2 = checkWellDefinedStructure(assoc, out, reportAllErrors);
+			if (res2 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
+				res = Definedness.NotWellDefined;
+			} else if (res2 == Definedness.PartiallyDefined) {
+				res = Definedness.PartiallyDefined;
 			}
-			if (!reportAllErrors && res == Legality.Illegal) return Legality.Illegal;
+			if (!reportAllErrors && res == Definedness.NotWellDefined) return Definedness.NotWellDefined;
 		}
 
 		out.flush();
@@ -2020,19 +2020,19 @@ public final class MSystemState {
 		return res;
 	}
 
-	public Legality checkLegalStructure(MAssociation assoc, PrintWriter out, boolean reportAllErrors) {
-		Legality res = Legality.Legal;
+	public Definedness checkWellDefinedStructure(MAssociation assoc, PrintWriter out, boolean reportAllErrors) {
+		Definedness res = Definedness.WellDefined;
 
 		boolean valid = validateRedefines(assoc, out, reportAllErrors);
-		if (!valid) res = Legality.Illegal;
+		if (!valid) res = Definedness.NotWellDefined;
 
 		if (assoc.associationEnds().size() != 2) {
 			// check for n-ary links
-			Legality res1 = naryAssociationsAreLegal(out, assoc, reportAllErrors);
-			if (res1 == Legality.Illegal || res == Legality.Illegal) {
-				res = Legality.Illegal;
-			} else if (res1 == Legality.PartiallyLegal) {
-				res = Legality.PartiallyLegal;
+			Definedness res1 = naryAssociationsAreWellDefined(out, assoc, reportAllErrors);
+			if (res1 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
+				res = Definedness.NotWellDefined;
+			} else if (res1 == Definedness.PartiallyDefined) {
+				res = Definedness.PartiallyDefined;
 			}
 		} else {
 			// check both association ends
@@ -2040,20 +2040,20 @@ public final class MSystemState {
 			MAssociationEnd aend1 = it2.next();
 			MAssociationEnd aend2 = it2.next();
 
-			Legality res2 = validateLegalBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors);
-			if (res2 == Legality.Illegal || res == Legality.Illegal) {
-				res = Legality.Illegal;
-			} else if (res2 == Legality.PartiallyLegal) {
-				res = Legality.PartiallyLegal;
+			Definedness res2 = validateWellDefinedBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors);
+			if (res2 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
+				res = Definedness.NotWellDefined;
+			} else if (res2 == Definedness.PartiallyDefined) {
+				res = Definedness.PartiallyDefined;
 			}
-			if (!reportAllErrors && res == Legality.Illegal) return Legality.Illegal;
+			if (!reportAllErrors && res == Definedness.NotWellDefined) return Definedness.NotWellDefined;
 
 
-			Legality res3 = validateLegalBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors);
-			if (res3 == Legality.Illegal || res == Legality.Illegal) {
-				res = Legality.Illegal;
-			} else if (res3 == Legality.PartiallyLegal) {
-				res = Legality.PartiallyLegal;
+			Definedness res3 = validateWellDefinedBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors);
+			if (res3 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
+				res = Definedness.NotWellDefined;
+			} else if (res3 == Definedness.PartiallyDefined) {
+				res = Definedness.PartiallyDefined;
 			}
 		}
 
@@ -2108,8 +2108,8 @@ public final class MSystemState {
 		return valid;
 	}
 
-	private Legality naryAssociationsAreLegal(PrintWriter out, MAssociation assoc, boolean reportAllErrors) {
-		Legality valid = Legality.Legal;
+	private Definedness naryAssociationsAreWellDefined(PrintWriter out, MAssociation assoc, boolean reportAllErrors) {
+		Definedness valid = Definedness.WellDefined;
 		Set<MLink> links = linksOfAssociation(assoc).links();
 
 		for (MAssociationEnd selEnd : assoc.associationEnds()) {
@@ -2143,11 +2143,11 @@ public final class MSystemState {
 					int largestLowerBound = selEnd.multiplicity().getLargestLowerBound();
 					if (count < largestLowerBound){
 						//case 1: num of obj is less the largest lower bound - partial
-						valid = Legality.PartiallyLegal;
+						valid = Definedness.PartiallyDefined;
 					}
 					else{
 						//case 2: num of obj is greater than the largest upper bound - illegal
-						valid = Legality.Illegal;
+						valid = Definedness.NotWellDefined;
 						out.println("Multiplicity constraint violation in association `"
 								+ assoc.name() + "':");
 						out.println("  Objects `" + StringUtil.fmtSeq(tuple, ", ")
@@ -2159,7 +2159,7 @@ public final class MSystemState {
 					}
 				}
 			}
-			if (!reportAllErrors && valid == Legality.Illegal) return Legality.Illegal;
+			if (!reportAllErrors && valid == Definedness.NotWellDefined) return Definedness.NotWellDefined;
 		}
 		return valid;
 	}
@@ -2247,9 +2247,9 @@ public final class MSystemState {
 		return valid;
 	}
 
-	private Legality validateLegalBinaryAssociations(PrintWriter out, MAssociation assoc,
-											   MAssociationEnd aend1, MAssociationEnd aend2, boolean reportAllErrors) {
-		Legality valid = Legality.Legal;
+	private Definedness validateWellDefinedBinaryAssociations(PrintWriter out, MAssociation assoc,
+														MAssociationEnd aend1, MAssociationEnd aend2, boolean reportAllErrors) {
+		Definedness valid = Definedness.WellDefined;
 
 		// for each object of the association end's type get
 		// the number of links in which the object participates
@@ -2261,7 +2261,7 @@ public final class MSystemState {
 
 			if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
 				//reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
-				valid = Legality.PartiallyLegal;
+				valid = Definedness.PartiallyDefined;
 				continue;
 			}
 
@@ -2270,23 +2270,23 @@ public final class MSystemState {
 					int largestLowerBound = aend2.multiplicity().getLargestLowerBound();
 					if (entry.getValue().size() < largestLowerBound){
 						//case 1: num of obj is less the largest lower bound - partial
-						valid = Legality.PartiallyLegal;
+						valid = Definedness.PartiallyDefined;
 					}
 					else{
 						//case 2: num of obj is greater than the largest upper bound - illegal
 						reportMultiplicityViolation(out, assoc, aend1, aend2, obj, entry);
-						valid = Legality.Illegal;
+						valid = Definedness.NotWellDefined;
 					}
 				}
 
 				if (!aend1.getSubsettedEnds().isEmpty()) {
 					if (!validateSubsets(out, obj, entry.getKey(), entry.getValue(), aend1)){
-						valid = Legality.Illegal;
+						valid = Definedness.NotWellDefined;
 					}
 				}
 			}
 
-			if (!reportAllErrors && valid == Legality.Illegal) return Legality.Illegal;
+			if (!reportAllErrors && valid == Definedness.NotWellDefined) return Definedness.NotWellDefined;
 		}
 
 		return valid;

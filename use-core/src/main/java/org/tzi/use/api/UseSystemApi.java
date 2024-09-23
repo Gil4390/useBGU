@@ -591,8 +591,8 @@ public abstract class UseSystemApi {
     	return checkState(NullPrintWriter.getInstance());
     }
 
-	public MSystemState.Legality checkLegality() {
-		return checkLegality(NullPrintWriter.getInstance());
+	public MSystemState.Definedness checkWellDefinedness() {
+		return checkWellDefinedness(NullPrintWriter.getInstance());
 	}
     
     /**
@@ -618,14 +618,14 @@ public abstract class UseSystemApi {
 
 
 
-	public MSystemState.Legality checkLegality(PrintWriter error){
-		MSystemState.Legality result;
+	public MSystemState.Definedness checkWellDefinedness(PrintWriter error){
+		MSystemState.Definedness result;
 		// Check structure
-		result = system.state().checkLegalStructure(NullPrintWriter.getInstance());
+		result = system.state().checkWellDefinedStructure(NullPrintWriter.getInstance());
 		// Check Invariants
-		MSystemState.Legality check = system.state().checkLegality(error, false, false, true, Collections.<String>emptyList());
-		if (check == MSystemState.Legality.Illegal){
-			result = MSystemState.Legality.Illegal;
+		MSystemState.Definedness check = system.state().checkWellDefinedness(error, false, false, true, Collections.<String>emptyList());
+		if (check == MSystemState.Definedness.NotWellDefined){
+			result = MSystemState.Definedness.NotWellDefined;
 		}
 		return result;
 	}

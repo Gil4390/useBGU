@@ -2,15 +2,12 @@ package org.tzi.use.uml.mm;
 
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
-import org.tzi.use.graph.DirectedGraph;
-import org.tzi.use.graph.DirectedGraphBase;
 import org.tzi.use.uml.ocl.type.EnumType;
 import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.util.NullPrintWriter;
 
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MMultiLevelModel extends MMultiModel {
 
@@ -177,12 +174,12 @@ public class MMultiLevelModel extends MMultiModel {
         return result;
     }
 
-    public String checkLegalState() {
-        return checkLegalState(NullPrintWriter.getInstance());
+    public String checkWellDefinednessState() {
+        return checkWellDefinednessState(NullPrintWriter.getInstance());
     }
 
-    public String checkLegalState(PrintWriter error){
-        MSystemState.Legality result = MSystemState.Legality.Legal;
+    public String checkWellDefinednessState(PrintWriter error){
+        MSystemState.Definedness result = MSystemState.Definedness.WellDefined;
         MModel previousModel = fModelsList.get(0);
         for (MModel model : this.models()){
             MMediator mediator = fMediators.get(model.name());
@@ -195,7 +192,7 @@ public class MMultiLevelModel extends MMultiModel {
 
                 }catch (Exception e){
                     error.println(e.getMessage());
-                    return MSystemState.Legality.Illegal.toString();
+                    return MSystemState.Definedness.NotWellDefined.toString();
                 }
             }
 
@@ -208,21 +205,21 @@ public class MMultiLevelModel extends MMultiModel {
 
                 }catch (Exception e){
                     error.println(e.getMessage());
-                    return MSystemState.Legality.Illegal.toString();
+                    return MSystemState.Definedness.NotWellDefined.toString();
                 }
             }
 
-            MSystemState.Legality currRes = systemApi.checkLegality(error);
-            if (currRes.equals(MSystemState.Legality.Illegal)){
-                return MSystemState.Legality.Illegal.toString();
+            MSystemState.Definedness currRes = systemApi.checkWellDefinedness(error);
+            if (currRes.equals(MSystemState.Definedness.NotWellDefined)){
+                return MSystemState.Definedness.NotWellDefined.toString();
             }
-            else if (currRes.equals(MSystemState.Legality.PartiallyLegal) && result.equals(MSystemState.Legality.Legal)){
-                result = MSystemState.Legality.PartiallyLegal;
+            else if (currRes.equals(MSystemState.Definedness.PartiallyDefined) && result.equals(MSystemState.Definedness.WellDefined)){
+                result = MSystemState.Definedness.PartiallyDefined;
             }
             previousModel = model;
         }
-        if (result.equals(MSystemState.Legality.PartiallyLegal)){
-            return MSystemState.Legality.Legal.toString();
+        if (result.equals(MSystemState.Definedness.PartiallyDefined)){
+            return MSystemState.Definedness.WellDefined.toString();
         }
         else return result.toString();
     }

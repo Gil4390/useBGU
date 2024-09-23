@@ -57,7 +57,6 @@ import org.tzi.use.uml.mm.statemachines.MStateMachine;
 import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.uml.sys.MSystemException;
-import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.uml.sys.events.StatementExecutedEvent;
 import org.tzi.use.uml.sys.events.tags.SystemStateChangedEvent;
 import org.tzi.use.uml.sys.events.tags.SystemStructureChangedEvent;
@@ -314,7 +313,7 @@ public class MainWindow extends JFrame {
         fCbMenuItemCheckStructure.setSelected(false);
         menu.add(fCbMenuItemCheckStructure);
 
-        mi = menu.add(fActionStateCheckLegality);
+        mi = menu.add(fActionStateCheckWellDefinedness);
         mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0));
 
         menu.add(new JSeparator());
@@ -715,9 +714,8 @@ public class MainWindow extends JFrame {
         fLogWriter.flush();
     }
 
-    private void checkLegality() {
-        //MSystemState.Legality legality = fSession.system().state().checkLegalStructure(fLogWriter);
-        String result = ((MMultiLevelModel)fSession.system().model()).checkLegalState(fLogWriter);
+    private void checkWellDefinedness() {
+        String result = ((MMultiLevelModel)fSession.system().model()).checkWellDefinednessState(fLogWriter);
 
         fLogWriter.println("checking structure, "
                 + ((!result.equals("Illegal")) ? "ok." : "found errors."));
@@ -839,7 +837,7 @@ public class MainWindow extends JFrame {
         boolean on = fSession.hasSystem();
         fActionStateCreateObject.setEnabled(on);
         fActionStateCheckStructure.setEnabled(on);
-        fActionStateCheckLegality.setEnabled(on);
+        fActionStateCheckWellDefinedness.setEnabled(on);
         fActionDetermineStates.setEnabled(on);
         fActionCheckStateInvariants.setEnabled(on);
         fActionStateReset.setEnabled(on);
@@ -1048,7 +1046,7 @@ public class MainWindow extends JFrame {
     private final ActionStateEvalOCL fActionStateEvalOCL = new ActionStateEvalOCL();
 
     private final ActionStateCheckStructure fActionStateCheckStructure = new ActionStateCheckStructure();
-    private final ActionStateCheckLegality fActionStateCheckLegality = new ActionStateCheckLegality();
+    private final ActionStateCheckWellDefinedness fActionStateCheckWellDefinedness = new ActionStateCheckWellDefinedness();
 
     private final ActionDetermineStates fActionDetermineStates = new ActionDetermineStates();
     
@@ -1823,14 +1821,14 @@ public class MainWindow extends JFrame {
         }
     }
 
-    private class ActionStateCheckLegality extends AbstractAction {
-        ActionStateCheckLegality() {
-            super("Check legality now");
+    private class ActionStateCheckWellDefinedness extends AbstractAction {
+        ActionStateCheckWellDefinedness() {
+            super("Check WellDefinedness now");
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            checkLegality();
+            checkWellDefinedness();
         }
     }
 
