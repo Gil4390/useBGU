@@ -599,6 +599,33 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+    public void testCompile_mlm16_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm16.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
+            Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a2", "c", "c5")), classC_Attributes);
+            Set<String> classE_Attributes = mlmResult.getClass("EF", "E").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
+            assertEquals(new HashSet<>(List.of("a2", "c", "e", "e9")), classE_Attributes);
+
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
     public void testCompile_mlm17_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -610,6 +637,9 @@ public class USECompilerMLMTest extends TestCase {
             mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
+
+            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
 
             Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
             assertEquals(new HashSet<>(List.of("bb5", "dd1")), classC_Roles);

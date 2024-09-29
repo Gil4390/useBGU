@@ -72,6 +72,15 @@ public class MInternalClassImpl extends MClassImpl{
                 for (MAttributeRenaming renamedAttribute : ((MClabject) edge).getAttributeRenaming()) {
                     MAttribute oldAttribute = renamedAttribute.attribute();
                     parentAttributes.remove(oldAttribute);
+                    for (MAttribute parentAttribute : parentAttributes) {
+                        if (parentAttribute instanceof MInternalAttribute) {
+                            MInternalAttribute internalAttribute = (MInternalAttribute) parentAttribute;
+                            if (internalAttribute.getOriginalAttribute().equals(oldAttribute)) {
+                                parentAttributes.remove(parentAttribute);
+                                break;
+                            }
+                        }
+                    }
                     MInternalAttribute attr =  new MInternalAttribute(renamedAttribute.newName(), oldAttribute.type());
                     attr.setOriginalAttribute(oldAttribute);
                     parentAttributes.add(attr);
