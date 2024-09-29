@@ -11,4 +11,12 @@ public class MRoleBinding {
         this.parentAssociationEnd = parentAssociationEnd;
     }
 
+    public MAssociationEnd getChildAssociationEnd() {
+        return childAssociationEnd;
+    }
+
+    public MAssociationEnd getParentAssociationEnd() {
+        return parentAssociationEnd;
+    }
+
 }

@@ -19,6 +19,9 @@ public class MAssoclink extends MGeneralization {
         fRoleBinding.add(roleBinding);
     }
 
+    public List<MRoleBinding> roleBindings() {
+        return fRoleBinding;
+    }
     @Override
     public String name() {
         return "ASSOCLINK_" + fChild.name() + "_" + fParent.name();
@@ -27,5 +30,10 @@ public class MAssoclink extends MGeneralization {
     @Override
     public String toString(){
         return name();
+    }
+
+    @Override
+    public void processWithVisitor(MMVisitor v) {
+        v.visitAssoclink(this);
     }
 }

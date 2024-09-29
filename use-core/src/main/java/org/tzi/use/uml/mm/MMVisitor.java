@@ -44,4 +44,5 @@ public interface MMVisitor {
 	void visitEnum(EnumType enumType);
     void visitMediator(MMediator mMediator);
     void visitClabject(MClabject mClabject);
+    void visitAssoclink(MAssoclink mAssoclink);
 }

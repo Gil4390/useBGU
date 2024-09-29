@@ -296,4 +296,9 @@ public class MMInstanceGenerator implements MMVisitor {
     public void visitClabject(MClabject mClabject) {
 
     }
+
+    @Override
+    public void visitAssoclink(MAssoclink mAssoclink) {
+
+    }
 }

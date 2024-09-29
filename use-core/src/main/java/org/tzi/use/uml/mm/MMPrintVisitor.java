@@ -605,9 +605,15 @@ public class MMPrintVisitor implements MMVisitor {
 
         incIndent();
 
-        indent();
-        println(keyword("attributes"));
+        boolean hasAttributeChanges = !e.getAttributeRenaming().isEmpty() || !e.getRemovedAttributes().isEmpty();
+        boolean hasRolesChanges = !e.getRenamedRoles().isEmpty() || !e.getRemovedRoles().isEmpty();
+
+        if(hasAttributeChanges) {
+            indent();
+            println(keyword("attributes"));
+        }
         incIndent();
+
         // visit attribute renamings
         for (MAttributeRenaming attrRenaming : e.getAttributeRenaming()) {
             indent();
@@ -621,6 +627,44 @@ public class MMPrintVisitor implements MMVisitor {
         }
 
         decIndent();
+        if(hasRolesChanges) {
+            indent();
+            println(keyword("roles"));
+        }
+        incIndent();
+
+        // visit role renamings
+        for (MRoleRenaming roleRenaming : e.getRenamedRoles()) {
+            indent();
+            println(id(roleRenaming.assocEnd().nameAsRolename()) + ws() + other("->") + ws() + id(roleRenaming.newName()));
+        }
+
+        // visit role removing
+        for (MAssociationEnd role : e.getRemovedRoles()) {
+            indent();
+            println(other("~") + id(role.nameAsRolename()));
+        }
+
+        decIndent();
+        decIndent();
+        indent();
+        println(keyword("end"));
+    }
+
+    @Override
+    public void visitAssoclink(MAssoclink e) {
+        visitAnnotations(e);
+        indent();
+        println(keyword("assoclink") + ws() + id(e.child().name()) + ws() + keyword(":") + ws() + id(e.parent().name()));
+
+        incIndent();
+
+        // visit role bindings
+        for (MRoleBinding roleBinding : e.roleBindings()) {
+            indent();
+            println(id(roleBinding.getChildAssociationEnd().nameAsRolename()) + ws() + other("->") + ws() + id(roleBinding.getParentAssociationEnd().nameAsRolename()));
+        }
+
         decIndent();
         indent();
         println(keyword("end"));
@@ -629,6 +673,10 @@ public class MMPrintVisitor implements MMVisitor {
     public void visitClabjectsAndAssoclinks(MMediator mMediator) {
         for (MClabject clabject : mMediator.clabjects()) {
             clabject.processWithVisitor(this);
+        }
+
+        for(MAssoclink assoclink : mMediator.assocLinks()) {
+            assoclink.processWithVisitor(this);
         }
     }
 
