@@ -1,0 +1,2 @@
+1. Run the jar file - 'use-gui.jar'
+2. 
