@@ -112,20 +112,6 @@
         <name>Computer_product@contain</name>
         <properties>
             <edgeproperty
-                id="Computer_product@contain::source::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>part</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>11.0</userOffsetX>
-                    <userOffsetY>-9.0</userOffsetY>
-                    <attached>Computer_product@contain::WayPoint::0</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty
                 id="Computer_product@contain::source::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -137,6 +123,20 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="Computer_product@contain::source::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>part</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>11.0</userOffsetX>
+                    <userOffsetY>-9.0</userOffsetY>
+                    <attached>Computer_product@contain::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -319,6 +319,19 @@
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
+            <edgeproperty id="PC@pcOs::target::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>os</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>5.0</userOffsetX>
+                    <userOffsetY>-8.0</userOffsetY>
+                    <attached>PC@pcOs::WayPoint::2</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
             <edgeproperty id="PC@pcOs::target::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -330,19 +343,6 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty id="PC@pcOs::target::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>os</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>5.0</userOffsetX>
-                    <userOffsetY>-8.0</userOffsetY>
-                    <attached>PC@pcOs::WayPoint::2</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -414,6 +414,19 @@
         <target>PC@PCOS</target>
         <name>installation</name>
         <properties>
+            <edgeproperty id="installation::source::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>installer</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>50.0</userOffsetX>
+                    <userOffsetY>4.0</userOffsetY>
+                    <attached>installation::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
             <edgeproperty id="installation::source::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -428,13 +441,13 @@
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
-            <edgeproperty id="installation::source::rolename"
+            <edgeproperty id="installation::target::rolename"
                 sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>installer</name>
+                <name>installed</name>
                 <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>50.0</userOffsetX>
-                    <userOffsetY>4.0</userOffsetY>
-                    <attached>installation::WayPoint::0</attached>
+                    <userOffsetX>-5.0</userOffsetX>
+                    <userOffsetY>-9.0</userOffsetY>
+                    <attached>installation::WayPoint::2</attached>
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>TOP</placement>
@@ -452,19 +465,6 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty id="installation::target::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>installed</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>-5.0</userOffsetX>
-                    <userOffsetY>-9.0</userOffsetY>
-                    <attached>installation::WayPoint::2</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -563,19 +563,6 @@
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
-            <edgeproperty id="PC@pcAppl::target::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>softw</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>10.0</userOffsetX>
-                    <userOffsetY>-10.0</userOffsetY>
-                    <attached>PC@pcAppl::WayPoint::1</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
             <edgeproperty id="PC@pcAppl::target::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -587,6 +574,19 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty id="PC@pcAppl::target::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>softw</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>10.0</userOffsetX>
+                    <userOffsetY>-10.0</userOffsetY>
+                    <attached>PC@pcAppl::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -640,6 +640,19 @@
         <target>PC@PC</target>
         <name>connection</name>
         <properties>
+            <edgeproperty id="connection::source::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>handler</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>2.0</userOffsetX>
+                    <userOffsetY>1.0</userOffsetY>
+                    <attached>connection::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
             <edgeproperty id="connection::source::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -654,13 +667,13 @@
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
-            <edgeproperty id="connection::source::rolename"
+            <edgeproperty id="connection::target::rolename"
                 sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>handler</name>
+                <name>maintained</name>
                 <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>2.0</userOffsetX>
-                    <userOffsetY>1.0</userOffsetY>
-                    <attached>connection::WayPoint::0</attached>
+                    <userOffsetX>3.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>connection::WayPoint::1</attached>
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>TOP</placement>
@@ -678,19 +691,6 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty id="connection::target::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>maintained</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>3.0</userOffsetX>
-                    <userOffsetY>0.0</userOffsetY>
-                    <attached>connection::WayPoint::1</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -788,20 +788,6 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="Computer_product@compatibility::target::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>appl</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>6.0</userOffsetX>
-                    <userOffsetY>-8.0</userOffsetY>
-                    <attached>Computer_product@compatibility::WayPoint::1</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty
                 id="Computer_product@compatibility::target::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -813,6 +799,20 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="Computer_product@compatibility::target::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>appl</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>6.0</userOffsetX>
+                    <userOffsetY>-8.0</userOffsetY>
+                    <attached>Computer_product@compatibility::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -870,6 +870,20 @@
         <name>Computer_product@hardwSoftw</name>
         <properties>
             <edgeproperty
+                id="Computer_product@hardwSoftw::source::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>hardw</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>1.0</userOffsetX>
+                    <userOffsetY>-9.0</userOffsetY>
+                    <attached>Computer_product@hardwSoftw::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
                 id="Computer_product@hardwSoftw::source::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -881,20 +895,6 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty
-                id="Computer_product@hardwSoftw::source::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>hardw</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>1.0</userOffsetX>
-                    <userOffsetY>-9.0</userOffsetY>
-                    <attached>Computer_product@hardwSoftw::WayPoint::0</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -1005,19 +1005,6 @@
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
-            <edgeproperty id="PC@pcCon::target::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>parent</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>-2.0</userOffsetX>
-                    <userOffsetY>-9.0</userOffsetY>
-                    <attached>PC@pcCon::WayPoint::1</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
             <edgeproperty id="PC@pcCon::target::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -1029,6 +1016,19 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty id="PC@pcCon::target::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>parent</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>-2.0</userOffsetX>
+                    <userOffsetY>-9.0</userOffsetY>
+                    <attached>PC@pcCon::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
@@ -1082,6 +1082,19 @@
         <target>PC@PCAppl</target>
         <name>PC@pcCompat</name>
         <properties>
+            <edgeproperty id="PC@pcCompat::source::rolename"
+                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
+                <name>syst</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>8.0</userOffsetX>
+                    <userOffsetY>7.0</userOffsetY>
+                    <attached>PC@pcCompat::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
             <edgeproperty id="PC@pcCompat::source::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="true" visible="true">
@@ -1093,19 +1106,6 @@
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty id="PC@pcCompat::source::rolename"
-                sizeCalculated="true" type="rolename" userDefined="true" visible="true">
-                <name>syst</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>8.0</userOffsetX>
-                    <userOffsetY>7.0</userOffsetY>
-                    <attached>PC@pcCompat::WayPoint::0</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
