@@ -863,6 +863,49 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+    public void testCompile_mlm28_assoclink_inherited_class_roles_not_accessible_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm28.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> class_D1_Roles = mlmResult.getClass("CD", "D1").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("cc1")), class_D1_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
+
+    public void testCompile_mlm29_role_removing_to_assoclink_Specification() {
+        MMultiLevelModel mlmResult = null;
+
+        File multiFile = new File(TEST_PATH + "/mlm29.use");
+        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(System.out);
+
+        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream1.close();
+
+            Set<String> class_E_Roles = mlmResult.getClass("EF", "E").navigableEnds().keySet();
+            assertEquals(new HashSet<>(List.of("ff1")), class_E_Roles);
+
+        } catch (Exception e) {
+            // This can be ignored
+            e.printStackTrace();
+            fail("Unexpected exception");
+        }
+    }
 
     public void testCompile_mlm_figure_1_test_Specification() {
         MMultiLevelModel mlmResult = null;
