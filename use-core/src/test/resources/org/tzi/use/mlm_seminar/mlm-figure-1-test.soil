@@ -1,0 +1,20 @@
+!create pc1:PC@PC
+!create pcos1:PC@PCOS
+!insert (pc1, pcos1) into PC@pcOs
+
+-- partial instance
+
+!create a1:Computer_product@Application
+!create c1:Computer_product@Computer
+!create s1:Computer_product@System
+
+!insert (a1,pcos1) into installation
+!insert (pcos1, a1) into Computer_product@compatibility
+
+-- inv PCInstallation is not satisfied
+
+!insert (s1, a1) into Computer_product@compatibility
+!insert (c1, s1) into Computer_product@hardwSoftw
+!insert (c1, pc1) into connection
+
+-- constraints and multiplicities are satisfied
