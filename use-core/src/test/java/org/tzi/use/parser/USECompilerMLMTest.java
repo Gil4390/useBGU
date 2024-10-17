@@ -75,7 +75,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 39);
+        List<File> fileList = getFilesMatchingSuffix(".use", 41);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -907,6 +907,30 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+
+//    public void testCompile_mlm_figure_1_test_generalization_Specification() {
+//        MMultiLevelModel mlmResult = null;
+//
+//        File multiFile = new File(TEST_PATH_SEMINAR + "/mlm-figure-1-test-generalization.use");
+//        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
+//        PrintWriter newErr = new PrintWriter(System.out);
+//
+//        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
+//            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
+//                    multiFile.getName(), newErr, new MultiLevelModelFactory());
+//            specStream1.close();
+//
+//            Set<String> class_PCAppl_Roles = mlmResult.getClass("PC", "PCAppl").navigableEnds().keySet();
+//            assertEquals(new HashSet<>(List.of("part","parent","softw")), class_PCAppl_Roles);
+//
+//
+//        } catch (Exception e) {
+//            // This can be ignored
+//            e.printStackTrace();
+//            fail("Unexpected exception");
+//        }
+//    }
+
     public void testCompile_mlm_figure_1_test_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -922,36 +946,55 @@ public class USECompilerMLMTest extends TestCase {
 
 
             Set<String> class_Hardware_Roles = mlmResult.getClass("Computer_product", "Hardware").navigableEnds().keySet();
+            List<String> class_Hardware_RolesType = mlmResult.getClass("Computer_product", "Hardware").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
             assertEquals(new HashSet<>(List.of("part","parent","softw")), class_Hardware_Roles);
+            assertEquals(new ArrayList<>(List.of("Computer_product@Hardware","Computer_product@Hardware","Computer_product@Software")), class_Hardware_RolesType);
 
             Set<String> class_Peripheral_Roles = mlmResult.getClass("Computer_product", "Peripheral").navigableEnds().keySet();
+            List<String> class_Peripheral_RolesType = mlmResult.getClass("Computer_product", "Peripheral").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
             assertEquals(new HashSet<>(List.of("part","parent","softw")), class_Peripheral_Roles);
+            assertEquals(new ArrayList<>(List.of("Computer_product@Hardware","Computer_product@Hardware","Computer_product@Software")), class_Peripheral_RolesType);
 
             Set<String> class_Computer_Roles = mlmResult.getClass("Computer_product", "Computer").navigableEnds().keySet();
-            assertEquals(new HashSet<>(List.of("part","parent","softw","maintained")), class_Computer_Roles);
+            List<String> class_Computer_RolesType = mlmResult.getClass("Computer_product", "Computer").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
+            assertEquals(new HashSet<>(List.of("maintained", "part","parent","softw")), class_Computer_Roles);
+            assertEquals(new ArrayList<>(List.of("PC@PC", "Computer_product@Hardware", "Computer_product@Hardware", "Computer_product@Software")), class_Computer_RolesType);
 
             Set<String> class_Software_Roles = mlmResult.getClass("Computer_product", "Software").navigableEnds().keySet();
+            List<String> class_Software_RolesType = mlmResult.getClass("Computer_product", "Software").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
             assertEquals(new HashSet<>(List.of("hardw")), class_Software_Roles);
+            assertEquals(new ArrayList<>(List.of("Computer_product@Hardware")), class_Software_RolesType);
 
             Set<String> class_System_Roles = mlmResult.getClass("Computer_product", "System").navigableEnds().keySet();
+            List<String> class_System_RolesType = mlmResult.getClass("Computer_product", "System").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
             assertEquals(new HashSet<>(List.of("hardw","appl")), class_System_Roles);
+            assertEquals(new ArrayList<>(List.of("Computer_product@Application", "Computer_product@Hardware")), class_System_RolesType);
 
             Set<String> class_Application_Roles = mlmResult.getClass("Computer_product", "Application").navigableEnds().keySet();
+            List<String> class_Application_RolesType = mlmResult.getClass("Computer_product", "Application").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
             assertEquals(new HashSet<>(List.of("installed","syst","hardw")), class_Application_Roles);
+            assertEquals(new ArrayList<>(List.of("Computer_product@Hardware", "PC@PCOS", "Computer_product@System")), class_Application_RolesType);
+
 
             Set<String> class_PC_Roles = mlmResult.getClass("PC", "PC").navigableEnds().keySet();
-            assertEquals(new HashSet<>(List.of("part","softw","handler","os")), class_PC_Roles);
+            List<String> class_PC_RolesType = mlmResult.getClass("PC", "PC").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
+            assertEquals(new HashSet<>(List.of("handler", "os", "part", "softw")), class_PC_Roles);
+            assertEquals(new ArrayList<>(List.of("Computer_product@Computer", "PC@PCOS", "PC@Device", "PC@PCAppl")), class_PC_RolesType);
 
             Set<String> class_Device_Roles = mlmResult.getClass("PC", "Device").navigableEnds().keySet();
+            List<String> class_Device_RolesType = mlmResult.getClass("PC", "Device").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
             assertEquals(new HashSet<>(List.of("parent","softw")), class_Device_Roles);
+            assertEquals(new ArrayList<>(List.of("PC@PC", "Computer_product@Software")), class_Device_RolesType);
 
             Set<String> class_PCAppl_Roles = mlmResult.getClass("PC", "PCAppl").navigableEnds().keySet();
+            List<String> class_PCAppl_RolesType = mlmResult.getClass("PC", "PCAppl").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
             assertEquals(new HashSet<>(List.of("hardw","syst","installed")), class_PCAppl_Roles);
+            assertEquals(new ArrayList<>(List.of("PC@PC", "PC@PCOS", "PC@PCOS")), class_PCAppl_RolesType);
 
             Set<String> class_PCOS_Roles = mlmResult.getClass("PC", "PCOS").navigableEnds().keySet();
-            assertEquals(new HashSet<>(List.of("installer","pc","appl")), class_PCOS_Roles);
-
-
+            List<String> class_PCOS_RolesType = mlmResult.getClass("PC", "PCOS").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
+            assertEquals(new HashSet<>(List.of("appl", "installer","pc")), class_PCOS_Roles);
+            assertEquals(new ArrayList<>(List.of( "PC@PCAppl", "Computer_product@Application", "PC@PC")), class_PCOS_RolesType);
 
 
             UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
