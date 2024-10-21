@@ -1,0 +1,3 @@
+!create b1:AB@B
+!create d1:CD@D
+!insert (b1, d1) into bd1

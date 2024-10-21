@@ -1,0 +1,7 @@
+!create c:CD@C
+!create b:AB@B
+!insert (c, b) into AB@ab1
+
+-- constraint does not hold
+
+!set b.b1 = 'b'
