@@ -4,4 +4,4 @@
 
 -- constraint does not hold
 
-!set b.b1 = 'b'
+!set b.b1 := 'b'

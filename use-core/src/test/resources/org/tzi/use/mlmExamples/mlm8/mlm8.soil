@@ -1,0 +1,15 @@
+!create c:CD@C
+!create b:AB@B
+!insert (c, b) into AB@ab1
+!set c.a2 := 10
+!set b.b1 := 'x'
+
+-- constraint doesn't hold
+
+!set b.b1 := 'b'
+
+-- constraint hold
+
+!set c.a2 := 0
+
+-- constraint doesn't hold
