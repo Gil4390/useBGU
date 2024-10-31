@@ -1,9 +1,8 @@
-when defining clabjects we can remove or rename some of the attributes that would be inherited
+The simplest case for defining a clabject acts the same as defining an inheritance relationship between the classes
 
-in this example we can see that class C does not inherit all the attributes from class A,
-but instead, the attribute `a1` is renamed to `c1`, and the attribute `a2` is removed.
+in this example we can see that class C inherits all the attributes from class A
 
-<img src="mlm3.jpg" alt="">
+<img src="clabject_empty.jpg" alt="">
 
 
     MLM ABCD
@@ -54,9 +53,6 @@ but instead, the attribute `a1` is renamed to `c1`, and the attribute `a2` is re
     
     mediator CD < AB
         clabject C : A
-            attributes
-                a1 -> c1
-                ~a2
         end
         
         clabject D : B
