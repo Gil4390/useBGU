@@ -75,7 +75,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 41);
+        List<File> fileList = getFilesMatchingSuffix(".use", 43);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -877,6 +877,8 @@ public class USECompilerMLMTest extends TestCase {
 
             Set<String> class_D1_Roles = mlmResult.getClass("CD", "D1").navigableEnds().keySet();
             assertEquals(new HashSet<>(List.of("cc1")), class_D1_Roles);
+            List<String> class_D1_RolesType = mlmResult.getClass("CD", "D1").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
+            assertEquals(new ArrayList<>(List.of( "CD@C")), class_D1_RolesType);
 
         } catch (Exception e) {
             // This can be ignored

@@ -5,10 +5,7 @@ import org.tzi.use.parser.MLMContext;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ASTClabject extends ASTAnnotatable{
 
@@ -130,5 +127,10 @@ public class ASTClabject extends ASTAnnotatable{
             }
             fClabject.addRemovedRole(removedAssocEnd);
         }
+
+        // Check that there is no role conflict
+        child.navigableEnds();
+
+
     }
 }

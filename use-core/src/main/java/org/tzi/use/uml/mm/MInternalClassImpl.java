@@ -152,6 +152,14 @@ public class MInternalClassImpl extends MClassImpl{
         // Remove the redefined ends
         allEnds.removeIf(e -> keysToRemove.contains(e.getValue()));
 
+        // Check that allEnds doesn't contain duplicates, throw error if there is any duplicates
+        Set<String> endSet = new HashSet<>();
+        for (Map.Entry<String, MNavigableElement> entry : allEnds) {
+            if (!endSet.add(entry.getKey())) {
+                throw new RuntimeException("Role: "+entry.getKey()+" is already defined in class "+name());
+            }
+        }
+
         // Combine the remaining ends into the result map
         Map<String, MNavigableElement> res = new TreeMap<>(navigableElements());
         allEnds.forEach(e -> res.put(e.getKey(), e.getValue()));
