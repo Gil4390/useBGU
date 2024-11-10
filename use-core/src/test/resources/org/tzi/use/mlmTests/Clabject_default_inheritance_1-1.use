@@ -18,7 +18,7 @@ mediator M1 < NONE
 end
 
 mediator M2 < M1
-  clabject D : C
+  clabject C : D
   end
 
 end
