@@ -1,0 +1,25 @@
+MLM CD
+
+  model M1
+    class D
+      attributes
+        attr1: String
+    end
+
+
+  model M2
+    class C
+      attributes
+        attr2: String
+    end
+
+
+mediator M1 < NONE
+end
+
+mediator M2 < M1
+  clabject D : C
+  end
+
+end
+
