@@ -1,0 +1,61 @@
+MLM ABCD
+
+  model AB
+    class A
+      attributes
+        a1: String
+        a2: Integer
+    end
+
+    class B
+      attributes
+        b1: String
+        b2: Integer
+    end
+
+    association ab1 between
+      A[*] role aa1
+      B[*] role bb1
+    end
+
+
+  model CD
+    class C
+      attributes
+        c: String
+    end
+
+    class D
+      attributes
+        d: String
+    end
+
+    class E
+    end
+
+    association cd1 between
+      C[1] role cc1
+      D[1] role dd1
+    end
+
+
+-- changing the max integer value in the plugin from 4 to 6, will make the model satisfiable
+inter-constraints
+context CD@C
+inv i1:
+    self.bbb1->select(b | b.b2 > 5)->size() > 0
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+    clabject C : A
+    roles
+        bb1 -> bbb1
+    end
+
+    clabject D : B
+    end
+
+end
