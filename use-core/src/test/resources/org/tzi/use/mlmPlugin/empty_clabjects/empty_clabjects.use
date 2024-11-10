@@ -1,0 +1,56 @@
+MLM ABCD
+
+  model AB
+    class A
+      attributes
+        a1: String
+        a2: Integer
+    end
+
+    class B
+      attributes
+        b1: String
+        b2: Integer
+    end
+
+    association ab1 between
+      A[1] role aa1
+      B[1] role bb1
+    end
+
+
+  model CD
+    class C
+      attributes
+        c: String
+    end
+
+    class D
+      attributes
+        d: String
+    end
+
+
+    association cd1 between
+      C[1] role cc1
+      D[1] role dd1
+    end
+
+
+mediator AB < NONE
+end
+
+-- removing the roles should make the mlm satisfiable, given the 1-link constraint, but it still remains unsatisfiable
+-- changing the maximum number of ab1 links to 2, without removing the roles, makes the model satisfiable
+mediator CD < AB
+    clabject C : A
+    --roles
+    --  ~bb1
+    end
+
+    clabject D : B
+    --roles
+    --  ~aa1
+    end
+
+end

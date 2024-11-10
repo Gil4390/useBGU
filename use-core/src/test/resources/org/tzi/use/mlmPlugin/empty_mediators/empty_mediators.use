@@ -14,14 +14,9 @@ MLM ABCD
     end
 
     association ab1 between
-      A[*] role aa1
-      B[*] role bb1
+      A[1] role aa1
+      B[1] role bb1
     end
-
-    constraints
-    context A
-        inv a1:
-            self.bb1->select(b | b.b2 > 5)->size() > 0
 
 
   model CD
@@ -35,30 +30,12 @@ MLM ABCD
         d: String
     end
 
-    class E
-    end
 
     association cd1 between
       C[1] role cc1
       D[1] role dd1
     end
 
-    association cd2 between
-      C[1] role cc2
-      E[1] role ee1
-    end
-
-    --association cd3 between
-      --E[2] role ee2
-      --D[1] role dd2
-    --end
-
-inter-constraints
-context CD@C
-  inv i1:
-    self.a2 > 5
-  inv i2:
-    self.bbb1->select(b | b.b2 > 5)->size() > 0
 
 
 mediator AB < NONE
