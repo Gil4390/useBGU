@@ -24,6 +24,21 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ *  Test USECompilerMLM class. The TestDriver reads all files with extension ".use" from the mlm directory
+ *  and processes them with the mlm parser. If a file <code>t.use</code> contains
+ *  expected errors there should be a file <code>t.fail</code> with the expected
+ *  output messages. There are four possible results:
+ *  <ol>
+ *    <li> file parses ok and no failure file exists: PASSED.</li>
+ *    <li> file parses ok and a failure file exists: FAILURE.</li>
+ *    <li> file does not parse and a failure file exists: PASSED if the actual
+ *    output matches the expected output from the failure file, otherwise
+ *    FAILURE.</li>
+ *    <li> file does not parse and no failure file exists: FAILURE.</li>
+ *  </ol>
+ *
+ */
 public class USECompilerMLMTest extends TestCase {
     private static final boolean VERBOSE = false;
 
@@ -248,7 +263,6 @@ public class USECompilerMLMTest extends TestCase {
 
         return result;
     }
-
 
     public void testCompile_mlm1_Specification() {
         MMultiLevelModel mlmResult = null;

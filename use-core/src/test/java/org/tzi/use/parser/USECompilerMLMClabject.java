@@ -1,6 +1,7 @@
 package org.tzi.use.parser;
 
 import junit.framework.TestCase;
+import org.assertj.core.api.Assertions;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.use.USECompilerMLM;
 import org.tzi.use.uml.mm.MAttribute;
@@ -13,7 +14,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertThat;
 
 public class USECompilerMLMClabject extends TestCase {
     private static final boolean VERBOSE = false;
@@ -29,77 +29,93 @@ public class USECompilerMLMClabject extends TestCase {
         }
     }
 
-    public void testCompile_mlm1_Specification() {
-        MMultiLevelModel mlmResult = null;
-        File multiFile = new File(TEST_PATH + "/Clabject_default_inheritance_1-1.use");
+    private MMultiLevelModel compileMLMSpecification(File specFile, PrintWriter newErr) {
+        MMultiLevelModel result = null;
 
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), new PrintWriter(System.out), new MultiLevelModelFactory());
-            specStream1.close();
-            //class D should inherit all the attributes from C
-            Set<String> classD_Attributes = mlmResult.getClass("M1", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-            assertEquals(new HashSet<>(List.of("attr1")), classD_Attributes);
-            Set<String> classC_Attributes = mlmResult.getClass("M2", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-            assertEquals(new HashSet<>(List.of("attr1", "attr2")), classC_Attributes);
-
-        } catch (Exception e) {
+        try (FileInputStream specStream = new FileInputStream(specFile)){
+            result = USECompilerMLM.compileMLMSpecification(specStream,
+                    specFile.getName(), newErr, new MultiLevelModelFactory());
+            specStream.close();
+        } catch (IOException e) {
             // This can be ignored
             e.printStackTrace();
-            fail("Unexpected exception");
         }
+
+        return result;
+    }
+
+    private Set<String> getAttributes(MMultiLevelModel mlm, String modelName, String ClassName) {
+        return mlm.getClass(modelName, ClassName)
+                .allAttributes()
+                .stream()
+                .map(MAttribute::name)
+                .collect(Collectors.toSet());
+    }
+    private Set<String> getRoles(MMultiLevelModel mlm, String modelName, String className) {
+        return mlm.getClass(modelName, className).navigableEnds().keySet();
+    }
+
+    /**
+     * Testing default clabject attribute inheritance
+     * because the clabject is empty all the attributes are inherited
+     */
+    public void testCompile_Clabject_default_inheritance_1_1_Specification() {
+        File mlmFile = new File(TEST_PATH + "/Clabject_default_inheritance_1-1.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        //class C should inherit all the attributes from D
+        Set<String> classC_Attributes = getAttributes(mlmResult, "M2", "C");
+        Assertions.assertThat(classC_Attributes).containsExactlyInAnyOrder("attr1", "attr2");
+    }
+
+    /**
+     * Testing attribute removal in clabject
+     */
+    public void testCompile_Clabject_attribute_removal_1_3_Specification() {
+        File mlmFile = new File(TEST_PATH + "/Clabject_attribute_removal_1-3.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        //class C should NOT inherit the removed attribute from D
+        Set<String> classC_Attributes = getAttributes(mlmResult, "M2", "C");
+        Assertions.assertThat(classC_Attributes).containsExactlyInAnyOrder("attr2");
+    }
+
+    public void testCompile_Clabject_attribute_renaming_1_4_Specification() {
+        File mlmFile = new File(TEST_PATH + "/Clabject_attribute_renaming_1-4.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        //class C should inherit the renamed attribute from D
+        Set<String> classC_Attributes = getAttributes(mlmResult, "M2", "C");
+        Assertions.assertThat(classC_Attributes).containsExactlyInAnyOrder("attr2", "attr3");
     }
 
     public void testCompile_Assoclink_inheritance_overrides_Specification() {
-        MMultiLevelModel mlmResult = null;
-        File multiFile = new File(TEST_PATH + "/rolesInheritance/Assoclink_inheritance_overrides_2-1.use");
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), new PrintWriter(System.out), new MultiLevelModelFactory());
-            specStream1.close();
-            assertRolesEqual("M2", "C", List.of("r"), mlmResult);
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
+        File mlmFile = new File(TEST_PATH + "/rolesInheritance/Assoclink_inheritance_overrides_2-1.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+        Set<String> classC_Roles = getRoles(mlmResult, "M2", "C");
+        Assertions.assertThat(classC_Roles).containsExactlyInAnyOrder("r");
     }
 
     public void testCompile_Default_role_inheritance_Specification() {
-        MMultiLevelModel mlmResult = null;
-        File multiFile = new File(TEST_PATH + "/rolesInheritance/Default_inheritance_2-2.use");
+        File mlmFile = new File(TEST_PATH + "/rolesInheritance/Default_inheritance_2-2.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+        Set<String> classC_Roles = getRoles(mlmResult, "M2", "C");
+        Assertions.assertThat(classC_Roles).containsExactlyInAnyOrder("ff1", "r");
 
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), new PrintWriter(System.out), new MultiLevelModelFactory());
-            specStream1.close();
-            assertRolesEqual("M2", "C", List.of("ff1","r"), mlmResult);
-            assertRolesEqual("M2", "F", List.of("cc1","dd1"), mlmResult);
-
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
+        Set<String> ClassF_Roles = getRoles(mlmResult, "M2", "F");
+        Assertions.assertThat(ClassF_Roles).containsExactlyInAnyOrder("cc1", "dd1");
     }
 
     public void testCompile_Duplicated_role_inheritance_2_3_c_Specification() {
-        MMultiLevelModel mlmResult = null;
-        File multiFile = new File(TEST_PATH + "/rolesInheritance/Duplicated_role_inheritance_2-3-c.use");
+        File mlmFile = new File(TEST_PATH + "/rolesInheritance/Duplicated_role_inheritance_2-3-c.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), new PrintWriter(System.out), new MultiLevelModelFactory());
-            specStream1.close();
-            assertRolesEqual("M2", "C", List.of("r"), mlmResult);
-            assertRolesEqual("M2", "F", List.of("cc1"), mlmResult);
+        Set<String> classC_Roles = getRoles(mlmResult, "M2", "C");
+        Assertions.assertThat(classC_Roles).containsExactlyInAnyOrder("r");
 
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
+        Set<String> ClassF_Roles = getRoles(mlmResult, "M2", "F");
+        Assertions.assertThat(ClassF_Roles).containsExactlyInAnyOrder("cc1");
+
     }
 
     public void testCompile_Duplicated_role_inheritance_2_3_e_Specification() {
