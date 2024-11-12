@@ -1,0 +1,53 @@
+MLM CD
+
+  model M1
+    class D
+    end
+
+    class E
+    end
+
+    class G
+    end
+
+    association assoc1 between
+      D[*] role dd1
+      E[*] role r
+    end
+
+    association assoc3 between
+      D[*] role dd2
+      G[*] role gg1
+    end
+
+
+  model M2
+    class C
+    end
+
+    class F
+    end
+
+    association assoc2 between
+      C[*] role cc1
+      F[*] role r
+    end
+
+
+mediator M1 < NONE
+end
+
+mediator M2 < M1
+  clabject C : D
+  end
+
+  clabject F : G
+  end
+
+  assoclink assoc2 : assoc3
+    cc1 -> dd2
+    r -> gg1
+  end
+
+end
+
