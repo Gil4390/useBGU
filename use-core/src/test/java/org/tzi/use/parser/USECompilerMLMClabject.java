@@ -44,6 +44,44 @@ public class USECompilerMLMClabject extends TestCase {
         return result;
     }
 
+    public void testMLMClabjectSpecification() {
+        Options.explicitVariableDeclarations = false;
+
+        List<File> fileList = getFilesMatchingSuffix(".use", 14);
+
+        // create a new stream for capturing output on stderr
+        USECompilerMLMClabject.StringOutputStream errStr = new USECompilerMLMClabject.StringOutputStream();
+        PrintWriter newErr = new PrintWriter(errStr);
+        // compile each file and compare with expected result
+        for (File specFile : fileList) {
+            String specFileName = specFile.getName();
+            try {
+                MMultiLevelModel multi_level_model = compileMLMSpecification(specFile, newErr);
+                File failFile = getFailFileFromUseFile(specFileName);
+
+                if (failFile.exists()) {
+                    if (multi_level_model != null) {
+                        failCompileSpecSucceededButErrorsExpected(specFileName, failFile);
+                    } else {
+                        if (!isErrorMessageAsExpected(failFile, errStr)) {
+                            failCompileSpecFailedFailFileDiffers(specFileName, errStr, failFile);
+                        }
+                    }
+                } else {
+                    if (multi_level_model == null) {
+                        failCompileSpecFailedWithoutFailFile(specFileName, errStr, failFile);
+                    }
+                }
+                if (VERBOSE) {
+                    System.out.println(specFileName + ": PASSED.");
+                }
+                errStr.reset();
+            } catch (FileNotFoundException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+    }
+
     private Set<String> getAttributes(MMultiLevelModel mlm, String modelName, String ClassName) {
         return mlm.getClass(modelName, ClassName)
                 .allAttributes()
@@ -64,8 +102,8 @@ public class USECompilerMLMClabject extends TestCase {
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //class C should inherit all the attributes from D
-        Set<String> classC_Attributes = getAttributes(mlmResult, "M2", "C");
-        Assertions.assertThat(classC_Attributes).containsExactlyInAnyOrder("attr1", "attr2");
+        assertAttributesEqual("M2", "C", List.of("attr2", "attr1"), mlmResult);
+
     }
 
     /**
@@ -76,8 +114,7 @@ public class USECompilerMLMClabject extends TestCase {
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //class C should NOT inherit the removed attribute from D
-        Set<String> classC_Attributes = getAttributes(mlmResult, "M2", "C");
-        Assertions.assertThat(classC_Attributes).containsExactlyInAnyOrder("attr2");
+        assertAttributesEqual("M2", "C", List.of("attr2"), mlmResult);
     }
 
     public void testCompile_Clabject_attribute_renaming_1_4_Specification() {
@@ -85,95 +122,177 @@ public class USECompilerMLMClabject extends TestCase {
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //class C should inherit the renamed attribute from D
-        Set<String> classC_Attributes = getAttributes(mlmResult, "M2", "C");
-        Assertions.assertThat(classC_Attributes).containsExactlyInAnyOrder("attr2", "attr3");
+        assertAttributesEqual("M2", "C", List.of("attr2", "attr3"), mlmResult);
     }
 
     public void testCompile_Assoclink_inheritance_overrides_Specification() {
-        File mlmFile = new File(TEST_PATH + "/rolesInheritance/Assoclink_inheritance_overrides_2-1.use");
+        File mlmFile = new File(TEST_PATH + "/Assoclink_inheritance_overrides_2-1.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        Set<String> classC_Roles = getRoles(mlmResult, "M2", "C");
-        Assertions.assertThat(classC_Roles).containsExactlyInAnyOrder("r");
+        assertRolesEqual("M2", "C", List.of("r"), mlmResult);
     }
 
     public void testCompile_Default_role_inheritance_Specification() {
-        File mlmFile = new File(TEST_PATH + "/rolesInheritance/Default_inheritance_2-2.use");
+        File mlmFile = new File(TEST_PATH + "/Default_inheritance_2-2.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        Set<String> classC_Roles = getRoles(mlmResult, "M2", "C");
-        Assertions.assertThat(classC_Roles).containsExactlyInAnyOrder("ff1", "r");
 
-        Set<String> ClassF_Roles = getRoles(mlmResult, "M2", "F");
-        Assertions.assertThat(ClassF_Roles).containsExactlyInAnyOrder("cc1", "dd1");
+        assertRolesEqual("M2", "C", List.of("ff1","r"), mlmResult);
+        assertRolesEqual("M2", "F", List.of("cc1","dd1"), mlmResult);
     }
 
     public void testCompile_Duplicated_role_inheritance_2_3_c_Specification() {
-        File mlmFile = new File(TEST_PATH + "/rolesInheritance/Duplicated_role_inheritance_2-3-c.use");
+        File mlmFile = new File(TEST_PATH + "/Duplicated_role_inheritance_2-3-c.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classC_Roles = getRoles(mlmResult, "M2", "C");
-        Assertions.assertThat(classC_Roles).containsExactlyInAnyOrder("r");
+        assertRolesEqual("M2", "C", List.of("r"), mlmResult);
+        assertRolesEqual("M2", "F", List.of("cc1"), mlmResult);
 
-        Set<String> ClassF_Roles = getRoles(mlmResult, "M2", "F");
-        Assertions.assertThat(ClassF_Roles).containsExactlyInAnyOrder("cc1");
-
-    }
-
-    public void testCompile_Duplicated_role_inheritance_2_3_e_Specification() {
-        MMultiLevelModel mlmResult = null;
-        File multiFile = new File(TEST_PATH + "/rolesInheritance/Duplicated_role_inheritance_2-3-e.use");
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), new PrintWriter(System.out), new MultiLevelModelFactory());
-            specStream1.close();
-
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
     }
 
     //TODO: bug should be fixed -- throws an error although there is renaming
     public void testCompile_Role_renaming_inheritance_2_4_a_Specification() {
-        MMultiLevelModel mlmResult = null;
-        File multiFile = new File(TEST_PATH + "/rolesInheritance/Role_renaming_inheritance_2-4-a.use");
+        File mlmFile = new File(TEST_PATH + "/Role_renaming_inheritance_2-4-a.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), new PrintWriter(System.out), new MultiLevelModelFactory());
-            specStream1.close();
 //            assertRolesEqual("M2", "C", List.of("r"), mlmResult);
 //            assertRolesEqual("M2", "F", List.of("cc1"), mlmResult);
 
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
     }
 
     public void testCompile_Role_removing_inheritance_2_5_a_Specification() {
-        MMultiLevelModel mlmResult = null;
-        File multiFile = new File(TEST_PATH + "/rolesInheritance/Role_removing_inheritance_2-5-a.use");
+        File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance_2-5-a.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), new PrintWriter(System.out), new MultiLevelModelFactory());
-            specStream1.close();
-            assertRolesEqual("M2", "C", List.of("r"), mlmResult);
-            assertRolesEqual("M2", "F", List.of("cc1","dd1"), mlmResult);
+        assertRolesEqual("M2", "C", List.of("r"), mlmResult);
+        assertRolesEqual("M2", "F", List.of("cc1","dd1"), mlmResult);
 
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
     }
 
     private void assertRolesEqual(String modelName, String className, List<String> expectedRoles, MMultiLevelModel mlmResult) {
-        Set<String> actualRoles = mlmResult.getClass(modelName, className).navigableEnds().keySet();
-        assertEquals(new HashSet<>(expectedRoles), actualRoles);
+        Set<String> actualRoles = getRoles(mlmResult, modelName, className);
+        Assertions.assertThat(actualRoles).containsExactlyInAnyOrderElementsOf(expectedRoles);
+    }
+
+    private void assertAttributesEqual(String modelName, String className, List<String> expectedAttributes, MMultiLevelModel mlmResult) {
+        Set<String> actualAttributes = getAttributes(mlmResult, modelName, className);
+        Assertions.assertThat(actualAttributes).containsExactlyInAnyOrderElementsOf(expectedAttributes);
+    }
+
+    private List<File> getFilesMatchingSuffix(String suffix, int expected) {
+        List<File> fileList = new ArrayList<File>();
+        File dir = new File(TEST_PATH.toURI());
+        File[] files = dir.listFiles( new SuffixFileFilter(suffix) );
+        assertNotNull(files);
+        fileList.addAll(Arrays.asList(files));
+
+        // make sure we don't silently miss the input files
+        assertEquals(
+                "make sure that all test files can be found "
+                        + " (or update expected number if you have added test files)",
+                expected,
+                fileList.size());
+
+        return fileList;
+    }
+
+    private File getFailFileFromUseFile(String specFileName) {
+        // check for a failure file
+        String failFileName =
+                specFileName.substring(0, specFileName.length() - 4) + ".fail";
+        File failFile = new File(TEST_PATH, failFileName);
+        return failFile;
+    }
+
+    private void failCompileSpecFailedWithoutFailFile(String specFileName, USECompilerMLMClabject.StringOutputStream errStr, File failFile) {
+        // unexpected failure
+        System.err.println("#######################");
+        System.err.print(errStr.toString());
+        System.err.println("#######################");
+        fail(
+                "compilation of "
+                        + specFileName
+                        + " had errors, but there is "
+                        + "no file `"
+                        + failFile.getName()
+                        + "'.");
+    }
+
+    private void failCompileSpecFailedFailFileDiffers(String specFileName, USECompilerMLMClabject.StringOutputStream errStr, File failFile) {
+        System.err.println("Expected: #############");
+
+        try (BufferedReader failReader = new BufferedReader(new FileReader(failFile))){
+            while (true) {
+                String line = failReader.readLine();
+                if (line == null) {
+                    break;
+                }
+                System.err.println(line);
+            }
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+        System.err.println("Got: ##################");
+        System.err.print(errStr.toString());
+        System.err.println("#######################");
+        fail(
+                "compilation of "
+                        + specFileName
+                        + " had errors, "
+                        + "but the expected error output differs.");
+    }
+
+    private void failCompileSpecSucceededButErrorsExpected(String specFileName, File failFile) {
+        fail(
+                "compilation of "
+                        + specFileName
+                        + " succeeded, "
+                        + "but errors were expected (see "
+                        + failFile
+                        + ").");
+    }
+
+    private boolean isErrorMessageAsExpected(File failFile, USECompilerMLMClabject.StringOutputStream errStr) throws FileNotFoundException {
+        // check whether error output equals expected output
+        String[] expect = errStr.toString().split("\n|(\r\n)");
+        //                        for (int i = 0; i < expect.length; i++) {
+        //                            System.out.println("[" + expect[i] + "]");
+        //                        }
+        int j = 0;
+        boolean ok = true;
+        try (BufferedReader failReader = new BufferedReader(new FileReader(failFile))){
+            while (ok) {
+                String line = failReader.readLine();
+                if (line == null) {
+                    ok = j == expect.length;
+                    break;
+                }
+                ok = line.equals(expect[j]);
+                j++;
+            }
+        } catch (IOException ex) {
+            ok = false;
+        } catch (IndexOutOfBoundsException ex) {
+            ok = false;
+        }
+        return ok;
+    }
+
+    class StringOutputStream extends OutputStream {
+        private StringBuilder fBuffer = new StringBuilder();
+
+
+        public void write(int b) {
+            fBuffer.append((char) b);
+        }
+
+
+        public void reset() {
+            fBuffer = new StringBuilder();
+        }
+
+
+        public String toString() {
+            return fBuffer.toString();
+        }
     }
 
 }
