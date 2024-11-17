@@ -44,8 +44,8 @@ end
 -- changing the maximum number of ab1 links to 2, without removing the roles, makes the model satisfiable
 mediator CD < AB
     clabject C : A
-    --roles
-    --  ~bb1
+    roles
+      ~bb1
     end
 
     clabject D : B

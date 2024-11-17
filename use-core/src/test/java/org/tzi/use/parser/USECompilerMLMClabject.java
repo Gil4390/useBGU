@@ -6,6 +6,7 @@ import org.tzi.use.config.Options;
 import org.tzi.use.parser.use.USECompilerMLM;
 import org.tzi.use.uml.mm.MAttribute;
 import org.tzi.use.uml.mm.MMultiLevelModel;
+import org.tzi.use.uml.mm.MNavigableElement;
 import org.tzi.use.uml.mm.MultiLevelModelFactory;
 import org.tzi.use.util.SuffixFileFilter;
 
@@ -82,15 +83,33 @@ public class USECompilerMLMClabject extends TestCase {
         }
     }
 
-    private Set<String> getAttributes(MMultiLevelModel mlm, String modelName, String ClassName) {
-        return mlm.getClass(modelName, ClassName)
+//    private Set<String> getAttributes(MMultiLevelModel mlm, String modelName, String ClassName) {
+//        return mlm.getClass(modelName, ClassName)
+//                .allAttributes()
+//                .stream()
+//                .map(MAttribute::name)
+//                .collect(Collectors.toSet());
+//    }
+
+    private Map<String, String> getAttributes(MMultiLevelModel mlm, String modelName, String className) {
+        return mlm.getClass(modelName, className)
                 .allAttributes()
                 .stream()
-                .map(MAttribute::name)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toMap(
+                        MAttribute::name,
+                        attribute -> attribute.type().toString()
+                ));
     }
-    private Set<String> getRoles(MMultiLevelModel mlm, String modelName, String className) {
-        return mlm.getClass(modelName, className).navigableEnds().keySet();
+
+    private Map<String, String> getRoles(MMultiLevelModel mlm, String modelName, String className) {
+        return mlm.getClass(modelName, className)
+                .navigableEnds()
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().cls().name()
+                ));
     }
 
     /**
@@ -102,7 +121,7 @@ public class USECompilerMLMClabject extends TestCase {
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //class C should inherit all the attributes from D
-        assertAttributesEqual("M2", "C", List.of("attr2", "attr1"), mlmResult);
+        assertAttributesEqual("M2", "C", Map.of("attr2", "String","attr1","String"), mlmResult);
 
     }
 
@@ -114,7 +133,7 @@ public class USECompilerMLMClabject extends TestCase {
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //class C should NOT inherit the removed attribute from D
-        assertAttributesEqual("M2", "C", List.of("attr2"), mlmResult);
+        assertAttributesEqual("M2", "C", Map.of("attr2", "String"), mlmResult);
     }
 
     public void testCompile_Clabject_attribute_renaming_1_4_Specification() {
@@ -122,29 +141,29 @@ public class USECompilerMLMClabject extends TestCase {
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //class C should inherit the renamed attribute from D
-        assertAttributesEqual("M2", "C", List.of("attr2", "attr3"), mlmResult);
+        assertAttributesEqual("M2", "C", Map.of("attr2", "String", "attr3", "Integer"), mlmResult);
     }
 
     public void testCompile_Assoclink_inheritance_overrides_Specification() {
         File mlmFile = new File(TEST_PATH + "/Assoclink_inheritance_overrides_2-1.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        assertRolesEqual("M2", "C", List.of("r"), mlmResult);
+        assertRolesEqual("M2", "C", Map.of("r", "M2@F"), mlmResult);
     }
 
     public void testCompile_Default_role_inheritance_Specification() {
         File mlmFile = new File(TEST_PATH + "/Default_inheritance_2-2.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        assertRolesEqual("M2", "C", List.of("ff1","r"), mlmResult);
-        assertRolesEqual("M2", "F", List.of("cc1","dd1"), mlmResult);
+        assertRolesEqual("M2", "C", Map.of("ff1","M2@F","r","M1@E"), mlmResult);
+        assertRolesEqual("M2", "F", Map.of("cc1", "M2@C","dd1","M1@D"), mlmResult);
     }
 
     public void testCompile_Duplicated_role_inheritance_2_3_c_Specification() {
         File mlmFile = new File(TEST_PATH + "/Duplicated_role_inheritance_2-3-c.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        assertRolesEqual("M2", "C", List.of("r"), mlmResult);
-        assertRolesEqual("M2", "F", List.of("cc1"), mlmResult);
+        assertRolesEqual("M2", "C", Map.of("r","M2@F"), mlmResult);
+        assertRolesEqual("M2", "F", Map.of("cc1","M2@C"), mlmResult);
 
     }
 
@@ -162,19 +181,20 @@ public class USECompilerMLMClabject extends TestCase {
         File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance_2-5-a.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        assertRolesEqual("M2", "C", List.of("r"), mlmResult);
-        assertRolesEqual("M2", "F", List.of("cc1","dd1"), mlmResult);
+        assertRolesEqual("M2", "C", Map.of("r","M2@F"), mlmResult );
+        assertRolesEqual("M2", "F", Map.of("cc1","M2@C", "dd1","M1@D" ), mlmResult);
 
     }
 
-    private void assertRolesEqual(String modelName, String className, List<String> expectedRoles, MMultiLevelModel mlmResult) {
-        Set<String> actualRoles = getRoles(mlmResult, modelName, className);
-        Assertions.assertThat(actualRoles).containsExactlyInAnyOrderElementsOf(expectedRoles);
+    private void assertRolesEqual(String modelName, String className ,Map<String,String> expectedRoles, MMultiLevelModel mlmResult ) {
+        Map<String, String> actualRoles = getRoles(mlmResult, modelName, className);
+        Assertions.assertThat(expectedRoles).containsExactlyInAnyOrderEntriesOf(actualRoles);
     }
 
-    private void assertAttributesEqual(String modelName, String className, List<String> expectedAttributes, MMultiLevelModel mlmResult) {
-        Set<String> actualAttributes = getAttributes(mlmResult, modelName, className);
-        Assertions.assertThat(actualAttributes).containsExactlyInAnyOrderElementsOf(expectedAttributes);
+    private void assertAttributesEqual(String modelName, String className, Map<String, String> expectedAttributes, MMultiLevelModel mlmResult) {
+//        Set<String> actualAttributes = getAttributes(mlmResult, modelName, className);
+        Map<String, String> actualAttributes = getAttributes(mlmResult, modelName, className);
+        Assertions.assertThat(actualAttributes).containsExactlyInAnyOrderEntriesOf(expectedAttributes);
     }
 
     private List<File> getFilesMatchingSuffix(String suffix, int expected) {
