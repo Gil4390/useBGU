@@ -387,6 +387,8 @@ public final class Shell implements Runnable, PPCHandler {
 			cmdGenMM(line.substring(6));
 		} else if (line.equals("genmonitor")) {
 			cmdGenMonitor();
+		}else if (line.startsWith("info mlm ")) {
+			cmdInfoMLM(line.substring(9));
 		} else if (line.startsWith("info ")) {
 			cmdInfo(line.substring(5));
 		} else if (line.equals("net")) {
@@ -936,6 +938,53 @@ public final class Shell implements Runnable, PPCHandler {
 		MSystem system = system();
 
 		System.out.print(system.getVariableEnvironment());
+	}
+
+	/**
+	 * Prints information about mlm queries.
+	 */
+	private void cmdInfoMLM(String line) throws NoSystemException {
+		StringTokenizer tokenizer = new StringTokenizer(line);
+		try {
+			String subCmd = tokenizer.nextToken();
+			if (subCmd.isEmpty()) {
+				//cmdInfoPrintMLM();
+			} else if (subCmd.equals("levels")) {
+				//cmdInfoLevels();
+			} else if (subCmd.equals("level")) {
+				String arg = tokenizer.nextToken();
+				//cmdInfoLevel(arg);
+			} else if (subCmd.equals("class")) {
+				String arg = tokenizer.nextToken();
+				cmdInfoMLMClass(arg);
+			} else {
+				Log.error("Syntax error in info command. Try `help'.");
+			}
+		} catch (NoSuchElementException ex) {
+			Log.error("Missing argument to `info mlm' command. Try `help'.");
+		}
+	}
+
+	private void cmdInfoMLMClass(String line) throws NoSystemException {
+		StringTokenizer tokenizer = new StringTokenizer(line);
+		try {
+			String subCmd = tokenizer.nextToken();
+			if (subCmd.isEmpty()) {
+				//cmdInfoMLMPrintClass();
+			} else if (subCmd.equals("attributes")) {
+				//cmdInfoMLMClassAttributes();
+			} else if (subCmd.equals("roles")) {
+				String arg = tokenizer.nextToken();
+				//cmdInfoMLMClassRoles(arg);
+			} else if (subCmd.equals("mediators")) {
+				String arg = tokenizer.nextToken();
+				//cmdInfoMLMClassMediators(arg);
+			} else {
+				Log.error("Syntax error in info command. Try `help'.");
+			}
+		} catch (NoSuchElementException ex) {
+			Log.error("Missing argument to `info mlm' command. Try `help'.");
+		}
 	}
 
 	/**
