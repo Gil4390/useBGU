@@ -387,8 +387,8 @@ public final class Shell implements Runnable, PPCHandler {
 			cmdGenMM(line.substring(6));
 		} else if (line.equals("genmonitor")) {
 			cmdGenMonitor();
-		}else if (line.startsWith("info mlm ")) {
-			cmdInfoMLM(line.substring(9));
+		}else if (line.startsWith("info mlm")) {
+			cmdInfoMLM(line.substring(8));
 		} else if (line.startsWith("info ")) {
 			cmdInfo(line.substring(5));
 		} else if (line.equals("net")) {
@@ -946,10 +946,12 @@ public final class Shell implements Runnable, PPCHandler {
 	private void cmdInfoMLM(String line) throws NoSystemException {
 		StringTokenizer tokenizer = new StringTokenizer(line);
 		try {
-			String subCmd = tokenizer.nextToken();
-			if (subCmd.isEmpty()) {
+			if (line.isEmpty()) {
 				cmdInfoPrintMLM();
-			} else if (subCmd.equals("levels")) {
+				return;
+			}
+			String subCmd = tokenizer.nextToken();
+			if (subCmd.equals("levels")) {
 				cmdInfoLevels();
 			} else if (subCmd.equals("level")) {
 				String arg = tokenizer.nextToken();
@@ -989,7 +991,7 @@ public final class Shell implements Runnable, PPCHandler {
 	}
 
 	private void cmdInfoPrintMLM() throws NoSystemException {
-
+		cmdInfoModel();
 	}
 
 	private void cmdInfoLevels() throws NoSystemException {

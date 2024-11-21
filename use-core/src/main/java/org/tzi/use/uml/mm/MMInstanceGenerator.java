@@ -301,4 +301,9 @@ public class MMInstanceGenerator implements MMVisitor {
     public void visitAssoclink(MAssoclink mAssoclink) {
 
     }
+
+    @Override
+    public void visitMLM(MMultiLevelModel e) {
+
+    }
 }

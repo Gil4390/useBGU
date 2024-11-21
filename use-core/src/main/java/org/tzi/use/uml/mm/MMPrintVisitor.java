@@ -459,6 +459,16 @@ public class MMPrintVisitor implements MMVisitor {
     }
 
     @Override
+    public void visitMLM(MMultiLevelModel e) {
+        visitModel(e);
+        List<MMediator> mediators = e.mediators();
+        for (MMediator mediator : mediators) {
+            mediator.processWithVisitor(this);
+            println();
+        }
+    }
+
+    @Override
 	public void visitOperation(MOperation e) {
         visitAnnotations(e);
         indent(); 

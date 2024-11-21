@@ -224,6 +224,11 @@ public class MMultiLevelModel extends MMultiModel {
         else return result.toString();
     }
 
+    @Override
+    public void processWithVisitor(MMVisitor v) {
+        v.visitMLM(this);
+    }
+
 
 //    public String getNameOfAssocEnd(MAssociationEnd mEndP1) throws Exception {
 //        MAssociationEnd end = mEndP1;

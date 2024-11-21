@@ -38,6 +38,7 @@ public interface MMVisitor {
     void visitClassInvariant(MClassInvariant e);
     void visitGeneralization(MGeneralization e);
     void visitModel(MModel e);
+    void visitMLM(MMultiLevelModel e);
     void visitOperation(MOperation e);
     void visitPrePostCondition(MPrePostCondition e);
 	void visitSignal(MSignal mSignalImpl);
