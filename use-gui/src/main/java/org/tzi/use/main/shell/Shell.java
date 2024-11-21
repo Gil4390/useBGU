@@ -948,12 +948,12 @@ public final class Shell implements Runnable, PPCHandler {
 		try {
 			String subCmd = tokenizer.nextToken();
 			if (subCmd.isEmpty()) {
-				//cmdInfoPrintMLM();
+				cmdInfoPrintMLM();
 			} else if (subCmd.equals("levels")) {
-				//cmdInfoLevels();
+				cmdInfoLevels();
 			} else if (subCmd.equals("level")) {
 				String arg = tokenizer.nextToken();
-				//cmdInfoLevel(arg);
+				cmdInfoLevel(arg);
 			} else if (subCmd.equals("class")) {
 				String arg = tokenizer.nextToken();
 				cmdInfoMLMClass(arg);
@@ -970,21 +970,50 @@ public final class Shell implements Runnable, PPCHandler {
 		try {
 			String subCmd = tokenizer.nextToken();
 			if (subCmd.isEmpty()) {
-				//cmdInfoMLMPrintClass();
+				cmdInfoMLMPrintClass();
 			} else if (subCmd.equals("attributes")) {
-				//cmdInfoMLMClassAttributes();
+				String arg = tokenizer.nextToken();
+				cmdInfoMLMClassAttributes(arg);
 			} else if (subCmd.equals("roles")) {
 				String arg = tokenizer.nextToken();
-				//cmdInfoMLMClassRoles(arg);
+				cmdInfoMLMClassRoles(arg);
 			} else if (subCmd.equals("mediators")) {
 				String arg = tokenizer.nextToken();
-				//cmdInfoMLMClassMediators(arg);
+				cmdInfoMLMClassMediators(arg);
 			} else {
 				Log.error("Syntax error in info command. Try `help'.");
 			}
 		} catch (NoSuchElementException ex) {
 			Log.error("Missing argument to `info mlm' command. Try `help'.");
 		}
+	}
+
+	private void cmdInfoPrintMLM() throws NoSystemException {
+
+	}
+
+	private void cmdInfoLevels() throws NoSystemException {
+
+	}
+
+	private void cmdInfoLevel(String arg) throws NoSystemException {
+
+	}
+
+	private void cmdInfoMLMPrintClass() throws NoSystemException {
+
+	}
+
+	private void cmdInfoMLMClassAttributes(String arg) throws NoSystemException {
+
+	}
+
+	private void cmdInfoMLMClassRoles(String arg) throws NoSystemException {
+
+	}
+
+	private void cmdInfoMLMClassMediators(String arg) throws NoSystemException {
+
 	}
 
 	/**
