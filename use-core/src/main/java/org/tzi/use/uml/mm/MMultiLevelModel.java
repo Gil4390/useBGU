@@ -98,6 +98,14 @@ public class MMultiLevelModel extends MMultiModel {
         return clabjects;
     }
 
+    public List<MAssoclink> assoclinks() {
+        List<MAssoclink> assoclinks = new ArrayList<>();
+        for (MMediator mediator : fMediators.values()){
+            assoclinks.addAll(mediator.assocLinks());
+        }
+        return assoclinks;
+    }
+
     public List<MMediator> mediators(){
         return new ArrayList<>(fMediators.values());
     }

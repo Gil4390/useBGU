@@ -957,8 +957,7 @@ public final class Shell implements Runnable, PPCHandler {
 				String arg = tokenizer.nextToken();
 				cmdInfoLevel(arg);
 			} else if (subCmd.equals("class")) {
-				String arg = tokenizer.nextToken();
-				cmdInfoMLMClass(arg);
+				cmdInfoMLMClass(line.substring(6));
 			} else {
 				Log.error("Syntax error in info command. Try `help'.");
 			}
@@ -971,17 +970,20 @@ public final class Shell implements Runnable, PPCHandler {
 		StringTokenizer tokenizer = new StringTokenizer(line);
 		try {
 			String subCmd = tokenizer.nextToken();
+			String className = tokenizer.nextToken();
+			MClass cls = system().model().getClass(className);
+			if (cls == null) {
+				Log.error("Class `" + className + "' not found.");
+				return;
+			}
 			if (subCmd.isEmpty()) {
-				cmdInfoMLMPrintClass();
+				cmdInfoMLMPrintClass(cls);
 			} else if (subCmd.equals("attributes")) {
-				String arg = tokenizer.nextToken();
-				cmdInfoMLMClassAttributes(arg);
+				cmdInfoMLMClassAttributes(cls);
 			} else if (subCmd.equals("roles")) {
-				String arg = tokenizer.nextToken();
-				cmdInfoMLMClassRoles(arg);
+				cmdInfoMLMClassRoles(cls);
 			} else if (subCmd.equals("mediators")) {
-				String arg = tokenizer.nextToken();
-				cmdInfoMLMClassMediators(arg);
+				cmdInfoMLMClassMediators(cls);
 			} else {
 				Log.error("Syntax error in info command. Try `help'.");
 			}
@@ -1002,20 +1004,65 @@ public final class Shell implements Runnable, PPCHandler {
 
 	}
 
-	private void cmdInfoMLMPrintClass() throws NoSystemException {
+	private void cmdInfoMLMPrintClass(MClass cls) throws NoSystemException {
 
 	}
 
-	private void cmdInfoMLMClassAttributes(String arg) throws NoSystemException {
+	private void cmdInfoMLMClassAttributes(MClass cls) throws NoSystemException {
+		System.out.println("attributes of class " + cls.name());
+		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
 
+		System.out.println("declared attributes");
+		List<MAttribute> attributes = cls.attributes();
+		for(MAttribute attribute : attributes){
+			printTab();
+			v.visitAttribute(attribute);
+		}
+		System.out.println("all attributes");
+		List<MAttribute> allAttributes = cls.allAttributes();
+		for(MAttribute attribute : allAttributes){
+			printTab();
+			v.visitAttribute(attribute);
+		}
 	}
 
-	private void cmdInfoMLMClassRoles(String arg) throws NoSystemException {
-
+	private void cmdInfoMLMClassRoles(MClass cls) throws NoSystemException {
+		System.out.println("class " + cls.name());
+		System.out.println("roles");
+		//TODO: add 'declared roles' and 'derived roles'
+		for(Map.Entry<String, ? extends MNavigableElement> navigableElement : cls.navigableEnds().entrySet()){
+			printTab();
+			System.out.println(navigableElement.getKey() + " : " + navigableElement.getValue().cls().name());
+		}
+		System.out.println("end");
 	}
 
-	private void cmdInfoMLMClassMediators(String arg) throws NoSystemException {
+	private void cmdInfoMLMClassMediators(MClass cls) throws NoSystemException {
+		System.out.println("mediator of class " + cls.name());
+		System.out.println("clabjects");
 
+		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
+		MSystem system = system();
+		List<MClabject> clabjects = ((MMultiLevelModel)system.model()).clabjects();
+		for(MClabject clabject : clabjects){
+			if(clabject.child().equals(cls)){
+				v.visitClabject(clabject);
+			}
+		}
+
+		System.out.println("assoclinks");
+		List<MAssoclink> assoclinks = ((MMultiLevelModel)system.model()).assoclinks();
+		for(MAssoclink assoclink : assoclinks) {
+			MAssociation childAssociation = ((MAssociation)assoclink.child());
+			boolean isClassRelatedToAssoclink = childAssociation.associationEnds().stream().anyMatch(assocEnd -> assocEnd.cls().equals(cls));
+			if (isClassRelatedToAssoclink) {
+				v.visitAssoclink(assoclink);
+			}
+		}
+	}
+
+	private void printTab() {
+		System.out.print("\t");
 	}
 
 	/**
