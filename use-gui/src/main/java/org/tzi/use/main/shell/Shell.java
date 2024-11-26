@@ -1051,8 +1051,11 @@ public final class Shell implements Runnable, PPCHandler {
 			v.visitMediator(mediator);
 		}
 		if (powerTypes){
-			//TODO
-
+			System.out.println("Power Types:");
+			MMediator mediator = ((MMultiLevelModel)system.model()).getMediator(modelName);
+			for (MClass cls : mediator.powerTypes()){
+				System.out.println(cls.name());
+			}
 		}
 
 	}
