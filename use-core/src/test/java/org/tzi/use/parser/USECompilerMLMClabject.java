@@ -246,8 +246,8 @@ public class USECompilerMLMClabject extends TestCase {
      * Testing default clabject attribute inheritance
      * because the clabject is empty all the attributes are inherited
      */
-    public void testCompile_Clabject_default_attribute_inheritance_Spec() {
-        File mlmFile = new File(TEST_PATH + "/Clabject_default_attribute_inheritance.use");
+    public void test_Clabject_default_attribute_inheritance_Spec() {
+        File mlmFile = new File(TEST_PATH + "/Clabject_default_attributes_inheritance.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //class C should inherit all the attributes from D
@@ -258,7 +258,7 @@ public class USECompilerMLMClabject extends TestCase {
     /**
      * Testing attribute removal in clabject
      */
-    public void testCompile_Clabject_attribute_removal_Spec() {
+    public void test_Clabject_attribute_removal_Spec() {
         File mlmFile = new File(TEST_PATH + "/Clabject_attribute_removal.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
@@ -266,7 +266,7 @@ public class USECompilerMLMClabject extends TestCase {
         assertAttributesEqual("M2", "C", Map.of("attr2", "String"), mlmResult);
     }
 
-    public void testCompile_Clabject_attribute_renaming_Spec() {
+    public void test_Clabject_attribute_renaming_Spec() {
         File mlmFile = new File(TEST_PATH + "/Clabject_attribute_renaming.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
@@ -274,13 +274,13 @@ public class USECompilerMLMClabject extends TestCase {
         assertAttributesEqual("M2", "C", Map.of("attr2", "String", "attr3", "Integer"), mlmResult);
     }
 
-    public void testCompile_Assoclink_inheritance_overrides_Spec() {
+    public void test_Assoclink_inheritance_overrides_Spec() {
         File mlmFile = new File(TEST_PATH + "/Assoclink_inheritance_overrides.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
         assertRolesEqual("M2", "C", Map.of("r", "M2@F"), mlmResult);
     }
 
-    public void testCompile_Default_role_inheritance_Spec() {
+    public void test_Default_role_inheritance_Spec() {
         File mlmFile = new File(TEST_PATH + "/Default_inheritance.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
@@ -288,7 +288,7 @@ public class USECompilerMLMClabject extends TestCase {
         assertRolesEqual("M2", "F", Map.of("cc1", "M2@C","dd1","M1@D"), mlmResult);
     }
 
-    public void testCompile_Duplicated_role_inheritance_Spec() {
+    public void test_Duplicated_role_inheritance_Spec() {
         File mlmFile = new File(TEST_PATH + "/Duplicated_role_inheritance.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
@@ -298,7 +298,7 @@ public class USECompilerMLMClabject extends TestCase {
     }
 
     //TODO: bug should be fixed -- throws an error although there is renaming
-    public void testCompile_Role_renaming_inheritance_Spec() {
+    public void test_Role_renaming_inheritance_Spec() {
         File mlmFile = new File(TEST_PATH + "/Role_renaming_inheritance.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
@@ -307,7 +307,7 @@ public class USECompilerMLMClabject extends TestCase {
 
     }
 
-    public void testCompile_Role_removing_inheritance_Spec() {
+    public void test_Role_removing_inheritance_Spec() {
         File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
