@@ -4,13 +4,11 @@ MLM ABCD
     class A
       attributes
         a1: Integer
-        a2: Integer
     end
 
     class B
       attributes
         b1: String
-        b2: String
     end
 
     association ab1 between

@@ -2,15 +2,11 @@ MLM ABCD
 
   model AB
     class A
-      attributes
-        a1: String
-        a2: Integer
     end
 
     class B
       attributes
         b1: String
-        b2: String
     end
 
     association ab1 between
@@ -21,13 +17,9 @@ MLM ABCD
 
   model CD
     class C
-      attributes
-        c: String
     end
 
     class D
-      attributes
-        d: String
     end
 
     association cd1 between
@@ -40,8 +32,6 @@ inter-constraints
 context CD@C
   inv i1:
     self.bb1->forAll( it | it.b1 = 'b')
-  inv i2:
-    self.a2 > 5
 
 
 mediator AB < NONE
