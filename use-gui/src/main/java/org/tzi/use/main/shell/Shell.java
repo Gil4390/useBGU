@@ -954,8 +954,7 @@ public final class Shell implements Runnable, PPCHandler {
 			if (subCmd.equals("levels")) {
 				cmdInfoLevels();
 			} else if (subCmd.equals("level")) {
-				String arg = tokenizer.nextToken();
-				cmdInfoLevel(arg);
+				cmdInfoLevel(tokenizer);
 			} else if (subCmd.equals("class")) {
 				cmdInfoMLMClass(line.substring(6));
 			} else {
@@ -997,10 +996,67 @@ public final class Shell implements Runnable, PPCHandler {
 	}
 
 	private void cmdInfoLevels() throws NoSystemException {
-
+		MSystem system = system();
+		Collection<MModel> models = ((MMultiLevelModel)system.model()).models();
+		System.out.println("NONE");
+		for (MModel model : models){
+			System.out.println(" /\\ ");
+			System.out.println(model.name());
+		}
 	}
 
-	private void cmdInfoLevel(String arg) throws NoSystemException {
+	private void cmdInfoLevel(StringTokenizer tokenizer) throws NoSystemException {
+		MSystem system = system();
+		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
+
+		String modelName = tokenizer.nextToken();
+		MModel model = ((MMultiLevelModel)system.model()).getModel(modelName);
+
+		boolean classes = true;
+		boolean associations = true;
+		boolean mediators = true;
+		boolean powerTypes = true;
+
+		if (tokenizer.hasMoreTokens()) {
+			classes = false;
+			associations = false;
+			mediators = false;
+			powerTypes = false;
+		}
+		while (tokenizer.hasMoreTokens()) {
+			String flag = tokenizer.nextToken();
+			if (flag.equals("-classes")) {
+				classes = true;
+			}
+			if (flag.equals("-associations")) {
+				associations = true;
+			}
+			if (flag.equals("-mediators")) {
+				mediators = true;
+			}
+			if (flag.equals("-powerTypes")) {
+				powerTypes = true;
+			}
+
+		}
+
+		if (classes){
+			model.classes().forEach(v::visitClass);
+		}
+		if (associations){
+			model.associations().forEach(v::visitAssociation);
+		}
+		if (mediators){
+			MMediator mediator = ((MMultiLevelModel)system.model()).getMediator(modelName);
+			v.visitMediator(mediator);
+		}
+		if (powerTypes){
+			System.out.println("Power Types:");
+			MMediator mediator = ((MMultiLevelModel)system.model()).getMediator(modelName);
+			for (MClass cls : mediator.powerTypes()){
+				System.out.println(cls.name());
+			}
+		}
 
 	}
 
