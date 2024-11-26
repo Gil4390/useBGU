@@ -8,7 +8,7 @@ Class 'D' roles <b>before</b> removal: ```'r : AB@B', 'r : CD@D'```
 
 Class 'D' roles <b>after</b> removal: ```'r : AB@B'```
 
-<img src="clabject_role_removal_with_inter_association.JPG" alt="">
+<img src="clabject_role_removal_with_inter_association.png" alt="">
 
 
 ```
