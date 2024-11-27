@@ -1,6 +1,8 @@
-The simplest case for defining a clabject acts the same as defining an inheritance relationship between the classes
+No renaming or removal of attributes or roles
 
-in this example we can see that class C inherits all the attributes from class A
+The simplest case for defining a clabject acts the same as defining an inheritance relationship between the classes.
+
+In this example, we can see that class C inherits all the attributes from class A
 
 <img src="clabject_empty.jpg" alt="">
 
