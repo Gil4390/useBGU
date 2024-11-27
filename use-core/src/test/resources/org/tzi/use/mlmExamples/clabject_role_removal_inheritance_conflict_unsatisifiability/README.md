@@ -1,14 +1,26 @@
-The following example, demonstrates a way to solve a conflicted role names by using role removal through a clabject.
+The following example, demonstrates a way to solve a multiplicity conflict caused by an inherited role 'dd1 : CD@D'.
 
-Clabject 'D' of class 'B' has a role removal of 'r : CD@D' through the inter-association 'bd1'.
+The current '.use' file will have a multiplicity constraint failure, to inspect the conflict, do the following:
 
-Therefore, Clabject 'D : B' doesnt inherits 'r' and prevents role duplication conflict.
+1. Load the '.use' file that is located in the current directory.
+2. Run the following commands in the console:
+```
+  !create b1:AB@B
+  !create d1:CD@D
+  !insert (b1, d1) into bd1
+  check
+```
 
-Class 'D' roles <b>before</b> removal: ```'r : AB@B', 'r : CD@D'```
 
-Class 'D' roles <b>after</b> removal: ```'r : AB@B'```
+Adding the following lines of role removal to clabject 'D : B' will fix this multiplicity constraint failure:
 
-<img src="clabject_role_removal_with_inter_association.png" alt="">
+```
+roles
+  ~dd1
+```
+
+
+<img src="clabject_role_removal_inheritance_conflict_unsatisifiability.png" alt="">
 
 
 ```
@@ -26,8 +38,8 @@ MLM ABCD
 
 inter-associations
 association bd1 between
-      AB@B[1] role r
-      CD@D[1] role r
+      AB@B[1] role bb1
+      CD@D[1] role dd1
 end
 
 
@@ -37,12 +49,9 @@ end
 mediator CD < AB
 
    clabject D : B
-        roles
-            ~r
    end
 
 end
-
 
 ```
 
