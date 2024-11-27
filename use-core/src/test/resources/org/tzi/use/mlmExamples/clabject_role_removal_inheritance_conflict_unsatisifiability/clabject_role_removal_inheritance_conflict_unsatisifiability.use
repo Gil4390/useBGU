@@ -1,0 +1,28 @@
+MLM ABCD
+
+  model AB
+
+    class B
+    end
+
+  model CD
+
+    class D
+    end
+
+inter-associations
+association bd1 between
+      AB@B[1] role bb1
+      CD@D[1] role dd1
+end
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+
+   clabject D : B
+   end
+
+end
