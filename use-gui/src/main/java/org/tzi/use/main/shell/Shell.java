@@ -1025,16 +1025,16 @@ public final class Shell implements Runnable, PPCHandler {
 		}
 		while (tokenizer.hasMoreTokens()) {
 			String flag = tokenizer.nextToken();
-			if (flag.equals("-classes")) {
+			if (flag.equals("-classes") || flag.equals("-cls") || flag.equals("-c")) {
 				classes = true;
 			}
-			if (flag.equals("-associations")) {
+			if (flag.equals("-associations") || flag.equals("-assoc") || flag.equals("-a")) {
 				associations = true;
 			}
-			if (flag.equals("-mediators")) {
+			if (flag.equals("-mediator") || flag.equals("-med") || flag.equals("-m")) {
 				mediators = true;
 			}
-			if (flag.equals("-powerTypes")) {
+			if (flag.equals("-powerTypes") || flag.equals("-power") || flag.equals("-pt")) {
 				powerTypes = true;
 			}
 
@@ -1052,8 +1052,9 @@ public final class Shell implements Runnable, PPCHandler {
 		}
 		if (powerTypes){
 			System.out.println("Power Types:");
-			MMediator mediator = ((MMultiLevelModel)system.model()).getMediator(modelName);
-			for (MClass cls : mediator.powerTypes()){
+			List<MClass> powerTypesList = ((MMultiLevelModel)system.model()).powerTypes(modelName);
+			for (MClass cls : powerTypesList){
+				printTab();
 				System.out.println(cls.name());
 			}
 		}

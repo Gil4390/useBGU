@@ -74,5 +74,13 @@
                 <include>*</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <!-- Directory with multi level models -->
+            <directory>${project.basedir}/../use-core/src/test/resources/org/tzi/use/mlmExamples/</directory>
+            <outputDirectory>examples/mlmExamples</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>

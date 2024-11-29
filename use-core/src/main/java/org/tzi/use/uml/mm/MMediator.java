@@ -83,10 +83,10 @@ public class MMediator extends MModelElementImpl {
         return fAssocLinks.values();
     }
 
-    public Collection<MClass> powerTypes(){
+    public List<MClass> powerTypes(){
         ArrayList<MClass> powerTypes = new ArrayList<>();
         for(MClabject clabject : fClabjects.values()){
-            powerTypes.add((MClass)clabject.child());
+            powerTypes.add((MClass)clabject.parent());
         }
         return powerTypes;
     }

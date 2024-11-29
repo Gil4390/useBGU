@@ -57,9 +57,9 @@ public class MMultiLevelModel extends MMultiModel {
 
     }
 
-    public MModel getParentModel(String modelName) throws Exception {
+    public MModel getParentModel(String modelName) {
         if (!fModels.containsKey(modelName)){
-            throw new Exception("Model `"+modelName+"' does not exist.");
+            return null;
         }
 
         MModel prevModel = null;
@@ -70,6 +70,20 @@ public class MMultiLevelModel extends MMultiModel {
             prevModel = model;
         }
         return prevModel;
+    }
+
+    public MModel getNextModel(String modelName) {
+        if (!fModels.containsKey(modelName)){
+            return null;
+        }
+        int i = 0;
+        for (MModel model : fModelsList){
+            if (model.name().equals(modelName) && i<fModelsList.size()-1){
+                return fModelsList.get(i+1);
+            }
+            i++;
+        }
+        return null;
     }
     public void addMediator(MMediator mediator) throws Exception {
         if (fMediators.containsKey(mediator.name()))
@@ -237,22 +251,20 @@ public class MMultiLevelModel extends MMultiModel {
         v.visitMLM(this);
     }
 
+    public List<MClass> powerTypes(){
+        List<MClass> res = new ArrayList<>();
+        for (MMediator mediator : this.mediators()){
+            res.addAll(mediator.powerTypes());
+        }
+        return res;
+    }
 
-//    public String getNameOfAssocEnd(MAssociationEnd mEndP1) throws Exception {
-//        MAssociationEnd end = mEndP1;
-//        MAssociation assoc = end.association();
-//        MModel currentModel = assoc.model();
-//        MModel parentModel = getParentModel(currentModel.name());
-//        if (parentModel == null){
-//            return end.name();
-//        }
-//        MAssoclink assoclink = getMediator(currentModel.name()).getAssoclink("ASSOCLINK_" + assoc.name() + "_");
-//        String name = end.name();
-//        for (MRoleRenaming roleRenaming : assoclink.getRoleRenaming()){
-//            if (roleRenaming.assocEndC().name().equals(name)){
-//                return roleRenaming.newName();
-//            }
-//        }
-//        return name;
-//    }
+    public List<MClass> powerTypes(String levelName) {
+        MModel prevModel = this.getNextModel(levelName);
+        if (prevModel == null){
+            return new ArrayList<>();
+        }
+        MMediator nextMediator = this.getMediator(prevModel.name());
+        return nextMediator.powerTypes();
+    }
 }
