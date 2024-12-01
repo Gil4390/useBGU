@@ -62,6 +62,7 @@ import java.net.Socket;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 class NoSystemException extends Exception {
 	/**
@@ -968,27 +969,54 @@ public final class Shell implements Runnable, PPCHandler {
 	private void cmdInfoMLMClass(String line) throws NoSystemException {
 		StringTokenizer tokenizer = new StringTokenizer(line);
 		try {
-			String subCmd = tokenizer.nextToken();
+			MClass derivedFromClass = null; // "M1@cls from M2@derivedFromClass"
 			String className = tokenizer.nextToken();
-			MClass cls = system().model().getClass(className);
-			if (cls == null) {
-				Log.error("Class `" + className + "' not found.");
-				return;
+			MClass cls = getClassSafe(className);
+			Set<String> activeFlags = new HashSet<>(List.of("-attributes", "-roles", "-mediators")); // all available flags
+			boolean showOrigin = false; // -origin flag
+			if (tokenizer.hasMoreTokens()) {
+				activeFlags.clear();
 			}
-			if (subCmd.isEmpty()) {
-				cmdInfoMLMPrintClass(cls);
-			} else if (subCmd.equals("attributes")) {
-				cmdInfoMLMClassAttributes(cls);
-			} else if (subCmd.equals("roles")) {
-				cmdInfoMLMClassRoles(cls);
-			} else if (subCmd.equals("mediators")) {
+
+			while (tokenizer.hasMoreTokens()) {
+				String flag = tokenizer.nextToken();
+				if(flag.equals("from")) {
+					derivedFromClass = getClassSafe(tokenizer.nextToken());
+					if(!tokenizer.hasMoreTokens()) {
+						activeFlags.addAll(List.of("-attributes", "-roles", "-mediators")); // if no flags are given, show all
+					}
+				} else {
+					activeFlags.add(flag);
+				}
+			}
+
+			if (activeFlags.contains("-origin")) {
+				showOrigin = true;
+			}
+			if(activeFlags.contains("-attributes")){
+				cmdInfoMLMClassAttributes(cls, derivedFromClass);
+			}
+			if(activeFlags.contains("-roles")){
+				cmdInfoMLMClassRoles(cls, derivedFromClass);
+			}
+			if(activeFlags.contains("-mediators")){
 				cmdInfoMLMClassMediators(cls);
-			} else {
-				Log.error("Syntax error in info command. Try `help'.");
 			}
+
 		} catch (NoSuchElementException ex) {
+			if(ex.getMessage() != null) {
+				Log.error(ex.getMessage());
+			}
 			Log.error("Missing argument to `info mlm' command. Try `help'.");
 		}
+	}
+
+	private MClass getClassSafe(String className) throws NoSystemException {
+		MClass cls = system().model().getClass(className);
+		if (cls == null) {
+			throw new NoSuchElementException("Class `" + className + "' not found.");
+		}
+		return cls;
 	}
 
 	private void cmdInfoPrintMLM() throws NoSystemException {
@@ -1062,10 +1090,18 @@ public final class Shell implements Runnable, PPCHandler {
 	}
 
 	private void cmdInfoMLMPrintClass(MClass cls) throws NoSystemException {
-
+		cmdInfoMLMClassAttributes(cls, null);
+		cmdInfoMLMClassRoles(cls, null);
+		cmdInfoMLMClassMediators(cls);
 	}
 
-	private void cmdInfoMLMClassAttributes(MClass cls) throws NoSystemException {
+	private void cmdInfoMLMClassAttributes(MClass cls, MClass derivedFromClass) throws NoSystemException {
+
+		if(derivedFromClass != null) {
+			cmdInfoMLMDerivedAttributes(cls, derivedFromClass);
+			return;
+		}
+
 		System.out.println("attributes of class " + cls.name());
 		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
 
@@ -1083,15 +1119,64 @@ public final class Shell implements Runnable, PPCHandler {
 		}
 	}
 
-	private void cmdInfoMLMClassRoles(MClass cls) throws NoSystemException {
+	private void cmdInfoMLMDerivedAttributes(MClass cls, MClass derivedFromClass) throws NoSystemException {
+		System.out.println("derived attributes of class " + cls.name() + " from class " + derivedFromClass.name());
+		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
+
+		List<MAttribute> powerTypeAttributes = derivedFromClass.attributes();
+		List<MAttribute> allAttributes = cls.allAttributes();
+
+		List<MAttribute> derivedAttributes = allAttributes.stream().filter(attribute -> {
+			if(attribute instanceof MInternalAttribute) {
+				return powerTypeAttributes.stream().anyMatch(powerTypeAttribute -> powerTypeAttribute.name().equals(((MInternalAttribute) attribute).getOriginalAttribute().name()));
+			}
+			return powerTypeAttributes.contains(attribute);
+		}).collect(Collectors.toList());
+
+		for(MAttribute attribute : derivedAttributes){
+			printTab();
+			v.visitAttribute(attribute);
+		}
+	}
+
+	private void cmdInfoMLMClassRoles(MClass cls, MClass derivedFromClass) throws NoSystemException {
+		if(derivedFromClass != null) {
+			cmdInfoMLMDerivedRoles(cls, derivedFromClass);
+			return;
+		}
 		System.out.println("class " + cls.name());
-		System.out.println("roles");
-		//TODO: add 'declared roles' and 'derived roles'
-		for(Map.Entry<String, ? extends MNavigableElement> navigableElement : cls.navigableEnds().entrySet()){
+
+		//TODO: find a better solution than type casting
+		System.out.println("declared roles");
+		printRoles(((MInternalClassImpl)cls).navigableElements());
+
+		System.out.println("all roles");
+		printRoles(cls.navigableEnds());
+
+		System.out.println("end");
+	}
+
+	private void cmdInfoMLMDerivedRoles(MClass cls, MClass derivedFromClass) {
+		System.out.println("derived roles of class " + cls.name() + " from class " + derivedFromClass.name());
+
+		Map<String, ? extends MNavigableElement> powerTypeRoles = derivedFromClass.navigableEnds();
+		Map<String, ? extends MNavigableElement> allRoles = cls.navigableEnds();
+
+		Map<String, MNavigableElement> derivedRoles = new HashMap<>();
+		for(Map.Entry<String, ? extends MNavigableElement> role : allRoles.entrySet()){
+			if(powerTypeRoles.containsValue(role.getValue())){
+				derivedRoles.put(role.getKey(), role.getValue());
+			}
+		}
+
+		printRoles(derivedRoles);
+	}
+
+	private void printRoles(Map<String, ? extends MNavigableElement> navigableEnds) {
+		for(Map.Entry<String, ? extends MNavigableElement> navigableElement : navigableEnds.entrySet()){
 			printTab();
 			System.out.println(navigableElement.getKey() + " : " + navigableElement.getValue().cls().name());
 		}
-		System.out.println("end");
 	}
 
 	private void cmdInfoMLMClassMediators(MClass cls) throws NoSystemException {
