@@ -64,21 +64,21 @@ Example:
 
     :   The complete level information will be shown in the Shell.
 
-#### Display Class Attributes
+#### Display Class Overview
 
-Displays all attributes of the specified class, including both inherited and renamed attributes.
+Displays an overview of the specified class. Can be filtered using flags or shows all information if no flags are provided.
 
 #### Syntax:
 
-:   `info mlm class attributes ${LEVEL_NAME@CLASS_NAME}`
+:   `info mlm class ${LEVEL_NAME@CLASS_NAME} [-attributes] [-roles] [-mediators]`
 
-Example:
+Examples:
 
 :   Get attributes for class C in level L2.
 
     User input:
 
-    :   `info mlm class attributes L2@C`
+    :   `info mlm class L2@C -attributes`
 
     Result:
 
@@ -88,25 +88,17 @@ Example:
             declared attributes
               attr1 : Integer
             end
-            derived attributes
+            all attributes
+              attr1 : Integer
               attr2 : String
             end
 
-#### Display Class Roles
-
-Displays all navigable ends of the specified class.
-
-#### Syntax:
-
-:   `info mlm class roles ${LEVEL_NAME@CLASS_NAME}`
-
-Example:
 
 :   Get roles for class C in level L2.
 
     User input:
 
-    :   `info mlm class roles L2@C`
+    :   `info mlm class L2@C -roles`
 
     Result:
 
@@ -120,22 +112,54 @@ Example:
               r2 : L1@B
             end
 
-#### Display Class Mediators
-
-Displays the clabjects and assoclinks associated with the specified class.
-
-#### Syntax:
-
-:   `info mlm class mediators ${LEVEL_NAME@CLASS_NAME}`
-
-Example:
-
 :   Get mediators for a specific class.
 
     User input:
 
-    :   `info mlm class mediators L2@C`
+    :   `info mlm class L2@C -mediators`
 
     Result:
 
     :   The mediators associated with the specified class will be shown in the Shell.
+
+
+#### Display Class Inheritance Overview
+
+Displays an overview of the inherited roles or attributes of a class from its powerType class. Can be filtered using flags or shows all information if no flags are provided.
+
+#### Syntax:
+
+:   `info mlm class ${LEVEL_NAME@CLASS_NAME} from ${LEVEL_NAME@CLASS_NAME} [-attributes] [-roles]`
+
+
+Examples:
+
+:   Get inherited attributes of class C in level L2 from class A in level L1.
+
+    User input:
+
+    :   `info mlm class L2@C from L1@A -attributes`
+
+    Result:
+
+    :   The attributes shown in the Shell.
+
+            derived attributes
+              attr1 : Integer
+            end
+
+:   Get inherited roles of class C in level L2 from class A in level L1.
+
+    User input:
+
+    :   `info mlm class L2@C -roles`
+
+    Result:
+
+    :   The roles shown in the Shell.
+
+            derived roles
+              r1 : L1@D
+            end
+
+
