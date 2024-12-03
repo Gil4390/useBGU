@@ -972,7 +972,7 @@ public final class Shell implements Runnable, PPCHandler {
 			MClass derivedFromClass = null; // "M1@cls from M2@derivedFromClass"
 			String className = tokenizer.nextToken();
 			MClass cls = getClassSafe(className);
-			Set<String> activeFlags = new HashSet<>(List.of("-attributes", "-roles", "-mediators")); // all available flags
+			Set<String> activeFlags = new HashSet<>(List.of("-attributes", "-roles", "-mediator")); // all available flags
 			boolean showOrigin = false; // -origin flag
 			if (tokenizer.hasMoreTokens()) {
 				activeFlags.clear();
@@ -983,7 +983,7 @@ public final class Shell implements Runnable, PPCHandler {
 				if(flag.equals("from")) {
 					derivedFromClass = getClassSafe(tokenizer.nextToken());
 					if(!tokenizer.hasMoreTokens()) {
-						activeFlags.addAll(List.of("-attributes", "-roles", "-mediators")); // if no flags are given, show all
+						activeFlags.addAll(List.of("-attributes", "-roles", "-mediator")); // if no flags are given, show all
 					}
 				} else {
 					activeFlags.add(flag);
@@ -999,7 +999,7 @@ public final class Shell implements Runnable, PPCHandler {
 			if(activeFlags.contains("-roles")){
 				cmdInfoMLMClassRoles(cls, derivedFromClass);
 			}
-			if(activeFlags.contains("-mediators")){
+			if(activeFlags.contains("-mediator")){
 				cmdInfoMLMClassMediators(cls);
 			}
 

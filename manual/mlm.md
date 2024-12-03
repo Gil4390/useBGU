@@ -70,7 +70,7 @@ Displays an overview of the specified class. Can be filtered using flags or show
 
 #### Syntax:
 
-:   `info mlm class ${LEVEL_NAME@CLASS_NAME} [-attributes] [-roles] [-mediators]`
+:   `info mlm class ${LEVEL_NAME@CLASS_NAME} [-attributes] [-roles] [-mediator]`
 
 Examples:
 
@@ -112,15 +112,15 @@ Examples:
               r2 : L1@B
             end
 
-:   Get mediators for a specific class.
+:   Get mediator for a specific class.
 
     User input:
 
-    :   `info mlm class L2@C -mediators`
+    :   `info mlm class L2@C -mediator`
 
     Result:
 
-    :   The mediators associated with the specified class will be shown in the Shell.
+    :   The mediator associated with the specified class will be shown in the Shell.
 
 
 #### Display Class Inheritance Overview
