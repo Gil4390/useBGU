@@ -1,0 +1,1 @@
+assoclink_end_is_not_defined_as_clabject_fail.use:1:4: Assoclink creation failed: Child class: CD@C or CD@D is not defined as a clabject in the mediator: CD

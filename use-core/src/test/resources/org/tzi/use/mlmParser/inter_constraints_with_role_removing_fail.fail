@@ -1,0 +1,1 @@
+inter_constraints_with_role_removing_fail.use:38:9: Undefined operation named `bb1' in expression `CD@C.bb1()'.

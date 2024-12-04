@@ -1,0 +1,1 @@
+inherited_renamed_attributes_are_not_accessible_with_old_name.use:42:9: Undefined operation named `a1' in expression `CD@C.a1()'.

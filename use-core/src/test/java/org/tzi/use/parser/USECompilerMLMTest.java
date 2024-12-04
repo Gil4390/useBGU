@@ -264,10 +264,13 @@ public class USECompilerMLMTest extends TestCase {
         return result;
     }
 
-    public void testCompile_mlm1_Specification() {
+    /**
+     * testing basic parsing rules of mlm with empty mediators
+     */
+    public void test_empty_mediators_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm1.use");
+        File multiFile = new File(TEST_PATH + "/empty_mediators.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -304,10 +307,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm2_Specification() {
+    /**
+     * testing basic parsing rules of mlm with empty clabjects
+     */
+    public void test_empty_clabjects_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm2.use");
+        File multiFile = new File(TEST_PATH + "/empty_clabjects.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -344,10 +350,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm3_Specification() {
+    /**
+     * testing basic parsing rules of attribute removing and renaming
+     */
+    public void test_attribute_removing_renaming_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm3.use");
+        File multiFile = new File(TEST_PATH + "/attribute_removing_renaming.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -384,10 +393,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm3b_Specification() {
+    /**
+     * testing basic parsing rules of role removing and renaming
+     */
+    public void test_roles_removing_renaming_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm3b.use");
+        File multiFile = new File(TEST_PATH + "/roles_removing_renaming.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -424,11 +436,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-
-    public void testCompile_mlm4_Specification() {
+    /**
+     * testing basic parsing rules of assoclink
+     */
+    public void test_assoclink_basic_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm4.use");
+        File multiFile = new File(TEST_PATH + "/assoclink_basic.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -465,10 +479,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm7a_Specification() {
+    /**
+     * testing the attribute inheritance of a 3-level MLM.
+     */
+    public void test_3_levels_empty_clabjects_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm7a.use");
+        File multiFile = new File(TEST_PATH + "/3_levels_empty_clabjects.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -491,10 +508,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm7b_Specification() {
+    /**
+     * testing the attribute inheritance of a 3-level MLM, when removing and renaming attributes.
+     */
+    public void test_3_levels_attributes_renaming_removing_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm7b.use");
+        File multiFile = new File(TEST_PATH + "/3_levels_attributes_renaming_removing.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -517,10 +537,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm8_Specification() {
+    /**
+     * when defining a clabject, all the attributes and roles are inherited and are accessible through inter-constraints
+     */
+    public void test_inter_constraints_with_empty_clabjects_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm8.use");
+        File multiFile = new File(TEST_PATH + "/inter_constraints_with_empty_clabjects.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -552,10 +575,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm12_Specification() {
+    /**
+     * when renaming an attribute in a clabject, the attribute should be accessible using the new attribute name through inter-constraints
+     */
+    public void test_clabject_attribute_renaming_with_inter_constraints_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm12.use");
+        File multiFile = new File(TEST_PATH + "/clabject_attribute_renaming_with_inter_constraints.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -583,10 +609,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm14_Specification() {
+    /**
+     * when renaming a role in a clabject, the role should be accessible using the new role name through inter-constraints.
+     */
+    public void testCompile_inter_constraints_with_role_renaming_Specification() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm14.use");
+        File multiFile = new File(TEST_PATH + "/inter_constraints_with_role_renaming.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -613,10 +642,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm16_Specification() {
+    /**
+     * Attribute renaming in 3-level MLM, each renamed attribute should only be accessible in its corresponding level
+     */
+    public void test_3_levels_attribute_renaming_inter_constraints_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm16.use");
+        File multiFile = new File(TEST_PATH + "/3_levels_attribute_renaming_inter_constraints.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -640,10 +672,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm17_Specification() {
+    /**
+     * Role renaming in 3-level MLM, each renamed role should only be accessible in its corresponding level
+     */
+    public void test_3_levels_roles_renaming_inter_constraints_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm17.use");
+        File multiFile = new File(TEST_PATH + "/3_levels_roles_renaming_inter_constraints.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -669,34 +704,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-
-//    public void testCompile_mlm_graph_toString() {
-//        MMultiLevelModel mlmResult = null;
-//
-//        File multiFile = new File(TEST_PATH_PAPER + "/mlm-figure-1-test.use");
-//        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-//        PrintWriter newErr = new PrintWriter(System.out);
-//
-//        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-//            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-//                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-//            specStream1.close();
-//
-//            UseMLMApi api = new UseMLMApi(mlmResult);
-//
-//
-//            System.out.println(mlmResult.generalizationGraph().toString());
-//        } catch (Exception e) {
-//            // This can be ignored
-//            e.printStackTrace();
-//            fail("Unexpected exception");
-//        }
-//    }
-
-    public void testCompile_mlm19_Specification() {
+    /**
+     * defining assoclink between inherited classes
+     */
+    public void test_assoclink_between_inherited_classes_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm19.use");
+        File multiFile = new File(TEST_PATH + "/assoclink_between_inherited_classes.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -712,10 +726,14 @@ public class USECompilerMLMTest extends TestCase {
             fail("Unexpected exception");
         }
     }
-    public void testCompile_mlm20_Specification() {
+
+    /**
+     * self-association in the upper level turns to an association in the lower level through assoclink
+     */
+    public void test_assoclink_self_assoc_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm20.use");
+        File multiFile = new File(TEST_PATH + "/assoclink_self_assoc.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -738,7 +756,9 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-
+    /**
+     * when removing an attribute in a clabject, the attribute shouldn’t be accessible at the current level.
+     */
     public void testCompile_mlm23_clabject_attribute_removing_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -762,6 +782,9 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+    /**
+     * when defining an assoclink, all parent roles related to that assoclink are not accessible
+     */
     public void testCompile_mlm21_assoclink_role_not_accessible_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -806,10 +829,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm22_assoclink_three_levels_roles_not_accessible_Specification() {
+    /**
+     * when defining two assoclinks in two separate levels, all parent roles are inaccessible on both levels.
+     */
+    public void test_3_levels_assoclink_roles_should_be_accessible_on_correct_levels_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm22.use");
+        File multiFile = new File(TEST_PATH + "/3_levels_assoclink.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -829,10 +855,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm26_assoclink_overrules_roles_deletion_Specification() {
+    /**
+     * when defining an assoclink, that is related to a deleted role, the assoclink overrules.
+     */
+    public void test_assoclink_overrules_role_removing_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm26.use");
+        File multiFile = new File(TEST_PATH + "/assoclink_overrules_role_removing.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -877,10 +906,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm28_assoclink_inherited_class_roles_not_accessible_Specification() {
+    /**
+     * when defining an assoclink, inherited classes shouldn’t have access to parent roles.
+     */
+    public void test_assoclink_removes_access_to_old_role_names_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm28.use");
+        File multiFile = new File(TEST_PATH + "/assoclink_removes_access_to_old_role_names.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -901,6 +933,9 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
+    /**
+     * when defining an assoclink and role removing to that assoclink in a 3-Level MLM, roles shouldn’t be accessible.
+     */
     public void testCompile_mlm29_role_removing_to_assoclink_Specification() {
         MMultiLevelModel mlmResult = null;
 
@@ -923,29 +958,6 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-
-//    public void testCompile_mlm_figure_1_test_generalization_Specification() {
-//        MMultiLevelModel mlmResult = null;
-//
-//        File multiFile = new File(TEST_PATH_SEMINAR + "/mlm-figure-1-test-generalization.use");
-//        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-//        PrintWriter newErr = new PrintWriter(System.out);
-//
-//        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-//            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-//                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-//            specStream1.close();
-//
-//            Set<String> class_PCAppl_Roles = mlmResult.getClass("PC", "PCAppl").navigableEnds().keySet();
-//            assertEquals(new HashSet<>(List.of("part","parent","softw")), class_PCAppl_Roles);
-//
-//
-//        } catch (Exception e) {
-//            // This can be ignored
-//            e.printStackTrace();
-//            fail("Unexpected exception");
-//        }
-//    }
 
     public void testCompile_mlm_figure_1_test_Specification() {
         MMultiLevelModel mlmResult = null;

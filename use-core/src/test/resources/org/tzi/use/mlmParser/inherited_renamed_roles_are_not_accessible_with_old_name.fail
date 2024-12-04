@@ -1,0 +1,1 @@
+inherited_renamed_roles_are_not_accessible_with_old_name.use:42:9: Undefined operation named `bb1' in expression `CD@C.bb1()'.
