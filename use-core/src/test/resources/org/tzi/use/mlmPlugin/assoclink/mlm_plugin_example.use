@@ -39,7 +39,7 @@ mediator CD < AB
 
     -- adding an assoclink suppose to make the model satisfiable, but it is not
     --assoclink cd1 : ab1
-      --  cc1 -> aa1
-      --  dd1 -> bb1
+      --  aa1 -> cc1
+      --  bb1 -> dd1
     --end
 end

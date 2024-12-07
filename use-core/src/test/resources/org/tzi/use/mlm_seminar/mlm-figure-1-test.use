@@ -142,8 +142,8 @@ mediator PC < Computer_product
    end
 
    assoclink pcOs : hardwSoftw
-        os->softw
-        pc->hardw
+        softw->os
+        hardw->pc
    end
 
    assoclink pcCompat : compatibility

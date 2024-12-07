@@ -37,7 +37,7 @@ mediator M2 < M1
   end
 
   assoclink assoc2 : assoc1
-    cc1 -> dd1
+    dd1 -> cc1
     r -> r
   end
 
