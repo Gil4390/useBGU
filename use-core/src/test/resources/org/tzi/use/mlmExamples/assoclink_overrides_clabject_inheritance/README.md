@@ -1,72 +1,66 @@
-The following example demonstrates how to define an assoclink.
+The following example demonstrates how assoclink can be used to override inheritance of roles.
 
-An assoclink must be associated with an association, that both ends have a defined clabject.
+When defining an assoclink, all inherited roles associated with the parent association of the assoclink, wont be inherited by default or by renaming. 
 
-Assoclink 'cd1' of association 'ab1', needs to have a role binding.
+In the current example, class 'C' wont inherit role 'bb1' because we defined an assoclink 'cd1' of 'ab1'.
 
-We can bind each parent role to the child role by adding the following lines under the assoclink segment :
+Therefore, the current roles of class 'C' and 'D':
 
-    aa1 -> cc1
-    bb1 -> dd1
-'parentRoleName -> childRoleName' denotes role binding.
+    CD@C.roles = { 'dd1 : CD@D' }
+    CD@D.roles = { 'cc1 : CD@C' }
 
-'parentRoleName' corresponds to the role of the parent clabject ('A.aa1').
+If we add a role renaming to clabject 'C : A', as the following:
 
-'childRoleName' corresponds to the role of the child clabject ('C.cc1').
+    clabject C : A
+        roles
+            aa1 -> jj1
+    end
 
-<img src="clabject_with_assoclink.png" alt="">
+role 'jj1' wont be inherited, and the roles will be the same as stated above.
+
+<img src="assoclink_overrides_clabject_inheritance.png" alt="">
 
     MLM ABCD
 
-    model AB
-    class A
-      attributes
-        a1: String
-        a2: String
-    end
+      model AB
+        class A
+        end
+    
+        class B
+        end
 
-    class B
-      attributes
-        b1: String
-        b2: String
-    end
-
-    association ab1 between
-      A[*] role aa1
-      B[*] role bb1
-    end
+        association ab1 between
+          A[*] role aa1
+          B[*] role bb1
+        end
 
 
-    model CD
-    class C
-      attributes
-        c: String
-    end
-
-    class D
-      attributes
-        d: String
-    end
-
-    association cd1 between
-      C[*] role cc1
-      D[*] role dd1
-    end
-
+      model CD
+        class C
+        end
+    
+        class D
+        end
+    
+        association cd1 between
+          C[*] role cc1
+          D[*] role dd1
+        end
 
 
     mediator AB < NONE
     end
     
     mediator CD < AB
-    clabject C : A
-    end
-
-    clabject D : B
-    end
-
-    assoclink cd1 : ab1
-        aa1 -> cc1
-        bb1 -> dd1
-    end
+        clabject C : A
+        end
+    
+        clabject D : B
+        end
+    
+        assoclink cd1 : ab1
+            aa1 -> cc1
+            bb1 -> dd1
+        end
+    
     end
