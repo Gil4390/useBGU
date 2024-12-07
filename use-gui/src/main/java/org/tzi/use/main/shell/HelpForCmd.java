@@ -292,6 +292,14 @@ public class HelpForCmd {
         printOneLineHelpByKey("help.info.prog");
         printOneLineHelpByKey("help.info.vars");
         printOneLineHelpByKey("help.info.coverage");
+
+        printHeader("Multi-Level-Model Information commands");
+        printOneLineHelpByKey("help.info.mlm");
+        printOneLineHelpByKey("help.info.mlm.levels");
+        printOneLineHelpByKey("help.info.mlm.level");
+        printOneLineHelpByKey("help.info.mlm.class");
+        printOneLineHelpByKey("help.info.mlm.class.from");
+
         printHeader("Constraint commands");
         printOneLineHelpByKey("help.constraints.load");
         printOneLineHelpByKey("help.constraints.unload");
