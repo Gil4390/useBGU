@@ -44,26 +44,29 @@ public class ASTAssoclink extends ASTAnnotatable{
         }
         MAssoclink mAssoclink = mlmContext.modelFactory().createAssoclink(child,parent);
 
-        String childRoleNameEnd1 = fRoleBindingEnd1.first.getText();
-        String parentRoleNameEnd1 = fRoleBindingEnd1.second.getText();
+        String parentRoleNameEnd1 = fRoleBindingEnd1.first.getText();
+        String childRoleNameEnd1 = fRoleBindingEnd1.second.getText();
 
-        String childRoleNameEnd2 = fRoleBindingEnd2.first.getText();
-        String parentRoleNameEnd2 = fRoleBindingEnd2.second.getText();
+        String parentRoleNameEnd2 = fRoleBindingEnd2.first.getText();
+        String childRoleNameEnd2 = fRoleBindingEnd2.second.getText();
 
+        if(mlmContext.getParentModel().getAssociation(fParentName.getText()) == null || mlmContext.getCurrentModel().getAssociation(fChildName.getText()) == null) {
+            throw new Exception("Association not found.");
+        }
 
-        List<MAssociationEnd> allEnds = new ArrayList<>(mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds());
-        allEnds.addAll(mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds());
+        List<MAssociationEnd> parentEnds = new ArrayList<>(mlmContext.getParentModel().getAssociation(fParentName.getText()).associationEnds());
+        List<MAssociationEnd> childEnds = new ArrayList<>(mlmContext.getCurrentModel().getAssociation(fChildName.getText()).associationEnds());
 
-        Optional<MAssociationEnd> mEndC1 = allEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd1)).findFirst();
+        Optional<MAssociationEnd> mEndC1 = childEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd1)).findFirst();
         if (mEndC1.isEmpty()) throw new Exception("End " + childRoleNameEnd1 + " not found.");
 
-        Optional<MAssociationEnd> mEndP1 = allEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd1)).findFirst();
+        Optional<MAssociationEnd> mEndP1 = parentEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd1)).findFirst();
         if (mEndP1.isEmpty()) throw new Exception("End " + parentRoleNameEnd1 + " not found.");
 
-        Optional<MAssociationEnd> mEndC2 = allEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd2)).findFirst();
+        Optional<MAssociationEnd> mEndC2 = childEnds.stream().filter(e -> e.nameAsRolename().equals(childRoleNameEnd2)).findFirst();
         if (mEndC2.isEmpty()) throw new Exception("End " + childRoleNameEnd2 + " not found.");
 
-        Optional<MAssociationEnd> mEndP2 = allEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd2)).findFirst();
+        Optional<MAssociationEnd> mEndP2 = parentEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd2)).findFirst();
         if (mEndP2.isEmpty()) throw new Exception("End " + parentRoleNameEnd2 + " not found.");
 
         mAssoclink.addRoleBinding(mlmContext.modelFactory().createRoleBinding(mEndC1.get(), mEndP1.get()));
