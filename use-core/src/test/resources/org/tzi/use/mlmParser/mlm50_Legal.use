@@ -60,7 +60,7 @@ mediator CD < AB
 
     assoclink cd1 : ab1
         aa1 -> cc1
-        bb1 -> bb1
+        bb1 -> dd1
     end
 
     assoclink ce1 : ab1

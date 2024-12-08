@@ -90,7 +90,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 44);
+        List<File> fileList = getFilesMatchingSuffix(".use", 43);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -783,7 +783,8 @@ public class USECompilerMLMTest extends TestCase {
     }
 
     /**
-     * when defining an assoclink, all parent roles related to that assoclink are not accessible
+     * when defining an assoclink, all parent roles related to that assoclink are not accessible using the parent end name
+     * instead hey should be accessible using the child end name
      */
     public void testCompile_mlm21_assoclink_role_not_accessible_Specification() {
         MMultiLevelModel mlmResult = null;
@@ -800,27 +801,6 @@ public class USECompilerMLMTest extends TestCase {
             UseMLMApi api = new UseMLMApi(mlmResult);
             System.out.println(api.getClassSafe("CD@C").navigableEnds().toString());
             assertFalse(api.getClassSafe("CD@C").navigableEnds().containsKey("bb1"));
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    public void testCompile_mlm21_assoclink_accessible_role_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/mlm21.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseMLMApi api = new UseMLMApi(mlmResult);
-            System.out.println(api.getClassSafe("CD@C").navigableEnds().toString());
             assertTrue(api.getClassSafe("CD@C").navigableEnds().containsKey("dd1"));
         } catch (Exception e) {
             // This can be ignored
@@ -880,10 +860,13 @@ public class USECompilerMLMTest extends TestCase {
         }
     }
 
-    public void testCompile_mlm27_Specification() {
+    /**
+     *
+     */
+    public void test_role_removing_solves_self_inheritance_satisfiability_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm27.use");
+        File multiFile = new File(TEST_PATH + "/role_removing_solves_self_inheritance_satisfiability.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -936,10 +919,10 @@ public class USECompilerMLMTest extends TestCase {
     /**
      * when defining an assoclink and role removing to that assoclink in a 3-Level MLM, roles shouldn’t be accessible.
      */
-    public void testCompile_mlm29_role_removing_to_assoclink_Specification() {
+    public void test_3_level_assoclink_with_role_removal_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/mlm29.use");
+        File multiFile = new File(TEST_PATH + "/3_level_assoclink_with_role_removal.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
