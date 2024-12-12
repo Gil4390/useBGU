@@ -69,9 +69,16 @@ public class ASTAssoclink extends ASTAnnotatable{
         Optional<MAssociationEnd> mEndP2 = parentEnds.stream().filter(e -> e.nameAsRolename().equals(parentRoleNameEnd2)).findFirst();
         if (mEndP2.isEmpty()) throw new Exception("End " + parentRoleNameEnd2 + " not found.");
 
+        mEndC1.get().addRedefinedEnd(mEndP1.get());
+        mEndC2.get().addRedefinedEnd(mEndP2.get());
+        mEndP1.get().addRedefiningEnd(mEndC1.get());
+        mEndP2.get().addRedefiningEnd(mEndC2.get());
+
         mAssoclink.addRoleBinding(mlmContext.modelFactory().createRoleBinding(mEndC1.get(), mEndP1.get()));
         mAssoclink.addRoleBinding(mlmContext.modelFactory().createRoleBinding(mEndC2.get(), mEndP2.get()));
 
+        parent.addRedefinedBy(child);
+        ((MInternalAssociationImpl)child).addRedefinesAssoclink(parent);
         return mAssoclink;
     }
 

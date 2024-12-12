@@ -672,7 +672,7 @@ public class MMPrintVisitor implements MMVisitor {
         // visit role bindings
         for (MRoleBinding roleBinding : e.roleBindings()) {
             indent();
-            println(id(roleBinding.getChildAssociationEnd().nameAsRolename()) + ws() + other("->") + ws() + id(roleBinding.getParentAssociationEnd().nameAsRolename()));
+            println(id(roleBinding.getParentAssociationEnd().nameAsRolename()) + ws() + other("->") + ws() + id(roleBinding.getChildAssociationEnd().nameAsRolename()));
         }
 
         decIndent();

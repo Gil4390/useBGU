@@ -1,5 +1,7 @@
 package org.tzi.use.uml.mm;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,6 +60,23 @@ public class MInternalAssociationImpl extends MAssociationImpl {
         }
 
         return true;
+    }
+
+    public void addRedefinesAssoclink(MAssociation parentAssociation) {
+        //change to lookup if its assoclink or redefines
+        //check by model name
+        this.redefines.add(parentAssociation);
+//        this.model().generalizationGraph().addEdge(new MAssoclink(this, parentAssociation));
+        Collection<MModel> currentModels = ((MInternalClassImpl)this.associationEnds().get(0).cls()).getMultiModel().models();
+
+        List<MAssociation> allAssociations = new ArrayList<>();
+        for(MModel model : currentModels) {
+            allAssociations.addAll(model.associations());
+        }
+
+        for (MAssociation assoc : allAssociations) {
+            assoc.calculateRedefinedByClosure();
+        }
     }
 
 
