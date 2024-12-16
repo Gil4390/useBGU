@@ -42,7 +42,7 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
     private Set<MAssociation> subsets = new HashSet<MAssociation>();
     private Set<MAssociation> subsettedBy = new HashSet<MAssociation>();
     
-    protected Set<MAssociation> redefines = new HashSet<MAssociation>();
+    private Set<MAssociation> redefines = new HashSet<MAssociation>();
     private Set<MAssociation> redefinedBy = new HashSet<MAssociation>();
     
     private boolean isUnion;

@@ -213,8 +213,4 @@ public class MInternalClassImpl extends MClassImpl{
         return null;
     }
 
-    public MMultiModel getMultiModel() {
-        return fMultiModel;
-    }
-
 }
