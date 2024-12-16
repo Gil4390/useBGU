@@ -171,7 +171,8 @@ public class MInternalClassImpl extends MClassImpl{
         return fNavigableElements;
     }
 
-    //return the clabject edge that connects this class with the class from the upper level
+    // TODO: only works of single clabject inheritance
+    // return the clabject edge that connects this class with the class from the upper level
     // will return null if the clabject doesn't exist
     public MClabject getClabjectEdge(){
         Set<MClass> parents = parents();

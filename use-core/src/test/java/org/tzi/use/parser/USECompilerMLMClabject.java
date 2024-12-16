@@ -2,12 +2,15 @@ package org.tzi.use.parser;
 
 import junit.framework.TestCase;
 import org.assertj.core.api.Assertions;
+import org.tzi.use.api.UseSystemApi;
+import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.use.USECompilerMLM;
 import org.tzi.use.uml.mm.MAttribute;
 import org.tzi.use.uml.mm.MMultiLevelModel;
 import org.tzi.use.uml.mm.MNavigableElement;
 import org.tzi.use.uml.mm.MultiLevelModelFactory;
+import org.tzi.use.uml.sys.MLMSystem;
 import org.tzi.use.util.SuffixFileFilter;
 
 import java.io.*;
@@ -311,9 +314,66 @@ public class USECompilerMLMClabject extends TestCase {
         File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        assertRolesEqual("M2", "C", Map.of("r","M2@F"), mlmResult );
-        assertRolesEqual("M2", "F", Map.of("cc1","M2@C", "dd1","M1@D" ), mlmResult);
+        assertRolesEqual("M2", "C", Map.of("dd1","M2@D"), mlmResult );
+        assertRolesEqual("M2", "D", Map.of("cc1","M2@C", "aa1","M1@A" ), mlmResult);
 
+    }
+
+    public void test_Role_removing_inheritance_link_creation_should_fail() {
+        File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("M1@B", "b1");
+            systemApi.createObject("M2@C", "c1");
+            systemApi.createObject("M2@D", "d1");
+
+            systemApi.createLink("M2@assoc2", "c1", "d1");
+
+            systemApi.createLink("M1@assoc1", "c1", "b1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role bb1 is removed from class M2@C", e.getMessage() + " " + e.getCause().getMessage());
+        }
+    }
+
+    public void test_Role_removing_inheritance_link_creation_should_fail_2() {
+        File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("M1@B", "b1");
+            systemApi.createObject("M2@C", "c1");
+            systemApi.createObject("M2@D", "d1");
+
+            systemApi.createLink("M2@assoc2", "c1", "d1");
+
+            systemApi.createLink("M1@assoc1", "c1", "d1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role bb1 is removed from class M2@C", e.getMessage() + " " + e.getCause().getMessage());
+        }
+    }
+
+    public void test_assoclink_link_creation_should_fail() {
+        File mlmFile = new File(TEST_PATH + "/clabject_with_assoclink.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("M1@B", "b1");
+            systemApi.createObject("M2@C", "c1");
+
+            systemApi.createLink("M1@assoc1", "c1", "b1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! association M1@assoc1 is overriden by assoclink", e.getMessage() + " " + e.getCause().getMessage());
+        }
     }
 
 }

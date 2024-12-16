@@ -64,6 +64,7 @@ import org.tzi.use.uml.sys.soil.MEnterOperationStatement;
 import org.tzi.use.uml.sys.soil.MExitOperationStatement;
 import org.tzi.use.uml.sys.soil.MNewObjectStatement;
 import org.tzi.use.uml.sys.soil.MStatement;
+import org.tzi.use.uml.sys.MLMSystem;
 import org.tzi.use.util.Log;
 import org.tzi.use.util.StringUtil;
 import org.tzi.use.util.USEWriter;
@@ -1359,7 +1360,7 @@ public class MainWindow extends JFrame {
             if (model != null) {
                 fLogWriter.println(model.getStats());
                 // create system
-                system = new MSystem(model);
+                system = new MLMSystem(model);
             } else {
                 system = null;
             }
