@@ -66,7 +66,7 @@ import static org.tzi.use.util.StringUtil.inQuotes;
  * @author Frank Hilken
  * @author Mark Richters
  */
-public final class MSystem {
+public class MSystem {
 	/** The model of this system. */
 	private MModel fModel;
 

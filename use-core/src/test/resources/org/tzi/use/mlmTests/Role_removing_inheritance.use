@@ -1,16 +1,16 @@
 MLM CD
 
   model M1
-    class D
+    class A
     end
 
-    class E
+    class B
     end
 
 
     association assoc1 between
-      D[*] role dd1
-      E[*] role r
+      A[*] role aa1
+      B[*] role bb1
     end
 
 
@@ -18,12 +18,12 @@ MLM CD
     class C
     end
 
-    class F
+    class D
     end
 
     association assoc2 between
       C[*] role cc1
-      F[*] role r
+      D[*] role dd1
     end
 
 
@@ -31,12 +31,12 @@ mediator M1 < NONE
 end
 
 mediator M2 < M1
-  clabject C : D
+  clabject C : A
     roles
-        ~r
+        ~bb1
   end
 
-  clabject F : E
+  clabject D : B
   end
 
 end
