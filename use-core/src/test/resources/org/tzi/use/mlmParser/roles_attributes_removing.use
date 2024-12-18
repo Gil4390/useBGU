@@ -61,7 +61,6 @@ mediator CD < AB
         a1 -> c1
         ~a2
       roles
-        bb1 -> bb3
         ~bb2
    end
 

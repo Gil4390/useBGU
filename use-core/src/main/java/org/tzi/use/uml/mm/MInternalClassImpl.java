@@ -113,18 +113,11 @@ public class MInternalClassImpl extends MClassImpl{
                     .edgesBetween(this, superclass).stream().findFirst().orElse(null);
 
             if (edge != null && edge instanceof MClabject) {
-                // Remove the roles that were removed or renamed by the clabject
+                // Remove the roles that were removed
                 ((MClabject)edge).getRemovedRoles().forEach(removedEnd -> {
                     parentEnds.removeIf(e -> e.getKey().equals(removedEnd.nameAsRolename()));
                 });
 
-                // Rename the roles as defined by the clabject
-                ((MClabject)edge).getRenamedRoles().forEach(renamedEnd -> {
-                    boolean isEndRemoved = parentEnds.removeIf(e -> e.getValue().equals(renamedEnd.assocEnd()));
-                    if(isEndRemoved) {
-                        parentEnds.add(new AbstractMap.SimpleEntry<>(renamedEnd.newName(), renamedEnd.assocEnd()));
-                    }
-                });
             }
 
             allEnds.addAll(parentEnds);

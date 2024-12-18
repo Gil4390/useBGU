@@ -26,10 +26,6 @@ public class MultiLevelModelFactory extends MultiModelFactory {
         return new MAttributeRenaming(attr, newName);
     }
 
-    public MRoleRenaming createRoleRenaming(MAssociationEnd endp,String newName){
-        return new MRoleRenaming(endp, newName);
-    }
-
     public MRoleBinding createRoleBinding(MAssociationEnd childAssociationEnd, MAssociationEnd parentAssociationEnd){
         return new MRoleBinding(childAssociationEnd, parentAssociationEnd);
     }

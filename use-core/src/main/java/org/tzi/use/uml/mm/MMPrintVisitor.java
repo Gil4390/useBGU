@@ -616,7 +616,7 @@ public class MMPrintVisitor implements MMVisitor {
         incIndent();
 
         boolean hasAttributeChanges = !e.getAttributeRenaming().isEmpty() || !e.getRemovedAttributes().isEmpty();
-        boolean hasRolesChanges = !e.getRenamedRoles().isEmpty() || !e.getRemovedRoles().isEmpty();
+        boolean hasRolesChanges = !e.getRemovedRoles().isEmpty();
 
         if(hasAttributeChanges) {
             indent();
@@ -642,12 +642,6 @@ public class MMPrintVisitor implements MMVisitor {
             println(keyword("roles"));
         }
         incIndent();
-
-        // visit role renamings
-        for (MRoleRenaming roleRenaming : e.getRenamedRoles()) {
-            indent();
-            println(id(roleRenaming.assocEnd().nameAsRolename()) + ws() + other("->") + ws() + id(roleRenaming.newName()));
-        }
 
         // visit role removing
         for (MAssociationEnd role : e.getRemovedRoles()) {

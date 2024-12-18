@@ -297,16 +297,6 @@ public class USECompilerMLMClabject extends TestCase {
 
     }
 
-    //TODO: bug should be fixed -- throws an error although there is renaming
-    public void test_Role_renaming_inheritance_Spec() {
-        File mlmFile = new File(TEST_PATH + "/Role_renaming_inheritance.use");
-        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-
-//            assertRolesEqual("M2", "C", List.of("r"), mlmResult);
-//            assertRolesEqual("M2", "F", List.of("cc1"), mlmResult);
-
-    }
-
     public void test_Role_removing_inheritance_Spec() {
         File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance.use");
         MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));

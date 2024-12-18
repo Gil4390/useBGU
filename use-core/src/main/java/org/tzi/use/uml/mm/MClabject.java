@@ -10,8 +10,6 @@ public class MClabject extends MGeneralization {
 
     private final List<MAttributeRenaming> fAttributeRenaming;
     private final List<MAttribute> fRemovedAttributes;
-
-    private final List<MRoleRenaming> fRoleRenaming;
     private final List<MAssociationEnd> fRemovedRoles;
 
 
@@ -19,7 +17,6 @@ public class MClabject extends MGeneralization {
         super(child, parent);
         this.fRemovedAttributes = new ArrayList<>();
         this.fAttributeRenaming = new ArrayList<>();
-        this.fRoleRenaming = new ArrayList<>();
         this.fRemovedRoles = new ArrayList<>();
     }
 
@@ -35,10 +32,6 @@ public class MClabject extends MGeneralization {
 
     public void addRemovedAttribute(MAttribute attribute) {
         fRemovedAttributes.add(attribute);
-    }
-
-    public void addRoleRenaming(MRoleRenaming roleRenaming) {
-        fRoleRenaming.add(roleRenaming);
     }
 
     public MAttribute getRemovedAttribute(String name) {
@@ -78,10 +71,6 @@ public class MClabject extends MGeneralization {
         });
         return attributes;
         //return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
-    }
-
-    public List<MRoleRenaming> getRenamedRoles() {
-        return fRoleRenaming;
     }
 
     public List<MAssociationEnd> getRemovedRoles() {

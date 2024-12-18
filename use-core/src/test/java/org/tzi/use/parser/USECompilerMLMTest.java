@@ -90,7 +90,7 @@ public class USECompilerMLMTest extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 43);
+        List<File> fileList = getFilesMatchingSuffix(".use", 39);
         // add all the example files which should have no errors
         File[] files = EXAMPLES_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -394,12 +394,12 @@ public class USECompilerMLMTest extends TestCase {
     }
 
     /**
-     * testing basic parsing rules of role removing and renaming
+     * testing basic parsing rules of role and attribute removing
      */
-    public void test_roles_removing_renaming_Spec() {
+    public void test_attributes_roles_removing_Spec() {
         MMultiLevelModel mlmResult = null;
 
-        File multiFile = new File(TEST_PATH + "/roles_removing_renaming.use");
+        File multiFile = new File(TEST_PATH + "/roles_attributes_removing.use");
         USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
         PrintWriter newErr = new PrintWriter(System.out);
 
@@ -425,7 +425,7 @@ public class USECompilerMLMTest extends TestCase {
             assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
 
             Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
-            assertEquals(new HashSet<>(List.of("dd1", "dd2", "bb3")), classC_Roles);
+            assertEquals(new HashSet<>(List.of("dd1", "dd2", "bb1")), classC_Roles);
             Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
             assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "aa1", "aa2", "dd3")), classD_Roles);
 
@@ -610,39 +610,6 @@ public class USECompilerMLMTest extends TestCase {
     }
 
     /**
-     * when renaming a role in a clabject, the role should be accessible using the new role name through inter-constraints.
-     */
-    public void testCompile_inter_constraints_with_role_renaming_Specification() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/inter_constraints_with_role_renaming.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
-            systemApi.createObject("CD@C", "c1");
-            systemApi.createObject("AB@B", "b1");
-            systemApi.createLink("AB@ab1", "c1", "b1");
-
-            Assert.assertFalse(systemApi.checkState());
-
-            systemApi.setAttributeValue("b1", "b1", "'b'");
-
-            Assert.assertTrue(systemApi.checkState());
-
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    /**
      * Attribute renaming in 3-level MLM, each renamed attribute should only be accessible in its corresponding level
      */
     public void test_3_levels_attribute_renaming_inter_constraints_Spec() {
@@ -663,38 +630,6 @@ public class USECompilerMLMTest extends TestCase {
             assertEquals(new HashSet<>(List.of("a2", "c", "c5")), classC_Attributes);
             Set<String> classE_Attributes = mlmResult.getClass("EF", "E").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
             assertEquals(new HashSet<>(List.of("a2", "c", "e", "e9")), classE_Attributes);
-
-
-        } catch (Exception e) {
-            // This can be ignored
-            e.printStackTrace();
-            fail("Unexpected exception");
-        }
-    }
-
-    /**
-     * Role renaming in 3-level MLM, each renamed role should only be accessible in its corresponding level
-     */
-    public void test_3_levels_roles_renaming_inter_constraints_Spec() {
-        MMultiLevelModel mlmResult = null;
-
-        File multiFile = new File(TEST_PATH + "/3_levels_roles_renaming_inter_constraints.use");
-        USECompilerMLMTest.StringOutputStream errStr = new USECompilerMLMTest.StringOutputStream();
-        PrintWriter newErr = new PrintWriter(System.out);
-
-        try (FileInputStream specStream1 = new FileInputStream(multiFile)){
-            mlmResult = USECompilerMLM.compileMLMSpecification(specStream1,
-                    multiFile.getName(), newErr, new MultiLevelModelFactory());
-            specStream1.close();
-
-            Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
-            assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
-
-            Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
-            assertEquals(new HashSet<>(List.of("bb5", "dd1")), classC_Roles);
-
-            Set<String> classE_Roles = mlmResult.getClass("EF", "E").navigableEnds().keySet();
-            assertEquals(new HashSet<>(List.of("bb9", "dd1","ff1")), classE_Roles);
 
 
         } catch (Exception e) {

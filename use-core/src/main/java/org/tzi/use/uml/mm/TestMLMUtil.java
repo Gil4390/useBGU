@@ -91,18 +91,6 @@ public class TestMLMUtil {
         return mlm;
     }
 
-    public MMultiLevelModel createMLMWithEmptyAssoclinks_RoleRenaming() {
-        return null;
-    }
-
-    public MMultiLevelModel createMLMWithAssoclinks_RoleRenaming_ChangeSingleRole() {
-        return null;
-    }
-
-    public MMultiLevelModel createMLMWithAssoclinks_RoleRenaming() {
-        return null;
-    }
-
     public MMultiLevelModel createMLMWithMediator_complex_1() {
         return null;
     }

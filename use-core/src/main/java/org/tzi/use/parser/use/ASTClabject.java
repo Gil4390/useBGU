@@ -13,7 +13,6 @@ public class ASTClabject extends ASTAnnotatable{
     private final Token fParentName;
     private final List<Pair<Token>> fAttributeRenaming;
     private final List<Token> fAttributeRemoving;
-    private final List<Pair<Token>> fRoleRenaming;
     private final List<Token> fRoleRemoving;
     private MClabject fClabject;
     public ASTClabject(Token fChildName, Token fParentName) {
@@ -21,7 +20,6 @@ public class ASTClabject extends ASTAnnotatable{
         this.fParentName = fParentName;
         fAttributeRenaming = new ArrayList<>();
         fAttributeRemoving = new ArrayList<>();
-        fRoleRenaming = new ArrayList<>();
         fRoleRemoving = new ArrayList<>();
     }
 
@@ -34,13 +32,6 @@ public class ASTClabject extends ASTAnnotatable{
         p.first = oldName;
         p.second = newName;
         fAttributeRenaming.add(p);
-    }
-
-    public void addRoleRenaming(Token oldName, Token newName) {
-        Pair<Token> p = new Pair<>();
-        p.first = oldName;
-        p.second = newName;
-        fRoleRenaming.add(p);
     }
 
     public void addRoleRemoving(Token removedName) {
@@ -101,22 +92,6 @@ public class ASTClabject extends ASTAnnotatable{
         MClass child = mlmContext.getCurrentModel().getClass(this.fChildName.getText());
 
 //        MMediator mediator = ((MMultiLevelModel)mlmContext.model()).getMediator(mlmContext.getCurrentModel().name());
-
-        for(Pair<Token> pair : fRoleRenaming) {
-            String oldRoleName = pair.first.getText();
-            MAssociationEnd oldAssocEnd = (MAssociationEnd) parent.navigableEnd(oldRoleName);
-            if(oldAssocEnd == null) {
-                throw new NullPointerException("Role: "+oldRoleName+" is not defined in the parent class: "+parent.name());
-            }
-            String newRoleName = pair.second.getText();
-            MAssociationEnd newAssocEnd = (MAssociationEnd) child.navigableEnd(newRoleName);
-            if(newAssocEnd != null) {
-                throw new NullPointerException("Role: "+newRoleName+" is already defined in the child class: "+child.name());
-            }
-
-            MRoleRenaming roleRenaming = mlmContext.modelFactory().createRoleRenaming(oldAssocEnd,newRoleName);
-            fClabject.addRoleRenaming(roleRenaming);
-        }
 
         for(Token removedRoleToken : fRoleRemoving) {
             String removedRole = removedRoleToken.getText();

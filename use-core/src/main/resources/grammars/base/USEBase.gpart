@@ -15,12 +15,9 @@
 
     clabject := "clabject" ID ":" ID
                           (attribute_rename)?
-                          (roles_rename)?
                           (constraints-inheritance)?
 
     attribute_rename := "attributes" ( (ID "->" ID) | ("~" ID) ) *
-
-    roles_rename := "roles" ( (ID "->" ID) | ("~" ID) ) *
 
     constraints-inheritance := "constraints" (~ID)*
  
@@ -58,8 +55,7 @@ clabject returns [ASTClabject n]
         )*
     )?
     ('roles'
-        ( (oldRoleName=IDENT '->' newRoleName=IDENT {$n.addRoleRenaming($oldRoleName, $newRoleName);})
-        | ( '~' oldRoleName=IDENT {$n.addRoleRemoving($oldRoleName);} )
+        ( ( '~' oldRoleName=IDENT {$n.addRoleRemoving($oldRoleName);} )
         )*
     )?
     'end'
