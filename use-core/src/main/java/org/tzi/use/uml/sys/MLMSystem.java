@@ -19,39 +19,18 @@ public class MLMSystem extends MSystem {
 
     @Override
     public MLink createLink(StatementEvaluationResult result, MAssociation association, List<MObject> participants, List<List<Value>> qualifierValues) throws MSystemException {
-        //check role removal
-        List<MClabject> clabjects = participants.stream().map(
-                p -> ((MInternalClassImpl)p.cls()).getClabjectEdge()
-        ).collect(Collectors.toList());
+        //check if role was removed or overridden in assoclink
+        if (association.associationEnds().size() <= 2){
+            for (int i = 0; i < participants.size(); i++){
+                MObject participant = participants.get(i);
+                MAssociationEnd end = association.associationEnds().get(1-i);
 
-        for (MClabject clabject : clabjects) {
-            if (clabject == null) {
-                continue;
-            }
-            for (MAssociationEnd end : clabject.getRemovedRoles()){
-                if (association.associationEnds().contains(end)){
-                    throw new MSystemException("Role " + end.name() + " is removed from class " + clabject.child().name());
+                MNavigableElement role = participant.cls().navigableEnd(end.nameAsRolename());
+                if (role == null) {
+                    throw new MSystemException("Role " + end.name() + " is not accessible from class " + participant.cls().name());
                 }
             }
         }
-
-
-        //check assoclink
-//        for (MAssociation childAssoc : association.children()){
-//            Set<MGeneralization> assoclinks = model().generalizationGraph().edgesBetween(association, childAssoc);
-//            Set<MGeneralization> assoclinks2 = model().generalizationGraph().edgesBetween(childAssoc, association);
-//            for (MGeneralization assoclink : assoclinks){
-//                if (assoclink instanceof MAssoclink){
-//                    for (MRoleBinding rb : ((MAssoclink) assoclink).roleBindings()) {
-//                        List<MClass> participantsClasses = participants.stream().map(MObject::cls).collect(Collectors.toList());
-//                        if (participantsClasses.contains(rb.getParentAssociationEnd().cls())) {
-//                            throw new MSystemException("Role " + rb.getParentAssociationEnd().name() + " is removed from class " + rb.getParentAssociationEnd().cls().name());
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
         return super.createLink(result, association, participants, qualifierValues);
     }
 }

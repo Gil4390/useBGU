@@ -15,6 +15,7 @@ import org.tzi.use.uml.ocl.expr.Evaluator;
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.value.Value;
 import org.tzi.use.uml.ocl.value.VarBindings;
+import org.tzi.use.uml.sys.MLMSystem;
 import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.util.SuffixFileFilter;
@@ -552,7 +553,8 @@ public class USECompilerMLMTest extends TestCase {
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
 
-            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            MLMSystem mlmSystem = new MLMSystem(mlmResult);
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
             systemApi.createObject("CD@C", "c1");
             systemApi.createObject("AB@B", "b1");
             systemApi.createLink("AB@ab1", "c1", "b1");
@@ -590,7 +592,8 @@ public class USECompilerMLMTest extends TestCase {
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
 
-            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            MLMSystem mlmSystem = new MLMSystem(mlmResult);
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
             systemApi.createObject("CD@C", "c1");
             systemApi.createObject("AB@B", "b1");
             systemApi.createLink("AB@ab1", "c1", "b1");
@@ -810,7 +813,8 @@ public class USECompilerMLMTest extends TestCase {
                     multiFile.getName(), newErr, new MultiLevelModelFactory());
             specStream1.close();
 
-            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            MLMSystem mlmSystem = new MLMSystem(mlmResult);
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
             systemApi.createObject("AB@B", "b1");
             systemApi.createObject("CD@D", "d1");
             systemApi.createLink("bd1", "b1", "d1");
@@ -942,8 +946,8 @@ public class USECompilerMLMTest extends TestCase {
             assertEquals(new HashSet<>(List.of("appl", "installer","pc")), class_PCOS_Roles);
             assertEquals(new ArrayList<>(List.of( "PC@PCAppl", "Computer_product@Application", "PC@PC")), class_PCOS_RolesType);
 
-
-            UseSystemApi systemApi = new UseSystemApiUndoable(mlmResult);
+            MLMSystem mlmSystem = new MLMSystem(mlmResult);
+            UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
             systemApi.createObject("Computer_product@System", "sys1");
             systemApi.createObject("Computer_product@Application", "app1");
             systemApi.createObject("Computer_product@Computer", "comp1");
@@ -953,7 +957,9 @@ public class USECompilerMLMTest extends TestCase {
             systemApi.createLink("Computer_product@compatibility", "sys1", "app1");
             systemApi.createLink("Computer_product@hardwSoftw", "comp1", "sys1");
 
+            //should fail
             systemApi.createLink("Computer_product@compatibility", "pcos1", "app1");
+
             systemApi.createLink("installation", "app1", "pcos1");
 
             systemApi.createLink("PC@pcOs", "pc1", "pcos1");

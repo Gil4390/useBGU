@@ -39,6 +39,7 @@ public class AllTests {
         test.addTestSuite( org.tzi.use.parser.USECompilerTest.class );
         test.addTestSuite( org.tzi.use.parser.USECompilerMultiTest.class );
         test.addTestSuite( org.tzi.use.parser.USECompilerMLMTest.class );
+        test.addTestSuite( org.tzi.use.parser.USECompilerMLMClabject.class );
         test.addTestSuite( org.tzi.use.parser.SoilCompilerMultiTest.class );
         test.addTest(org.tzi.use.parser.soil.AllTests.suite());
         test.addTest(org.tzi.use.parser.shell.AllTests.suite());

@@ -1,0 +1,49 @@
+MLM CD
+
+  model M1
+    class A
+    end
+
+    class B
+    end
+
+
+    association assoc1 between
+      A[1] role aa1
+      B[1] role bb1
+    end
+
+
+  model M2
+    class C
+        attributes
+            cAttr: String
+    end
+
+    class D
+    end
+
+    association assoc2 between
+      C[1] role cc1
+      D[1] role dd1
+    end
+
+inter-constraints
+    context M1@B
+        inv i1:
+            self.aa1.oclAsType(M2@C).cAttr = 'c'
+
+
+mediator M1 < NONE
+end
+
+mediator M2 < M1
+  clabject C : A
+    roles
+        ~bb1
+  end
+
+  clabject D : B
+  end
+end
+

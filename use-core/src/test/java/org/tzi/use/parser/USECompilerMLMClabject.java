@@ -169,7 +169,7 @@ public class USECompilerMLMClabject extends TestCase {
     public void testMLMClabjectSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 14);
+        List<File> fileList = getFilesMatchingSuffix(".use", 15);
 
         // create a new stream for capturing output on stderr
         USECompilerMLMClabject.StringOutputStream errStr = new USECompilerMLMClabject.StringOutputStream();
@@ -325,7 +325,7 @@ public class USECompilerMLMClabject extends TestCase {
             systemApi.createLink("M1@assoc1", "c1", "b1");
             fail("Link creation should fail");
         } catch (Exception e) {
-            assertEquals("Link creation failed! Role bb1 is removed from class M2@C", e.getMessage() + " " + e.getCause().getMessage());
+            assertEquals("Link creation failed! Role bb1 is not accessible from class M2@C", e.getMessage() + " " + e.getCause().getMessage());
         }
     }
 
@@ -345,7 +345,80 @@ public class USECompilerMLMClabject extends TestCase {
             systemApi.createLink("M1@assoc1", "c1", "d1");
             fail("Link creation should fail");
         } catch (Exception e) {
-            assertEquals("Link creation failed! Role bb1 is removed from class M2@C", e.getMessage() + " " + e.getCause().getMessage());
+            assertEquals("Link creation failed! Role bb1 is not accessible from class M2@C", e.getMessage() + " " + e.getCause().getMessage());
+        }
+    }
+
+    public void test_Role_removing_inheritance_3_levels_Spec() {
+        File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance_3_levels.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        assertRolesEqual("M2", "C", Map.of("dd1","M2@D"), mlmResult );
+        assertRolesEqual("M2", "D", Map.of("cc1","M2@C", "aa1","M1@A" ), mlmResult);
+
+        assertRolesEqual("M3", "E", Map.of("ff1","M3@F"), mlmResult );
+        assertRolesEqual("M3", "F", Map.of("ee1","M3@E"), mlmResult);
+
+    }
+
+    public void test_Role_removing_inheritance_3_levels_link_creation_should_fail() {
+        File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance_3_levels.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+
+        try {
+            systemApi.createObject("M1@A", "a1");
+            systemApi.createObject("M1@B", "b1");
+            systemApi.createObject("M2@C", "c1");
+            systemApi.createObject("M2@D", "d1");
+            systemApi.createObject("M3@E", "e1");
+            systemApi.createObject("M3@F", "f1");
+
+            systemApi.createLink("M1@assoc1", "a1", "b1");
+            systemApi.createLink("M2@assoc2", "c1", "d1");
+            systemApi.createLink("M1@assoc1", "a1", "d1");
+            systemApi.createLink("M3@assoc3", "e1", "f1");
+        }
+        catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+
+
+        try {
+            systemApi.createLink("M1@assoc1", "e1", "b1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role bb1 is not accessible from class M3@E", e.getMessage() + " " + e.getCause().getMessage());
+        }
+
+        try {
+            systemApi.createLink("M2@assoc2", "e1", "d1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role dd1 is not accessible from class M3@E", e.getMessage() + " " + e.getCause().getMessage());
+        }
+
+        try {
+            systemApi.createLink("M1@assoc1", "e1", "d1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role bb1 is not accessible from class M3@E", e.getMessage() + " " + e.getCause().getMessage());
+        }
+
+        try {
+            systemApi.createLink("M1@assoc1", "a1", "f1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role aa1 is not accessible from class M3@F", e.getMessage() + " " + e.getCause().getMessage());
+        }
+
+        try {
+            systemApi.createLink("M2@assoc2", "c1", "f1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role cc1 is not accessible from class M3@F", e.getMessage() + " " + e.getCause().getMessage());
         }
     }
 
@@ -356,13 +429,13 @@ public class USECompilerMLMClabject extends TestCase {
         MLMSystem mlmSystem = new MLMSystem(mlmResult);
         UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
         try {
-            systemApi.createObject("M1@B", "b1");
-            systemApi.createObject("M2@C", "c1");
+            systemApi.createObject("AB@B", "b1");
+            systemApi.createObject("CD@C", "c1");
 
-            systemApi.createLink("M1@assoc1", "c1", "b1");
+            systemApi.createLink("AB@ab1", "c1", "b1");
             fail("Link creation should fail");
         } catch (Exception e) {
-            assertEquals("Link creation failed! association M1@assoc1 is overriden by assoclink", e.getMessage() + " " + e.getCause().getMessage());
+            assertEquals("Link creation failed! Role bb1 is not accessible from class CD@C", e.getMessage() + " " + e.getCause().getMessage());
         }
     }
 
