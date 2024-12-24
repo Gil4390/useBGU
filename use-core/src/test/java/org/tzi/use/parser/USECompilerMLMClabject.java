@@ -169,7 +169,7 @@ public class USECompilerMLMClabject extends TestCase {
     public void testMLMClabjectSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 15);
+        List<File> fileList = getFilesMatchingSuffix(".use", 19);
 
         // create a new stream for capturing output on stderr
         USECompilerMLMClabject.StringOutputStream errStr = new USECompilerMLMClabject.StringOutputStream();

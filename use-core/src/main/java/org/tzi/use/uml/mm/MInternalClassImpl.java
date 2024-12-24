@@ -112,38 +112,16 @@ public class MInternalClassImpl extends MClassImpl{
             MGeneralization edge = fMultiModel.generalizationGraph()
                     .edgesBetween(this, superclass).stream().findFirst().orElse(null);
 
-            if (edge != null && edge instanceof MClabject) {
+            if (edge instanceof MClabject) {
                 // Remove the roles that were removed
                 ((MClabject)edge).getRemovedRoles().forEach(removedEnd -> {
                     parentEnds.removeIf(e -> e.getKey().equals(removedEnd.nameAsRolename()));
                 });
-
             }
 
             allEnds.addAll(parentEnds);
         }
 
-        // Handle ends that are redefined in assoclinks
-        Set<MNavigableElement> keysToRemove = new HashSet<>();
-
-        for (int i = 0; i < allEnds.size(); i++) {
-            MNavigableElement end1 = allEnds.get(i).getValue();
-            MAssociation assoc1 = end1.association();
-
-            for (int j = i + 1; j < allEnds.size(); j++) {
-                MNavigableElement end2 = allEnds.get(j).getValue();
-                MAssociation assoc2 = end2.association();
-
-                this.fMultiModel.fGenGraph.edgesBetween(assoc1, assoc2).forEach(e -> {
-                    if (e instanceof MAssoclink && associations().contains(e.fChild)) {
-                        keysToRemove.addAll(e.fParent.navigableEnds().values());
-                    }
-                });
-            }
-        }
-
-        // Remove the redefined ends
-        allEnds.removeIf(e -> keysToRemove.contains(e.getValue()));
 
         // Check that allEnds doesn't contain duplicates, throw error if there is any duplicates
         Set<String> endSet = new HashSet<>();

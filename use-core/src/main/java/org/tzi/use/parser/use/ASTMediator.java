@@ -78,6 +78,15 @@ public class ASTMediator extends ASTAnnotatable{
                 throw new Exception("Assoclink creation failed: " + "Child class: "+childClass1.name()+ " or "+childClass2.name()+ " is not instantiating the appropriate class in the mediator: "+mMediator.name());
             }
 
+            for (MAssociationEnd end : ((MAssociation) assoclink.parent()).associationEnds()) {
+                if (end.cls().equals(parentClass2)) {
+                    clabject1.addRemovedRole(end);
+                }
+                if (end.cls().equals(parentClass1)) {
+                    clabject2.addRemovedRole(end);
+                }
+            }
+
 
             mMediator.addAssocLink(assoclink);
             mlmContext.model().addGeneralization(assoclink);

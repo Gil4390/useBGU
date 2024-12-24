@@ -4,8 +4,6 @@ import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.Value;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class MLMSystem extends MSystem {
     /**
@@ -24,13 +22,14 @@ public class MLMSystem extends MSystem {
             for (int i = 0; i < participants.size(); i++){
                 MObject participant = participants.get(i);
                 MAssociationEnd end = association.associationEnds().get(1-i);
-
                 MNavigableElement role = participant.cls().navigableEnd(end.nameAsRolename());
-                if (role == null) {
+                if (role == null || !role.cls().equals(end.cls())) {
                     throw new MSystemException("Role " + end.name() + " is not accessible from class " + participant.cls().name());
                 }
             }
+
         }
+
         return super.createLink(result, association, participants, qualifierValues);
     }
 }
