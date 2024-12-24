@@ -516,6 +516,30 @@ public class USECompilerMLMClabject extends TestCase {
 
     }
 
+    public void test_Assoclink_same_role_name_link_creation_should_fail() {
+        File mlmFile = new File(TEST_PATH + "/Assoclink_same_role_names.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("M1@A", "a1");
+            systemApi.createObject("M1@B", "b1");
+            systemApi.createObject("M2@C", "c1");
+            systemApi.createObject("M2@D", "d1");
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+
+        try {
+            systemApi.createLink("M1@assoc1", "c1", "b1");
+            fail("Link creation should fail");
+        } catch (Exception e) {
+            assertEquals("Link creation failed! Role bb1 is not accessible from class M2@C", e.getMessage() + " " + e.getCause().getMessage());
+        }
+
+    }
+
 
     public void test_assoclink_link_creation_should_fail() {
         File mlmFile = new File(TEST_PATH + "/clabject_with_assoclink.use");
