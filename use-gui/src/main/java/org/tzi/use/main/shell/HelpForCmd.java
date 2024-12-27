@@ -196,6 +196,14 @@ public class HelpForCmd {
             printDetailedHelpByKey("help.info.prog");
         } else if (cmd.startsWith("info vars")) {
             printDetailedHelpByKey("help.info.vars");
+        } else if (cmd.startsWith("info mlm levels")) {
+            printDetailedHelpByKey("help.info.mlm.levels");
+        } else if (cmd.startsWith("info mlm level")) {
+            printDetailedHelpByKey("help.info.mlm.level");
+        } else if (cmd.startsWith("info mlm class")) {
+            printDetailedHelpByKey("help.info.mlm.class");
+        } else if (cmd.startsWith("info mlm")) {
+            printDetailedHelpByKey("help.info.mlm");
         } else if (cmd.startsWith("info")) {
             printDetailedHelpByKey("help.info");
         } else if (cmd.startsWith("net")) {
