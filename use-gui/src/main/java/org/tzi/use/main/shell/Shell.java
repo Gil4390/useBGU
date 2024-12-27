@@ -959,10 +959,13 @@ public final class Shell implements Runnable, PPCHandler {
 			} else if (subCmd.equals("class")) {
 				cmdInfoMLMClass(line.substring(6));
 			} else {
-				Log.error("Syntax error in info command. Try `help'.");
+				Log.error("Syntax error in info mlm command. Try `help'.");
 			}
 		} catch (NoSuchElementException ex) {
 			Log.error("Missing argument to `info mlm' command. Try `help'.");
+		}
+		catch (Exception e) {
+			Log.error(e.getMessage());
 		}
 	}
 
@@ -995,19 +998,24 @@ public final class Shell implements Runnable, PPCHandler {
 			}
 			if(activeFlags.contains("-attributes")){
 				cmdInfoMLMClassAttributes(cls, derivedFromClass);
+				System.out.println("------------------------------------------------");
 			}
 			if(activeFlags.contains("-roles")){
 				cmdInfoMLMClassRoles(cls, derivedFromClass);
+				System.out.println("------------------------------------------------");
 			}
 			if(activeFlags.contains("-mediator")){
 				cmdInfoMLMClassMediators(cls);
+				System.out.println("------------------------------------------------");
 			}
 
 		} catch (NoSuchElementException ex) {
 			if(ex.getMessage() != null) {
 				Log.error(ex.getMessage());
 			}
-			Log.error("Missing argument to `info mlm' command. Try `help'.");
+			else{
+				Log.error("Missing argument to `info mlm class` command. Try `help`.");
+			}
 		}
 	}
 
@@ -1033,12 +1041,15 @@ public final class Shell implements Runnable, PPCHandler {
 		}
 	}
 
-	private void cmdInfoLevel(StringTokenizer tokenizer) throws NoSystemException {
+	private void cmdInfoLevel(StringTokenizer tokenizer) throws Exception {
 		MSystem system = system();
 		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
 
 		String modelName = tokenizer.nextToken();
 		MModel model = ((MMultiLevelModel)system.model()).getModel(modelName);
+		if (model == null){
+			throw new Exception("Level `" + modelName + "' not found.");
+		}
 
 		boolean classes = true;
 		boolean associations = true;
@@ -1070,13 +1081,16 @@ public final class Shell implements Runnable, PPCHandler {
 
 		if (classes){
 			model.classes().forEach(v::visitClass);
+			System.out.println("------------------------------------------------");
 		}
 		if (associations){
 			model.associations().forEach(v::visitAssociation);
+			System.out.println("------------------------------------------------");
 		}
 		if (mediators){
 			MMediator mediator = ((MMultiLevelModel)system.model()).getMediator(modelName);
 			v.visitMediator(mediator);
+			System.out.println("------------------------------------------------");
 		}
 		if (powerTypes){
 			System.out.println("Power Types:");
@@ -1085,6 +1099,7 @@ public final class Shell implements Runnable, PPCHandler {
 				printTab();
 				System.out.println(cls.name());
 			}
+			System.out.println("------------------------------------------------");
 		}
 
 	}

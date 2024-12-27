@@ -203,7 +203,9 @@ public class MMultiModel extends MModel{
         if(name.contains("@")) {
             //regular class
             String modelName = name.split("@")[0];
-            String clsName = name.split("@")[1];
+            if (!fModels.containsKey(modelName)){
+                return null;
+            }
             return fModels.get(modelName).getClass(name);
         } else {
             //inter-class
