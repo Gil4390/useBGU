@@ -376,6 +376,8 @@ public final class Shell implements Runnable, PPCHandler {
 			cmdExec(line.substring(2).trim(), true);
 		} else if (line.startsWith("!")) {
 			cmdExec(line.substring(1).trim(), false);
+		} else if (line.equals("wd") || line.startsWith("wd ")) {
+			cmdCheckWellDefinedness(line);
 		} else if (line.equals("check") || line.startsWith("check ")) {
 			cmdCheck(line);
 		} else if (line.equals("genvcg")) {
@@ -593,6 +595,12 @@ public final class Shell implements Runnable, PPCHandler {
 		}
 		fLastCheckResult = system().state().check(out, verbose, details, all,
 				invNames);
+	}
+
+	private void cmdCheckWellDefinedness(String line) throws NoSystemException {
+		System.out.println("Checking well definedness..");
+		String res = ((MMultiLevelModel) system().model()).checkWellDefinednessState(new PrintWriter(System.out));
+		System.out.println("Result: " + res);
 	}
 
 
