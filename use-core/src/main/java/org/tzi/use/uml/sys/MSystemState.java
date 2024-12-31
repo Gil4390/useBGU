@@ -2217,6 +2217,14 @@ public final class MSystemState {
 							continue;
 						}
 					}
+					MClass objClass = obj.cls();
+					MClabject clabject2 = ((MInternalClassImpl) objClass).getClabjectEdge();
+					if (clabject2 != null){
+						if (clabject2.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
+							continue;
+						}
+					}
+
 				}
 				reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
 				if (!reportAllErrors) {
