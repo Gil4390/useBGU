@@ -644,7 +644,7 @@ public class MMPrintVisitor implements MMVisitor {
         incIndent();
 
         // visit role removing
-        for (MAssociationEnd role : e.getRemovedRoles()) {
+        for (MAssociationEnd role : e.getOnlyClabjectRemovedRoles()) {
             indent();
             println(other("~") + id(role.nameAsRolename()));
         }

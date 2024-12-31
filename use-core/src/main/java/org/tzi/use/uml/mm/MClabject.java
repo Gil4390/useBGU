@@ -11,6 +11,7 @@ public class MClabject extends MGeneralization {
     private final List<MAttributeRenaming> fAttributeRenaming;
     private final List<MAttribute> fRemovedAttributes;
     private final List<MAssociationEnd> fRemovedRoles;
+    private final List<MAssociationEnd> fRemovedRolesAssoclink;
 
 
     public MClabject(MClass child, MClass parent) {
@@ -18,6 +19,7 @@ public class MClabject extends MGeneralization {
         this.fRemovedAttributes = new ArrayList<>();
         this.fAttributeRenaming = new ArrayList<>();
         this.fRemovedRoles = new ArrayList<>();
+        this.fRemovedRolesAssoclink = new ArrayList<>();
     }
 
     public void addAttributeRenaming(MAttributeRenaming attributeRenaming) {
@@ -43,9 +45,6 @@ public class MClabject extends MGeneralization {
         return null;
     }
 
-    public void addRemovedRole(MAssociationEnd role) {
-        fRemovedRoles.add(role);
-    }
 
     public MAttributeRenaming getRenamedAttribute(String oldName) {
         for(MAttributeRenaming removedAttribute : fAttributeRenaming) {
@@ -73,7 +72,20 @@ public class MClabject extends MGeneralization {
         //return fAttributeRenaming.stream().map(MAttributeRenaming::attribute).collect(Collectors.toList());
     }
 
+    public void addRemovedRole(MAssociationEnd role) {
+        fRemovedRoles.add(role);
+    }
+    public void addRemovedRoleAssoclink(MAssociationEnd role) {
+        fRemovedRolesAssoclink.add(role);
+    }
+
     public List<MAssociationEnd> getRemovedRoles() {
+        List<MAssociationEnd> allRemovedRoles = new ArrayList<>(fRemovedRoles);
+        allRemovedRoles.addAll(fRemovedRolesAssoclink);
+        return allRemovedRoles;
+    }
+
+    public List<MAssociationEnd> getOnlyClabjectRemovedRoles() {
         return fRemovedRoles;
     }
 

@@ -80,10 +80,10 @@ public class ASTMediator extends ASTAnnotatable{
 
             for (MAssociationEnd end : ((MAssociation) assoclink.parent()).associationEnds()) {
                 if (end.cls().equals(parentClass2)) {
-                    clabject1.addRemovedRole(end);
+                    clabject1.addRemovedRoleAssoclink(end);
                 }
                 if (end.cls().equals(parentClass1)) {
-                    clabject2.addRemovedRole(end);
+                    clabject2.addRemovedRoleAssoclink(end);
                 }
             }
 

@@ -20,27 +20,22 @@ MLM ABCD
     class D
     end
 
-
     association cd1 between
       C[1] role cc1
       D[1] role dd1
     end
 
-
 mediator AB < NONE
 end
 
--- removing the roles should make the mlm satisfiable, given the 1-link constraint, but it still remains unsatisfiable
--- changing the maximum number of ab1 links to 2, without removing the roles, makes the model satisfiable
 mediator CD < AB
+-- plugin satisfiable only when the number of objects of 'A' and 'B' is 0.
     clabject C : A
-    --roles
-    --  ~bb1
+    roles
+        ~bb1
     end
 
     clabject D : B
-    --roles
-    --  ~aa1
     end
 
 end

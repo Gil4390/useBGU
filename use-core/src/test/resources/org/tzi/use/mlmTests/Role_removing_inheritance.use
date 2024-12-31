@@ -9,8 +9,8 @@ MLM CD
 
 
     association assoc1 between
-      A[*] role aa1
-      B[*] role bb1
+      A[1] role aa1
+      B[1] role bb1
     end
 
 
@@ -22,8 +22,8 @@ MLM CD
     end
 
     association assoc2 between
-      C[*] role cc1
-      D[*] role dd1
+      C[1] role cc1
+      D[1] role dd1
     end
 
 

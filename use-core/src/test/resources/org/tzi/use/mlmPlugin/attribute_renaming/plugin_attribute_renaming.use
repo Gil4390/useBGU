@@ -1,0 +1,46 @@
+MLM ABCD
+
+  model AB
+    class A
+      attributes
+        a1: String
+        a2: Integer
+    end
+
+    class B
+      attributes
+        b1: String
+        b2: Integer
+    end
+
+    constraints
+    context A
+      inv a1:
+        self.a2 > 5
+
+
+  model CD
+    class C
+      attributes
+        c: String
+    end
+
+    class D
+      attributes
+        d: String
+    end
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+    clabject C : A
+    attributes
+      a2 -> c2
+    end
+
+    clabject D : B
+    end
+
+end
