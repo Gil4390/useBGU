@@ -570,7 +570,32 @@ public class USECompilerMLMClabject extends TestCase {
             systemApi.createObject("M2@C", "c1");
             systemApi.createObject("M2@D", "d1");
             systemApi.createLink("M1@assoc1", "a1", "b1");
+            systemApi.createLink("M1@assoc1", "a1", "d1");
             systemApi.createLink("M2@assoc2", "c1", "d1");
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+
+        assertTrue(systemApi.checkState());
+    }
+
+    public void test_Role_removing_3_levels_check_state() {
+        File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance_3_levels.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("M1@A", "a1");
+            systemApi.createObject("M1@B", "b1");
+            systemApi.createObject("M2@C", "c1");
+            systemApi.createObject("M2@D", "d1");
+            systemApi.createObject("M3@E", "e1");
+            systemApi.createObject("M3@F", "f1");
+            systemApi.createLink("M1@assoc1", "a1", "b1");
+            systemApi.createLink("M1@assoc1", "a1", "d1");
+            systemApi.createLink("M2@assoc2", "c1", "d1");
+            systemApi.createLink("M3@assoc3", "e1", "f1");
         } catch (Exception e) {
             fail("Objects and links creation setup should not fail");
         }
