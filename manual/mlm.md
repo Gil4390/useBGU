@@ -163,3 +163,34 @@ Examples:
             end
 
 
+#### Check Well Definedness
+
+Checks the loaded MLM for well definedness.
+
+#### Syntax:
+
+:   `wd`
+
+Example:
+
+:   Checks the loaded MLM for well definedness
+
+    User input:
+
+    :   `wd`
+
+    Result:
+
+    :   Checking well definedness..
+        checking structure...
+        checked structure in 0ms.
+        checking invariants...
+        checked 0 invariants in 0.000s, 0 failures.
+        checking structure...
+        Multiplicity constraint violation in association `AB@ab1':
+        Object `CD@C' of class `AB@A' is connected to 3 objects of class `AB@B'
+        at association end `bb1' but the multiplicity is specified as `2'.
+        checked structure in 0ms.
+        checking invariants...
+        checked 0 invariants in 0.000s, 0 failures.
+        Result: NotWellDefined
