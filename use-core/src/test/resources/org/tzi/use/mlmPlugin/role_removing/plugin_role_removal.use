@@ -30,6 +30,7 @@ end
 
 mediator CD < AB
 -- plugin satisfiable only when the number of objects of 'A' and 'B' is 0.
+
     clabject C : A
     roles
         ~bb1

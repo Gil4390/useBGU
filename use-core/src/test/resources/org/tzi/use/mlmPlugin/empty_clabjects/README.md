@@ -1,6 +1,8 @@
-The following model will be UNSATISFIABLE when the max number of links of 'AB@ab1' limited to 1.
+The following examples will test the credibility of the plugin with default inheritance.
 
-Unsatisfiability occurs because the 1-1 multiplicity between each pair of classes.
+Example 1: (UNSATISFIABLE) True Negative
+Max number of links of 'AB@ab1' limited to 1, the model is UNSATISFIABLE because we cant connect object 'd1'/'c1' to their inherited roles.
 
-Changing the max number to '2' will make the model SATISFIABLE.
+Example 2: (SATISFIABLE) False Positive
+Max number of links of 'AB@ab1' limited to 2, this example is FP because the plugin allowed connecting a 1-1 multiplicity with 2 objects, (d1 connects to a1 & c1)
 
