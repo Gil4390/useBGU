@@ -11,7 +11,7 @@
                          (mediator)*
                          EOF
 
-    mediator ::= "mediator" ID < ID (clabject | assoc)* "end"
+    mediator ::= "mediator" ID < ID (clabject | assoclink)* "end"
 
     clabject := "clabject" ID ":" ID
                           (attribute_rename)?
@@ -21,7 +21,7 @@
 
     constraints-inheritance := "constraints" (~ID)*
  
-    assoclink := "association" ID ":" ID
+    assoclink := "assoclink" ID ":" ID
                          ID "->" ID
                          ID "->" ID
 */
