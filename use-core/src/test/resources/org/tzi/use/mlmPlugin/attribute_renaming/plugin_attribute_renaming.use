@@ -13,10 +13,10 @@ MLM ABCD
         b2: Integer
     end
 
-    constraints
-    context A
-      inv a1:
-        self.a2 > 5
+    --constraints
+    --context A
+    --  inv a1:
+    --    self.a2 > 5
 
 
   model CD
@@ -30,14 +30,24 @@ MLM ABCD
         d: String
     end
 
+--Example 1
+inter-constraints
+context CD@C inv:
+    self.a2 > 5
+
+--Example 2
+--inter-constraints
+--context CD@C inv:
+--    self.c2 > 5
 
 mediator AB < NONE
 end
 
 mediator CD < AB
     clabject C : A
-    attributes
-      a2 -> c2
+    -- uncomment the following lines for Example 2
+    --attributes
+    --  a2 -> c2
     end
 
     clabject D : B

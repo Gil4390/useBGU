@@ -36,8 +36,8 @@ end
 
 mediator CD < AB
     clabject C : A
---    attributes
---      ~a2
+    --attributes
+    --  ~a2
     end
 
     clabject D : B
