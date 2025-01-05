@@ -141,27 +141,18 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/attribute_removing_renaming.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
-        Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "B", Map.of("b1", "String", "b2", "String"), mlmResult);
 
-        Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
-        Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("aa1", "dd3")), classB_Roles);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "B", Map.of("aa1", "AB@A", "dd3", "CD@D"), mlmResult);
 
         //classes C & D should inherit the roles and attributes from A & B with renaming and removing of attributes
-        Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("c", "c1")), classC_Attributes);
-        Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("c", "String", "c1", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "D", Map.of("d", "String", "b1", "String", "b2", "String"), mlmResult);
 
-        Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("dd1", "dd2", "bb1")), classC_Roles);
-        Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "aa1", "dd3")), classD_Roles);
-    }
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D", "dd2", "CD@D", "bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C", "cc2", "CD@C", "bb3", "AB@B", "aa1", "AB@A", "dd3", "CD@D"), mlmResult);}
 
     /**
      * testing basic parsing rules of role and attribute removing
@@ -170,26 +161,18 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/roles_attributes_removing.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
-        Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "B", Map.of("b1", "String", "b2", "String"), mlmResult);
 
-        Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("bb1", "bb2")), classA_Roles);
-        Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("aa1", "aa2", "dd3")), classB_Roles);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("bb1", "AB@B", "bb2", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "B", Map.of("aa1", "AB@A", "aa2", "AB@A", "dd3", "CD@D"), mlmResult);
 
         //classes C & D should inherit the roles and attributes from A & B with renaming and removing of attributes and roles
-        Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("c", "c1")), classC_Attributes);
-        Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("c", "String", "c1", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "D", Map.of("d", "String", "b1", "String", "b2", "String"), mlmResult);
 
-        Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("dd1", "dd2", "bb1")), classC_Roles);
-        Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "aa1", "aa2", "dd3")), classD_Roles);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D", "dd2", "CD@D", "bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C", "cc2", "CD@C", "bb3", "AB@B", "aa1", "AB@A", "aa2", "AB@A", "dd3", "CD@D"), mlmResult);
 
     }
 
@@ -200,26 +183,17 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/assoclink_basic.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
-        Set<String> classB_Attributes = mlmResult.getClass("AB", "B").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("b1", "b2")), classB_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "B", Map.of("b1", "String", "b2", "String"), mlmResult);
 
-        Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("bb1")), classA_Roles);
-        Set<String> classB_Roles = mlmResult.getClass("AB", "B").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("aa1", "dd3")), classB_Roles);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "B", Map.of("aa1", "AB@A", "dd3", "CD@D"), mlmResult);
 
-        Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("c", "c1")), classC_Attributes);
-        Set<String> classD_Attributes = mlmResult.getClass("CD", "D").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("d", "b1", "b2")), classD_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("c", "String", "c1", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "D", Map.of("d", "String", "b1", "String", "b2", "String"), mlmResult);
 
-        //the association cd1 is defined as assoclink of ab1
-        Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("dd1", "dd2")), classC_Roles);
-        Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("cc1", "cc2", "bb3", "dd3")), classD_Roles);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D", "dd2", "CD@D"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C", "cc2", "CD@C", "bb3", "AB@B", "dd3", "CD@D"), mlmResult);
 
     }
 
@@ -230,12 +204,9 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/3_levels_empty_clabjects.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("aa")), classA_Attributes);
-        Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("aa", "cc")), classC_Attributes);
-        Set<String> classE_Attributes = mlmResult.getClass("EF", "E").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("aa", "cc", "ee")), classE_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("aa", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("aa", "String", "cc", "Integer"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("EF", "E", Map.of("aa", "String", "cc", "Integer", "ee", "Integer"), mlmResult);
 
     }
 
@@ -246,12 +217,9 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/3_levels_attributes_renaming_removing.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("aa1", "aa2")), classA_Attributes);
-        Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("aa3", "cc")), classC_Attributes);
-        Set<String> classE_Attributes = mlmResult.getClass("EF", "E").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("aa3", "cc", "ee")), classE_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("aa1", "String", "aa2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("aa3", "String", "cc", "Integer"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("EF", "E", Map.of("aa3", "String", "cc", "Integer", "ee", "Integer"), mlmResult);
 
     }
 
@@ -319,12 +287,9 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/3_levels_attribute_renaming_inter_constraints.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classA_Attributes = mlmResult.getClass("AB", "A").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("a1", "a2")), classA_Attributes);
-        Set<String> classC_Attributes = mlmResult.getClass("CD", "C").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("a2", "c", "c5")), classC_Attributes);
-        Set<String> classE_Attributes = mlmResult.getClass("EF", "E").allAttributes().stream().map(MAttribute::name).collect(Collectors.toSet());
-        assertEquals(new HashSet<>(List.of("a2", "c", "e", "e9")), classE_Attributes);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "Integer"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("a2", "Integer", "c", "String", "c5", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("EF", "E", Map.of("a2", "Integer", "c", "String", "e", "String", "e9", "String"), mlmResult);
 
     }
 
@@ -336,6 +301,7 @@ public class USECompilerMLMTestComplex extends TestCase {
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
         //TODO add some checks
+        MLMTestUtil.getInstance().assertRolesEqual("M2", "C", Map.of("dd1", "CD@D"));
     }
 
     /**
@@ -345,12 +311,9 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/assoclink_self_assoc.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> classA_Roles = mlmResult.getClass("AB", "A").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("aaa1", "aaa2")), classA_Roles);
-        Set<String> classC_Roles = mlmResult.getClass("CD", "C").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("dd1")), classC_Roles);
-        Set<String> classD_Roles = mlmResult.getClass("CD", "D").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("cc1")), classD_Roles);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("aaa1", "AB@A", "aaa2", "AB@A"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C"), mlmResult);
 
     }
 
@@ -450,10 +413,7 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/assoclink_removes_access_to_old_role_names.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> class_D1_Roles = mlmResult.getClass("CD", "D1").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("cc1")), class_D1_Roles);
-        List<String> class_D1_RolesType = mlmResult.getClass("CD", "D1").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new ArrayList<>(List.of( "CD@C")), class_D1_RolesType);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D1", Map.of("cc1", "CD@C"), mlmResult);
     }
 
     /**
@@ -463,8 +423,7 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/3_level_assoclink_with_role_removal.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> class_E_Roles = mlmResult.getClass("EF", "E").navigableEnds().keySet();
-        assertEquals(new HashSet<>(List.of("ff1")), class_E_Roles);
+        MLMTestUtil.getInstance().assertRolesEqual("EF", "E", Map.of("ff1", "EF@F"), mlmResult);
     }
 
 
@@ -472,56 +431,16 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH_SEMINAR + "/mlm-figure-1-test.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        Set<String> class_Hardware_Roles = mlmResult.getClass("Computer_product", "Hardware").navigableEnds().keySet();
-        List<String> class_Hardware_RolesType = mlmResult.getClass("Computer_product", "Hardware").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("part","parent","softw")), class_Hardware_Roles);
-        assertEquals(new ArrayList<>(List.of("Computer_product@Hardware","Computer_product@Hardware","Computer_product@Software")), class_Hardware_RolesType);
-
-        Set<String> class_Peripheral_Roles = mlmResult.getClass("Computer_product", "Peripheral").navigableEnds().keySet();
-        List<String> class_Peripheral_RolesType = mlmResult.getClass("Computer_product", "Peripheral").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("part","parent","softw")), class_Peripheral_Roles);
-        assertEquals(new ArrayList<>(List.of("Computer_product@Hardware","Computer_product@Hardware","Computer_product@Software")), class_Peripheral_RolesType);
-
-        Set<String> class_Computer_Roles = mlmResult.getClass("Computer_product", "Computer").navigableEnds().keySet();
-        List<String> class_Computer_RolesType = mlmResult.getClass("Computer_product", "Computer").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("maintained", "part","parent","softw")), class_Computer_Roles);
-        assertEquals(new ArrayList<>(List.of("PC@PC", "Computer_product@Hardware", "Computer_product@Hardware", "Computer_product@Software")), class_Computer_RolesType);
-
-        Set<String> class_Software_Roles = mlmResult.getClass("Computer_product", "Software").navigableEnds().keySet();
-        List<String> class_Software_RolesType = mlmResult.getClass("Computer_product", "Software").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("hardw")), class_Software_Roles);
-        assertEquals(new ArrayList<>(List.of("Computer_product@Hardware")), class_Software_RolesType);
-
-        Set<String> class_System_Roles = mlmResult.getClass("Computer_product", "System").navigableEnds().keySet();
-        List<String> class_System_RolesType = mlmResult.getClass("Computer_product", "System").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("hardw","appl")), class_System_Roles);
-        assertEquals(new ArrayList<>(List.of("Computer_product@Application", "Computer_product@Hardware")), class_System_RolesType);
-
-        Set<String> class_Application_Roles = mlmResult.getClass("Computer_product", "Application").navigableEnds().keySet();
-        List<String> class_Application_RolesType = mlmResult.getClass("Computer_product", "Application").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("installed","syst","hardw")), class_Application_Roles);
-        assertEquals(new ArrayList<>(List.of("Computer_product@Hardware", "PC@PCOS", "Computer_product@System")), class_Application_RolesType);
-
-
-        Set<String> class_PC_Roles = mlmResult.getClass("PC", "PC").navigableEnds().keySet();
-        List<String> class_PC_RolesType = mlmResult.getClass("PC", "PC").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("handler", "os", "part", "softw")), class_PC_Roles);
-        assertEquals(new ArrayList<>(List.of("Computer_product@Computer", "PC@PCOS", "PC@Device", "PC@PCAppl")), class_PC_RolesType);
-
-        Set<String> class_Device_Roles = mlmResult.getClass("PC", "Device").navigableEnds().keySet();
-        List<String> class_Device_RolesType = mlmResult.getClass("PC", "Device").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("parent","softw")), class_Device_Roles);
-        assertEquals(new ArrayList<>(List.of("PC@PC", "Computer_product@Software")), class_Device_RolesType);
-
-        Set<String> class_PCAppl_Roles = mlmResult.getClass("PC", "PCAppl").navigableEnds().keySet();
-        List<String> class_PCAppl_RolesType = mlmResult.getClass("PC", "PCAppl").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("hardw","syst","installed")), class_PCAppl_Roles);
-        assertEquals(new ArrayList<>(List.of("PC@PC", "PC@PCOS", "PC@PCOS")), class_PCAppl_RolesType);
-
-        Set<String> class_PCOS_Roles = mlmResult.getClass("PC", "PCOS").navigableEnds().keySet();
-        List<String> class_PCOS_RolesType = mlmResult.getClass("PC", "PCOS").navigableEnds().values().stream().map(element -> element.cls().name()).collect(Collectors.toList());
-        assertEquals(new HashSet<>(List.of("appl", "installer","pc")), class_PCOS_Roles);
-        assertEquals(new ArrayList<>(List.of( "PC@PCAppl", "Computer_product@Application", "PC@PC")), class_PCOS_RolesType);
+        MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "Hardware", Map.of("part", "Computer_product@Hardware", "parent", "Computer_product@Hardware", "softw", "Computer_product@Software"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "Peripheral", Map.of("part", "Computer_product@Hardware", "parent", "Computer_product@Hardware", "softw", "Computer_product@Software"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "Computer", Map.of("maintained", "PC@PC", "part", "Computer_product@Hardware", "parent", "Computer_product@Hardware", "softw", "Computer_product@Software"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "Software", Map.of("hardw", "Computer_product@Hardware"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "System", Map.of("hardw", "Computer_product@Hardware", "appl", "Computer_product@Application"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "Application", Map.of("installed", "PC@PCOS", "syst", "Computer_product@System", "hardw", "Computer_product@Hardware"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("PC", "PC", Map.of("handler", "Computer_product@Computer", "os", "PC@PCOS", "part", "PC@Device", "softw", "PC@PCAppl"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("PC", "Device", Map.of("parent", "PC@PC", "softw", "Computer_product@Software"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("PC", "PCAppl", Map.of("hardw", "PC@PC", "syst", "PC@PCOS", "installed", "PC@PCOS"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("PC", "PCOS", Map.of("appl", "PC@PCAppl", "installer", "Computer_product@Application", "pc", "PC@PC"), mlmResult);
 
         MLMSystem mlmSystem = new MLMSystem(mlmResult);
         UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
