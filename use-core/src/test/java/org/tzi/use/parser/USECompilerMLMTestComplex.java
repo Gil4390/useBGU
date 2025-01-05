@@ -300,8 +300,8 @@ public class USECompilerMLMTestComplex extends TestCase {
         File mlmFile = new File(TEST_PATH + "/assoclink_between_inherited_classes.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
-        //TODO add some checks
-        MLMTestUtil.getInstance().assertRolesEqual("M2", "C", Map.of("dd1", "CD@D"));
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C"), mlmResult);
     }
 
     /**
