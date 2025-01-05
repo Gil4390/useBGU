@@ -169,7 +169,7 @@ public class USECompilerMLMClabject extends TestCase {
     public void testMLMClabjectSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = getFilesMatchingSuffix(".use", 19);
+        List<File> fileList = getFilesMatchingSuffix(".use", 20);
 
         // create a new stream for capturing output on stderr
         USECompilerMLMClabject.StringOutputStream errStr = new USECompilerMLMClabject.StringOutputStream();
@@ -621,6 +621,23 @@ public class USECompilerMLMClabject extends TestCase {
         }
 
         assertTrue(systemApi.checkState());
+    }
+
+    public void test_attribute_removing_check_state() {
+        File mlmFile = new File(TEST_PATH + "/Clabject_attribute_removal_with_local_constraint.use");
+        MMultiLevelModel mlmResult = compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("M1@D", "d1");
+            systemApi.createObject("M2@C", "c1");
+            systemApi.setAttributeValue("d1", "attr1", "4");
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+
+        assertFalse(systemApi.checkState());
     }
 
 }
