@@ -1,0 +1,50 @@
+MLM CD
+
+  model M1
+    class A
+    end
+
+    class B
+        attributes
+            b: Integer
+    end
+
+
+    association assoc1 between
+      A[*] role aa1
+      B[*] role bb1
+    end
+
+    constraints
+    context A
+      inv i1:
+        self.bb1->forAll(b_role| b_role.b > 5)
+
+
+  model M2
+    class C
+    end
+
+    class D
+    end
+
+    association assoc2 between
+      C[*] role cc1
+      D[*] role dd1
+    end
+
+
+mediator M1 < NONE
+end
+
+mediator M2 < M1
+  clabject C : A
+    roles
+        ~bb1
+  end
+
+  clabject D : B
+  end
+
+end
+

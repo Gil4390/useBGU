@@ -1,8 +1,5 @@
 package org.tzi.use.uml.mm;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.tzi.use.graph.DirectedEdge;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,6 +84,10 @@ public class MClabject extends MGeneralization {
 
     public List<MAssociationEnd> getOnlyClabjectRemovedRoles() {
         return fRemovedRoles;
+    }
+
+    public List<MAssociationEnd> getOnlyAssoclinkRemovedRoles() {
+        return fRemovedRolesAssoclink;
     }
 
 
