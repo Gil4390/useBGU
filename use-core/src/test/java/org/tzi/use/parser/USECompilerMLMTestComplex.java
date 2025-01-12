@@ -51,7 +51,7 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 39);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 40);
         // add all the example files which should have no errors
         File[] files = TEST_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);

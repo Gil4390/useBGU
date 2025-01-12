@@ -267,4 +267,23 @@ public class MMultiLevelModel extends MMultiModel {
         MMediator nextMediator = this.getMediator(prevModel.name());
         return nextMediator.powerTypes();
     }
+
+    public Set<MClass> subClassesOfClassForInvariant(MClass cls, MClassInvariant inv){
+        Set<MClass> res = new HashSet<>();
+        Set<MClass> children = ((MInternalClassImpl) cls).children();
+
+        //clabjects connect classes from different levels
+        for (MClass child : children) {
+            if (!child.model().equals(cls.model())) {
+                MGeneralization edge = cls.model().generalizationGraph().edgesBetween(child, cls).iterator().next();
+                MClabject clabject = ((MClabject) edge);
+                if (clabject.getRemovedConstraints().contains(inv)){
+                    continue;
+                }
+                res.add(child);
+                subClassesOfClassForInvariant(child, inv);
+            }
+        }
+        return res;
+    }
 }

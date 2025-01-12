@@ -161,6 +161,37 @@ public class MInternalClassImpl extends MClassImpl{
 
         return (MClabject) edge;
     }
+
+    // returns the clabjects edges that connect this class with classes from the upper level
+    public Set<MClabject> clabjectsFromParents(){
+        Set<MClabject> res = new HashSet<>();
+        Set<MClass> parents = parents();
+
+        //need to find the parent that's not in the current level
+        for (MClassifier parent : parents) {
+            if (!parent.model().equals(this.model())) {
+                MGeneralization edge = this.model.generalizationGraph().edgesBetween(this, parent).iterator().next();
+                res.add((MClabject) edge);
+            }
+        }
+        return res;
+    }
+
+    // returns the clabjects edges that connect this class with classes from the lower level
+    public Set<MClabject> clabjectsFromChildren(){
+        Set<MClabject> res = new HashSet<>();
+        Set<MClass> children = children();
+
+        //need to find the children that's not in the current level
+        for (MClassifier child : children) {
+            if (!child.model().equals(this.model())) {
+                MGeneralization edge = this.model.generalizationGraph().edgesBetween(child, this).iterator().next();
+                res.add((MClabject) edge);
+            }
+        }
+        return res;
+    }
+
     @Override
     public MAttribute attribute(String name, boolean searchInherited) {
         if (fMultiModel == null) return super.attribute(name, searchInherited);
@@ -179,8 +210,8 @@ public class MInternalClassImpl extends MClassImpl{
 
         }
         MClabject clabject = getClabjectEdge();
-        if (clabject != null && getClabjectEdge().getAttributes().containsKey(name)){
-            return getClabjectEdge().getAttributes().get(name);
+        if (clabject != null && clabject.getAttributes().containsKey(name)){
+            return clabject.getAttributes().get(name);
         }
         return null;
     }

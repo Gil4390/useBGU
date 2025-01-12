@@ -14,13 +14,16 @@ public class ASTClabject extends ASTAnnotatable{
     private final List<Pair<Token>> fAttributeRenaming;
     private final List<Token> fAttributeRemoving;
     private final List<Token> fRoleRemoving;
+    private final List<Token> fConstraintRemoving;
     private MClabject fClabject;
+
     public ASTClabject(Token fChildName, Token fParentName) {
         this.fChildName = fChildName;
         this.fParentName = fParentName;
         fAttributeRenaming = new ArrayList<>();
         fAttributeRemoving = new ArrayList<>();
         fRoleRemoving = new ArrayList<>();
+        fConstraintRemoving = new ArrayList<>();
     }
 
     public void addAttributeRemoving(Token removedName) {
@@ -36,6 +39,10 @@ public class ASTClabject extends ASTAnnotatable{
 
     public void addRoleRemoving(Token removedName) {
         fRoleRemoving.add(removedName);
+    }
+
+    public void addConstraintRemoving(Token removedName) {
+        fConstraintRemoving.add(removedName);
     }
 
     public MClabject gen(MLMContext mlmContext) throws Exception {
@@ -82,6 +89,15 @@ public class ASTClabject extends ASTAnnotatable{
             String newAttribute = pair.second.getText();
             MAttributeRenaming attributeRenaming = mlmContext.modelFactory().createAttributeRenaming(oldMAttribute, newAttribute);
             mClabject.addAttributeRenaming(attributeRenaming);
+        }
+
+        for (Token removedConstraint : fConstraintRemoving){
+            String constraintName = removedConstraint.getText();
+            MClassInvariant constraint = parent.model().getClassInvariant(parent.name() + "::" + parent.model().name() + "@" + constraintName);
+            if(constraint == null) {
+                throw new Exception("Parent class: "+ parent.name()+ ", doesn't contain a constraint with the name: "+constraintName);
+            }
+            mClabject.addRemovedConstraint(constraint);
         }
 
         return mClabject;
