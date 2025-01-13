@@ -34,10 +34,10 @@ public class ExpAllInstancesForInv extends ExpAllInstances{
         SetValue res;
 
         if(this.getSourceType().isTypeOfClass()) {
-            //Set<MObject> objSet = systemState.objectsOfClassAndSubClasses((MClass)this.getSourceType());
             MClass cls = (MClass) this.getSourceType();
             Set<MObject> objSet = new HashSet<>(systemState.objectsOfClass(cls));
-            Set<MClass> subClassesForInvariant = ((MMultiLevelModel)((MInternalClassImpl) cls).getMultiModel()).subClassesOfClassForInvariant(cls, this.invariant);
+            MMultiLevelModel mlm = ((MMultiLevelModel)((MInternalClassImpl) cls).getMultiModel());
+            Set<MClass> subClassesForInvariant = mlm.subClassesOfClassForInvariant(cls, this.invariant);
             for(MClass subClass : subClassesForInvariant) {
                 objSet.addAll(systemState.objectsOfClass(subClass));
             }
@@ -51,18 +51,8 @@ public class ExpAllInstancesForInv extends ExpAllInstances{
 
             // create result set with object references
             res = new SetValue(this.getSourceType(), objValues);
-        } else if (this.getSourceType().isTypeOfAssociation()) {
-            MLinkSet links = systemState.linksOfAssociation((MAssociation)this.getSourceType());
-            Value[] linkValues = new Value[links.size()];
-
-            int i = 0;
-            for (MLink link : links.links()) {
-                linkValues[i++] = new LinkValue(link.association(), link);
-            }
-
-            res = new SetValue(this.getSourceType(), linkValues);
         } else {
-            throw new IllegalArgumentException("allInstances() is only supported on classes and associations.");
+            throw new IllegalArgumentException("allInstancesForInv() is only supported on classes.");
         }
 
         ctx.exit(this, res);
