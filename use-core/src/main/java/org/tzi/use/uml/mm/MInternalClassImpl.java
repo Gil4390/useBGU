@@ -38,6 +38,9 @@ public class MInternalClassImpl extends MClassImpl{
         }
         return Character.toLowerCase(rolename.charAt(0)) + rolename.substring(1);
     }
+    public MMultiModel getMultiModel() {
+        return fMultiModel;
+    }
     @Override
     public Set<MClass> parents() {
         if (fMultiModel == null)

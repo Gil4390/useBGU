@@ -149,15 +149,20 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
         return fBody;
     }
 
-    private void calculateExpandedExpression() throws ExpInvalidException {
-	    Expression allInstances = new ExpAllInstances(fClass);
-	    
-	    if (fIsExistential) {
-	    	fExpanded = new ExpExists(fVars, allInstances, fBody);
-	    } else {
-	    	fExpanded = new ExpForAll(fVars, allInstances, fBody);
-	    }
-	}
+    public void calculateExpandedExpression() throws ExpInvalidException {
+        Expression allInstances;
+        if (cls() instanceof MInternalClassImpl && ((MInternalClassImpl) cls()).getMultiModel() instanceof MMultiLevelModel) {
+            allInstances = new ExpAllInstancesForInv(fClass, this);
+        }
+        else{
+            allInstances = new ExpAllInstances(fClass);
+        }
+        if (fIsExistential) {
+            fExpanded = new ExpExists(fVars, allInstances, fBody);
+        } else {
+            fExpanded = new ExpForAll(fVars, allInstances, fBody);
+        }
+    }
 
 	/** 
      * Returns the expanded expression of the invariant. This

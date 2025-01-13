@@ -55,6 +55,9 @@ public class MMultiLevelModel extends MMultiModel {
         model.classes().forEach(cls -> ((MInternalClassImpl)cls).setMultiModel(this));
         fModelsList.add(model);
 
+        for (MClassInvariant inv : model.classInvariants()){
+            inv.calculateExpandedExpression();
+        }
     }
 
     public MModel getParentModel(String modelName) {
