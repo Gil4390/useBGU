@@ -1,9 +1,6 @@
 package org.tzi.use.uml.ocl.expr;
 
-import org.tzi.use.uml.mm.MAssociation;
-import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MClassInvariant;
-import org.tzi.use.uml.mm.MMultiLevelModel;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.value.LinkValue;
 import org.tzi.use.uml.ocl.value.ObjectValue;
@@ -40,7 +37,7 @@ public class ExpAllInstancesForInv extends ExpAllInstances{
             //Set<MObject> objSet = systemState.objectsOfClassAndSubClasses((MClass)this.getSourceType());
             MClass cls = (MClass) this.getSourceType();
             Set<MObject> objSet = new HashSet<>(systemState.objectsOfClass(cls));
-            Set<MClass> subClassesForInvariant = ((MMultiLevelModel) systemState.system().model()).subClassesOfClassForInvariant(cls, this.invariant);
+            Set<MClass> subClassesForInvariant = ((MMultiLevelModel)((MInternalClassImpl) cls).getMultiModel()).subClassesOfClassForInvariant(cls, this.invariant);
             for(MClass subClass : subClassesForInvariant) {
                 objSet.addAll(systemState.objectsOfClass(subClass));
             }
