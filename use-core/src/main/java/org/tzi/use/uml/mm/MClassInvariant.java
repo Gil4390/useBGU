@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author      Mark Richters 
  */
-public final class MClassInvariant extends MModelElementImpl implements UseFileLocatable {
+public class MClassInvariant extends MModelElementImpl implements UseFileLocatable {
 	
     /**
      * context type
@@ -150,13 +150,8 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
     }
 
     public void calculateExpandedExpression() throws ExpInvalidException {
-        Expression allInstances;
-        if (cls() instanceof MInternalClassImpl && ((MInternalClassImpl) cls()).getMultiModel() instanceof MMultiLevelModel) {
-            allInstances = new ExpAllInstancesForInv(fClass, this);
-        }
-        else{
-            allInstances = new ExpAllInstances(fClass);
-        }
+        Expression allInstances = new ExpAllInstances(fClass);
+
         if (fIsExistential) {
             fExpanded = new ExpExists(fVars, allInstances, fBody);
         } else {
@@ -172,6 +167,10 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
      */
     public Expression expandedExpression() {
         return fExpanded;
+    }
+
+    public void setExpanded(Expression exp) {
+        this.fExpanded = exp;
     }
 
     /**

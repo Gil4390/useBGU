@@ -17,7 +17,7 @@ public class MultiModelFactory extends ModelFactory{
      * indicates the current generated model, followed by '@' sign.
      * Example: 'model1@'
      */
-    private String modelName;
+    protected String modelName;
 
     public void setModelName(String modelName) {
         this.modelName = modelName;

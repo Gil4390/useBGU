@@ -1,6 +1,7 @@
 package org.tzi.use.uml.mm;
 
-import org.tzi.use.uml.ocl.expr.VarDecl;
+import org.tzi.use.uml.ocl.expr.ExpInvalidException;
+import org.tzi.use.uml.ocl.expr.Expression;
 
 import java.util.List;
 
@@ -12,6 +13,11 @@ public class MultiLevelModelFactory extends MultiModelFactory {
     }
     public MMultiLevelModel createMLM(MMultiModel multiModel){
         return new MMultiLevelModel(multiModel);
+    }
+
+    @Override
+    public MClassInvariant createClassInvariant(String name, List<String> vars, MClass cls, Expression inv, boolean isExistential) throws ExpInvalidException {
+        return new MInternalClassInvariant(modelName + name, vars, cls, inv, isExistential);
     }
 
     public MMediator createMediator(String name) {
