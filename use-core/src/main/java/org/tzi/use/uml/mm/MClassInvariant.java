@@ -45,7 +45,7 @@ public class MClassInvariant extends MModelElementImpl implements UseFileLocatab
     /**
      * The body expression expanded by <code>forAll</code> or <code>exists</code>
      */
-    private Expression fExpanded;
+    protected Expression fExpanded;
     
     /**
      * position of class in the model
@@ -167,10 +167,6 @@ public class MClassInvariant extends MModelElementImpl implements UseFileLocatab
      */
     public Expression expandedExpression() {
         return fExpanded;
-    }
-
-    public void setExpanded(Expression exp) {
-        this.fExpanded = exp;
     }
 
     /**

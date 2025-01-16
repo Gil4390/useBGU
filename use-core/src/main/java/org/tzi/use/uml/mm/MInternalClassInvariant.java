@@ -20,9 +20,9 @@ public class MInternalClassInvariant extends MClassInvariant{
         Expression allInstances = new ExpAllInstancesForInv(cls(), this);
 
         if (isExistential()) {
-            this.setExpanded(new ExpExists(vars(), allInstances, bodyExpression()));
+            fExpanded = new ExpExists(vars(), allInstances, bodyExpression());
         } else {
-            this.setExpanded(new ExpForAll(vars(), allInstances, bodyExpression()));
+            fExpanded = new ExpForAll(vars(), allInstances, bodyExpression());
         }
     }
 }
