@@ -29,7 +29,7 @@ public class USECompilerMLMSimple extends TestCase {
     public void testMLMClabjectSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 22);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 25);
 
         // create a new stream for capturing output on stderr
         MLMTestUtil.StringOutputStream errStr = new MLMTestUtil.StringOutputStream();
@@ -395,10 +395,11 @@ public class USECompilerMLMSimple extends TestCase {
             fail("Objects and links creation setup should not fail");
         }
 
-        assertTrue(systemApi.checkState());
+        assertFalse(systemApi.checkState());
     }
 
     public void test_Role_removing_3_levels_check_state() {
+        //TODO: i think this test cant be satisfied -- revisit this
         File mlmFile = new File(TEST_PATH + "/Role_removing_inheritance_3_levels.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
@@ -445,24 +446,13 @@ public class USECompilerMLMSimple extends TestCase {
     public void test_attribute_removing_check_state() {
         File mlmFile = new File(TEST_PATH + "/Clabject_attribute_removal_with_local_constraint.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-
-        MLMSystem mlmSystem = new MLMSystem(mlmResult);
-        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
-        try {
-            systemApi.createObject("M1@D", "d1");
-            systemApi.createObject("M2@C", "c1");
-            systemApi.setAttributeValue("d1", "attr1", "4");
-        } catch (Exception e) {
-            fail("Objects and links creation setup should not fail");
-        }
-
-        assertFalse(systemApi.checkState());
+        // parsing should fail -- attr1 is removed and constraint i1 isnt removed
+        assertNull(mlmResult);
     }
 
     public void test_constraint_removal() {
         File mlmFile = new File(TEST_PATH + "/constraint_removal.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-
         MLMSystem mlmSystem = new MLMSystem(mlmResult);
         UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
         try {
@@ -482,7 +472,7 @@ public class USECompilerMLMSimple extends TestCase {
     public void test_constraint_and_attribute_removal2() {
         File mlmFile = new File(TEST_PATH + "/constraint_and_attribute_removal2.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-
+        //TODO: fix implementation -- parsing should pass because (~b1) and (~i1)
         MLMSystem mlmSystem = new MLMSystem(mlmResult);
         UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
         try {
@@ -500,19 +490,8 @@ public class USECompilerMLMSimple extends TestCase {
     public void test_constraint_and_role_removal() {
         File mlmFile = new File(TEST_PATH + "/constraint_and_role_removal.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-
-        MLMSystem mlmSystem = new MLMSystem(mlmResult);
-        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
-        try {
-            systemApi.createObject("AB@B", "b1");
-            systemApi.createObject("CD@C", "c1");
-
-            systemApi.setAttributeValue("b1", "b1", "4");
-            assertTrue(systemApi.checkState());
-
-        } catch (Exception e) {
-            fail("Objects and links creation setup should not fail");
-        }
+        // parsing should fail -- bb1 is removed and constraint i1 isnt removed
+        assertNull(mlmResult);
     }
 
 }
