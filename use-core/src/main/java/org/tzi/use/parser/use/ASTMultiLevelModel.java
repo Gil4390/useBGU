@@ -94,7 +94,8 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 for (MAttribute attr : clab.getRemovedAttributes()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (invCoverage.get(inv).getCoveredAttributes().contains(attr)) {
-                            mlmContext.reportWarning(fName,
+                            //TODO in the case that the invariant is also removed don't throw an error
+                            mlmContext.reportError(fName,
                                     "\n\tAttribute " + attr.name()
                                     + "\n\tis removed from clabject " + clab.name()
                                     + "\n\tbut is covered by invariant " + inv.name()
@@ -107,7 +108,8 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                     MAttribute attr = attributeRenaming.attribute();
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (invCoverage.get(inv).getCoveredAttributes().contains(attr)) {
-                            mlmContext.reportWarning(fName,
+                            // TODO
+                            mlmContext.reportError(fName,
                                     "\n\tAttribute " + attr.name()
                                     + "\n\tis renamed in clabject " + clab.name()
                                     + "\n\tbut is covered by invariant " + inv.name()
@@ -119,7 +121,8 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 for (MAssociationEnd end : clab.getOnlyClabjectRemovedRoles()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (invCoverage.get(inv).getCoveredAssociations().contains(end.association())) {
-                            mlmContext.reportWarning(fName,
+                            // TODO
+                            mlmContext.reportError(fName,
                                     "\n\tRole " + end.name()
                                     + "\n\tis removed from clabject " + clab.name()
                                     + "\n\tbut is covered by invariant " + inv.name()
@@ -131,7 +134,8 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 for (MAssociationEnd end : clab.getOnlyAssoclinkRemovedRoles()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (invCoverage.get(inv).getCoveredAssociations().contains(end.association())) {
-                            mlmContext.reportWarning(fName,
+                            // TODO
+                            mlmContext.reportError(fName,
                                 "\n\tRole " + end.name()
                                     + "\n\tis removed from an assoclink"
                                     + "\n\tbut is covered by invariant " + inv.name()
