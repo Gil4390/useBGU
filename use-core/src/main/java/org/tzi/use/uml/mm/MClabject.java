@@ -9,6 +9,7 @@ public class MClabject extends MGeneralization {
     private final List<MAttribute> fRemovedAttributes;
     private final List<MAssociationEnd> fRemovedRoles;
     private final List<MAssociationEnd> fRemovedRolesAssoclink;
+    private final List<MClassInvariant> fRemovedConstraints;
 
 
     public MClabject(MClass child, MClass parent) {
@@ -17,6 +18,7 @@ public class MClabject extends MGeneralization {
         this.fAttributeRenaming = new ArrayList<>();
         this.fRemovedRoles = new ArrayList<>();
         this.fRemovedRolesAssoclink = new ArrayList<>();
+        this.fRemovedConstraints = new ArrayList<>();
     }
 
     public void addAttributeRenaming(MAttributeRenaming attributeRenaming) {
@@ -88,6 +90,14 @@ public class MClabject extends MGeneralization {
 
     public List<MAssociationEnd> getOnlyAssoclinkRemovedRoles() {
         return fRemovedRolesAssoclink;
+    }
+
+    public void addRemovedConstraint(MClassInvariant constraint) {
+        fRemovedConstraints.add(constraint);
+    }
+
+    public List<MClassInvariant> getRemovedConstraints() {
+        return fRemovedConstraints;
     }
 
 

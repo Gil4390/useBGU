@@ -29,7 +29,7 @@ public class USECompilerMLMSimple extends TestCase {
     public void testMLMClabjectSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 20);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 22);
 
         // create a new stream for capturing output on stderr
         MLMTestUtil.StringOutputStream errStr = new MLMTestUtil.StringOutputStream();
@@ -457,6 +457,62 @@ public class USECompilerMLMSimple extends TestCase {
         }
 
         assertFalse(systemApi.checkState());
+    }
+
+    public void test_constraint_removal() {
+        File mlmFile = new File(TEST_PATH + "/constraint_removal.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("AB@B", "b1");
+            systemApi.createObject("CD@C", "c1");
+            systemApi.createLink("AB@ab1", "c1", "b1");
+
+            systemApi.setAttributeValue("b1", "b1", "4");
+            assertTrue(systemApi.checkState());
+
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+    }
+
+
+    public void test_constraint_and_attribute_removal2() {
+        File mlmFile = new File(TEST_PATH + "/constraint_and_attribute_removal2.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("AB@A", "a1");
+            systemApi.createObject("CD@D", "d1");
+
+            systemApi.createLink("AB@ab1", "a1", "d1");
+
+            assertTrue(systemApi.checkState(new PrintWriter(System.out)));
+
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+    }
+    public void test_constraint_and_role_removal() {
+        File mlmFile = new File(TEST_PATH + "/constraint_and_role_removal.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            systemApi.createObject("AB@B", "b1");
+            systemApi.createObject("CD@C", "c1");
+
+            systemApi.setAttributeValue("b1", "b1", "4");
+            assertTrue(systemApi.checkState());
+
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
     }
 
 }

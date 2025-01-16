@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author      Mark Richters 
  */
-public final class MClassInvariant extends MModelElementImpl implements UseFileLocatable {
+public class MClassInvariant extends MModelElementImpl implements UseFileLocatable {
 	
     /**
      * context type
@@ -45,7 +45,7 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
     /**
      * The body expression expanded by <code>forAll</code> or <code>exists</code>
      */
-    private Expression fExpanded;
+    protected Expression fExpanded;
     
     /**
      * position of class in the model
@@ -149,15 +149,15 @@ public final class MClassInvariant extends MModelElementImpl implements UseFileL
         return fBody;
     }
 
-    private void calculateExpandedExpression() throws ExpInvalidException {
-	    Expression allInstances = new ExpAllInstances(fClass);
-	    
-	    if (fIsExistential) {
-	    	fExpanded = new ExpExists(fVars, allInstances, fBody);
-	    } else {
-	    	fExpanded = new ExpForAll(fVars, allInstances, fBody);
-	    }
-	}
+    public void calculateExpandedExpression() throws ExpInvalidException {
+        Expression allInstances = new ExpAllInstances(fClass);
+
+        if (fIsExistential) {
+            fExpanded = new ExpExists(fVars, allInstances, fBody);
+        } else {
+            fExpanded = new ExpForAll(fVars, allInstances, fBody);
+        }
+    }
 
 	/** 
      * Returns the expanded expression of the invariant. This

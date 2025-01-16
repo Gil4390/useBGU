@@ -42,7 +42,7 @@ import org.tzi.use.uml.sys.MSystemState;
  * @author Mark Richters
  * @author Lars Hamann
  */
-public final class ExpAllInstances extends Expression {
+public class ExpAllInstances extends Expression {
     private MClassifier fSourceType;
     
     public ExpAllInstances(Type sourceType)
