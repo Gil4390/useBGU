@@ -94,7 +94,11 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 for (MAttribute attr : clab.getRemovedAttributes()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (invCoverage.get(inv).getCoveredAttributes().contains(attr)) {
-                            //TODO in the case that the invariant is also removed don't throw an error
+                            //in the case that the invariant is also removed don't throw an error
+                            if (clab.getRemovedConstraints().contains(inv)) {
+                                continue;
+                            }
+
                             mlmContext.reportError(fName,
                                     "\n\tAttribute " + attr.name()
                                     + "\n\tis removed from clabject " + clab.name()
