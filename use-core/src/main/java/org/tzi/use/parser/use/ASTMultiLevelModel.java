@@ -1,13 +1,13 @@
 package org.tzi.use.parser.use;
 
 import org.antlr.runtime.Token;
-import org.tzi.use.analysis.coverage.BasicCoverageData;
-import org.tzi.use.analysis.coverage.BasicExpressionCoverageCalulator;
+import org.tzi.use.analysis.coverage.*;
 import org.tzi.use.parser.MLMContext;
 import org.tzi.use.parser.MultiContext;
 import org.tzi.use.uml.mm.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ASTMultiLevelModel extends ASTMultiModel{
 
@@ -82,28 +82,33 @@ public class ASTMultiLevelModel extends ASTMultiModel{
     }
 
     public void checkInvariantParsingWarning(MMultiLevelModel mMultiLevelModel, MLMContext mlmContext) {
-        Map<MClassInvariant, BasicCoverageData> invCoverage = new HashMap<MClassInvariant, BasicCoverageData>();
-        BasicExpressionCoverageCalulator invCalc = new BasicExpressionCoverageCalulator(true);
-
-        for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
-            invCoverage.put(inv, invCalc.calcualteCoverage(inv.flaggedExpression()));
-        }
+        Map<MModelElement, CoverageData> completeData = CoverageAnalyzer
+                .calculateInvariantCoverage(mMultiLevelModel, true);
 
         for (MMediator med : mMultiLevelModel.mediators()) {
             for (MClabject clab : med.clabjects()) {
                 for (MAttribute attr : clab.getRemovedAttributes()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
-                        if (invCoverage.get(inv).getCoveredAttributes().contains(attr)) {
-                            //in the case that the invariant is also removed don't throw an error
+                        if(completeData.get(inv).getAttributeCoverage().containsKey(attr)) {
                             if (clab.getRemovedConstraints().contains(inv)) {
                                 continue;
                             }
 
+                            // if the attribute is removed from the clabject, and is covered by an invariant (local), but the class be navigate to it, then it shouldnt throw an error.
+                            boolean isOtherEndRemoved = false;
+                            for(MAssociation assoc : completeData.get(inv).getAssociationCoverage().keySet()) {
+                                MAssociationEnd end = assoc.associationEnds().stream().filter(e -> !clab.child().isSubClassOf(e.cls())).findAny().get();
+                                if(clab.getRemovedRoles().contains(end)) {
+                                    isOtherEndRemoved = true;
+                                }
+                            }
+
+                            if(isOtherEndRemoved) continue;
+
                             mlmContext.reportError(fName,
-                                    "\n\tAttribute " + attr.name()
+                                    "Attribute " + attr.name()
                                     + "\n\tis removed from clabject " + clab.name()
-                                    + "\n\tbut is covered by invariant " + inv.name()
-                                    + "\n\tthis may cause the check state to be invalid");
+                                    + "\n\tbut is covered by invariant " + inv.name());
                         }
                     }
                 }
@@ -111,42 +116,41 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 for (MAttributeRenaming attributeRenaming : clab.getAttributeRenaming()) {
                     MAttribute attr = attributeRenaming.attribute();
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
-                        if (invCoverage.get(inv).getCoveredAttributes().contains(attr)) {
-                            // TODO
+                        if (completeData.get(inv).getAttributeCoverage().keySet().contains(attr)) {
+                            // 1. if a user renames an attribute, and remove the invariant (local), then it shouldn't throw an error
+                            // 2. if a user renames an attribute, and an inter-constraint related to it, then it shouldn't throw an error
+                            if(clab.getRemovedConstraints().contains(inv) || mMultiLevelModel.interInvariants().contains(inv) )
+                                continue;
                             mlmContext.reportError(fName,
-                                    "\n\tAttribute " + attr.name()
+                                    "Attribute " + attr.name()
                                     + "\n\tis renamed in clabject " + clab.name()
-                                    + "\n\tbut is covered by invariant " + inv.name()
-                                    + "\n\tthis may cause the check state to be invalid");
+                                    + "\n\tbut is covered by invariant " + inv.name());
                         }
                     }
                 }
 
                 for (MAssociationEnd end : clab.getOnlyClabjectRemovedRoles()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
-                        if (invCoverage.get(inv).getCoveredAssociations().contains(end.association())) {
-                            // TODO
+                        if (completeData.get(inv).getPropertyCoverage().keySet().contains(end)) {
                             mlmContext.reportError(fName,
-                                    "\n\tRole " + end.name()
+                                    "Role " + end.name()
                                     + "\n\tis removed from clabject " + clab.name()
-                                    + "\n\tbut is covered by invariant " + inv.name()
-                                    + "\n\tthis may cause the check state to be invalid");
+                                    + "\n\tbut is covered by invariant " + inv.name());
                         }
                     }
                 }
 
-                for (MAssociationEnd end : clab.getOnlyAssoclinkRemovedRoles()) {
+                for(MAssociationEnd end : clab.getOnlyAssoclinkRemovedRoles()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
-                        if (invCoverage.get(inv).getCoveredAssociations().contains(end.association())) {
-                            // TODO
+                        if (completeData.get(inv).getPropertyCoverage().keySet().contains(end)) {
                             mlmContext.reportError(fName,
-                                "\n\tRole " + end.name()
-                                    + "\n\tis removed from an assoclink"
-                                    + "\n\tbut is covered by invariant " + inv.name()
-                                    + "\n\tthis may cause the check state to be invalid");
+                                    "Role " + end.name()
+                                            + "\n\tremoved from an assoclink "
+                                            + "\n\tbut covered by invariant " + inv.name());
                         }
                     }
                 }
+
             }
         }
     }

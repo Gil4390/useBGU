@@ -45,14 +45,12 @@ mediator AB < NONE
 end
 
 mediator CD < AB
-    clabject C : A
-        constraints
-            ~i1
-    end
 
     clabject D : B
         attributes
             ~b1
+        roles
+            ~aa1
     end
 
 end

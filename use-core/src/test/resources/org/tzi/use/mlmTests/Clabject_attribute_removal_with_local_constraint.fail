@@ -1,0 +1,3 @@
+Clabject_attribute_removal_with_local_constraint.use:1:4: Attribute attr1
+	is removed from clabject CLABJECT_M2@C_M1@D
+	but is covered by invariant M1@i1

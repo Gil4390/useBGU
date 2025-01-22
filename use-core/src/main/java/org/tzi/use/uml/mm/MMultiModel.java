@@ -321,6 +321,18 @@ public class MMultiModel extends MModel{
         return invariants;
     }
 
+    public Collection<MClassInvariant> interInvariants() {
+        return this.fClassInvariants.values();
+    }
+
+    public Collection<MClassInvariant> intraInvariants() {
+        Collection<MClassInvariant> invariants = new ArrayList<>();
+        for(MModel model : fModels.values()) {
+            invariants.addAll(model.classInvariants());
+        }
+        return invariants;
+    }
+
     /**
      * Return class invariant by a given name and a model name, if no model
      * name specified, returns the inter-invariant.
