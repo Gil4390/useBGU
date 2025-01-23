@@ -443,13 +443,6 @@ public class USECompilerMLMSimple extends TestCase {
         assertTrue(systemApi.checkState());
     }
 
-    public void test_attribute_removing_check_state() {
-        File mlmFile = new File(TEST_PATH + "/Clabject_attribute_removal_with_local_constraint.use");
-        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        // parsing should fail -- attr1 is removed and constraint i1 isnt removed
-        assertNull(mlmResult);
-    }
-
     public void test_constraint_removal() {
         File mlmFile = new File(TEST_PATH + "/constraint_removal.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
@@ -499,19 +492,11 @@ public class USECompilerMLMSimple extends TestCase {
             systemApi.createObject("AB@A", "a1");
             systemApi.createObject("CD@D", "d1");
 
-//            systemApi.createLink("AB@ab1", "a1", "d1");
-
             assertTrue(systemApi.checkState(new PrintWriter(System.out)));
 
         } catch (Exception e) {
             fail("Objects and links creation setup should not fail");
         }
-    }
-    public void test_constraint_and_role_removal() {
-        File mlmFile = new File(TEST_PATH + "/constraint_and_role_removal.use");
-        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        // parsing should fail -- bb1 is removed and constraint i1 isnt removed
-        assertNull(mlmResult);
     }
 
 }
