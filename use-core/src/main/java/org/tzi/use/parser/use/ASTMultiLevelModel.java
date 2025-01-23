@@ -132,6 +132,9 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 for (MAssociationEnd end : clab.getOnlyClabjectRemovedRoles()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (completeData.get(inv).getPropertyCoverage().keySet().contains(end)) {
+                            if (clab.getRemovedConstraints().contains(inv)) {
+                                continue;
+                            }
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
                                     + "\n\tis removed from clabject " + clab.name()
@@ -143,6 +146,9 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 for(MAssociationEnd end : clab.getOnlyAssoclinkRemovedRoles()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (completeData.get(inv).getPropertyCoverage().keySet().contains(end)) {
+                            if (clab.getRemovedConstraints().contains(inv)) {
+                                continue;
+                            }
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
                                             + "\n\tremoved from an assoclink "
