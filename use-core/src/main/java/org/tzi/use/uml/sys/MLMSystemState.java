@@ -173,7 +173,7 @@ public class MLMSystemState extends MSystemState{
         long start = System.currentTimeMillis();
 
         Definedness res = Definedness.WellDefined;
-        out.println("checking structure...");
+        out.println("checking structure of level " + system().model() + "...");
         out.flush();
 
         updateDerivedValues(true);

@@ -10,6 +10,7 @@ import org.tzi.use.util.NullPrintWriter;
 
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MMultiLevelModel extends MMultiModel {
 
@@ -204,7 +205,8 @@ public class MMultiLevelModel extends MMultiModel {
     public String checkWellDefinednessState(PrintWriter error){
         MLMSystemState.Definedness result = MLMSystemState.Definedness.WellDefined;
         MModel previousModel = fModelsList.get(0);
-        for (MModel model : this.models()){
+        Collection<MModel> models = this.models().stream().skip(1).collect(Collectors.toList());
+        for (MModel model : models){
             MMediator mediator = fMediators.get(model.name());
             UseMLMSystemApi systemApi = new UseMLMSystemApi(previousModel);
 

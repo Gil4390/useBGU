@@ -23,6 +23,9 @@ MLM ABCD
     class E
     end
 
+    class F
+    end
+
     association cd1 between
       C[*] role cc1
       D[*] role dd1
@@ -30,6 +33,10 @@ MLM ABCD
     association ce1 between
       C[*] role cc1
       E[*] role ee1
+    end
+    association cf1 between
+      C[*] role cc1
+      F[*] role ff1
     end
 
 
@@ -46,6 +53,9 @@ mediator CD < AB
     clabject E : B
     end
 
+    clabject F : B
+    end
+
     assoclink cd1 : ab1
         aa1 -> cc1
         bb1 -> dd1
@@ -54,5 +64,10 @@ mediator CD < AB
     assoclink ce1 : ab1
        aa1 -> cc1
        bb1 -> ee1
+    end
+
+    assoclink cf1 : ab1
+       aa1 -> cc1
+       bb1 -> ff1
     end
 end
