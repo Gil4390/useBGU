@@ -51,7 +51,7 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 40);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 44);
         // add all the example files which should have no errors
         File[] files = TEST_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -222,6 +222,76 @@ public class USECompilerMLMTestComplex extends TestCase {
         MLMTestUtil.getInstance().assertAttributesEqual("EF", "E", Map.of("aa3", "String", "cc", "Integer", "ee", "Integer"), mlmResult);
 
     }
+
+    //region Double-Clabject Inheritance
+    public void test_double_clabject_Spec() {
+        File mlmFile = new File(TEST_PATH + "/double_clabject.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "B", Map.of("b1", "String", "b2", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "B", Map.of("aa1", "AB@A"), mlmResult);
+
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("c", "String", "a1", "String", "a2", "String", "b1", "String", "b2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "D", Map.of("d", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D", "aa1", "AB@A", "bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C"), mlmResult);
+    }
+
+    public void test_double_clabject_attribute_removing_Spec() {
+        File mlmFile = new File(TEST_PATH + "/double_clabject_attribute_removing.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "B", Map.of("b1", "String", "b2", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "B", Map.of("aa1", "AB@A"), mlmResult);
+
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("c", "String", "a2", "String", "b2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "D", Map.of("d", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D", "aa1", "AB@A", "bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C"), mlmResult);
+    }
+
+    public void test_double_clabject_attribute_renaming_Spec() {
+        File mlmFile = new File(TEST_PATH + "/double_clabject_attribute_renaming.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "B", Map.of("b1", "String", "b2", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "B", Map.of("aa1", "AB@A"), mlmResult);
+
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("c", "String", "a3", "String", "a2", "String", "b3", "String", "b2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "D", Map.of("d", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D", "aa1", "AB@A", "bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C"), mlmResult);
+    }
+
+    public void test_double_clabject_role_removing_Spec() {
+        File mlmFile = new File(TEST_PATH + "/double_clabject_role_removing.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("AB", "B", Map.of("b1", "String", "b2", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "A", Map.of("bb1", "AB@B"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("AB", "B", Map.of("aa1", "AB@A"), mlmResult);
+
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("c", "String", "a1", "String", "a2", "String", "b1", "String", "b2", "String"), mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("CD", "D", Map.of("d", "String"), mlmResult);
+
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "C", Map.of("dd1", "CD@D"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("CD", "D", Map.of("cc1", "CD@C"), mlmResult);
+    }
+    //endregion
 
     /**
      * when defining a clabject, all the attributes and roles are inherited and are accessible through inter-constraints
@@ -468,6 +538,9 @@ public class USECompilerMLMTestComplex extends TestCase {
             fail("Unexpected exception");
         }
     }
+
+
+
 
 
 }

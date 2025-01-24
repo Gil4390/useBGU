@@ -25,10 +25,9 @@ public class MInternalClassImpl extends MClassImpl{
     }
 
     /**
-     * The name of the class to be represented as rolename for association end
-     * model1@Animal -> animal
-     * Animal -> animal
-     * @return
+     * The name of the class to be represented as role name for association end
+     *  - model1@Animal -> animal
+     *  - Animal -> animal
      */
     @Override
     public String nameAsRolename() {
@@ -145,26 +144,6 @@ public class MInternalClassImpl extends MClassImpl{
         return fNavigableElements;
     }
 
-    // TODO: only works of single clabject inheritance
-    // return the clabject edge that connects this class with the class from the upper level
-    // will return null if the clabject doesn't exist
-    public MClabject getClabjectEdge(){
-        Set<MClass> parents = parents();
-        if (parents.isEmpty()) return null;
-        //need to find the parent that's not in the current level
-        Iterator<MClass> iterator = parents.iterator();
-        MClassifier parent = iterator.next();
-        if (parent.model().equals(this.model())){
-            if (!iterator.hasNext()){
-                return null;
-            }
-            parent = iterator.next();
-        }
-        MGeneralization edge = this.model.generalizationGraph().edgesBetween(this,parent).iterator().next();
-
-        return (MClabject) edge;
-    }
-
     // returns the clabjects edges that connect this class with classes from the upper level
     public Set<MClabject> clabjectsFromParents(){
         Set<MClabject> res = new HashSet<>();
@@ -200,23 +179,23 @@ public class MInternalClassImpl extends MClassImpl{
         if (fMultiModel == null) return super.attribute(name, searchInherited);
 
         MAttribute res = super.attribute(name, searchInherited);
-        if (res != null){
-            //check if the attribute is removed or renamed by the clabject
-
-            MClabject clabject = getClabjectEdge();
-            if (clabject == null){
-                return res;
+        if (res == null){
+            // check if the given name is a renamed name of an attribute
+            for (MClabject clab : clabjectsFromParents()) {
+                if (clab.getAttributes().containsKey(name)){
+                    return clab.getAttributes().get(name);
+                }
             }
-            if (clabject.getRemovedAttribute(name) == null && clabject.getRenamedAttribute(name) == null){
-                return res;
-            }
+            return null;
+        }
 
+        // check if the given name was removed or renamed if so return null
+        for (MClabject clab : clabjectsFromParents()){
+            if (clab.getRemovedAttribute(name) != null || clab.getRenamedAttribute(name) != null){
+                return null;
+            }
         }
-        MClabject clabject = getClabjectEdge();
-        if (clabject != null && clabject.getAttributes().containsKey(name)){
-            return clabject.getAttributes().get(name);
-        }
-        return null;
+        return res;
     }
 
 }

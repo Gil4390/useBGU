@@ -176,6 +176,10 @@ public class MSystem {
 		return fCurrentState;
 	}
 
+	public void setCurrentState(MSystemState state) {
+		fCurrentState = state;
+	}
+
 	/**
 	 * Returns the system's model.
 	 */
