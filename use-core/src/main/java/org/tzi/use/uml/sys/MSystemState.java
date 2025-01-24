@@ -2211,20 +2211,26 @@ public final class MSystemState {
 			if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
 				MClass cls2 = aend2.cls();
 				if (cls2 instanceof MInternalClassImpl){
-					MClabject clabject = ((MInternalClassImpl) cls2).getClabjectEdge();
-					if (clabject != null){
+					Set<MClabject> clabjects1 = ((MInternalClassImpl) cls2).clabjectsFromParents();
+					boolean isRole1Removed = false;
+					for (MClabject clabject : clabjects1){
 						if (clabject.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
-							continue;
+							isRole1Removed = true;
+							break;
 						}
 					}
-					MClass objClass = obj.cls();
-					MClabject clabject2 = ((MInternalClassImpl) objClass).getClabjectEdge();
-					if (clabject2 != null){
-						if (clabject2.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
-							continue;
-						}
-					}
+					if (isRole1Removed) continue;
 
+					MClass objClass = obj.cls();
+					Set<MClabject> clabjects2 = ((MInternalClassImpl) objClass).clabjectsFromParents();
+					boolean isRole2Removed = false;
+					for (MClabject clabject : clabjects2){
+						if (clabject.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
+							isRole2Removed = true;
+							break;
+						}
+					}
+					if (isRole2Removed) continue;
 				}
 				reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
 				if (!reportAllErrors) {

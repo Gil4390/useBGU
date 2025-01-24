@@ -1,9 +1,6 @@
 package org.tzi.use.uml.mm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MInternalAssociationImpl extends MAssociationImpl {
@@ -28,18 +25,11 @@ public class MInternalAssociationImpl extends MAssociationImpl {
         }
         // handle self associations
         if(classes.length == 2 && classes[0].equals(classes[1])) {
-            MClass class1 = classes[0];
-            MClass class2 = classes[1];
-            if(class1 instanceof MInternalClassImpl && class2 instanceof MInternalClassImpl) {
-                MClabject clabject1 = ((MInternalClassImpl)class1).getClabjectEdge();
-                MClabject clabject2 = ((MInternalClassImpl)class2).getClabjectEdge();
-                if(clabject1 != null) {
-                    boolean isRoleRemoved = clabject1.getRemovedRoles().stream().anyMatch((role) -> associationEnds().contains(role));
-                    if(isRoleRemoved)
-                        return false;
-                }
-                else if(clabject2 != null) {
-                    boolean isRoleRemoved = clabject2.getRemovedRoles().stream().anyMatch((role) -> associationEnds().contains(role));
+            MClass cls = classes[0];
+            if(cls instanceof MInternalClassImpl) {
+                Set<MClabject> clabjects = ((MInternalClassImpl)cls).clabjectsFromParents();
+                for (MClabject clabject : clabjects) {
+                    boolean isRoleRemoved = clabject.getRemovedRoles().stream().anyMatch((role) -> associationEnds().contains(role));
                     if(isRoleRemoved)
                         return false;
                 }
