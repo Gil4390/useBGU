@@ -7,12 +7,14 @@ import java.util.List;
 
 public class MLMSystem extends MSystem {
     /**
-     * constructs a new MSystem
+     * constructs a new MLMSystem
+     * sets the current state to a new MLMSystemState
      *
      * @param model the model of this system
      */
     public MLMSystem(MModel model) {
         super(model);
+        this.setCurrentState(new MLMSystemState(getUniqueNameGenerator().generate("state#"), this));
     }
 
     @Override

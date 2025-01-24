@@ -590,10 +590,6 @@ public abstract class UseSystemApi {
     public boolean checkState() {
     	return checkState(NullPrintWriter.getInstance());
     }
-
-	public MSystemState.Definedness checkWellDefinedness() {
-		return checkWellDefinedness(NullPrintWriter.getInstance());
-	}
     
     /**
 	 * <p>This method validates the current state of
@@ -614,20 +610,6 @@ public abstract class UseSystemApi {
 		isValid = isValid && system.state().check(error, false, false, true, Collections.<String>emptyList());
 		
 		return isValid;
-	}
-
-
-
-	public MSystemState.Definedness checkWellDefinedness(PrintWriter error){
-		MSystemState.Definedness result;
-		// Check structure
-		result = system.state().checkWellDefinedStructure(NullPrintWriter.getInstance());
-		// Check Invariants
-		MSystemState.Definedness check = system.state().checkWellDefinedness(error, false, false, true, Collections.<String>emptyList());
-		if (check == MSystemState.Definedness.NotWellDefined){
-			result = MSystemState.Definedness.NotWellDefined;
-		}
-		return result;
 	}
 
 	/**
