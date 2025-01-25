@@ -1,6 +1,7 @@
 package org.tzi.use.uml.mm;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MMediator extends MModelElementImpl {
 
@@ -89,6 +90,23 @@ public class MMediator extends MModelElementImpl {
             powerTypes.add((MClass)clabject.parent());
         }
         return powerTypes;
+    }
+
+    public List<MClabject> clabjectsOfAssoclink(String assoclinkName){
+        return null;
+    }
+
+    public MAssoclink assoclinkOfClabject(String clabjectName){
+        MClabject clabject = getClabject(clabjectName);
+        for(MAssoclink assoclink : fAssocLinks.values()){
+            MAssociation childAssoc = (MAssociation) assoclink.child();
+            MAssociation parentAssoc = (MAssociation) assoclink.parent();
+            if(childAssoc.associationEnds().stream().map(MAssociationEnd::cls).collect(Collectors.toList()).contains(clabject.child())
+                    && parentAssoc.associationEnds().stream().map(MAssociationEnd::cls).collect(Collectors.toList()).contains(clabject.parent()) ){
+                return assoclink;
+            }
+        }
+        return null;
     }
 
 }

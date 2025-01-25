@@ -1,3 +1,3 @@
 constraint_opposite_powerclass_with_role_removal.use:1:4: Role xx1
-	is removed from clabject CLABJECT_CD@D_AB@B
+	is removed by clabject CLABJECT_CD@D_AB@B
 	but is covered by invariant AB@i1
