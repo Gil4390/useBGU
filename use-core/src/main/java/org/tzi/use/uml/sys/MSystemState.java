@@ -1926,7 +1926,7 @@ public class MSystemState {
 		}
 	}
 
-	private boolean validateBinaryAssociations(PrintWriter out, MAssociation assoc, 
+	protected boolean validateBinaryAssociations(PrintWriter out, MAssociation assoc,
 			MAssociationEnd aend1, MAssociationEnd aend2, boolean reportAllErrors) {
 		boolean valid = true;
 
@@ -1939,29 +1939,6 @@ public class MSystemState {
 			Map<List<Value>,Set<MObject>> linkedObjects = getLinkedObjects(obj, aend1, aend2);
 			
 			if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
-				MClass cls2 = aend2.cls();
-				if (cls2 instanceof MInternalClassImpl){
-					Set<MClabject> clabjects1 = ((MInternalClassImpl) cls2).clabjectsFromParents();
-					boolean isRole1Removed = false;
-					for (MClabject clabject : clabjects1){
-						if (clabject.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
-							isRole1Removed = true;
-							break;
-						}
-					}
-					if (isRole1Removed) continue;
-
-					MClass objClass = obj.cls();
-					Set<MClabject> clabjects2 = ((MInternalClassImpl) objClass).clabjectsFromParents();
-					boolean isRole2Removed = false;
-					for (MClabject clabject : clabjects2){
-						if (clabject.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
-							isRole2Removed = true;
-							break;
-						}
-					}
-					if (isRole2Removed) continue;
-				}
 				reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
 				if (!reportAllErrors) {
 					return false;

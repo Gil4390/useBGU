@@ -331,7 +331,6 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void test_clabject_attribute_renaming_with_inter_constraints_Spec() {
         File mlmFile = new File(TEST_PATH + "/clabject_attribute_renaming_with_inter_constraints.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        //TODO: fix implementation -- renaming in a constraint shouldn't throw an error when parsing
         MLMSystem mlmSystem = new MLMSystem(mlmResult);
         UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
         try {
@@ -356,7 +355,6 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void test_3_levels_attribute_renaming_inter_constraints_Spec() {
         File mlmFile = new File(TEST_PATH + "/3_levels_attribute_renaming_inter_constraints.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        //TODO: fix implementation -- renaming shouldn't throw an error when parsing
         MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "Integer"), mlmResult);
         MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("a2", "Integer", "c", "String", "c5", "String"), mlmResult);
         MLMTestUtil.getInstance().assertAttributesEqual("EF", "E", Map.of("a2", "Integer", "c", "String", "e", "String", "e9", "String"), mlmResult);

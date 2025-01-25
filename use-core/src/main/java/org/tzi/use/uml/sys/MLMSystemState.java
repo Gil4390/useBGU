@@ -3,10 +3,7 @@ package org.tzi.use.uml.sys;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.tzi.use.config.Options;
-import org.tzi.use.uml.mm.MAssociation;
-import org.tzi.use.uml.mm.MAssociationEnd;
-import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MClassInvariant;
+import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.expr.Evaluator;
 import org.tzi.use.uml.ocl.expr.ExpInvalidException;
 import org.tzi.use.uml.ocl.expr.ExpStdOp;
@@ -346,7 +343,71 @@ public class MLMSystemState extends MSystemState{
 
         return valid;
     }
+    @Override
+    protected boolean validateBinaryAssociations(PrintWriter out, MAssociation assoc,
+                                               MAssociationEnd aend1, MAssociationEnd aend2, boolean reportAllErrors) {
+        boolean valid = true;
 
+        // for each object of the association end's type get
+        // the number of links in which the object participates
+        MClass cls = aend1.cls();
+        Set<MObject> objects = objectsOfClassAndSubClasses(cls);
+
+        for (MObject obj : objects) {
+            Map<List<Value>,Set<MObject>> linkedObjects = getLinkedObjects(obj, aend1, aend2);
+
+            if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
+                MClass cls2 = aend2.cls();
+                if (cls2 instanceof MInternalClassImpl){
+                    Set<MClabject> clabjects1 = ((MInternalClassImpl) cls2).clabjectsFromParents();
+                    boolean isRole1Removed = false;
+                    for (MClabject clabject : clabjects1){
+                        if (clabject.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
+                            isRole1Removed = true;
+                            break;
+                        }
+                    }
+                    if (isRole1Removed) continue;
+
+                    MClass objClass = obj.cls();
+                    Set<MClabject> clabjects2 = ((MInternalClassImpl) objClass).clabjectsFromParents();
+                    boolean isRole2Removed = false;
+                    for (MClabject clabject : clabjects2){
+                        if (clabject.getRemovedRoles().stream().anyMatch(r -> r.equals(aend2))){
+                            isRole2Removed = true;
+                            break;
+                        }
+                    }
+                    if (isRole2Removed) continue;
+                }
+                reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
+                if (!reportAllErrors) {
+                    return false;
+                } else {
+                    valid = false;
+                    continue;
+                }
+            }
+
+            for(Map.Entry<List<Value>, Set<MObject>> entry : linkedObjects.entrySet()) {
+                if (!aend2.multiplicity().contains(entry.getValue().size())) {
+                    reportMultiplicityViolation(out, assoc, aend1, aend2, obj, entry);
+                    valid = false;
+                }
+
+                if (!aend1.getSubsettedEnds().isEmpty()) {
+                    if (!validateSubsets(out, obj, entry.getKey(), entry.getValue(), aend1))
+                        valid = false;
+                }
+            }
+
+            if (!reportAllErrors && !valid) {
+                return valid;
+            }
+        }
+
+        return valid;
+    }
 
 
 }

@@ -71,7 +71,7 @@ public class MSystem {
 	private MModel fModel;
 
 	/** The current system state. */
-	private MSystemState fCurrentState;
+	protected MSystemState fCurrentState;
 
 	/** The set of all objects */
 	private Map<String, MObject> fObjects;
@@ -174,10 +174,6 @@ public class MSystem {
 	 */
 	public MSystemState state() {
 		return fCurrentState;
-	}
-
-	public void setCurrentState(MSystemState state) {
-		fCurrentState = state;
 	}
 
 	/**

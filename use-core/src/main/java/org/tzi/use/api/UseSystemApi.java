@@ -29,7 +29,10 @@ import org.tzi.use.uml.ocl.expr.Evaluator;
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.tzi.use.uml.ocl.expr.MultiplicityViolationException;
 import org.tzi.use.uml.ocl.value.Value;
-import org.tzi.use.uml.sys.*;
+import org.tzi.use.uml.sys.MLink;
+import org.tzi.use.uml.sys.MLinkObject;
+import org.tzi.use.uml.sys.MObject;
+import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.util.NullPrintWriter;
 import org.tzi.use.util.StringUtil;
 
