@@ -136,9 +136,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 continue;
                             }
                             // if the role is removed from the clabject, and is covered by an invariant (local), but the class cant be navigated to it, then it shouldn't throw an error.
-                            if(clab.getRemovedRoles().contains(end)) {
-                                continue;
-                            }
+
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
                                     + "\n\tis removed by clabject " + clab.name()
