@@ -19,8 +19,12 @@
 
 package org.tzi.use.uml.mm;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.tzi.use.util.collections.CollectionUtil;
@@ -294,11 +298,8 @@ class MAssociationImpl extends MClassifierImpl implements MAssociation {
             if (!classes[i].isSubClassOf(end.cls())) return false;
             ++i;
         }
-
         return true;
     }
-
-
 
 	@Override
 	public void addSubsets(@NonNull MAssociation asso) {

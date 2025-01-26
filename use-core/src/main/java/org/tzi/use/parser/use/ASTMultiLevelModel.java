@@ -107,7 +107,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
 
                             mlmContext.reportError(fName,
                                     "Attribute " + attr.name()
-                                    + "\n\tis removed from clabject " + clab.name()
+                                    + "\n\tis removed by clabject " + clab.name()
                                     + "\n\tbut is covered by invariant " + inv.name());
                         }
                     }
@@ -135,9 +135,11 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             if (clab.getRemovedConstraints().contains(inv)) {
                                 continue;
                             }
+                            // if the role is removed from the clabject, and is covered by an invariant (local), but the class cant be navigated to it, then it shouldn't throw an error.
+
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
-                                    + "\n\tis removed from clabject " + clab.name()
+                                    + "\n\tis removed by clabject " + clab.name()
                                     + "\n\tbut is covered by invariant " + inv.name());
                         }
                     }
@@ -149,9 +151,17 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             if (clab.getRemovedConstraints().contains(inv)) {
                                 continue;
                             }
+
+                            // if the role is removed from the clabject, and is covered by an invariant (local), but the class cant be navigated to it, then it shouldn't throw an error.
+                            if(clab.getRemovedRoles().contains(end)) {
+                                continue;
+                            }
+
+                            MAssoclink assoclink = med.assoclinkOfClabject(clab.name());
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
-                                            + "\n\tremoved from an assoclink "
+                                            + "\n\tremoved by assoclink: " + assoclink
+                                            + "\n\tand by clabject: " + clab
                                             + "\n\tbut covered by invariant " + inv.name());
                         }
                     }

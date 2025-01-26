@@ -716,9 +716,10 @@ public class MainWindow extends JFrame {
     }
 
     private void checkWellDefinedness() {
+        fLogWriter.println("Checking well definedness..");
         String result = ((MMultiLevelModel)fSession.system().model()).checkWellDefinednessState(fLogWriter);
 
-        fLogWriter.println("checking well definedness, " + result);
+        fLogWriter.println("Result: " + result);
         fLogWriter.flush();
     }
 

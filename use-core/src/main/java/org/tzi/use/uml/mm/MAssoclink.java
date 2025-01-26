@@ -4,10 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MAssoclink extends MGeneralization {
-//    private final String fName;
-//
-//    private MAssociation fParent;
-//    private MAssociation fChild;
+
     private final List<MRoleBinding> fRoleBinding;
 
     public MAssoclink(MAssociation child, MAssociation parent) {

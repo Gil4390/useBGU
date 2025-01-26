@@ -90,7 +90,8 @@ model PC
 
 --    constraints
 --    context Device inv DeviceDates:
---      self.parent.testDate->forAll(d| d > manuDate)
+--      self.parent->forAll(p| p.testDate > manuDate)
+-- doesnt work because you cant reference an inherited attribute of an instance of a class
 
 inter-associations
 association connection between
@@ -115,40 +116,38 @@ end
 
 mediator PC < Computer_product
 
-   clabject Device : Peripheral
-   end
+    clabject Device : Peripheral
+    end
 
-   clabject PC : Computer
+    clabject PC : Computer
         attributes
             ~relatedStandard
-        roles
-            ~maintained
-   end
+    end
 
-   clabject PCOS : System
-   end
+    clabject PCOS : System
+    end
 
-   clabject PCAppl : Application
-   end
+    clabject PCAppl : Application
+    end
 
-   assoclink pcCon : contain
+    assoclink pcCon : contain
         parent->parent
         part->part
-   end
+    end
 
-   assoclink pcAppl : hardwSoftw
+    assoclink pcAppl : hardwSoftw
         softw->softw
         hardw->hardw
-   end
+    end
 
-   assoclink pcOs : hardwSoftw
+    assoclink pcOs : hardwSoftw
         softw->os
         hardw->pc
-   end
+    end
 
-   assoclink pcCompat : compatibility
+    assoclink pcCompat : compatibility
         syst->syst
         appl->appl
-   end
+    end
 
 end

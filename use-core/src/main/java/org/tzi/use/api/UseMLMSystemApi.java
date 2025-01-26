@@ -29,15 +29,7 @@ public class UseMLMSystemApi extends UseSystemApiUndoable {
     }
 
     public MLMSystemState.Definedness checkWellDefinedness(PrintWriter error){
-        MLMSystemState.Definedness result;
-        // Check structure
-        result = ((MLMSystemState)system.state()).checkWellDefinedStructure(NullPrintWriter.getInstance());
-        // Check Invariants
-        MLMSystemState.Definedness check = ((MLMSystemState)system.state()).checkWellDefinedness(error, false, false, true, Collections.<String>emptyList());
-        if (check == MLMSystemState.Definedness.NotWellDefined){
-            result = MLMSystemState.Definedness.NotWellDefined;
-        }
-        return result;
+        return ((MLMSystemState)system.state()).checkWellDefinedness(error, false, false, true, Collections.<String>emptyList());
     }
 
     public MLMSystemState.Definedness checkWellDefinedness() {

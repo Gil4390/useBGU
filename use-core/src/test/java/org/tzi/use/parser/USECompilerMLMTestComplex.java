@@ -331,7 +331,6 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void test_clabject_attribute_renaming_with_inter_constraints_Spec() {
         File mlmFile = new File(TEST_PATH + "/clabject_attribute_renaming_with_inter_constraints.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        //TODO: fix implementation -- renaming in a constraint shouldn't throw an error when parsing
         MLMSystem mlmSystem = new MLMSystem(mlmResult);
         UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
         try {
@@ -356,7 +355,6 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void test_3_levels_attribute_renaming_inter_constraints_Spec() {
         File mlmFile = new File(TEST_PATH + "/3_levels_attribute_renaming_inter_constraints.use");
         MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
-        //TODO: fix implementation -- renaming shouldn't throw an error when parsing
         MLMTestUtil.getInstance().assertAttributesEqual("AB", "A", Map.of("a1", "String", "a2", "Integer"), mlmResult);
         MLMTestUtil.getInstance().assertAttributesEqual("CD", "C", Map.of("a2", "Integer", "c", "String", "c5", "String"), mlmResult);
         MLMTestUtil.getInstance().assertAttributesEqual("EF", "E", Map.of("a2", "Integer", "c", "String", "e", "String", "e9", "String"), mlmResult);
@@ -507,7 +505,7 @@ public class USECompilerMLMTestComplex extends TestCase {
         MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "Software", Map.of("hardw", "Computer_product@Hardware"), mlmResult);
         MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "System", Map.of("hardw", "Computer_product@Hardware", "appl", "Computer_product@Application"), mlmResult);
         MLMTestUtil.getInstance().assertRolesEqual("Computer_product", "Application", Map.of("installed", "PC@PCOS", "syst", "Computer_product@System", "hardw", "Computer_product@Hardware"), mlmResult);
-        MLMTestUtil.getInstance().assertRolesEqual("PC", "PC", Map.of("handler", "Computer_product@Computer", "os", "PC@PCOS", "part", "PC@Device", "softw", "PC@PCAppl"), mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("PC", "PC", Map.of("handler", "Computer_product@Computer", "os", "PC@PCOS", "part", "PC@Device", "softw", "PC@PCAppl", "maintained" , "PC@PC"), mlmResult);
         MLMTestUtil.getInstance().assertRolesEqual("PC", "Device", Map.of("parent", "PC@PC", "softw", "Computer_product@Software"), mlmResult);
         MLMTestUtil.getInstance().assertRolesEqual("PC", "PCAppl", Map.of("hardw", "PC@PC", "syst", "PC@PCOS", "installed", "PC@PCOS"), mlmResult);
         MLMTestUtil.getInstance().assertRolesEqual("PC", "PCOS", Map.of("appl", "PC@PCAppl", "installer", "Computer_product@Application", "pc", "PC@PC"), mlmResult);
@@ -525,19 +523,20 @@ public class USECompilerMLMTestComplex extends TestCase {
             systemApi.createLink("Computer_product@compatibility", "sys1", "app1");
             systemApi.createLink("Computer_product@hardwSoftw", "comp1", "sys1");
 
-            //should fail
-            //systemApi.createLink("Computer_product@compatibility", "pcos1", "app1");
-
             systemApi.createLink("installation", "app1", "pcos1");
 
             systemApi.createLink("PC@pcOs", "pc1", "pcos1");
             systemApi.createLink("connection", "comp1", "pc1");
 
-            //Assert.assertTrue(systemApi.checkState(newErr));
+            // The structure check is false because PC@PC - Computer_Product@Computer association's multiplicity cant be satisfied,
+            // and if we remove the role maintained to satisfy it, the inter constraint will fail because maintained is used
+            //Assert.assertTrue(systemApi.checkState());
+
         } catch (Exception e) {
             fail("Unexpected exception");
         }
     }
+
 
 
 
