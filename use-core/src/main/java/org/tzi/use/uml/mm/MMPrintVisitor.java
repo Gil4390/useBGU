@@ -650,6 +650,19 @@ public class MMPrintVisitor implements MMVisitor {
         }
 
         decIndent();
+        if (!e.getRemovedConstraints().isEmpty()) {
+            indent();
+            println(keyword("constraints"));
+        }
+        incIndent();
+        // visit constraint removal
+        for (MClassInvariant invariant : e.getRemovedConstraints()) {
+            indent();
+            String invName = invariant.name().contains("@") ? invariant.name().split("@")[1] : invariant.name();
+            println(other("~") + id(invName));
+        }
+
+        decIndent();
         decIndent();
         indent();
         println(keyword("end"));

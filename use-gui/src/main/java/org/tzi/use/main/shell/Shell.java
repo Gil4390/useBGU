@@ -983,7 +983,7 @@ public final class Shell implements Runnable, PPCHandler {
 			MClass derivedFromClass = null; // "M1@cls from M2@derivedFromClass"
 			String className = tokenizer.nextToken();
 			MClass cls = getClassSafe(className);
-			Set<String> activeFlags = new HashSet<>(List.of("-attributes", "-roles", "-mediator")); // all available flags
+			Set<String> activeFlags = new HashSet<>(List.of("-attributes", "-roles", "-mediator","-constraints")); // all available flags
 			boolean showOrigin = false; // -origin flag
 			if (tokenizer.hasMoreTokens()) {
 				activeFlags.clear();
@@ -994,7 +994,7 @@ public final class Shell implements Runnable, PPCHandler {
 				if(flag.equals("from")) {
 					derivedFromClass = getClassSafe(tokenizer.nextToken());
 					if(!tokenizer.hasMoreTokens()) {
-						activeFlags.addAll(List.of("-attributes", "-roles", "-mediator")); // if no flags are given, show all
+						activeFlags.addAll(List.of("-attributes", "-roles", "-mediator","-constraints")); // if no flags are given, show all
 					}
 				} else {
 					activeFlags.add(flag);
@@ -1014,6 +1014,10 @@ public final class Shell implements Runnable, PPCHandler {
 			}
 			if(activeFlags.contains("-mediator")){
 				cmdInfoMLMClassMediators(cls);
+				System.out.println("------------------------------------------------");
+			}
+			if(activeFlags.contains("-constraints")){
+				cmdInfoMLMClassConstraints(cls, derivedFromClass);
 				System.out.println("------------------------------------------------");
 			}
 
@@ -1193,6 +1197,51 @@ public final class Shell implements Runnable, PPCHandler {
 		}
 
 		printRoles(derivedRoles);
+	}
+
+	private void cmdInfoMLMClassConstraints(MClass cls, MClass derivedFromClass) {
+		if(derivedFromClass != null) {
+			cmdInfoMLMDerivedConstraints(cls, derivedFromClass);
+			return;
+		}
+		System.out.println("constraints of class " + cls.name());
+		List<MClassInvariant> invariants = cls.model().classInvariants().stream().filter(invariant -> invariant.cls().equals(cls)).collect(Collectors.toList());
+
+		System.out.println("declared invariants");
+		for(MClassInvariant invariant : invariants){
+			printTab();
+			System.out.println(invariant.name());
+		}
+
+		// Find all invariants from the parent classes of the clabjects
+		List<MClassInvariant> allParentInvariants = ((MInternalClassImpl)cls).clabjectsFromParents().stream()
+				.map(clabject -> clabject.parent().model().classInvariants().stream()
+				//Filter all the invariants that not related to the clabject parent
+				.filter(invariant -> invariant.cls().equals(clabject.parent())).collect(Collectors.toList()))
+				.flatMap(Collection::stream).collect(Collectors.toList());
+		List<MClassInvariant> removedInvariantsOfCls = ((MInternalClassImpl)cls).clabjectsFromParents().stream().map(MClabject::getRemovedConstraints).flatMap(Collection::stream).collect(Collectors.toList());
+		List<MClassInvariant> allInvariants = allParentInvariants.stream().filter(invariant -> !removedInvariantsOfCls.contains(invariant)).collect(Collectors.toList());
+		allInvariants.addAll(invariants);
+		System.out.println("all invariants");
+		for(MClassInvariant invariant : allInvariants){
+			printTab();
+			System.out.println(invariant.name());
+		}
+	}
+
+	private void cmdInfoMLMDerivedConstraints(MClass cls, MClass derivedFromClass) {
+		System.out.println("derived constraints of class " + cls.name() + " from class " + derivedFromClass.name());
+		// Check if cls have a clabject of derivedFromClass
+		if(((MInternalClassImpl)cls).clabjectsFromParents().stream().noneMatch(clabject -> clabject.parent().equals(derivedFromClass))){
+			return;
+		}
+		List<MClassInvariant> powerTypeInvariants = derivedFromClass.model().classInvariants().stream().filter(invariant -> invariant.cls().equals(derivedFromClass)).collect(Collectors.toList());
+		List<MClassInvariant> removedInvariantsOfCls = ((MInternalClassImpl)cls).clabjectsFromParents().stream().map(MClabject::getRemovedConstraints).flatMap(Collection::stream).collect(Collectors.toList());
+		List<MClassInvariant> derivedInvariants = powerTypeInvariants.stream().filter(invariant -> !removedInvariantsOfCls.contains(invariant)).collect(Collectors.toList());
+		for(MClassInvariant invariant : derivedInvariants){
+			printTab();
+			System.out.println(invariant.name());
+		}
 	}
 
 	private void printRoles(Map<String, ? extends MNavigableElement> navigableEnds) {
