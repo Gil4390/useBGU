@@ -542,4 +542,10 @@ public class USECompilerMLMSimple extends TestCase {
         }
     }
 
+    public void test_constraint_opposite_powerclass_with_role_removal() {
+        File mlmFile = new File(TEST_PATH + "/constraint_opposite_powerclass_with_role_removal.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+        assertNotNull(mlmResult);
+    }
+
 }

@@ -7,12 +7,6 @@ MLM ABCD
         a2: Integer
     end
 
-    class B
-      attributes
-        b1: String
-        b2: Integer
-    end
-
     constraints
     context A
       inv i1:
@@ -25,11 +19,6 @@ MLM ABCD
         c: String
     end
 
-    class D
-      attributes
-        d: String
-    end
-
 
 mediator AB < NONE
 end
@@ -38,9 +27,8 @@ mediator CD < AB
     clabject C : A
     attributes
       ~a2
-    end
-
-    clabject D : B
+    constraints
+      ~i1
     end
 
 end

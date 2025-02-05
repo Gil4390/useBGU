@@ -135,8 +135,16 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             if (clab.getRemovedConstraints().contains(inv)) {
                                 continue;
                             }
-                            // if the role is removed from the clabject, and is covered by an invariant (local), but the class cant be navigated to it, then it shouldn't throw an error.
+                            //1. if the role is removed from a clabject that its power-type class isn't the 'context' class, it shouldn't throw an error.
+                            if(!inv.cls().equals(clab.parent())) {
+                                mlmContext.reportWarning(fName,
+                                        "Role " + end.name()
+                                                + "\n\tis removed by clabject " + clab.name()
+                                                + "\n\tbut is covered by invariant " + inv.name());
+                                continue;
+                            }
 
+                            //2. if the role is removed from the clabject, and is covered by an invariant (local), it should throw an error.
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
                                     + "\n\tis removed by clabject " + clab.name()
