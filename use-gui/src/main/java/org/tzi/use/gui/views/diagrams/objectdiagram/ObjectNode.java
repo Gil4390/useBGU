@@ -250,6 +250,7 @@ public class ObjectNode extends PlaceableNode implements SortChangeListener, Obj
 			fillColor = fOpt.getGREYED_FILL_COLOR();
 			lineColor = fOpt.getGREYED_LINE_COLOR();
 		}
+		// different colors for different levels in the object diagaram in a multi-level-model
 		if (!isSelected() && this.fObject.cls().name().contains("@")){
 			int color = this.fObject.cls().name().split("@")[0].hashCode()*1005 + 8539;
 			int R = (color & 0x000000FF);

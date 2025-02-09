@@ -36,6 +36,7 @@ import org.tzi.use.gui.views.diagrams.waypoints.WayPoint;
  */
 public final class GeneralizationEdge extends EdgeBase {
 
+    // Needed to distinguish between a clabject and regular inheritance edge
     private boolean isClabjectEdge = false;
 
     protected GeneralizationEdge( PlaceableNode child, PlaceableNode parent, 
@@ -87,6 +88,7 @@ public final class GeneralizationEdge extends EdgeBase {
                                                              false);
                         n1 = n2;
                     } else if(isClabjectEdge) {
+                            // draw a clabject edge if the edge is a clabject edge
                         	// draw the last line segment, as an inheritance
                             DirectedEdgeFactory.drawClabject( g, (int) n1.getCenter().getX(),
                                                                     (int) n1.getCenter().getY(),

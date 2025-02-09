@@ -210,6 +210,11 @@ public final class MMultiplicity {
         return StringUtil.fmtSeq(mRanges.iterator(), ",");
     }
 
+
+    /**
+     * A helper function that used during the calc of well-definedness
+     * @return the largest lower bound of all ranges.
+     */
     public int getLargestLowerBound() {
     	int largest = 0;
     	for (Range r : mRanges) {

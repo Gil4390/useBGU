@@ -86,6 +86,7 @@ public class BinaryAssociationOrLinkEdge extends AssociationOrLinkPartEdge {
      */
     MAssociationEnd fSourceEnd;
 
+	// needed to distinguish between regular association and inter association
 	boolean isInterAssoc = false;
 
     /**
@@ -427,6 +428,7 @@ public class BinaryAssociationOrLinkEdge extends AssociationOrLinkPartEdge {
             g.setColor( fOpt.getEDGE_COLOR() );
         }
 
+		// for inter-association, draw a bolded line
 		Stroke previousStroke = g.getStroke();
         if(isInterAssoc) {
 			//change the thickness of the line

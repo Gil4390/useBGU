@@ -315,7 +315,7 @@ public class ClassDiagram extends DiagramView
 		n.setMinWidth(minClassNodeWidth);
 		n.setMinHeight(minClassNodeHeight);
 
-		if (n.name().contains("@")){
+		if (n.name().contains("@")){ // different colors for diifferent levels in a multi-level-model
 			int color = n.name().split("@")[0].hashCode()*1005 + 8539;
 			int R = (color & 0x000000FF);
 			int G = (color & 0x0000FF00) >> 8;
@@ -584,6 +584,7 @@ public class ClassDiagram extends DiagramView
 			// binary association
 			BinaryAssociationOrLinkEdge e = createBinaryAssociationOrLinkEdge(source, target, assocEnd1, assocEnd2,
 					this, assoc);
+			// Needed to distinguish between regular association and inter association
 			if(!assoc.name().contains("@")) {
 				e.setAsInterAssoc();
 			}
@@ -751,6 +752,7 @@ public class ClassDiagram extends DiagramView
 		}
 
 		GeneralizationEdge e = GeneralizationEdge.create(lookup.get(child), lookup.get(parent), this);
+		// Needed to distinguish between regular generalization and a clabject
 		if(gen instanceof MClabject) {
 			e.setClabjectEdge(true);
 		}
