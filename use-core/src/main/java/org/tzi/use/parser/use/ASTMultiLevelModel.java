@@ -138,7 +138,9 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             //1. if the role is removed from a clabject that its power-type class isn't the 'context' class, it shouldn't throw an error.
                             if(!inv.cls().equals(clab.parent())) {
                                 mlmContext.reportWarning(fName,
-                                        "Role " + end.name()
+                                                "\n\tRole " + end.name()
+                                                + "\n\tthat's part of the classes:" + end.association().associationEnds().get(0).cls()
+                                                + " and " + end.association().associationEnds().get(1).cls()
                                                 + "\n\tis removed by clabject " + clab.name()
                                                 + "\n\tbut is covered by invariant " + inv.name());
                                 continue;

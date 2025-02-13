@@ -11,6 +11,10 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Context information available when walking the abstract syntax tree
+ * Used for parsing a Multi-Model.
+ */
 public class MultiContext extends Context{
 
     private MultiContext parent;
@@ -21,7 +25,7 @@ public class MultiContext extends Context{
      * @param filename
      * @param err
      * @param globalBindings
-     * @param factory
+     * @param factory - the multiContext uses a multiModelFactory instead of a regular factory
      */
     public MultiContext(String filename, PrintWriter err, VarBindings globalBindings, MultiModelFactory factory) {
         super(filename, err, globalBindings, factory);

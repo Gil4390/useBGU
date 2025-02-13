@@ -9,7 +9,8 @@ import org.tzi.use.uml.ocl.type.Type;
 /**
  *
  * Node of the abstract syntax tree constructed by the parser.
- *
+ * Used to identify classes in inter-constraints
+ * 
  * @author Gil Khais
  * @author Amiel Saad
  */

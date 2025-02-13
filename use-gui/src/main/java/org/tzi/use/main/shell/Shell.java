@@ -983,7 +983,7 @@ public final class Shell implements Runnable, PPCHandler {
 			MClass derivedFromClass = null; // "M1@cls from M2@derivedFromClass"
 			String className = tokenizer.nextToken();
 			MClass cls = getClassSafe(className);
-			Set<String> activeFlags = new HashSet<>(List.of("-attributes", "-roles", "-mediator","-constraints")); // all available flags
+			Set<String> activeFlags = new HashSet<>(List.of("-attributes", "-roles", "-mediator","-constraints", "-pt")); // all available flags
 			boolean showOrigin = false; // -origin flag
 			if (tokenizer.hasMoreTokens()) {
 				activeFlags.clear();
@@ -994,7 +994,7 @@ public final class Shell implements Runnable, PPCHandler {
 				if(flag.equals("from")) {
 					derivedFromClass = getClassSafe(tokenizer.nextToken());
 					if(!tokenizer.hasMoreTokens()) {
-						activeFlags.addAll(List.of("-attributes", "-roles", "-mediator","-constraints")); // if no flags are given, show all
+						activeFlags.addAll(List.of("-attributes", "-roles", "-mediator","-constraints", "-pt")); // if no flags are given, show all
 					}
 				} else {
 					activeFlags.add(flag);
@@ -1018,6 +1018,10 @@ public final class Shell implements Runnable, PPCHandler {
 			}
 			if(activeFlags.contains("-constraints")){
 				cmdInfoMLMClassConstraints(cls, derivedFromClass);
+				System.out.println("------------------------------------------------");
+			}
+			if (activeFlags.contains("-pt")){
+				cmdInfoMLMClassPowerTypes(cls);
 				System.out.println("------------------------------------------------");
 			}
 
@@ -1129,16 +1133,16 @@ public final class Shell implements Runnable, PPCHandler {
 			return;
 		}
 
-		System.out.println("attributes of class " + cls.name());
+		System.out.println("attributes of class " + cls.name() + ":");
 		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
 
-		System.out.println("declared attributes");
+		System.out.println("declared attributes:");
 		List<MAttribute> attributes = cls.attributes();
 		for(MAttribute attribute : attributes){
 			printTab();
 			v.visitAttribute(attribute);
 		}
-		System.out.println("all attributes");
+		System.out.println("all attributes:");
 		List<MAttribute> allAttributes = cls.allAttributes();
 		for(MAttribute attribute : allAttributes){
 			printTab();
@@ -1171,13 +1175,11 @@ public final class Shell implements Runnable, PPCHandler {
 			cmdInfoMLMDerivedRoles(cls, derivedFromClass);
 			return;
 		}
-		System.out.println("class " + cls.name());
 
-		//TODO: find a better solution than type casting
-		System.out.println("declared roles");
+		System.out.println("declared roles:");
 		printRoles(((MInternalClassImpl)cls).navigableElements());
 
-		System.out.println("all roles");
+		System.out.println("all roles:");
 		printRoles(cls.navigableEnds());
 
 		System.out.println("end");
@@ -1204,10 +1206,10 @@ public final class Shell implements Runnable, PPCHandler {
 			cmdInfoMLMDerivedConstraints(cls, derivedFromClass);
 			return;
 		}
-		System.out.println("constraints of class " + cls.name());
+		System.out.println("constraints of class " + cls.name() + ":");
 		List<MClassInvariant> invariants = cls.model().classInvariants().stream().filter(invariant -> invariant.cls().equals(cls)).collect(Collectors.toList());
 
-		System.out.println("declared invariants");
+		System.out.println("declared invariants:");
 		for(MClassInvariant invariant : invariants){
 			printTab();
 			System.out.println(invariant.name());
@@ -1222,7 +1224,7 @@ public final class Shell implements Runnable, PPCHandler {
 		List<MClassInvariant> removedInvariantsOfCls = ((MInternalClassImpl)cls).clabjectsFromParents().stream().map(MClabject::getRemovedConstraints).flatMap(Collection::stream).collect(Collectors.toList());
 		List<MClassInvariant> allInvariants = allParentInvariants.stream().filter(invariant -> !removedInvariantsOfCls.contains(invariant)).collect(Collectors.toList());
 		allInvariants.addAll(invariants);
-		System.out.println("all invariants");
+		System.out.println("all invariants:");
 		for(MClassInvariant invariant : allInvariants){
 			printTab();
 			System.out.println(invariant.name());
@@ -1244,6 +1246,11 @@ public final class Shell implements Runnable, PPCHandler {
 		}
 	}
 
+	private void cmdInfoMLMClassPowerTypes(MClass cls) throws NoSystemException {
+		System.out.println("power types of class " + cls.name());
+		System.out.println(((MMultiLevelModel)this.system().model()).powerTypesOfClass(cls.name()));
+	}
+
 	private void printRoles(Map<String, ? extends MNavigableElement> navigableEnds) {
 		for(Map.Entry<String, ? extends MNavigableElement> navigableElement : navigableEnds.entrySet()){
 			printTab();
@@ -1252,8 +1259,8 @@ public final class Shell implements Runnable, PPCHandler {
 	}
 
 	private void cmdInfoMLMClassMediators(MClass cls) throws NoSystemException {
-		System.out.println("mediator of class " + cls.name());
-		System.out.println("clabjects");
+		System.out.println("mediator of class " + cls.name() + ":");
+		System.out.println("clabjects:");
 
 		MMVisitor v = new MMPrintVisitor(new PrintWriter(System.out, true));
 		MSystem system = system();
@@ -1264,7 +1271,7 @@ public final class Shell implements Runnable, PPCHandler {
 			}
 		}
 
-		System.out.println("assoclinks");
+		System.out.println("assoclinks:");
 		List<MAssoclink> assoclinks = ((MMultiLevelModel)system.model()).assoclinks();
 		for(MAssoclink assoclink : assoclinks) {
 			MAssociation childAssociation = ((MAssociation)assoclink.child());

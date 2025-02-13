@@ -271,6 +271,14 @@ public class MMultiLevelModel extends MMultiModel {
         return nextMediator.powerTypes();
     }
 
+    public List<MClass> powerTypesOfClass(String className) {
+        List<MClass> res = new ArrayList<>();
+        ((MInternalClassImpl) getClass(className)).clabjectsFromParents().forEach(
+                clab -> res.add((MClass) clab.parent())
+        );
+        return res;
+    }
+
     public Set<MClass> subClassesOfClassForInvariant(MClass cls, MClassInvariant inv){
         Set<MClass> res = new HashSet<>();
         Set<MClass> children = ((MInternalClassImpl) cls).children();
