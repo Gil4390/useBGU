@@ -34,7 +34,7 @@ public class MultiModelFactory extends ModelFactory{
 
     /**
      * creates an MInternalClass instance with the name of current generated model.
-     * @return
+     * @return MClass
      */
     @Override
     public MClass createClass(String name, boolean isAbstract) {
@@ -43,7 +43,7 @@ public class MultiModelFactory extends ModelFactory{
 
     /**
      * creates an MAssociation instance with the name of current generated model.
-     * @return
+     * @return MAssociation
      */
     @Override
     public MAssociation createAssociation(String name) {
@@ -51,6 +51,10 @@ public class MultiModelFactory extends ModelFactory{
     }
 
 
+    /**
+     * creates an MAttribute instance with the name of current generated model.
+     * @return MAssociationEnd
+     */
     @Override
     public MAssociationEnd createAssociationEnd(MClass cls, String rolename, MMultiplicity mult, int kind, boolean isOrdered, List<VarDecl> qualifiers) {
         return super.createAssociationEnd(cls, rolename, mult, kind, isOrdered, qualifiers);
@@ -58,7 +62,7 @@ public class MultiModelFactory extends ModelFactory{
 
     /**
      * creates an MAssociationClass instance with the name of current generated model.
-     * @return
+     * @return MAssociationClass
      */
     @Override
     public MAssociationClass createAssociationClass(String name, boolean isAbstract) {
@@ -67,7 +71,7 @@ public class MultiModelFactory extends ModelFactory{
 
     /**
      * creates an MClassInvariant instance with the name of current generated model.
-     * @return
+     * @return MClassInvariant
      */
     @Override
     public MClassInvariant createClassInvariant(String name, List<String> vars, MClass cls, Expression inv, boolean isExistential) throws ExpInvalidException {

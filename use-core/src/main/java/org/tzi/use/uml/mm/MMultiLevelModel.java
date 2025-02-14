@@ -41,7 +41,7 @@ public class MMultiLevelModel extends MMultiModel {
                 this.fAssociations.put(association.name(), association);
             }
             //look for inter invariants
-            for (MClassInvariant invariant : multiModel.interConstraints()) {
+            for (MClassInvariant invariant : multiModel.interInvariants()) {
                 this.addClassInvariant(invariant);
             }
         }catch (Exception e){

@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 /**
  * A MultiModel is a top-level package containing models.
  * <p>
- * holds inter-classes, inter-associations, inter-invariants, etc.
+ * holds models, inter-classes, inter-associations, inter-invariants.
  */
 public class MMultiModel extends MModel{
 
-    private String currentModel;
+    private String currentModel; //used during the gen of ASTMultiModel to keep track of the current model
     protected Map<String, MModel> fModels; // <modelName, MModel>
 
     public MMultiModel(String name) {
@@ -28,7 +28,6 @@ public class MMultiModel extends MModel{
         fModels = new TreeMap<>();
         currentModel = "";
     }
-
 
     /**
      * Adds a model. The model must have a unique name within the multiModel.
@@ -73,15 +72,6 @@ public class MMultiModel extends MModel{
 
     }
 
-
-    public MAssociation getInterAssociations(String assocName) {
-        return this.fAssociations.get(assocName);
-    }
-
-    public Collection<MClassInvariant> interConstraints() {
-        return this.fClassInvariants.values();
-    }
-
     /**
      * Returns the specified model by name.
      *
@@ -93,10 +83,6 @@ public class MMultiModel extends MModel{
 
     public void setCurrentModel(String currentModel) {
         this.currentModel = currentModel;
-    }
-
-    public String getCurrentModel() {
-        return currentModel;
     }
 
     /**
@@ -222,13 +208,18 @@ public class MMultiModel extends MModel{
      * Returns the related association by model name
      * @param modelName related model name
      * @param assocName association name
-     * @return
+     * @return The MAssociation with the name assocName in the model modelName
      */
     public MAssociation getAssociation(String modelName, String assocName){
         MModel model = this.getModel(modelName);
         return model.getAssociation(assocName);
     }
 
+    /**
+     * Returns the related association by full name
+     * @param name full name of the association
+     * @return MAssociation with the given name
+     */
     @Override
     public @Nullable MAssociation getAssociation(String name) {
         if(name.contains("@")) {
@@ -259,7 +250,7 @@ public class MMultiModel extends MModel{
      * Returns the related invariant by model name
      * @param modelName related model name
      * @param invName invariant name
-     * @return
+     * @return The MClassInvariant with the name invName in the model modelName
      */
     public MClassInvariant getClassInvariant(String modelName, String invName){
         MModel model = this.getModel(modelName);
@@ -268,7 +259,7 @@ public class MMultiModel extends MModel{
 
     /**
      * Returns all classes in each model and all inter-classes
-     * @return
+     * @return collection of MClass objects
      */
     @Override
     public Collection<MClass> classes() {
@@ -288,7 +279,7 @@ public class MMultiModel extends MModel{
 
     /**
      * Returns all associations in each model and all inter-associations
-     * @return
+     * @return collection of MAssociation objects
      */
     @Override
     public Collection<MAssociation> associations() {
@@ -302,13 +293,25 @@ public class MMultiModel extends MModel{
         return associations;
     }
 
+    /**
+     * Returns all associations in each model and all inter-associations
+     * @return collection of MAssociation objects
+     */
     public Collection<MAssociation> interAssociations() {
         return this.fAssociations.values();
     }
 
     /**
+     * Returns the association by the specified name, if there is
+     * no model name, it's an inter-association
+     */
+    public MAssociation getInterAssociations(String assocName) {
+        return this.fAssociations.get(assocName);
+    }
+
+    /**
      * Returns all class invariants in each model and all inter-invariants
-     * @return
+     * @return collection of MClassInvariant objects
      */
     @Override
     public Collection<MClassInvariant> classInvariants() {
@@ -321,10 +324,18 @@ public class MMultiModel extends MModel{
         return invariants;
     }
 
+    /**
+     * Returns the inter-invariants of the multi-model
+     * @return collection of MClassInvariant objects
+     */
     public Collection<MClassInvariant> interInvariants() {
         return this.fClassInvariants.values();
     }
 
+    /**
+     * Returns the intra-invariants of the multi-model, only the invariants from the internal models
+     * @return
+     */
     public Collection<MClassInvariant> intraInvariants() {
         Collection<MClassInvariant> invariants = new ArrayList<>();
         for(MModel model : fModels.values()) {
@@ -339,7 +350,6 @@ public class MMultiModel extends MModel{
      * @param name class invariant name
      * @return
      */
-
     @Override
     public MClassInvariant getClassInvariant(String name) {
         String invName = name.split("::")[1];
