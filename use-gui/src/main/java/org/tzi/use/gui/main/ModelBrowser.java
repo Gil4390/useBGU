@@ -343,8 +343,12 @@ public class ModelBrowser extends JPanel
     }
 
     public void createNodes( final DefaultMutableTreeNode top ) {
-        final Collection<MClass> sortedClasses = 
-            fMbs.sortClasses( new ArrayList<MClass>(fModel.classes()) );
+        final Collection<MClassifier> sortedDataTypes =
+                fMbs.sortClasses( new ArrayList<MClassifier>(fModel.dataTypes()) );
+        addChildNodes( top, "Data types", sortedDataTypes );
+
+        final Collection<MClassifier> sortedClasses =
+            fMbs.sortClasses( new ArrayList<MClassifier>(fModel.classes()) );
         addChildNodes( top, "Classes", sortedClasses );
 
         final ArrayList<MAssociation> sortedAssociations = 

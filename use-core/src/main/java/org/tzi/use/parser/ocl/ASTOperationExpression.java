@@ -19,34 +19,14 @@
 
 package org.tzi.use.parser.ocl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.antlr.runtime.Token;
 import org.tzi.use.config.Options;
 import org.tzi.use.parser.Context;
 import org.tzi.use.parser.ExprContext;
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.parser.SrcPos;
-import org.tzi.use.uml.mm.MAttribute;
-import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MClassifier;
-import org.tzi.use.uml.mm.MNavigableElement;
-import org.tzi.use.uml.mm.MOperation;
-import org.tzi.use.uml.ocl.expr.ExpAttrOp;
-import org.tzi.use.uml.ocl.expr.ExpBagLiteral;
-import org.tzi.use.uml.ocl.expr.ExpInvalidException;
-import org.tzi.use.uml.ocl.expr.ExpNavigation;
-import org.tzi.use.uml.ocl.expr.ExpNavigationClassifierSource;
-import org.tzi.use.uml.ocl.expr.ExpObjAsSet;
-import org.tzi.use.uml.ocl.expr.ExpObjOp;
-import org.tzi.use.uml.ocl.expr.ExpStdOp;
-import org.tzi.use.uml.ocl.expr.ExpTupleSelectOp;
-import org.tzi.use.uml.ocl.expr.ExpVariable;
-import org.tzi.use.uml.ocl.expr.Expression;
+import org.tzi.use.uml.mm.*;
+import org.tzi.use.uml.ocl.expr.*;
 import org.tzi.use.uml.ocl.type.CollectionType;
 import org.tzi.use.uml.ocl.type.TupleType;
 import org.tzi.use.uml.ocl.type.Type;
@@ -54,10 +34,15 @@ import org.tzi.use.uml.ocl.type.Type.VoidHandling;
 import org.tzi.use.util.StringUtil;
 import org.tzi.use.util.collections.CollectionUtil;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 /**
- * Node of the abstract syntax tree constructed by the parser.
+ * <p>Node of the abstract syntax tree constructed by the parser.</p>
  * 
- * This AST class generates different expressions, depending
+ * <p>This AST class generates different expressions, depending
  * on the context:
  * 
  * <ol> 
@@ -70,13 +55,14 @@ import org.tzi.use.util.collections.CollectionUtil;
  *       navigation over associations with multiplicity zero or one (p. 7-13 of OMG UML 1.3)</li>
  *   <li>variable</li>
  * </ol>
+ * </p>
  * @author  Mark Richters
  * @author  Lars Hamann
  */
 public class ASTOperationExpression extends ASTExpression {
-    private Token fOp;
-    private ASTExpression fSrcExpr;
-    private List<ASTExpression> fArgs; 
+    private final Token fOp;
+    private final ASTExpression fSrcExpr;
+    private final List<ASTExpression> fArgs;
     private boolean fHasParentheses;
     private boolean fFollowsArrow;
     private Expression[] fArgExprs;
@@ -97,7 +83,7 @@ public class ASTOperationExpression extends ASTExpression {
                                   boolean followsArrow) {
         fOp = op;
         fSrcExpr = source;
-        fArgs = new ArrayList<ASTExpression>();
+        fArgs = new ArrayList<>();
         fHasParentheses = false;
         fFollowsArrow = followsArrow;
     }
@@ -181,7 +167,7 @@ public class ASTOperationExpression extends ASTExpression {
 
     public Expression gen(Context ctx) throws SemanticException {
         Expression res = null;
-        Expression srcExpr = null;
+        Expression srcExpr;
         String opname = fOp.getText();
 
         if (fSrcExpr != null ) {
@@ -205,6 +191,7 @@ public class ASTOperationExpression extends ASTExpression {
             // assumed to be the source expression?
             if (res == null ) {
                 ExprContext ec = ctx.exprContext();
+                MClassifier cf = ctx.model().getClassifier(opname);
                 if (! ec.isEmpty() ) {
                     // construct source expression
                     ExprContext.Entry e = ec.peek();
@@ -212,10 +199,15 @@ public class ASTOperationExpression extends ASTExpression {
                     if (e.fType.isKindOfCollection(VoidHandling.EXCLUDE_VOID) )
                         fFollowsArrow = true;
                     res = gen1(ctx, srcExpr);
-                } else
+                } else if (cf != null ) {
+                    // constructor call?
+                    // (8) check for constructor call
+                    res = gen1(ctx, new ExpVariable("self", cf));
+                } else {
                     throw new SemanticException(fOp, "Undefined " + 
                                                 ( fHasParentheses ? "operation" : "variable" ) + 
                                                 " `" + opname + "'.");
+                }
             }
         }
 
@@ -234,12 +226,11 @@ public class ASTOperationExpression extends ASTExpression {
         
         return res;
     }
-    
 
     private Expression gen1(Context ctx, Expression srcExpr) 
         throws SemanticException 
     {
-        Expression res = null;
+        Expression res;
         String opname = fOp.getText();
         Type srcType = srcExpr.type();
         
@@ -292,7 +283,7 @@ public class ASTOperationExpression extends ASTExpression {
 
         opcase += fFollowsArrow ? ARROW : DOT;
         opcase += fHasParentheses ? PARENTHESES : NO_PARENTHESES;
-        opcase += fExplicitRolenameOrQualifiers.size() > 0 ? EXPLICIT_ROLENAME : NO_EXPLICIT_ROLENAME;
+        opcase += !fExplicitRolenameOrQualifiers.isEmpty() ? EXPLICIT_ROLENAME : NO_EXPLICIT_ROLENAME;
 
         switch ( opcase ) {
         case SRC_SIMPLE_TYPE + DOT + NO_PARENTHESES: 
@@ -309,7 +300,7 @@ public class ASTOperationExpression extends ASTExpression {
         	if (fArgExprs[0].type().isTypeOfVoidType()) {
         		try {
 					fArgExprs[0] = new ExpBagLiteral(new Expression[0]);
-				} catch (ExpInvalidException e) { }
+				} catch (ExpInvalidException ignored) { }
         	} else {
 	            ctx.reportWarning(fOp, "application of `" + opname + 
 	                              "' to a single value should be done with `.' " +
@@ -562,7 +553,7 @@ public class ASTOperationExpression extends ASTExpression {
                                              Type elemType)
         throws SemanticException 
     {
-        Expression res = null;
+        Expression res;
         // (1) predefined OCL operation
 
         // find operation on element type
@@ -597,25 +588,28 @@ public class ASTOperationExpression extends ASTExpression {
 
 
     // checks (3) and (1)
-    private Expression genObjOperation(Context ctx, MClassifier srcClass, Expression srcExpr) throws SemanticException {
-        Expression res = null;
+    private Expression genObjOperation(Context ctx, MClassifier srcClassifier, Expression srcExpr) throws SemanticException {
+        Expression res;
 
         // find operation
         String opname = fOp.getText();
-        MOperation op = null;
-        
-        if (srcClass.isTypeOfClass()) {
-        	op = ((MClass)srcClass).operation(opname, true);
+        MOperation op;
+
+        // check for constructor call
+        MClassifier cf = ctx.model().getClassifier(opname);
+        if (cf == null) {
+            op = srcClassifier.operation(opname, true);
+        } else {
+            op = cf.operation(opname, false);
         }
         
         if (op != null ) {
-        	
-        	// operation must have a body
-        	if (!op.hasBody()) {
+        	// operation must have a body or must be a constructor
+        	if (!op.hasBody() && !op.isConstructor()) {
         		throw new SemanticException(
         				fOp, 
         				"Operation " +
-        				srcClass.name() +
+        				srcClassifier.name() +
         				"::" + 
         				opname +
         				" has no body.");
@@ -628,19 +622,23 @@ public class ASTOperationExpression extends ASTExpression {
         		throw new SemanticException(
         				fOp, 
         				"Operation " +
-        				srcClass.name() +
+        				srcClassifier.name() +
         				"::" + 
         				opname +
         				" is not a query operation.");
         	}
         	
-            try { 
+            try {
                 // constructor performs additional checks
-                res = new ExpObjOp(op, fArgExprs);
+                if (op.isConstructor()) {
+                    res = new ExpInstanceConstructor(op, fArgExprs);
+                } else {
+                    res = new ExpObjOp(op, fArgExprs);
+                }
                 res.setSourcePosition(new SrcPos(fOp));
             } catch (ExpInvalidException ex) {
                 throw new SemanticException(fOp, 
-                                            "In operation call `" + srcClass.name() + "::" + 
+                                            "In operation call `" + srcClassifier.name() + "::" + 
                                             opname + "': " + ex.getMessage());
             }
         } else {
@@ -656,12 +654,12 @@ public class ASTOperationExpression extends ASTExpression {
 
 	@Override
 	public void getFreeVariables(Set<String> freeVars) {
+        for (ASTExpression fArg : fArgs) {
+            fArg.getFreeVariables(freeVars);
+        }
+
 		if (fSrcExpr != null) {
 			fSrcExpr.getFreeVariables(freeVars);
-			Iterator<ASTExpression> it = fArgs.iterator();
-			while (it.hasNext()) {
-				it.next().getFreeVariables(freeVars);
-			}
 		} else {
 			if (!fHasParentheses) {
 				freeVars.add(fOp.getText());

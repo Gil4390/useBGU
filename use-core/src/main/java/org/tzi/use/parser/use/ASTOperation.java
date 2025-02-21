@@ -55,25 +55,29 @@ public class ASTOperation extends ASTAnnotatable {
     private ASTStatement fStatement; // optional
     private MOperation fOperation;   // the operation is generated in two passes
     private List<ASTPrePostClause> fPrePostClauses;
-  
-    
+    private final boolean fIsConstructor;
+
     public ASTOperation(
     		Token name, 
     		List<ASTVariableDeclaration> paramList,
-    		ASTType t) {
+    		ASTType t,
+            boolean isConstructor) {
     	
     	fName = name;
         fParamList = paramList;
         fType = t;
         fOperation = null;
         fPrePostClauses = new ArrayList<ASTPrePostClause>();
+        fIsConstructor = isConstructor;
     }
-    
-    
+
+    public boolean isConstructor() {
+        return fIsConstructor;
+    }
+
     public void setStatement(ASTStatement statement) {
     	fStatement = statement;
     }
-    
     
     public void setExpression(ASTExpression exp) {
     	fExpr = exp;
@@ -84,7 +88,7 @@ public class ASTOperation extends ASTAnnotatable {
     }
 
     public MOperation genSignature(Context ctx) 
-        throws SemanticException 
+        throws SemanticException
     {
         // map params to VarDeclList
         VarDeclList varDeclList = new VarDeclList(false);
@@ -106,9 +110,9 @@ public class ASTOperation extends ASTAnnotatable {
         } else {
             resultType = fType.gen(ctx);
         }
-        
-        fOperation = ctx.modelFactory().createOperation(fName.getText(), varDeclList, resultType);
-        
+
+        fOperation = ctx.modelFactory().createOperation(fName.getText(), varDeclList, resultType, fIsConstructor);
+
         // sets the line position of the USE-Model in this attribute
         fOperation.setPositionInModel( fName.getLine() );
         
@@ -127,12 +131,17 @@ public class ASTOperation extends ASTAnnotatable {
         return fOperation;
     }
 
-    public void genFinal(Context ctx) throws SemanticException 
+    public void genFinal(Context ctx) throws SemanticException
     {
         // fOperation is null if genSignature exited with an Exception
-        if (fOperation == null )
+        if (fOperation == null)
             return;
         
+        if (fIsConstructor && fOperation.resultType() != fOperation.cls()) {
+            throw new SemanticException(fName, "Instance constructor " + StringUtil.inQuotes(fName.getText()) +
+                    " must not have result type.");
+        }
+
         // enter parameters into scope of expression
         Symtable vars = ctx.varTable();
         vars.enterScope();
@@ -141,7 +150,6 @@ public class ASTOperation extends ASTAnnotatable {
             VarDecl decl = astDecl.gen(ctx);
             vars.add(astDecl.name(), decl.type());
         }
-        
         
         ///////////////////////
         // BEGIN SOIL EXTENSION
@@ -153,15 +161,17 @@ public class ASTOperation extends ASTAnnotatable {
         
         try {
             if (fExpr != null ) {
+                if (fIsConstructor) {
+                    throw new MInvalidModelException("Instance constructor " + StringUtil.inQuotes(fName.getText())
+                            + " must not have body.");
+                }
                 Expression expr = fExpr.gen(ctx);
                 fOperation.setExpression(expr);
             }
-            
 
             for (ASTPrePostClause ppc : fPrePostClauses) {
-                ppc.gen(ctx, ctx.currentClass(), fOperation);
+                ppc.gen(ctx, ctx.currentClassifier(), fOperation);
             }
-            
             
         } catch (MInvalidModelException ex) {
             throw new SemanticException(fName, ex);
@@ -170,30 +180,26 @@ public class ASTOperation extends ASTAnnotatable {
         }
     }
 
-
 	private MStatement genStatement(Context context) throws SemanticException {
 		try {
 			return fStatement.generateStatement(context, fOperation);
 		} catch (CompilationFailedException e) {
-			StringBuilder message = new StringBuilder();
-			message.append("\nCould not compile soil defined operation ");
-			message.append(StringUtil.inQuotes(fOperation.signature()));
-			message.append(" due to the following error:\n");
-			message.append(e.getMessage(true));
-			
-			throw new SemanticException(fName, message.toString());
+            String message = "\nCould not compile soil defined operation " +
+                    StringUtil.inQuotes(fOperation.signature()) +
+                    " due to the following error:\n" +
+                    e.getMessage(true);
+
+			throw new SemanticException(fName, message);
 		}
 	}
 
-
 	/**
 	 * During compilation, this operation marks this AST-node
-	 * as invali, because the signature had errors.
-	 * Any call to {@link #genFinal(Context)} afterwards 
+	 * as invalid, because the signature had errors.
+	 * Any call to {@link #genFinal(Context)} afterward
 	 * is ignored.
 	 */
 	public void setSignatureGenFailed() {
 		this.fOperation = null;
 	}
 }
-

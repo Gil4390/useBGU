@@ -337,7 +337,7 @@ public class ExpressionPrintVisitor implements ExpressionVisitor {
 	}
 
 	@Override
-	public void visitObjOp(ExpObjOp exp) {
+	public void visitInstanceOp(ExpInstanceOp exp) {
 		exp.getArguments()[0].processWithVisitor(this);
 		writer.write('.');
 		writer.write(operation(exp.getOperation().name(), exp));
