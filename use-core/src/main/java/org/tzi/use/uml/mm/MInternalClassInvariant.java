@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class MInternalClassInvariant extends MClassInvariant{
 
-    MInternalClassInvariant(String name, List<String> vars, MClass cls, Expression inv, boolean isExistential) throws ExpInvalidException {
+    MInternalClassInvariant(String name, List<String> vars, MClassifier cls, Expression inv, boolean isExistential) throws ExpInvalidException {
         super(name, vars, cls, inv, isExistential);
     }
 

@@ -70,7 +70,7 @@ public class MultiModelFactory extends ModelFactory{
      * @return
      */
     @Override
-    public MClassInvariant createClassInvariant(String name, List<String> vars, MClass cls, Expression inv, boolean isExistential) throws ExpInvalidException {
+    public MClassInvariant createClassInvariant(String name, List<String> vars, MClassifier cls, Expression inv, boolean isExistential) throws ExpInvalidException {
         return super.createClassInvariant(modelName + name, vars, cls, inv, isExistential);
     }
 }

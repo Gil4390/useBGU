@@ -169,7 +169,7 @@ interAssociationClassDefinition[boolean isAbstract] returns [ASTAssociationClass
     }
 
     name=IDENT { $n = new ASTAssociationClass($name, isAbstract); }
-    ( LESS idListRes=idList { $n.addSuperClasses($idListRes.idList); } )?
+    ( LESS idListRes=idList { $n.addSuperClassifiers($idListRes.idList); } )?
     ('between'
     ae=interAssociationEnd { $n.addEnd($ae.n); }
     ( ae=interAssociationEnd { $n.addEnd($ae.n); } )+
@@ -178,7 +178,7 @@ interAssociationClassDefinition[boolean isAbstract] returns [ASTAssociationClass
       ( a=attributeDefinition { $n.addAttribute($a.n); } )*
     )?
     ( 'operations'
-      ( op=operationDefinition { $n.addOperation($op.n); } )*
+      ( op=operationDefinition[n] { $n.addOperation($op.n); } )*
     )?
     ( 'constraints'
       (

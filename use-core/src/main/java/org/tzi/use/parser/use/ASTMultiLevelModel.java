@@ -97,7 +97,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             // if the attribute is removed from the clabject, and is covered by an invariant (local), but the class be navigate to it, then it shouldnt throw an error.
                             boolean isOtherEndRemoved = false;
                             for(MAssociation assoc : completeData.get(inv).getAssociationCoverage().keySet()) {
-                                MAssociationEnd end = assoc.associationEnds().stream().filter(e -> !clab.child().isSubClassOf(e.cls())).findAny().get();
+                                MAssociationEnd end = assoc.associationEnds().stream().filter(e -> !clab.child().isSubClassifierOf(e.cls())).findAny().get();
                                 if(clab.getRemovedRoles().contains(end)) {
                                     isOtherEndRemoved = true;
                                 }

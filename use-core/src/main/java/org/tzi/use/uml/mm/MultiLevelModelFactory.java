@@ -16,7 +16,7 @@ public class MultiLevelModelFactory extends MultiModelFactory {
     }
 
     @Override
-    public MClassInvariant createClassInvariant(String name, List<String> vars, MClass cls, Expression inv, boolean isExistential) throws ExpInvalidException {
+    public MClassInvariant createClassInvariant(String name, List<String> vars, MClassifier cls, Expression inv, boolean isExistential) throws ExpInvalidException {
         return new MInternalClassInvariant(modelName + name, vars, cls, inv, isExistential);
     }
 

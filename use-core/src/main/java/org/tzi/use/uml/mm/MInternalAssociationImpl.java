@@ -20,7 +20,7 @@ public class MInternalAssociationImpl extends MAssociationImpl {
     public boolean isAssignableFrom(MClass[] classes) {
         int i=0;
         for (MAssociationEnd end : associationEnds()) {
-            if (!classes[i].isSubClassOf(end.cls())) return false;
+            if (!classes[i].isSubClassifierOf(end.cls())) return false;
             ++i;
         }
         // handle self associations

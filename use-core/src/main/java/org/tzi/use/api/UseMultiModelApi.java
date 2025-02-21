@@ -546,7 +546,9 @@ public class UseMultiModelApi extends UseModelApi{
             resultType = getType(returnType);
         }
 
-        return createOperationEx(owner, operationName, vars, resultType);
+        boolean isConstructor = operationName.equals(ownerName);
+
+        return createOperationEx(owner, operationName, vars, resultType, isConstructor);
     }
 
     /**
