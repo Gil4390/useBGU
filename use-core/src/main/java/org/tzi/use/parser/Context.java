@@ -52,7 +52,7 @@ public class Context {
     
     private MModel fModel;
     private MClassifier fCurrentClassifier;
-    private ModelFactory fModelFactory;
+    protected ModelFactory fModelFactory;
     private MSystemState fSystemState;
     private boolean fInsidePostCondition;
     private List<String> fLoopVarNames;

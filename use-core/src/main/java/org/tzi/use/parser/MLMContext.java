@@ -8,23 +8,18 @@ import java.io.PrintWriter;
 
 public class MLMContext extends MultiContext {
 
-
-    private MultiLevelModelFactory factory;
     private MLMContext parent;
     private MModel parentModel;
     private MModel currentModel;
 
-
-    public MLMContext(String filename, PrintWriter err, VarBindings globalBindings, MultiLevelModelFactory factory) {
+    public MLMContext(String filename, PrintWriter err, VarBindings globalBindings, ModelFactory factory) {
         super(filename, err, globalBindings, factory);
-        this.factory = factory;
         parent = null;
     }
 
     public void setMainContext(MLMContext parent) {
         this.parent = parent;
     }
-
 
     public void setMLModel(MMultiLevelModel mlModel) {
         super.setModel(mlModel);
@@ -46,8 +41,9 @@ public class MLMContext extends MultiContext {
         this.currentModel = currentModel;
     }
 
+    @Override
     public MultiLevelModelFactory modelFactory() {
-        return this.factory;
+        return (MultiLevelModelFactory) super.modelFactory();
     }
 
     @Override

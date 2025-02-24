@@ -1,20 +1,16 @@
 package org.tzi.use.parser;
 
 import org.antlr.runtime.Token;
-import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.mm.MMultiModel;
 import org.tzi.use.uml.mm.ModelFactory;
 import org.tzi.use.uml.mm.MultiModelFactory;
 import org.tzi.use.uml.ocl.value.VarBindings;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MultiContext extends Context{
 
-    private MultiContext parent;
-    private MultiModelFactory fMultiModelFactory;
+    private MultiContext mainContext; // used to track weather this context is of a multi-model or internal model
 
     /**
      *
@@ -23,14 +19,18 @@ public class MultiContext extends Context{
      * @param globalBindings
      * @param factory
      */
-    public MultiContext(String filename, PrintWriter err, VarBindings globalBindings, MultiModelFactory factory) {
+    public MultiContext(String filename, PrintWriter err, VarBindings globalBindings, ModelFactory factory) {
         super(filename, err, globalBindings, factory);
-        fMultiModelFactory = factory;
-        parent = null;
+        mainContext = null;
     }
 
     public void setParentContext(MultiContext parent) {
-        this.parent = parent;
+        this.mainContext = parent;
+    }
+
+    @Override
+    public MultiModelFactory modelFactory() {
+        return (MultiModelFactory) super.modelFactory();
     }
 
     /**
@@ -41,8 +41,8 @@ public class MultiContext extends Context{
 
     @Override
     public void reportError(Token t, String msg) {
-        if(parent != null) {
-            parent.reportError(t, msg);
+        if(mainContext != null) {
+            mainContext.reportError(t, msg);
         } else {
             super.reportError(t, msg);
         }
@@ -50,8 +50,8 @@ public class MultiContext extends Context{
 
     @Override
     public void reportError(Token t, Exception ex) {
-        if(parent != null) {
-            parent.reportError(t, ex);
+        if(mainContext != null) {
+            mainContext.reportError(t, ex);
         } else {
             super.reportError(t, ex);
         }
@@ -59,15 +59,11 @@ public class MultiContext extends Context{
 
     @Override
     public void reportError(SemanticException ex) {
-        if(parent != null) {
-            parent.reportError(ex);
+        if(mainContext != null) {
+            mainContext.reportError(ex);
         } else {
             super.reportError(ex);
         }
-    }
-
-    public MultiModelFactory modelFactory() {
-        return this.fMultiModelFactory;
     }
 
     public void setMultiModel(MMultiModel multiModel){
