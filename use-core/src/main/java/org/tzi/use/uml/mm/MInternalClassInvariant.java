@@ -8,7 +8,6 @@ import java.util.List;
  *  This Class is used to override the calculateExpandedExpression method of the MClassInvariant class.
  *  This class wil only be created as part of a Multi-Level Model.
  *
- * @author      Gil Khais
  */
 public class MInternalClassInvariant extends MClassInvariant{
 

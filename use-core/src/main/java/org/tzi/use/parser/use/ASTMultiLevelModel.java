@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 
 public class ASTMultiLevelModel extends ASTMultiModel{
 
-    //private final Token fName;
     private ASTMultiModel fMultiModel;
     private final List<ASTMediator> fMediators;
+
     public ASTMultiLevelModel(Token name) {
         super(name);
         fMediators = new ArrayList<>();
@@ -27,14 +27,13 @@ public class ASTMultiLevelModel extends ASTMultiModel{
         this.fMediators.add(mediator);
     }
 
-
     public MMultiLevelModel gen(MLMContext mlmContext) {
         MMultiLevelModel mMultiLevelModel = null;
         try{
             MultiContext multiCtx = new MultiContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
             MMultiModel multiModel = fMultiModel.gen(multiCtx);
             if (multiModel == null){
-                throw new Exception("error parsing multi model");
+                throw new Exception("error parsing multi level model");
             }
             mMultiLevelModel = mlmContext.modelFactory().createMLM(multiModel);
             mMultiLevelModel.setFilename(mlmContext.filename());
@@ -43,7 +42,6 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             mlmContext.reportError(fName,e);
             return null;
         }
-
 
 
         Iterator<ASTMediator> medIt = fMediators.iterator();

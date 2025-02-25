@@ -3,12 +3,9 @@ package org.tzi.use.parser.use;
 import org.antlr.runtime.Token;
 import org.tzi.use.parser.MLMContext;
 import org.tzi.use.uml.mm.*;
-import org.tzi.use.util.Pair;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ASTMediator extends ASTAnnotatable{
 

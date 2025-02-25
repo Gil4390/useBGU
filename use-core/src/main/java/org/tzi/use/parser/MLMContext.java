@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 
 public class MLMContext extends MultiContext {
 
-    private MModel parentModel;
-    private MModel currentModel;
+    private MModel parentModel; // the model that is the parent of the current model in th mediator hierarchy
+    private MModel currentModel; // the model that is currently being parsed
 
     public MLMContext(String filename, PrintWriter err, VarBindings globalBindings, ModelFactory factory) {
         super(filename, err, globalBindings, factory);

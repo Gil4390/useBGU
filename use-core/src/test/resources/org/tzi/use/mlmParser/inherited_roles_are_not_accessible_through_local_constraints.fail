@@ -1,2 +1,2 @@
 inherited_roles_are_not_accessible_through_local_constraints.use:41:13: Undefined operation named `bb1' in expression `CD@C.bb1()'.
-inherited_roles_are_not_accessible_through_local_constraints.use:1:4: error parsing multi model
+inherited_roles_are_not_accessible_through_local_constraints.use:1:4: error parsing multi level model

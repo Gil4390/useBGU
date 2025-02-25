@@ -27,7 +27,7 @@ public class USECompilerMLM {
     private USECompilerMLM() {}
 
     /**
-     * Compiles a multi-model specification.
+     * Compiles a multi-level-model specification.
      *
      * @param  in the source to be compiled
      * @param  inName name of the source stream

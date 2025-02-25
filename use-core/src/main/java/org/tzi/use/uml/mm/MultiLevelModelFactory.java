@@ -7,7 +7,6 @@ import java.util.List;
 
 public class MultiLevelModelFactory extends MultiModelFactory {
 
-
     public MMultiLevelModel createMLM(String name) {
         return new MMultiLevelModel(name);
     }

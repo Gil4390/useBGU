@@ -16,11 +16,13 @@ public class MMultiLevelModel extends MMultiModel {
 
     private final List<MModel> fModelsList; //ordered list of models
     private final Map<String, MMediator> fMediators;
+
     protected MMultiLevelModel(String name) {
         super(name);
         fModelsList = new ArrayList<>();
         fMediators = new HashMap<>();
     }
+
     protected MMultiLevelModel(MMultiModel multiModel){
         super(multiModel.name());
         fModelsList = new ArrayList<>();

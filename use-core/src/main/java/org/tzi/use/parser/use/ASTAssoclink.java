@@ -7,15 +7,15 @@ import org.tzi.use.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ASTAssoclink extends ASTAnnotatable{
+
     private final Token fChildName;
     private final Token fParentName;
     private Pair<Token> fRoleBindingEnd1;
     private Pair<Token> fRoleBindingEnd2;
+
     public ASTAssoclink(Token fChildName, Token fParentName) {
         this.fChildName = fChildName;
         this.fParentName = fParentName;

@@ -49,8 +49,21 @@ public class UseMLMApi extends UseMultiModelApi{
         return mMultiLevelModel;
     }
 
-
-
+    /**
+     * Helper method to safely retrieve a class or an inter-class.
+     * Safe by the degree, that if no exception is thrown you get a valid class
+     * instance. In contrast to the need to handle <code>null</code> as a return value.
+     *  <p>
+     *      In order to retrieve regular classes from a model the name
+     *      must be in the format: <code> modelName@className </code>
+     *  </p>
+     *  <p>
+     *      For inter-classes the name must be the name of the inter-class
+     *  </p>
+     * @param name The name of the class to lookup.
+     * @return The {@link MClass} with the name <code>name</code>.
+     * @throws UseApiException If no class with the given name exists in the encapsulated multi-model.
+     */
     @Override
     public MClass getClassSafe(String name) throws UseApiException {
         if (!name.contains("@")){
@@ -78,10 +91,6 @@ public class UseMLMApi extends UseMultiModelApi{
         }
         return cls;
     }
-
-
-
-
 
     /**
      * This method is used to create a new Mediator object and add it to the multi-level model.
@@ -112,6 +121,13 @@ public class UseMLMApi extends UseMultiModelApi{
         return this.mMultiLevelModel.getMediator(name);
     }
 
+    /**
+     * This method is used to create a new Clabject object and add it to the mediator.
+     * @param mediatorName The name of the mediator to which the clabject is added.
+     * @param childName The name of the child class.
+     * @param parentName The name of the parent class.
+     * @return The newly created Clabject object.
+     */
     public MClabject createClabject(String mediatorName, String childName, String parentName){
         MMediator mediator = this.getMediator(mediatorName);
         if (mediator == null) {
@@ -134,6 +150,14 @@ public class UseMLMApi extends UseMultiModelApi{
         return clabject;
     }
 
+    /**
+     * This method is used to create a new MAttributeRenaming object and add it to the Clabject.
+     * @param mediatorName The name of the mediator that holds the clabject.
+     * @param clabjectName The name of the clabject to which the attribute renaming is added.
+     * @param oldAttrName The name of the existing attribute.
+     * @param newAttrName The name of the new renamed attribute.
+     * @return The newly created MAttributeRenaming object.
+     */
     public MAttributeRenaming createAttributeRenaming(String mediatorName, String clabjectName, String oldAttrName, String newAttrName){
         MMediator mediator = this.getMediator(mediatorName);
         if (mediator == null) {
@@ -185,24 +209,4 @@ public class UseMLMApi extends UseMultiModelApi{
         mediator.addAssocLink(assoclink);
         return assoclink;
     }
-
-//    public MRoleRenaming createRoleRenaming(String mediatorName, String assoclinkName, String oldRoleName, String newRoleName){
-//        MMediator mediator = this.getMediator(mediatorName);
-//        MAssoclink assoclink = mediator.getAssoclink(assoclinkName);
-//
-//
-//        List<MAssociationEnd> ends = ((MAssociation)assoclink.child()).associationEnds();
-//
-//        MAssociationEnd end = ends.get(0);
-//        if (end.name().equals(oldRoleName)) {
-//            end = ends.get(1);
-//        }
-//
-//        MRoleRenaming roleRenaming = mFactory.createRoleRenaming(end, newRoleName);
-//        assoclink.addRoleRenaming(roleRenaming);
-//        return roleRenaming;
-//    }
-
-
-
 }

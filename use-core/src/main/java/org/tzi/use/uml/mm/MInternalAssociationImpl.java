@@ -3,15 +3,12 @@ package org.tzi.use.uml.mm;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * this class is needed to distinguish between internal and regular associations
+ * in the isAssignableFrom method
+ */
 public class MInternalAssociationImpl extends MAssociationImpl {
-    /**
-     * Creates a new association. Connections to classes are
-     * established by adding association ends. The kind of association
-     * will be automatically determined by the kind of association
-     * ends.
-     *
-     * @param name
-     */
+
     MInternalAssociationImpl(String name) {
         super(name);
     }

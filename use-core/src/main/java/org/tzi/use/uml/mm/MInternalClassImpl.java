@@ -51,6 +51,12 @@ public class MInternalClassImpl extends MClassImpl{
             return super.allParents();
         return Collections.unmodifiableSet(fMultiModel.generalizationGraph().targetNodeClosureSet(MClass.class, this));
     }
+    /**
+     * Returns the set of all attributes defined for this class,
+     * by calculating the attributes that were removed or renamed by mediators
+     *
+     * @return List(MAttribute)
+     */
     @Override
     public List<MAttribute> allAttributes() {
 
@@ -98,6 +104,12 @@ public class MInternalClassImpl extends MClassImpl{
         return new ArrayList<>(result);
     }
 
+    /**
+     * Returns a map of all association ends that can be reached from
+     * this class by navigation, by calculating the association ends that were removed mediators
+     *
+     * @return Map(String, MAssociationEnd)
+     */
     @Override
     public Map<String, MNavigableElement> navigableEnds() {
         if (fMultiModel == null)
@@ -144,7 +156,9 @@ public class MInternalClassImpl extends MClassImpl{
         return fNavigableElements;
     }
 
-    // returns the clabjects edges that connect this class with classes from the upper level
+    /**
+     * returns the clabjects edges that connect this class with classes from the upper level
+     */
     public Set<MClabject> clabjectsFromParents(){
         Set<MClabject> res = new HashSet<>();
         Set<MClass> parents = parents();
@@ -159,8 +173,10 @@ public class MInternalClassImpl extends MClassImpl{
         return res;
     }
 
-    // returns the clabjects edges that connect this class with classes from the lower level
-    public Set<MClabject> clabjectsFromChildren(){
+    /**
+     * returns the clabjects edges that connect this class with classes from the lower level
+     */
+     public Set<MClabject> clabjectsFromChildren(){
         Set<MClabject> res = new HashSet<>();
         Set<MClass> children = children();
 

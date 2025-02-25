@@ -48,10 +48,11 @@ public class ASTMultiModel extends ASTModel {
 
         Iterator<ASTModel> mIt = fModels.iterator();
         while(mIt.hasNext()) {
+            // iterate over all models and generate them
+            // for each model create a new context and set the main context to the multi-context.
             ASTModel model = mIt.next();
             MultiContext ctx = new MultiContext(multiCtx.filename(), multiCtx.getOut(), null, multiCtx.modelFactory());
-            ctx.setParentContext(multiCtx);
-            //multiCtx.setContext(model.toString(), ctx);
+            ctx.setMainContext(multiCtx);
 
             multiCtx.modelFactory().setModelName(model.fName.getText() + "@");
             mMultiModel.setCurrentModel(model.fName.getText());

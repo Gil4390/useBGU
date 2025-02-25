@@ -2,18 +2,19 @@ package org.tzi.use.uml.ocl.expr;
 
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.type.Type;
-import org.tzi.use.uml.ocl.value.LinkValue;
 import org.tzi.use.uml.ocl.value.ObjectValue;
 import org.tzi.use.uml.ocl.value.SetValue;
 import org.tzi.use.uml.ocl.value.Value;
-import org.tzi.use.uml.sys.MLink;
-import org.tzi.use.uml.sys.MLinkSet;
 import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystemState;
 
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * this class is needed to calculate the correct classes that related to an invariant,
+ * since role removals and invariant removals can change the relevant objects that are related to an invariant
+ */
 public class ExpAllInstancesForInv extends ExpAllInstances{
 
     MClassInvariant invariant;

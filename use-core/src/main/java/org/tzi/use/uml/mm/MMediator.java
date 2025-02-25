@@ -5,8 +5,6 @@ import java.util.stream.Collectors;
 
 public class MMediator extends MModelElementImpl {
 
-    private String fName;
-
     private MModel currentModel;
     private MModel parentModel;
     private final Map<String, MClabject> fClabjects;
@@ -14,7 +12,6 @@ public class MMediator extends MModelElementImpl {
 
     public MMediator(String name) {
         super(name);
-        this.fName = name;
         fClabjects = new HashMap<>();
         fAssocLinks = new HashMap<>();
     }
@@ -58,10 +55,6 @@ public class MMediator extends MModelElementImpl {
 
     public MAssoclink getAssoclink(String name){
         return this.fAssocLinks.get(name);
-    }
-
-    public String name(){
-        return fName;
     }
 
     public String parentModelName() {

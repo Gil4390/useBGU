@@ -11,6 +11,11 @@ import org.tzi.use.util.NullPrintWriter;
 import java.io.PrintWriter;
 import java.util.Collections;
 
+/**
+ * This MLM system API implementation is used to change the system state of a mlm system.
+ * this class is needed in order for an MLMSystem to be used in the computation of the system state.
+ *
+ */
 public class UseMLMSystemApi extends UseSystemApiUndoable {
     public UseMLMSystemApi(Session session) {
         super(session);

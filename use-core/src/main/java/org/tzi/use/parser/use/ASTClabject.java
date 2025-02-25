@@ -107,8 +107,6 @@ public class ASTClabject extends ASTAnnotatable{
         MClass parent = mlmContext.getParentModel().getClass(this.fParentName.getText());
         MClass child = mlmContext.getCurrentModel().getClass(this.fChildName.getText());
 
-//        MMediator mediator = ((MMultiLevelModel)mlmContext.model()).getMediator(mlmContext.getCurrentModel().name());
-
         for(Token removedRoleToken : fRoleRemoving) {
             String removedRole = removedRoleToken.getText();
             MAssociationEnd removedAssocEnd = (MAssociationEnd) parent.navigableEnd(removedRole);
@@ -121,7 +119,5 @@ public class ASTClabject extends ASTAnnotatable{
 
         // Check that there is no role conflict
         child.navigableEnds();
-
-
     }
 }
