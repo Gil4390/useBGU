@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 
 public class MultiContext extends Context{
 
-    private MultiContext mainContext; // used to track weather this context is of a multi-model or internal model
+    protected MultiContext mainContext; // used to track weather this context is of a multi-model or internal model
 
     /**
      *
@@ -24,7 +24,7 @@ public class MultiContext extends Context{
         mainContext = null;
     }
 
-    public void setParentContext(MultiContext parent) {
+    public void setMainContext(MultiContext parent) {
         this.mainContext = parent;
     }
 
