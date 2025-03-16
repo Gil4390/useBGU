@@ -1,10 +1,6 @@
 package org.tzi.use.uml.mm;
 
-import com.google.common.collect.Iterators;
-import org.tzi.use.graph.DirectedGraph;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * MInternalClassImpl instances represent classes in a model related to multi-model.
@@ -15,15 +11,19 @@ import java.util.stream.Collectors;
 
 public class MInternalClassImpl extends MClassImpl{
 
-    private MMultiModel fMultiModel;
+    private MMultiLevelModel mainModel;
     MInternalClassImpl(String name, boolean isAbstract) {
         super(name, isAbstract);
     }
 
-    public void setMultiModel(MMultiModel multi) {
-        this.fMultiModel = multi;
+    public void setMultiModel(MMultiLevelModel multi) {
+        this.mainModel = multi;
     }
 
+    // during the initial parsing process, the model is not yet set, after the model is generated and added to the mlm this class should behave differently.
+    private boolean isPartOfMainModel() {
+        return mainModel != null;
+    }
     /**
      * The name of the class to be represented as role name for association end
      *  - model1@Animal -> animal
@@ -38,18 +38,18 @@ public class MInternalClassImpl extends MClassImpl{
         return Character.toLowerCase(rolename.charAt(0)) + rolename.substring(1);
     }
     public MMultiModel getMultiModel() {
-        return fMultiModel;
+        return mainModel;
     }
     @Override
     public Set<MClass> parents() {
-        if (fMultiModel == null)
+        if (!isPartOfMainModel())
             return super.parents();
-        return fMultiModel.generalizationGraph().targetNodeSet(MClass.class, this);
+        return mainModel.generalizationGraph().targetNodeSet(MClass.class, this);
     }
     public Set<MClass> allParents() {
-        if (fMultiModel == null)
+        if (!isPartOfMainModel())
             return super.allParents();
-        return Collections.unmodifiableSet(fMultiModel.generalizationGraph().targetNodeClosureSet(MClass.class, this));
+        return Collections.unmodifiableSet(mainModel.generalizationGraph().targetNodeClosureSet(MClass.class, this));
     }
     /**
      * Returns the set of all attributes defined for this class,
@@ -59,15 +59,14 @@ public class MInternalClassImpl extends MClassImpl{
      */
     @Override
     public List<MAttribute> allAttributes() {
-
-        if (fMultiModel == null) return super.allAttributes();
+        if (!isPartOfMainModel()) return super.allAttributes();
         // start with local attributes
         Set<MAttribute> result = new HashSet<>(attributes());
 
         // add attributes from all super classes
         // call recursively to get all attributes from all super classes
         for (MClass cls : allParents() ) {
-            Set<MGeneralization> edges = fMultiModel.generalizationGraph().edgesBetween(this, cls);
+            Set<MGeneralization> edges = mainModel.generalizationGraph().edgesBetween(this, cls);
             if (edges.isEmpty()) continue;
             MGeneralization edge = edges.iterator().next();
             if (edge instanceof MClabject){
@@ -112,7 +111,7 @@ public class MInternalClassImpl extends MClassImpl{
      */
     @Override
     public Map<String, MNavigableElement> navigableEnds() {
-        if (fMultiModel == null)
+        if (!isPartOfMainModel())
             return super.navigableEnds();
 
         List<Map.Entry<String,MNavigableElement>> allEnds = new ArrayList<>(navigableElements().entrySet());
@@ -123,7 +122,7 @@ public class MInternalClassImpl extends MClassImpl{
                 parentEnds.add(new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()));
             }
 
-            MGeneralization edge = fMultiModel.generalizationGraph()
+            MGeneralization edge = mainModel.generalizationGraph()
                     .edgesBetween(this, superclass).stream().findFirst().orElse(null);
 
             if (edge instanceof MClabject) {
@@ -192,7 +191,7 @@ public class MInternalClassImpl extends MClassImpl{
 
     @Override
     public MAttribute attribute(String name, boolean searchInherited) {
-        if (fMultiModel == null) return super.attribute(name, searchInherited);
+        if (!isPartOfMainModel()) return super.attribute(name, searchInherited);
 
         MAttribute res = super.attribute(name, searchInherited);
         if (res == null){

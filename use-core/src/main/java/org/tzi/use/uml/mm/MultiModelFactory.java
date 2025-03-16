@@ -2,7 +2,6 @@ package org.tzi.use.uml.mm;
 
 import org.tzi.use.uml.ocl.expr.ExpInvalidException;
 import org.tzi.use.uml.ocl.expr.Expression;
-import org.tzi.use.uml.ocl.expr.VarDecl;
 
 import java.util.List;
 /**
@@ -50,11 +49,6 @@ public class MultiModelFactory extends ModelFactory{
         return new MInternalAssociationImpl(modelName + name);
     }
 
-
-    @Override
-    public MAssociationEnd createAssociationEnd(MClass cls, String rolename, MMultiplicity mult, int kind, boolean isOrdered, List<VarDecl> qualifiers) {
-        return super.createAssociationEnd(cls, rolename, mult, kind, isOrdered, qualifiers);
-    }
 
     /**
      * creates an MAssociationClass instance with the name of current generated model.
