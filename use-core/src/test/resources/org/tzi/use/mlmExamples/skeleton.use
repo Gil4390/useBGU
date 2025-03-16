@@ -1,0 +1,120 @@
+MLM ABCD
+   model AB
+       class A
+       attributes
+           attr1: Integer
+           attr2: Real
+           attr3: String
+       end
+
+
+       class A1
+       attributes
+           attr1: String
+       end
+
+
+       class A2 < A1
+       end
+
+
+       class B
+       attributes
+           attr1: Integer
+           attr2: String
+           attr3: Boolean
+       end
+
+
+       class B1
+       attributes
+           attr1: Integer
+       end
+
+
+ association aa1 between
+   A[1] role a1
+   A1[1] role r1
+ end
+
+
+ association bb1 between
+   B[1] role b1
+   B1[1] role r1
+ end
+
+
+ association ab between
+   A[*] role a
+   B[1] role b
+ end
+
+
+       constraints
+       context A inv ABMLM:
+       	self.b.attr2 = 'MLM'
+
+
+       context A1 inv A1B1MLM:
+       	self.a1.b.r1.attr1 > 5
+
+
+
+
+   model CD
+       class C
+       end
+
+
+       class D
+       end
+
+
+       class E < D
+       end
+
+
+ association cd between
+   C[*] role c
+   D[*] role d
+ end
+
+
+inter-associations
+association ac between
+    CD@C[1..*] role ic
+    AB@A1[1..*] role ia
+end
+
+
+inter-constraints
+context CD@C inv CB1MLM:
+self.ia->forAll( it | it.oclIsTypeOf(AB@A2) 
+and it.attr1 = 'MLM')
+
+
+mediator AB < NONE
+end
+
+mediator CD < AB
+   clabject C : A
+       attributes
+           ~attr1		
+       roles
+           ~r1
+       constraints
+           ~ABMLM
+   end
+
+
+   clabject D : B
+       attributes
+           attr1 -> attrD
+   end
+
+
+   assoclink cd : ab
+       a -> c
+       b -> d
+   end
+end
