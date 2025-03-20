@@ -5,7 +5,6 @@ import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.ocl.type.EnumType;
 import org.tzi.use.uml.sys.MLMSystemState;
-import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.util.NullPrintWriter;
 
 import java.io.PrintWriter;
@@ -57,7 +56,7 @@ public class MMultiLevelModel extends MMultiModel {
     @Override
     public void addModel(MModel model) throws Exception {
         super.addModel(model);
-        model.classes().forEach(cls -> ((MInternalClassImpl)cls).setMultiModel(this));
+        model.classes().forEach(cls -> ((MInternalClassImpl)cls).setMainModel(this));
         fModelsList.add(model);
 
         for (MClassInvariant inv : model.classInvariants()){

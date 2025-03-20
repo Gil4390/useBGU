@@ -85,10 +85,6 @@ public class MMediator extends MModelElementImpl {
         return powerTypes;
     }
 
-    public List<MClabject> clabjectsOfAssoclink(String assoclinkName){
-        return null;
-    }
-
     public MAssoclink assoclinkOfClabject(String clabjectName){
         MClabject clabject = getClabject(clabjectName);
         for(MAssoclink assoclink : fAssocLinks.values()){

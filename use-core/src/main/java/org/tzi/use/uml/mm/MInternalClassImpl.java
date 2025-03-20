@@ -16,7 +16,7 @@ public class MInternalClassImpl extends MClassImpl{
         super(name, isAbstract);
     }
 
-    public void setMultiModel(MMultiLevelModel multi) {
+    public void setMainModel(MMultiLevelModel multi) {
         this.mainModel = multi;
     }
 
