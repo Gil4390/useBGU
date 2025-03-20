@@ -11,9 +11,6 @@ MLM ABCD
             attr1: String
         end
 
-        class A2 < A1
-        end
-
         class B
         attributes
            attr1: Integer
@@ -23,6 +20,9 @@ MLM ABCD
         class B1
         attributes
            attr1: Integer
+        end
+
+        class B2 < B
         end
 
         association aa1 between
@@ -71,7 +71,7 @@ end
 
 inter-constraints
 context CD@C inv CB1MLM:
-    self.ia->forAll( it | it.oclIsTypeOf(AB@A2) and it.attr1 = 'MLM')
+    self.ia->forAll( it | it.attr1 = 'MLM')
 
 
 mediator AB < NONE
@@ -89,6 +89,13 @@ mediator CD < AB
    end
 
    clabject C : B
+   end
+
+   clabject E : B2
+        attributes
+            ~attr2
+        roles
+            ~r1
    end
 
    clabject D : B
