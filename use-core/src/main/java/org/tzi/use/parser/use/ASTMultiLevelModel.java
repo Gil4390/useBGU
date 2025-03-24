@@ -55,6 +55,10 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             ctx.setModel(mMultiLevelModel);
 
             MModel currentModel = mMultiLevelModel.getModel(mediator.getName());
+            if (currentModel == null){
+                mlmContext.reportError(fName,"Model " + mediator.getName() + " not found");
+                return null;
+            }
             ctx.setCurrentModel(currentModel);
 
             try {
