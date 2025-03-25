@@ -1,1 +1,1 @@
-Clabject_duplicated_inheritance_b.use:1:4: Attribute attr1 is present in both parent and child classes
+Clabject_duplicated_inheritance_b.use:1:4: Attribute attr1 is present in both parent: M1@D and child: M2@C

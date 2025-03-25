@@ -75,7 +75,7 @@ public class ASTClabject extends ASTAnnotatable{
         }
 
         for(Token removedAttrToken : fAttributeRemoving) {
-            for(MAttribute attribute : parent.attributes()) {
+            for(MAttribute attribute : parent.allAttributes()) {
                 if (removedAttrToken.getText().equals(attribute.name())) {
                     mClabject.addRemovedAttribute(attribute);
                     break;

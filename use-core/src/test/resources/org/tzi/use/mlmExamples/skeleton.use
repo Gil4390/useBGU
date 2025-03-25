@@ -92,8 +92,6 @@ mediator CD < AB
    end
 
    clabject E : B2
-        attributes
-            ~attr2
         roles
             ~r1
    end
@@ -101,6 +99,7 @@ mediator CD < AB
    clabject D : B
         attributes
             attr1 -> attrD
+            ~attr2
    end
 
    assoclink cd : ab

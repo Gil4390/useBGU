@@ -152,7 +152,7 @@ public class MMultiLevelModel extends MMultiModel {
                             continue;
                         }
                         //fGenGraph.removeEdge(gen);
-                        throw new MInvalidModelException("Attribute "+childAttr.name()+" is present in both parent and child classes");
+                        throw new MInvalidModelException("Attribute "+childAttr.name()+" is present in both parent: " + gen.parent().name() + " and child: " + gen.child().name());
                     }
                 }
             }
