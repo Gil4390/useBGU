@@ -193,7 +193,8 @@ public class MInternalClassImpl extends MClassImpl{
     public MAttribute attribute(String name, boolean searchInherited) {
         if (!isPartOfMainModel()) return super.attribute(name, searchInherited);
 
-        MAttribute res = super.attribute(name, searchInherited);
+//        MAttribute res = super.attribute(name, searchInherited);
+        MAttribute res = allAttributes().stream().filter(a -> a.name().equals(name)).findFirst().orElse(null);
         if (res == null){
             // check if the given name is a renamed name of an attribute
             for (MClabject clab : clabjectsFromParents()) {
@@ -205,11 +206,11 @@ public class MInternalClassImpl extends MClassImpl{
         }
 
         // check if the given name was removed or renamed if so return null
-        for (MClabject clab : clabjectsFromParents()){
-            if (clab.getRemovedAttribute(name) != null || clab.getRenamedAttribute(name) != null){
-                return null;
-            }
-        }
+//        for (MClabject clab : clabjectsFromParents()){
+//            if (clab.getRemovedAttribute(name) != null || clab.getRenamedAttribute(name) != null){
+//                return null;
+//            }
+//        }
         return res;
     }
 

@@ -197,15 +197,24 @@ public final class MObjectState implements MInstanceState {
      */
     public void setAttributeValue(MAttribute attr, Value newVal) {
 		for (MAttribute a : fAttrSlots.keySet()) {
-			if (a instanceof MInternalAttribute){
+			if (a instanceof MInternalAttribute) {
 				MInternalAttribute ia = (MInternalAttribute) a;
 				if (ia.getOriginalAttribute().equals(attr)) {
 					attr = ia;
 				}
 			}
 		}
-        Value oldVal = fAttrSlots.get(attr);
-        
+
+		// Find the attribute based on the name (not the reference)
+		for(MAttribute a : fAttrSlots.keySet()){
+			if(a.equals(attr)){
+				attr = a;
+				break;
+			}
+		}
+
+		Value oldVal = fAttrSlots.get(attr);
+
         if (oldVal == null )
 			throw new IllegalArgumentException("Attribute `" + attr
 					+ "' does not exist in object `" + fObject.name() + "'.");
