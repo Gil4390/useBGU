@@ -1,0 +1,2 @@
+!create bc1:Product@BookCopy
+!set bc1.currency := 100

@@ -51,7 +51,7 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 44);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 45);
         // add all the example files which should have no errors
         File[] files = TEST_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -537,7 +537,21 @@ public class USECompilerMLMTestComplex extends TestCase {
         }
     }
 
+    public void test_multi_2024_challenge_Spec() {
+        File mlmFile = new File(TEST_PATH + "/multi-2024-challenge.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+
+        MLMTestUtil.getInstance().assertAttributesEqual("Product", "BookCopy", Map.of("currency", "Integer", "SSP", "Integer", "reducedPrice", "Integer"), mlmResult);
+        try{
+            systemApi.createObject("Product@BookCopy", "bc1");
+            systemApi.setAttributeValue("bc1", "currency", "10");
+        } catch (Exception e) {
+            fail("Unexpected exception");
+        }
+    }
 
 
 

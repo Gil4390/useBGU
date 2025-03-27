@@ -1,0 +1,96 @@
+MLM Warehous
+
+-- ;;;;;;;;;;;;;;;;;;;;;;;
+  model ProductSpecFamily
+    class ProductSpecType
+       attributes
+	      currency:Integer
+--		  taxRate:String
+    end
+
+    class InformationSpecType<ProductSpecType
+       attributes
+    end
+
+--
+  constraints
+
+
+
+-- ;;;;;;;;;;;;;;;;;;;
+  model ProductSpec
+    class ProductSpec 
+	   attributes
+		  SSP:Integer
+    end
+
+    class BookSpec <ProductSpec
+	   attributes
+    end
+
+
+--
+--  constraints
+--  context BookSpec
+--    inv taxRate:
+--      self.taxRate = 7  
+
+
+-- ;;;;;;;;;;;;;;;
+  model Product
+    class ProductCopy
+	attributes
+	  reducedPrice:Integer
+    end
+
+   class BookCopy < ProductCopy
+	attributes
+    end
+
+
+
+-- ;;;;;;;;;;;;;;;;;;;
+inter-associations
+
+
+-- ;;;;;;;;;;;;;;;;;
+inter-constraints
+
+
+
+-- ;;;;;;;;;;;;;;;;;;;;;;;;;;
+mediator ProductSpecFamily < NONE
+end
+
+mediator ProductSpec < ProductSpecFamily
+   clabject ProductSpec : ProductSpecType
+   end
+
+
+  clabject BookSpec : InformationSpecType
+      attributes
+		    ~currency
+      roles
+ 
+      constraints
+ 
+   end
+
+end
+
+
+mediator Product < ProductSpec
+   clabject ProductCopy : ProductSpec
+       attributes
+       roles
+       constraints
+   end
+
+clabject BookCopy : BookSpec
+       attributes
+--           ~taxRate		
+		   ~currency
+       ~SSP
+   end
+
+end
