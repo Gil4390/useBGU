@@ -3,8 +3,8 @@ package org.tzi.use.uml.mm;
 import org.tzi.use.api.UseMLMSystemApi;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
+import org.tzi.use.uml.Definedness;
 import org.tzi.use.uml.ocl.type.EnumType;
-import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.util.NullPrintWriter;
 
 import java.io.PrintWriter;
@@ -204,7 +204,7 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
     public String checkWellDefinednessState(PrintWriter error){
-        MSystemState.Definedness result = MSystemState.Definedness.WellDefined;
+        Definedness result = Definedness.WellDefined;
         MModel previousModel = fModelsList.get(0);
         Collection<MModel> models = this.models().stream().skip(1).collect(Collectors.toList());
         for (MModel model : models){
@@ -218,7 +218,7 @@ public class MMultiLevelModel extends MMultiModel {
 
                 }catch (Exception e){
                     error.println(e.getMessage());
-                    return MSystemState.Definedness.NotWellDefined.toString();
+                    return Definedness.NotWellDefined.toString();
                 }
             }
 
@@ -231,21 +231,21 @@ public class MMultiLevelModel extends MMultiModel {
 
                 }catch (Exception e){
                     error.println(e.getMessage());
-                    return MSystemState.Definedness.NotWellDefined.toString();
+                    return Definedness.NotWellDefined.toString();
                 }
             }
 
-            MSystemState.Definedness currRes = systemApi.checkWellDefinedness(error);
-            if (currRes.equals(MSystemState.Definedness.NotWellDefined)){
-                return MSystemState.Definedness.NotWellDefined.toString();
+            Definedness currRes = systemApi.checkWellDefinedness(error);
+            if (currRes.equals(Definedness.NotWellDefined)){
+                return Definedness.NotWellDefined.toString();
             }
-            else if (currRes.equals(MSystemState.Definedness.PartiallyDefined) && result.equals(MSystemState.Definedness.WellDefined)){
-                result = MSystemState.Definedness.PartiallyDefined;
+            else if (currRes.equals(Definedness.PartiallyDefined) && result.equals(Definedness.WellDefined)){
+                result = Definedness.PartiallyDefined;
             }
             previousModel = model;
         }
-        if (result.equals(MSystemState.Definedness.PartiallyDefined)){
-            return MSystemState.Definedness.WellDefined.toString();
+        if (result.equals(Definedness.PartiallyDefined)){
+            return Definedness.WellDefined.toString();
         }
         else return result.toString();
     }

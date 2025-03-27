@@ -1,7 +1,7 @@
 package org.tzi.use.uml.mm;
 
 import junit.framework.TestCase;
-import org.tzi.use.uml.sys.MSystemState;
+import org.tzi.use.uml.Definedness;
 
 public class MLMCreationTest extends TestCase {
 
@@ -53,35 +53,35 @@ public class MLMCreationTest extends TestCase {
 
     public void testValidMLM_TwoMultiplicityRange_PartiallyLegal() {
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMTwoMultiplicityRange();
-        assertEquals(MSystemState.Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
+        assertEquals(Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
     }
 
     public void testLegalMLM_NoAssocLink_PartiallyLegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM1();
-        assertEquals(MSystemState.Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
+        assertEquals(Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
     }
     public void testLegalMLM_OneAssocLink_PartiallyLegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM2();
-        assertEquals(MSystemState.Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
+        assertEquals(Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
     }
     public void testLegalMLM_TwoAssocLink_Legal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM3();
-        assertEquals(MSystemState.Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
+        assertEquals(Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
     }
 
     public void testLegalMLM_ThreeAssocLink_Illegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLM4();
-        assertEquals(MSystemState.Definedness.NotWellDefined.toString(), mlm.checkWellDefinednessState());
+        assertEquals(Definedness.NotWellDefined.toString(), mlm.checkWellDefinednessState());
     }
 
     public void testLegalMLM_Constraint_Illegal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithConstraint();
-        assertEquals(MSystemState.Definedness.NotWellDefined.toString(), mlm.checkWellDefinednessState());
+        assertEquals(Definedness.NotWellDefined.toString(), mlm.checkWellDefinednessState());
     }
 
     public void testLegalMLM_Constraint_Legal(){
         MMultiLevelModel mlm = TestMLMUtil.getInstance().createMLMWithConstraint2();
-        assertEquals(MSystemState.Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
+        assertEquals(Definedness.WellDefined.toString(), mlm.checkWellDefinednessState());
     }
 
     public void testMLM_AttributeRenaming() {

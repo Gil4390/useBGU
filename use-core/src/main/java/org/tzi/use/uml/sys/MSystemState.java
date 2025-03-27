@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.tzi.use.config.Options;
 import org.tzi.use.graph.DirectedGraph;
 import org.tzi.use.graph.DirectedGraphBase;
+import org.tzi.use.uml.Definedness;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.expr.*;
 import org.tzi.use.uml.ocl.type.Type.VoidHandling;
@@ -1909,9 +1910,7 @@ public final class MSystemState {
 		return false;
 	}
 
-	public enum Definedness {
-		WellDefined, NotWellDefined, PartiallyDefined
-	}
+
 	public Definedness checkWellDefinedStructure(PrintWriter out) {
 		return checkWellDefinedStructure(out, true);
 	}

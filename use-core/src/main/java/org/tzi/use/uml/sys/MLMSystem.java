@@ -14,7 +14,6 @@ public class MLMSystem extends MSystem {
      */
     public MLMSystem(MModel model) {
         super(model);
-//        fCurrentState = new MSystemState(getUniqueNameGenerator().generate("state#"), this);
     }
 
     @Override
