@@ -4,7 +4,7 @@ import org.tzi.use.api.UseMLMSystemApi;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.ocl.type.EnumType;
-import org.tzi.use.uml.sys.MLMSystemState;
+import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.util.NullPrintWriter;
 
 import java.io.PrintWriter;
@@ -204,7 +204,7 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
     public String checkWellDefinednessState(PrintWriter error){
-        MLMSystemState.Definedness result = MLMSystemState.Definedness.WellDefined;
+        MSystemState.Definedness result = MSystemState.Definedness.WellDefined;
         MModel previousModel = fModelsList.get(0);
         Collection<MModel> models = this.models().stream().skip(1).collect(Collectors.toList());
         for (MModel model : models){
@@ -218,7 +218,7 @@ public class MMultiLevelModel extends MMultiModel {
 
                 }catch (Exception e){
                     error.println(e.getMessage());
-                    return MLMSystemState.Definedness.NotWellDefined.toString();
+                    return MSystemState.Definedness.NotWellDefined.toString();
                 }
             }
 
@@ -231,21 +231,21 @@ public class MMultiLevelModel extends MMultiModel {
 
                 }catch (Exception e){
                     error.println(e.getMessage());
-                    return MLMSystemState.Definedness.NotWellDefined.toString();
+                    return MSystemState.Definedness.NotWellDefined.toString();
                 }
             }
 
-            MLMSystemState.Definedness currRes = systemApi.checkWellDefinedness(error);
-            if (currRes.equals(MLMSystemState.Definedness.NotWellDefined)){
-                return MLMSystemState.Definedness.NotWellDefined.toString();
+            MSystemState.Definedness currRes = systemApi.checkWellDefinedness(error);
+            if (currRes.equals(MSystemState.Definedness.NotWellDefined)){
+                return MSystemState.Definedness.NotWellDefined.toString();
             }
-            else if (currRes.equals(MLMSystemState.Definedness.PartiallyDefined) && result.equals(MLMSystemState.Definedness.WellDefined)){
-                result = MLMSystemState.Definedness.PartiallyDefined;
+            else if (currRes.equals(MSystemState.Definedness.PartiallyDefined) && result.equals(MSystemState.Definedness.WellDefined)){
+                result = MSystemState.Definedness.PartiallyDefined;
             }
             previousModel = model;
         }
-        if (result.equals(MLMSystemState.Definedness.PartiallyDefined)){
-            return MLMSystemState.Definedness.WellDefined.toString();
+        if (result.equals(MSystemState.Definedness.PartiallyDefined)){
+            return MSystemState.Definedness.WellDefined.toString();
         }
         else return result.toString();
     }

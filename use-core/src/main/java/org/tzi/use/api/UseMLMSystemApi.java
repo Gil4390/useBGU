@@ -4,8 +4,9 @@ import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.main.Session;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.sys.MLMSystem;
-import org.tzi.use.uml.sys.MLMSystemState;
+//import org.tzi.use.uml.sys.MLMSystemState;
 import org.tzi.use.uml.sys.MSystem;
+import org.tzi.use.uml.sys.MSystemState;
 import org.tzi.use.util.NullPrintWriter;
 
 import java.io.PrintWriter;
@@ -33,11 +34,11 @@ public class UseMLMSystemApi extends UseSystemApiUndoable {
         super(api);
     }
 
-    public MLMSystemState.Definedness checkWellDefinedness(PrintWriter error){
-        return ((MLMSystemState)system.state()).checkWellDefinedness(error, false, false, true, Collections.<String>emptyList());
+    public MSystemState.Definedness checkWellDefinedness(PrintWriter error){
+        return system.state().checkWellDefinedness(error, false, false, true, Collections.<String>emptyList());
     }
 
-    public MLMSystemState.Definedness checkWellDefinedness() {
+    public MSystemState.Definedness checkWellDefinedness() {
         return checkWellDefinedness(NullPrintWriter.getInstance());
     }
 }
