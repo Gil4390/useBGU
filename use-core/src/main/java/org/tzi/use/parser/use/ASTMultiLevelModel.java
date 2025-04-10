@@ -106,17 +106,24 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             }
 
                             if(isOtherEndRemoved) continue;
-
-                            mlmContext.reportError(fName,
-                                    "Attribute " + attr.name()
-                                    + "\n\tis removed by clabject " + clab.name()
-                                    + "\n\tbut is covered by invariant " + inv.name());
+                            //TODO:
+//                            mlmContext.reportWarning(fName,
+//                                    "Attribute " + attr.name()
+//                                    + "\n\tis removed by clabject " + clab.name()
+//                                    + "\n\tbut is covered by invariant " + inv.name());
                         }
                     }
                 }
 
                 for (MAttributeRenaming attributeRenaming : clab.getAttributeRenaming()) {
                     MAttribute attr = attributeRenaming.attribute();
+                    for(MAttribute currentAttr : clab.child().allAttributes()) {
+                        if(currentAttr.name().equals(attr.name()))
+                            mlmContext.reportWarning(fName,
+                                    "Attribute " + attr.name()
+                                    + "\n\tis renamed to  " + attributeRenaming.newName() + ", "
+                                    + "\n\tand the base attribute is also inherited.");
+                    }
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (completeData.get(inv).getAttributeCoverage().keySet().contains(attr)) {
                             // 1. if a user renames an attribute, and remove the invariant (local), then it shouldn't throw an error
