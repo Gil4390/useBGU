@@ -91,7 +91,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             for (MClabject clab : med.clabjects()) {
                 for (MAttribute attr : clab.getRemovedAttributes()) {
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
-                        if(completeData.get(inv).getAttributeCoverage().containsKey(attr)) {
+                        if(clab.child().isSubClassifierOf(inv.cls()) && completeData.get(inv).getAttributeCoverage().containsKey(attr)) {
                             if (clab.getRemovedConstraints().contains(inv)) {
                                 continue;
                             }
@@ -106,11 +106,22 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             }
 
                             if(isOtherEndRemoved) continue;
-                            //TODO:
-//                            mlmContext.reportWarning(fName,
-//                                    "Attribute " + attr.name()
-//                                    + "\n\tis removed by clabject " + clab.name()
-//                                    + "\n\tbut is covered by invariant " + inv.name());
+
+                            // if the attribute is removed from the clabject, but the attribute is inherited from other source (superclass etc.), then it shouldn't throw an error.
+                            boolean isAttributeExists = false;
+                            for(MAttribute currentAttr : clab.child().allAttributes()) {
+                                if(currentAttr.name().equals(attr.name())) {
+                                    isAttributeExists = true;
+                                    break;
+                                }
+                            }
+
+                            if(isAttributeExists) continue;
+
+                            mlmContext.reportError(fName,
+                                    "Attribute " + attr.name()
+                                    + "\n\tis removed by clabject " + clab.name()
+                                    + "\n\tbut is covered by invariant " + inv.name());
                         }
                     }
                 }
@@ -122,7 +133,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             mlmContext.reportWarning(fName,
                                     "Attribute " + attr.name()
                                     + "\n\tis renamed to  " + attributeRenaming.newName() + ", "
-                                    + "\n\tand the base attribute is also inherited.");
+                                    + "\n\tand the base attribute " + attr.name() + " is also inherited.");
                     }
                     for (MClassInvariant inv : mMultiLevelModel.classInvariants()) {
                         if (completeData.get(inv).getAttributeCoverage().keySet().contains(attr)) {
