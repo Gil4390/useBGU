@@ -96,7 +96,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 continue;
                             }
 
-                            // if the attribute is removed from the clabject, and is covered by an invariant (local), but the class be navigate to it, then it shouldnt throw an error.
+                            // if the attribute is removed from the clabject, and is accessed by an invariant (local), but the class be navigate to it, then it shouldnt throw an error.
                             boolean isOtherEndRemoved = false;
                             for(MAssociation assoc : completeData.get(inv).getAssociationCoverage().keySet()) {
                                 MAssociationEnd end = assoc.associationEnds().stream().filter(e -> !clab.child().isSubClassifierOf(e.cls())).findAny().get();
@@ -121,7 +121,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             mlmContext.reportError(fName,
                                     "Attribute " + attr.name()
                                     + "\n\tis removed by clabject " + clab.name()
-                                    + "\n\tbut is covered by invariant " + inv.name());
+                                    + "\n\tbut is accessed by invariant " + inv.name());
                         }
                     }
                 }
@@ -144,7 +144,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             mlmContext.reportError(fName,
                                     "Attribute " + attr.name()
                                     + "\n\tis renamed in clabject " + clab.name()
-                                    + "\n\tbut is covered by invariant " + inv.name());
+                                    + "\n\tbut is accessed by invariant " + inv.name());
                         }
                     }
                 }
@@ -160,15 +160,15 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 mlmContext.reportWarning(fName,
                                         "Role " + end.name()
                                                 + "\n\tis removed by clabject " + clab.name()
-                                                + "\n\tbut is covered by invariant " + inv.name());
+                                                + "\n\tbut is accessed by invariant " + inv.name());
                                 continue;
                             }
 
-                            //2. if the role is removed from the clabject, and is covered by an invariant (local), it should throw an error.
+                            //2. if the role is removed from the clabject, and is accessed by an invariant (local), it should throw an error.
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
                                     + "\n\tis removed by clabject " + clab.name()
-                                    + "\n\tbut is covered by invariant " + inv.name());
+                                    + "\n\tbut is accessed by invariant " + inv.name());
                         }
                     }
                 }
@@ -180,7 +180,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 continue;
                             }
 
-                            // if the role is removed from the clabject, and is covered by an invariant (local), but the class cant be navigated to it, then it shouldn't throw an error.
+                            // if the role is removed from the clabject, and is accessed by an invariant (local), but the class cant be navigated to it, then it shouldn't throw an error.
                             if(clab.getRemovedRoles().contains(end)) {
                                 continue;
                             }
@@ -190,7 +190,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                     "Role " + end.name()
                                             + "\n\tremoved by assoclink: " + assoclink
                                             + "\n\tand by clabject: " + clab
-                                            + "\n\tbut covered by invariant " + inv.name());
+                                            + "\n\tbut accessed by invariant " + inv.name());
                         }
                     }
                 }
