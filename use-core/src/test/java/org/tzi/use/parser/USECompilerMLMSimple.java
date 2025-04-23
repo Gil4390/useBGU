@@ -29,7 +29,7 @@ public class USECompilerMLMSimple extends TestCase {
     public void testMLMClabjectSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 32);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 33);
 
         // create a new stream for capturing output on stderr
         MLMTestUtil.StringOutputStream errStr = new MLMTestUtil.StringOutputStream();

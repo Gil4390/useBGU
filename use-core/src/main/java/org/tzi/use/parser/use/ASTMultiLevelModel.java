@@ -120,8 +120,8 @@ public class ASTMultiLevelModel extends ASTMultiModel{
 
                             mlmContext.reportError(fName,
                                     "Attribute " + attr.name()
-                                    + "\n\tis removed by clabject " + clab.name()
-                                    + "\n\tbut is accessed by invariant " + inv.name());
+                                    + "\n\tthat is accessed by invariant " + inv.name()
+                                    + "\n\ton " + clab.name() + " is missing");
                         }
                     }
                 }
@@ -159,8 +159,8 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             if(!inv.cls().equals(clab.parent())) {
                                 mlmContext.reportWarning(fName,
                                         "Role " + end.name()
-                                                + "\n\tis removed by clabject " + clab.name()
-                                                + "\n\tbut is accessed by invariant " + inv.name());
+                                                + "\n\tthat is accessed by a invariant " + inv.name()
+                                                + "\n\ton clabject "+ clab.name() +" is missing");
                                 continue;
                             }
 
