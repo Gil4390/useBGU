@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.tzi.use.config.Options;
 import org.tzi.use.graph.DirectedGraph;
 import org.tzi.use.graph.DirectedGraphBase;
-import org.tzi.use.uml.Definedness;
+import org.tzi.use.uml.Satisfiability;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.expr.*;
 import org.tzi.use.uml.ocl.type.Type.VoidHandling;
@@ -1684,14 +1684,14 @@ public final class MSystemState {
 		return valid;
 	}
 
-	public Definedness checkWellDefinedness(PrintWriter out, boolean traceEvaluation,
-											boolean showDetails, boolean allInvariants, final List<String> invNames) {
-		Definedness valid = Definedness.WellDefined;
+	public Satisfiability checkPartialSatisfiability(PrintWriter out, boolean traceEvaluation,
+												  boolean showDetails, boolean allInvariants, final List<String> invNames) {
+		Satisfiability valid = Satisfiability.Satisfied;
 		Evaluator evaluator = new Evaluator();
 
 		// model inherent constraints: check whether cardinalities of
 		// association links match their declaration of multiplicities
-		valid = checkWellDefinedStructure(out);
+		valid = checkSatisfiedStructure(out);
 
 		if (Options.EVAL_NUMTHREADS > 1)
 			out.println("checking invariants (using " + Options.EVAL_NUMTHREADS
@@ -1795,7 +1795,7 @@ public final class MSystemState {
 									new VarBindings());
 							out.println("  -> " + v1.toStringWithType());
 						}
-						valid = Definedness.NotWellDefined;
+						valid = Satisfiability.NotSatisfied;
 						numFailed++;
 					}
 				}
@@ -1911,8 +1911,8 @@ public final class MSystemState {
 	}
 
 
-	public Definedness checkWellDefinedStructure(PrintWriter out) {
-		return checkWellDefinedStructure(out, true);
+	public Satisfiability checkSatisfiedStructure(PrintWriter out) {
+		return checkSatisfiedStructure(out, true);
 	}
 
 	/**
@@ -1958,10 +1958,10 @@ public final class MSystemState {
 		return res;
 	}
 
-	public Definedness checkWellDefinedStructure(PrintWriter out, boolean reportAllErrors) {
+	public Satisfiability checkSatisfiedStructure(PrintWriter out, boolean reportAllErrors) {
 		long start = System.currentTimeMillis();
 
-		Definedness res = Definedness.WellDefined;
+		Satisfiability res = Satisfiability.Satisfied;
 		out.println("checking structure...");
 		out.flush();
 
@@ -1969,19 +1969,19 @@ public final class MSystemState {
 
 		// check the whole/part hierarchy
 		if (!checkWholePartLink(out)) {
-			if (!reportAllErrors) return Definedness.NotWellDefined;
-			res = Definedness.NotWellDefined;
+			if (!reportAllErrors) return Satisfiability.NotSatisfied;
+			res = Satisfiability.NotSatisfied;
 		}
 
 		// check all associations
 		for (MAssociation assoc : fSystem.model().associations()) {
-			Definedness res2 = checkWellDefinedStructure(assoc, out, reportAllErrors);
-			if (res2 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
-				res = Definedness.NotWellDefined;
-			} else if (res2 == Definedness.PartiallyDefined) {
-				res = Definedness.PartiallyDefined;
+			Satisfiability res2 = checkSatisfiedStructure(assoc, out, reportAllErrors);
+			if (res2 == Satisfiability.NotSatisfied || res == Satisfiability.NotSatisfied) {
+				res = Satisfiability.NotSatisfied;
+			} else if (res2 == Satisfiability.PartiallySatisfied) {
+				res = Satisfiability.PartiallySatisfied;
 			}
-			if (!reportAllErrors && res == Definedness.NotWellDefined) return Definedness.NotWellDefined;
+			if (!reportAllErrors && res == Satisfiability.NotSatisfied) return Satisfiability.NotSatisfied;
 		}
 
 		out.flush();
@@ -2024,19 +2024,19 @@ public final class MSystemState {
 		return res;
 	}
 
-	public Definedness checkWellDefinedStructure(MAssociation assoc, PrintWriter out, boolean reportAllErrors) {
-		Definedness res = Definedness.WellDefined;
+	public Satisfiability checkSatisfiedStructure(MAssociation assoc, PrintWriter out, boolean reportAllErrors) {
+		Satisfiability res = Satisfiability.Satisfied;
 
 		boolean valid = validateRedefines(assoc, out, reportAllErrors);
-		if (!valid) res = Definedness.NotWellDefined;
+		if (!valid) res = Satisfiability.NotSatisfied;
 
 		if (assoc.associationEnds().size() != 2) {
 			// check for n-ary links
-			Definedness res1 = naryAssociationsAreWellDefined(out, assoc, reportAllErrors);
-			if (res1 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
-				res = Definedness.NotWellDefined;
-			} else if (res1 == Definedness.PartiallyDefined) {
-				res = Definedness.PartiallyDefined;
+			Satisfiability res1 = naryAssociationsAreSatisfied(out, assoc, reportAllErrors);
+			if (res1 == Satisfiability.NotSatisfied || res == Satisfiability.NotSatisfied) {
+				res = Satisfiability.NotSatisfied;
+			} else if (res1 == Satisfiability.PartiallySatisfied) {
+				res = Satisfiability.PartiallySatisfied;
 			}
 		} else {
 			// check both association ends
@@ -2044,20 +2044,20 @@ public final class MSystemState {
 			MAssociationEnd aend1 = it2.next();
 			MAssociationEnd aend2 = it2.next();
 
-			Definedness res2 = validateWellDefinedBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors);
-			if (res2 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
-				res = Definedness.NotWellDefined;
-			} else if (res2 == Definedness.PartiallyDefined) {
-				res = Definedness.PartiallyDefined;
+			Satisfiability res2 = validateSatisfiedBinaryAssociations(out, assoc, aend1, aend2, reportAllErrors);
+			if (res2 == Satisfiability.NotSatisfied || res == Satisfiability.NotSatisfied) {
+				res = Satisfiability.NotSatisfied;
+			} else if (res2 == Satisfiability.PartiallySatisfied) {
+				res = Satisfiability.PartiallySatisfied;
 			}
-			if (!reportAllErrors && res == Definedness.NotWellDefined) return Definedness.NotWellDefined;
+			if (!reportAllErrors && res == Satisfiability.NotSatisfied) return Satisfiability.NotSatisfied;
 
 
-			Definedness res3 = validateWellDefinedBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors);
-			if (res3 == Definedness.NotWellDefined || res == Definedness.NotWellDefined) {
-				res = Definedness.NotWellDefined;
-			} else if (res3 == Definedness.PartiallyDefined) {
-				res = Definedness.PartiallyDefined;
+			Satisfiability res3 = validateSatisfiedBinaryAssociations(out, assoc, aend2, aend1, reportAllErrors);
+			if (res3 == Satisfiability.NotSatisfied || res == Satisfiability.NotSatisfied) {
+				res = Satisfiability.NotSatisfied;
+			} else if (res3 == Satisfiability.PartiallySatisfied) {
+				res = Satisfiability.PartiallySatisfied;
 			}
 		}
 
@@ -2112,8 +2112,8 @@ public final class MSystemState {
 		return valid;
 	}
 
-	private Definedness naryAssociationsAreWellDefined(PrintWriter out, MAssociation assoc, boolean reportAllErrors) {
-		Definedness valid = Definedness.WellDefined;
+	private Satisfiability naryAssociationsAreSatisfied(PrintWriter out, MAssociation assoc, boolean reportAllErrors) {
+		Satisfiability valid = Satisfiability.Satisfied;
 		Set<MLink> links = linksOfAssociation(assoc).links();
 
 		for (MAssociationEnd selEnd : assoc.associationEnds()) {
@@ -2147,11 +2147,11 @@ public final class MSystemState {
 					int largestLowerBound = selEnd.multiplicity().getLargestLowerBound();
 					if (count < largestLowerBound){
 						//case 1: num of obj is less the largest lower bound - partial
-						valid = Definedness.PartiallyDefined;
+						valid = Satisfiability.PartiallySatisfied;
 					}
 					else{
 						//case 2: num of obj is greater than the largest upper bound - illegal
-						valid = Definedness.NotWellDefined;
+						valid = Satisfiability.NotSatisfied;
 						out.println("Multiplicity constraint violation in association `"
 								+ assoc.name() + "':");
 						out.println("  Objects `" + StringUtil.fmtSeq(tuple, ", ")
@@ -2163,7 +2163,7 @@ public final class MSystemState {
 					}
 				}
 			}
-			if (!reportAllErrors && valid == Definedness.NotWellDefined) return Definedness.NotWellDefined;
+			if (!reportAllErrors && valid == Satisfiability.NotSatisfied) return Satisfiability.NotSatisfied;
 		}
 		return valid;
 	}
@@ -2268,9 +2268,9 @@ public final class MSystemState {
 		return valid;
 	}
 
-	private Definedness validateWellDefinedBinaryAssociations(PrintWriter out, MAssociation assoc,
+	private Satisfiability validateSatisfiedBinaryAssociations(PrintWriter out, MAssociation assoc,
 															  MAssociationEnd aend1, MAssociationEnd aend2, boolean reportAllErrors) {
-		Definedness valid = Definedness.WellDefined;
+		Satisfiability valid = Satisfiability.Satisfied;
 
 		// for each object of the association end's type get
 		// the number of links in which the object participates
@@ -2282,7 +2282,7 @@ public final class MSystemState {
 
 			if (linkedObjects.size() == 0 && !aend2.multiplicity().contains(0)) {
 				//reportMultiplicityViolation(out, assoc, aend1, aend2, obj, null);
-				valid = Definedness.PartiallyDefined;
+				valid = Satisfiability.PartiallySatisfied;
 				continue;
 			}
 
@@ -2291,23 +2291,23 @@ public final class MSystemState {
 					int largestLowerBound = aend2.multiplicity().getLargestLowerBound();
 					if (entry.getValue().size() < largestLowerBound){
 						//case 1: num of obj is less the largest lower bound - partial
-						valid = Definedness.PartiallyDefined;
+						valid = Satisfiability.PartiallySatisfied;
 					}
 					else{
 						//case 2: num of obj is greater than the largest upper bound - illegal
 						reportMultiplicityViolation(out, assoc, aend1, aend2, obj, entry);
-						valid = Definedness.NotWellDefined;
+						valid = Satisfiability.NotSatisfied;
 					}
 				}
 
 				if (!aend1.getSubsettedEnds().isEmpty()) {
 					if (!validateSubsets(out, obj, entry.getKey(), entry.getValue(), aend1)){
-						valid = Definedness.NotWellDefined;
+						valid = Satisfiability.NotSatisfied;
 					}
 				}
 			}
 
-			if (!reportAllErrors && valid == Definedness.NotWellDefined) return Definedness.NotWellDefined;
+			if (!reportAllErrors && valid == Satisfiability.NotSatisfied) return Satisfiability.NotSatisfied;
 		}
 
 		return valid;

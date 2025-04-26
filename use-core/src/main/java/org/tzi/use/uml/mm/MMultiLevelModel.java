@@ -4,6 +4,7 @@ import org.tzi.use.api.UseMLMSystemApi;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.uml.Definedness;
+import org.tzi.use.uml.Satisfiability;
 import org.tzi.use.uml.ocl.type.EnumType;
 import org.tzi.use.util.NullPrintWriter;
 
@@ -235,11 +236,11 @@ public class MMultiLevelModel extends MMultiModel {
                 }
             }
 
-            Definedness currRes = systemApi.checkWellDefinedness(error);
-            if (currRes.equals(Definedness.NotWellDefined)){
+            Satisfiability currRes = systemApi.checkWellDefinedness(error);
+            if (currRes.equals(Satisfiability.NotSatisfied)){
                 return Definedness.NotWellDefined.toString();
             }
-            else if (currRes.equals(Definedness.PartiallyDefined) && result.equals(Definedness.WellDefined)){
+            else if (currRes.equals(Satisfiability.PartiallySatisfied) && result.equals(Definedness.WellDefined)){
                 result = Definedness.PartiallyDefined;
             }
             previousModel = model;

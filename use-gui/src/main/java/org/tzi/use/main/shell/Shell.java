@@ -373,6 +373,8 @@ public final class Shell implements Runnable, PPCHandler {
 			cmdExec(line.substring(1).trim(), false);
 		} else if (line.equals("wd") || line.startsWith("wd ")) {
 			cmdCheckWellDefinedness(line);
+		} else if (line.equals("check partial") || line.startsWith("check partial ")) {
+			cmdCheckPartialSatisfiability(line);
 		} else if (line.equals("check") || line.startsWith("check ")) {
 			cmdCheck(line);
 		} else if (line.equals("genvcg")) {
@@ -590,6 +592,15 @@ public final class Shell implements Runnable, PPCHandler {
 	private void cmdCheckWellDefinedness(String line) throws NoSystemException {
 		System.out.println("Checking well definedness..");
 		String res = ((MMultiLevelModel) system().model()).checkWellDefinednessState(new PrintWriter(System.out));
+		System.out.println("Result: " + res);
+	}
+
+	private void cmdCheckPartialSatisfiability(String line) throws NoSystemException {
+		System.out.println("Checking Partial Satisfiability..");
+
+		PrintWriter out = new PrintWriter(USEWriter.getInstance().getOut());
+		String res = system().state().checkPartialSatisfiability(out,false, false, false, Collections.<String>emptyList()).toString();
+
 		System.out.println("Result: " + res);
 	}
 

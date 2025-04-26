@@ -2,7 +2,7 @@ package org.tzi.use.api;
 
 import org.tzi.use.api.impl.UseSystemApiUndoable;
 import org.tzi.use.main.Session;
-import org.tzi.use.uml.Definedness;
+import org.tzi.use.uml.Satisfiability;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.sys.MLMSystem;
 import org.tzi.use.uml.sys.MSystem;
@@ -33,11 +33,11 @@ public class UseMLMSystemApi extends UseSystemApiUndoable {
         super(api);
     }
 
-    public Definedness checkWellDefinedness(PrintWriter error){
-        return system.state().checkWellDefinedness(error, false, false, true, Collections.<String>emptyList());
+    public Satisfiability checkWellDefinedness(PrintWriter error){
+        return system.state().checkPartialSatisfiability(error, false, false, true, Collections.<String>emptyList());
     }
 
-    public Definedness checkWellDefinedness() {
+    public Satisfiability checkWellDefinedness() {
         return checkWellDefinedness(NullPrintWriter.getInstance());
     }
 }
