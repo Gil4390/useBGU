@@ -155,6 +155,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             if (clab.getRemovedConstraints().contains(inv)) {
                                 continue;
                             }
+                            if(mMultiLevelModel.interInvariants().contains(inv) && !inv.cls().equals(clab.child())) continue;
                             //1. if the role is removed from a clabject that its power-type class isn't the 'context' class, it shouldn't throw an error.
                             if(!inv.cls().equals(clab.parent())) {
                                 mlmContext.reportWarning(fName,
