@@ -29,6 +29,8 @@ This user manual can be accessed in:
 
 **Running MedMLM model for this manual:**
 
+![MLM Model Example](https://github.com/user-attachments/assets/87154fbf-db51-4631-b773-87cef9b62ffc)
+
 ![MLM Model Example](media/image28.png)
 
 .use file of the running example:
@@ -292,6 +294,9 @@ Queries: The command line interface supports additional queries that are not ena
 
 ### 2.1. Graphical User Interface
 
+![MLM-USE GUI](https://github.com/user-attachments/assets/de6f47cf-a0b9-4eaf-a74a-04bb452d6dd4)
+
+
 ![MLM-USE GUI](media/image25.png)
 
 ### 2.2. Visual presentation of a MedMLM model in MLM-USE
@@ -303,7 +308,10 @@ An MLM-USE model is implemented in USE as a "flat" traditional class model. The 
 - Inter-associations are visualized with a *bold association line*
 - Classes in different levels have *different level colors*
 
-For example the model described in this manual is visualized in MOM-USE as follows:
+For example the model described in this manual is visualized in MLM-USE as follows:
+
+![MLM-USE Visualization](https://github.com/user-attachments/assets/434f7c1c-76cc-4ba8-b54b-ad3bd6255b73)
+
 
 ![MOM-USE Visualization](media/image16.png)
 
@@ -329,9 +337,14 @@ State -> Create object...
 
 A small window will appear:
 
+
+![Create Object Window](https://github.com/user-attachments/assets/92dd0b2d-c319-4b3a-bb16-ff6718295375)
+
 ![Create Object Window](media/image11.png)
 
 After selecting a class and specifying its name, a new object will appear.
+
+![New Object](https://github.com/user-attachments/assets/248cf3a3-6b27-4c86-8144-2d4ce60f7bc1)
 
 ![New Object](media/image20.png)
 
@@ -339,9 +352,13 @@ Links are also added via the toolbar. Possible roles are presented:
 
 Select both objects while holding SHIFT, then Right-Click on one of the objects. A window will appear where all the options of link insertion are shown.
 
+![Link Insertion Options](https://github.com/user-attachments/assets/849ccd3d-78af-4e9b-b10e-280ca5905a64)
+
 ![Link Insertion Options](media/image23.png)
 
 Objects that belong to classes on different levels are visualized with their level colors.
+
+![Objects with Level Colors](https://github.com/user-attachments/assets/35b6571c-8c5f-4cc1-a51d-2efbadb78ae9)
 
 ![Objects with Level Colors](media/image1.png)
 
@@ -351,13 +368,19 @@ An object diagram is checked for being legal, i.e., satisfy all model requiremen
 
 For example, for the object diagram below, 'check' yields a contradiction answer:
 
+![Object Diagram Example](https://github.com/user-attachments/assets/65e8487c-af31-4281-b856-1a9615700721)
+
 ![Object Diagram Example](media/image2.png)
+
+![Contradiction Answer](https://github.com/user-attachments/assets/e20a94ed-3b28-47a1-bc99-5a84deb770b1)
 
 ![Contradiction Answer](media/image10.png)
 
 The multiplicity restriction on role r1 of class B is violated. The violation can be repaired by adding a new object of type 'AB@B1' and linking it to object b.
 
 A new legality check:
+
+![New Legality Check](https://github.com/user-attachments/assets/a7e75c4f-0f2b-450e-bb52-fb2bdf74bc27)
 
 ![New Legality Check](media/image19.png)
 
@@ -366,6 +389,8 @@ The response notifies on satisfaction or violations of the invariants (constrain
 ### Multiplicity constraints on associations' roles:
 
 Multiplicity on an association role (also termed association-end) is represented as a group of ranges. For example:
+
+![Multiplicity Example](https://github.com/user-attachments/assets/6206d523-ef31-48d1-a345-cb402f8cf365)
 
 ![Multiplicity Example](media/image4.png)
 
@@ -397,15 +422,21 @@ Inheritance and overriding semantics:
 
 1. The following object diagram includes objects *objC* and *objD* of classes C and D in model CD.
 
+![Object Diagram C and D](https://github.com/user-attachments/assets/3ed8a0aa-856d-46da-8527-32ab0c7f4412)
+
 ![Object Diagram C and D](media/image17.png)
 
 Objects *objC* and *objD* are linked by roles *c* and *d*. These are the only roles between classes C and D, since roles *a,b*, are banned by the assoclink.
 
 2. An object *objB1* of B1 is added. objC can be linked to objB1 by the inherited role *r1*.
 
+![Object with objB1](https://github.com/user-attachments/assets/f5e504ef-5a90-4140-b411-14c635562b99)
+
 ![Object with objB1](media/image21.png)
 
 3. Addition of *objA* of class A:
+
+![Object with objA](https://github.com/user-attachments/assets/0bce6e1a-f9f9-42b6-af71-8af3396501c1)
 
 ![Object with objA](media/image27.png)
 
@@ -413,11 +444,15 @@ An attempt to link *objD* with *objA* through role '*a'* fails, since inheritanc
 
 4. Addition of *objA1* of class A1, with links to *objA* through association aa1 and *objC* through association ac.
 
+![Object with objA1](https://github.com/user-attachments/assets/16af5529-78c7-4a6b-b23d-2838d8b3774d)
+
 ![Object with objA1](media/image24.png)
 
 The constraints on classes A and A1 vacuously hold, since there is no link through role *b*. The inter-constraint on C holds.
 
 5. Addition of *objE* of class E with values for all inherited attributes -- *attr1, attr2, attD*, and links for all inherited roles -- *a, c, r1*:
+
+![Object with objE](https://github.com/user-attachments/assets/fb47a065-b96e-4abf-8728-6b42b0a82703)
 
 ![Object with objE](media/image15.png)
 
@@ -429,11 +464,15 @@ ObjD has 0 r1 links, and objB1 has 2 b1 links.
 
 Indeed, running 'check', yields the following output:
 
+![Check Output](https://github.com/user-attachments/assets/cbe9bd83-3be0-4384-b055-a0c22549e4fd)
+
 ![Check Output](media/image22.png)
 
 ### Attribute Conflicts
 
 Attribute inheritance from superClasses or powerClasses can yield attribute naming conflicts: Attribute renaming or removal in mediators can resolve naming conflicts.
+
+![Attribute Conflicts](https://github.com/user-attachments/assets/a06f62f4-3284-44f2-a513-616d526e0dcc)
 
 ![Attribute Conflicts](media/image12.png)
 
@@ -445,9 +484,11 @@ Appendix A lists warning and conflicts that arise from inheritance.
 
 Metadata queries are entered in the command line interface, which is opened when the application is launched:
 
+![Command Line Interface](https://github.com/user-attachments/assets/d04166dd-2bcf-4161-832a-3f06b78b8cea)
+
 ![Command Line Interface](media/image9.png)
 
-MLM-ISE commands and queries are explained in the following link:
+MLM-USE commands and queries are explained in the following link:
 
 [**https://github.com/Gil4390/useBGU/blob/MLM-USE-Release/manual/mlm.md**](https://github.com/Gil4390/useBGU/blob/MLM-USE-Release/manual/mlm.md)
 
@@ -472,13 +513,19 @@ In all other versions of MedMLM models, the result of the satisfiability check n
 
 Load a .use MedMLM file, and navigate to the following tab:
 
+![Satisfiability Tab](https://github.com/user-attachments/assets/7504cb9b-4054-432d-8e2d-6018253d5b93)
+
 ![Satisfiability Tab](media/image14.png)
 
 The following window will pop up:
 
+![Satisfiability Window](https://github.com/user-attachments/assets/c639141a-b20b-4e95-a373-d2f43d1d8180)
+
 ![Satisfiability Window](media/image26.png)
 
 Here, you can set the upper and lower boundaries on the number of objects of classes and links of associations. After clicking on 'Validate', the result of the satisfiability check will appear as a text in the bottom of the main USE-MLM window, as shown below.
+
+![Satisfiability Result](https://github.com/user-attachments/assets/66c78aa2-cbf5-4890-8285-b282ab3951d1)
 
 ![Satisfiability Result](media/image8.png)
 
@@ -499,9 +546,13 @@ In MLM-USE, well-definedness of a MedMLM model is done via the graphic interface
 
 #### Checking Well-Definedness
 
+![Well-Definedness Check](https://github.com/user-attachments/assets/39bb959e-451a-4b28-98bd-c5a8a2bd2e31)
+
 ![Well-Definedness Check](media/image18.png)
 
 The result appears in the log box in the bottom of the window:
+
+![Well-Definedness Result](https://github.com/user-attachments/assets/fb0805f6-274b-48d5-9b75-33a2b56af792)
 
 ![Well-Definedness Result](media/image13.png)
 
@@ -542,6 +593,16 @@ If some minimum bounds are violated, and all maximum bounds and constraints are 
 Here it is presented in the context of the well-definedness check. But it can be added to USE, Multi-USE, MLM-USE as a general extension to checking legality of object diagrams.
 
 Examples of checking well-definedness:
+
+![Well-Definedness Example 1](https://github.com/user-attachments/assets/c178e815-92c8-4aeb-9631-1b8f37a0c4a2)
+
+![Well-Definedness Example 2](https://github.com/user-attachments/assets/10ff82d4-2a37-4fe5-a7b1-cccd97c8b424)
+
+![Well-Definedness Example 3](https://github.com/user-attachments/assets/a219b1c5-bc98-4c9f-9f71-d63419209834)
+
+![Well-Definedness Example 4](https://github.com/user-attachments/assets/4bbab6d1-dff9-42ae-b349-cb0e7ca8558d)
+
+
 
 ![Well-Definedness Example 1](media/image7.jpg)
 
