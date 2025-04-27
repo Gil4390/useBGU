@@ -24,14 +24,12 @@ This user manual can be accessed in:
       1. Checking well Definedness
       2. Model mediators elements
       3. Object View of a level class model
-   - Appendix A: Conflicts and Warnings
-   - Appendix B: Formal Definition of MedMLM Model Specification
+- Appendix A: Conflicts and Warnings
+- Appendix B: Formal Definition of MedMLM Model Specification
 
 **Running MedMLM model for this manual:**
 
-![MLM Model Example](https://github.com/user-attachments/assets/87154fbf-db51-4631-b773-87cef9b62ffc)
-
-![MLM Model Example](media/image28.png)
+![MLM Model Example](https://github.com/user-attachments/assets/92c0b416-3a95-4486-a924-ac093f2ffac5)
 
 .use file of the running example:
 [https://github.com/Gil4390/useBGU/blob/MLM-USE/use-core/src/test/resources/org/tzi/use/mlmExamples/skeleton.use](https://github.com/Gil4390/useBGU/blob/MLM-USE/use-core/src/test/resources/org/tzi/use/mlmExamples/skeleton.use)
@@ -66,68 +64,68 @@ MLM ABCD
 
 model AB
 
-class A
-attributes
-  attr1: Integer 
-  attr2: Real
-end
-
-class A1
-attributes
-  attr1: String
-end
-
-class B
-attributes
-  attr1: Integer
-  attr2: String
-end
-
-class B1
-attributes
-  attr1: Integer
-end
-
-class B2 < B
-end
-
-association aa1 between
-  A[1] role a1
-  A1[1] role r1
-end
-
-association bb1 between
-  B[1] role b1
-  B1[1] role r1
-end
-
-association ab between
-  A[*] role a
-  B[1] role b
-end
-
-constraints
-context A inv ABMLM:
-  self.b.attr2 = 'MLM'
-
-context A1 inv A1B1MLM:
-  self.a1.b.r1.attr1 > 5
+   class A
+   attributes
+     attr1: Integer 
+     attr2: Real
+   end
+   
+   class A1
+   attributes
+     attr1: String
+   end
+   
+   class B
+   attributes
+     attr1: Integer
+     attr2: String
+   end
+   
+   class B1
+   attributes
+     attr1: Integer
+   end
+   
+   class B2 < B
+   end
+   
+   association aa1 between
+     A[1] role a1
+     A1[1] role r1
+   end
+   
+   association bb1 between
+     B[1] role b1
+     B1[1] role r1
+   end
+   
+   association ab between
+     A[*] role a
+     B[1] role b
+   end
+   
+   constraints
+   context A inv ABMLM:
+     self.b.attr2 = 'MLM'
+   
+   context A1 inv A1B1MLM:
+     self.a1.b.r1.attr1 > 5
 
 model CD
 
-class C
-end
-
-class D
-end
-
-class E < D
-end
-
-association cd between
-  C[*] role c
-  D[*] role d
-end
+   class C
+   end
+   
+   class D
+   end
+   
+   class E < D
+   end
+   
+   association cd between
+     C[*] role c
+     D[*] role d
+   end
 ```
 
 ### 2. Inter-level information
@@ -152,28 +150,28 @@ end
 
 mediator CD < AB
   clabject C : A
-  attributes
-    ~attr1
-    attr2 -> attrC
-  roles
-    ~r1
-  constraints
-    ~ABMLM
+     attributes
+       ~attr1
+       attr2 -> attrC
+     roles
+       ~r1
+     constraints
+       ~ABMLM
   end
 
   clabject C : B
   end
 
   clabject E : B2
-  attributes
-    ~attr2
-  roles
-    ~r1
+     attributes
+       ~attr2
+     roles
+       ~r1
   end
 
   clabject D : B
-  attributes
-    attr1 -> attrD
+     attributes
+       attr1 -> attrD
   end
 
   assoclink cd : ab
@@ -222,7 +220,7 @@ attribute *attr1* of powerclass B is renamed in clabject D into *attrD*.
 
 ```
 attributes
-attr1 -> attrD
+   attr1 -> attrD
 ```
 
 Note that in clabject C of A, attribute *attr2* is renamed into *attrC* (with type Real). *attr2*, with type string, is still inherited through the instance-of of clabject C of powerClass B.
@@ -243,7 +241,7 @@ Role removal cancels the inheritance of the association of the removed role.
 
 ```
 roles
-~r1
+   ~r1
 ```
 
 #### Constraint Removal
@@ -252,7 +250,7 @@ Constraint removal is marked using '~'. ~ABMLM marks that this constraint is not
 
 ```
 constraints
-~ABMLM
+   ~ABMLM
 ```
 
 #### **Defining Assoclinks**
@@ -294,10 +292,7 @@ Queries: The command line interface supports additional queries that are not ena
 
 ### 2.1. Graphical User Interface
 
-![MLM-USE GUI](https://github.com/user-attachments/assets/de6f47cf-a0b9-4eaf-a74a-04bb452d6dd4)
-
-
-![MLM-USE GUI](media/image25.png)
+![MLM-USE GUI](https://github.com/user-attachments/assets/2aa85067-d636-4335-b29b-7d1ad983203e)
 
 ### 2.2. Visual presentation of a MedMLM model in MLM-USE
 
@@ -310,10 +305,8 @@ An MLM-USE model is implemented in USE as a "flat" traditional class model. The 
 
 For example the model described in this manual is visualized in MLM-USE as follows:
 
-![MLM-USE Visualization](https://github.com/user-attachments/assets/434f7c1c-76cc-4ba8-b54b-ad3bd6255b73)
+![MLM-USE Visualization](https://github.com/user-attachments/assets/4136948e-406c-471e-87e4-32e6e7958ebf)
 
-
-![MOM-USE Visualization](media/image16.png)
 
 #### MLM-USE does not distinguish the MLM levels. Users must manually organize level visualization. That is, after loading a .use file all classes will be mixed up. However, the user can organize the levels according to the colors of the classes, by dragging and dropping class boxes.
 
@@ -340,13 +333,11 @@ A small window will appear:
 
 ![Create Object Window](https://github.com/user-attachments/assets/92dd0b2d-c319-4b3a-bb16-ff6718295375)
 
-![Create Object Window](media/image11.png)
 
 After selecting a class and specifying its name, a new object will appear.
 
 ![New Object](https://github.com/user-attachments/assets/248cf3a3-6b27-4c86-8144-2d4ce60f7bc1)
 
-![New Object](media/image20.png)
 
 Links are also added via the toolbar. Possible roles are presented:
 
@@ -354,13 +345,11 @@ Select both objects while holding SHIFT, then Right-Click on one of the objects.
 
 ![Link Insertion Options](https://github.com/user-attachments/assets/849ccd3d-78af-4e9b-b10e-280ca5905a64)
 
-![Link Insertion Options](media/image23.png)
 
 Objects that belong to classes on different levels are visualized with their level colors.
 
 ![Objects with Level Colors](https://github.com/user-attachments/assets/35b6571c-8c5f-4cc1-a51d-2efbadb78ae9)
 
-![Objects with Level Colors](media/image1.png)
 
 ### 3.2. Checking legality of an object diagram
 
@@ -370,19 +359,13 @@ For example, for the object diagram below, 'check' yields a contradiction answer
 
 ![Object Diagram Example](https://github.com/user-attachments/assets/65e8487c-af31-4281-b856-1a9615700721)
 
-![Object Diagram Example](media/image2.png)
-
 ![Contradiction Answer](https://github.com/user-attachments/assets/e20a94ed-3b28-47a1-bc99-5a84deb770b1)
-
-![Contradiction Answer](media/image10.png)
 
 The multiplicity restriction on role r1 of class B is violated. The violation can be repaired by adding a new object of type 'AB@B1' and linking it to object b.
 
 A new legality check:
 
 ![New Legality Check](https://github.com/user-attachments/assets/a7e75c4f-0f2b-450e-bb52-fb2bdf74bc27)
-
-![New Legality Check](media/image19.png)
 
 The response notifies on satisfaction or violations of the invariants (constraints).
 
@@ -391,8 +374,6 @@ The response notifies on satisfaction or violations of the invariants (constrain
 Multiplicity on an association role (also termed association-end) is represented as a group of ranges. For example:
 
 ![Multiplicity Example](https://github.com/user-attachments/assets/6206d523-ef31-48d1-a345-cb402f8cf365)
-
-![Multiplicity Example](media/image4.png)
 
 multiplicity of [1..3, 5..7] means there are 2 ranges, one from 1 to 3 and another from 5 to 7.
 
@@ -424,21 +405,15 @@ Inheritance and overriding semantics:
 
 ![Object Diagram C and D](https://github.com/user-attachments/assets/3ed8a0aa-856d-46da-8527-32ab0c7f4412)
 
-![Object Diagram C and D](media/image17.png)
-
 Objects *objC* and *objD* are linked by roles *c* and *d*. These are the only roles between classes C and D, since roles *a,b*, are banned by the assoclink.
 
 2. An object *objB1* of B1 is added. objC can be linked to objB1 by the inherited role *r1*.
 
 ![Object with objB1](https://github.com/user-attachments/assets/f5e504ef-5a90-4140-b411-14c635562b99)
 
-![Object with objB1](media/image21.png)
-
 3. Addition of *objA* of class A:
 
 ![Object with objA](https://github.com/user-attachments/assets/0bce6e1a-f9f9-42b6-af71-8af3396501c1)
-
-![Object with objA](media/image27.png)
 
 An attempt to link *objD* with *objA* through role '*a'* fails, since inheritance of '*a'* is banned by the assoclink.
 
@@ -446,15 +421,11 @@ An attempt to link *objD* with *objA* through role '*a'* fails, since inheritanc
 
 ![Object with objA1](https://github.com/user-attachments/assets/16af5529-78c7-4a6b-b23d-2838d8b3774d)
 
-![Object with objA1](media/image24.png)
-
 The constraints on classes A and A1 vacuously hold, since there is no link through role *b*. The inter-constraint on C holds.
 
 5. Addition of *objE* of class E with values for all inherited attributes -- *attr1, attr2, attD*, and links for all inherited roles -- *a, c, r1*:
 
 ![Object with objE](https://github.com/user-attachments/assets/fb47a065-b96e-4abf-8728-6b42b0a82703)
-
-![Object with objE](media/image15.png)
 
 Note that now the constraints on classes A and A1 apply and are satisfied.
 
@@ -466,15 +437,11 @@ Indeed, running 'check', yields the following output:
 
 ![Check Output](https://github.com/user-attachments/assets/cbe9bd83-3be0-4384-b055-a0c22549e4fd)
 
-![Check Output](media/image22.png)
-
 ### Attribute Conflicts
 
 Attribute inheritance from superClasses or powerClasses can yield attribute naming conflicts: Attribute renaming or removal in mediators can resolve naming conflicts.
 
 ![Attribute Conflicts](https://github.com/user-attachments/assets/a06f62f4-3284-44f2-a513-616d526e0dcc)
-
-![Attribute Conflicts](media/image12.png)
 
 Appendix A lists warning and conflicts that arise from inheritance.
 
@@ -485,8 +452,6 @@ Appendix A lists warning and conflicts that arise from inheritance.
 Metadata queries are entered in the command line interface, which is opened when the application is launched:
 
 ![Command Line Interface](https://github.com/user-attachments/assets/d04166dd-2bcf-4161-832a-3f06b78b8cea)
-
-![Command Line Interface](media/image9.png)
 
 MLM-USE commands and queries are explained in the following link:
 
@@ -515,19 +480,14 @@ Load a .use MedMLM file, and navigate to the following tab:
 
 ![Satisfiability Tab](https://github.com/user-attachments/assets/7504cb9b-4054-432d-8e2d-6018253d5b93)
 
-![Satisfiability Tab](media/image14.png)
-
 The following window will pop up:
 
-![Satisfiability Window](https://github.com/user-attachments/assets/c639141a-b20b-4e95-a373-d2f43d1d8180)
+![Satisfiability Window](https://github.com/user-attachments/assets/1ff84b45-74b7-4a01-bc58-0cee1f63ca9e)
 
-![Satisfiability Window](media/image26.png)
 
 Here, you can set the upper and lower boundaries on the number of objects of classes and links of associations. After clicking on 'Validate', the result of the satisfiability check will appear as a text in the bottom of the main USE-MLM window, as shown below.
 
 ![Satisfiability Result](https://github.com/user-attachments/assets/66c78aa2-cbf5-4890-8285-b282ab3951d1)
-
-![Satisfiability Result](media/image8.png)
 
 ### 4.3. Model well-definedness
 
@@ -548,13 +508,9 @@ In MLM-USE, well-definedness of a MedMLM model is done via the graphic interface
 
 ![Well-Definedness Check](https://github.com/user-attachments/assets/39bb959e-451a-4b28-98bd-c5a8a2bd2e31)
 
-![Well-Definedness Check](media/image18.png)
-
 The result appears in the log box in the bottom of the window:
 
 ![Well-Definedness Result](https://github.com/user-attachments/assets/fb0805f6-274b-48d5-9b75-33a2b56af792)
-
-![Well-Definedness Result](media/image13.png)
 
 ***Well-definedness algorithm*** in MLM-USE:
 
@@ -603,15 +559,6 @@ Examples of checking well-definedness:
 ![Well-Definedness Example 4](https://github.com/user-attachments/assets/4bbab6d1-dff9-42ae-b349-cb0e7ca8558d)
 
 
-
-![Well-Definedness Example 1](media/image7.jpg)
-
-![Well-Definedness Example 2](media/image5.png)
-
-![Well-Definedness Example 3](media/image3.png)
-
-![Well-Definedness Example 4](media/image6.png)
-
 ## Appendix A: Conflicts and Warnings in Model loading
 
 The following section showcases the possible warnings that can appear while loading an MLM file, and the conditions that led to that warning.
@@ -641,7 +588,7 @@ The following section showcases the possible warnings that can appear while load
 
 1. The missing role might have been removed from a clabject and not inherited from elsewhere.
 2. The missing role might haven't been declared.
-3. [Suggestion:]{.underline} If the invariant is inherited from a powerClass of the clabject, It is suggested to consider cancelling its inheritance.
+3. **Suggestion:** If the invariant is inherited from a powerClass of the clabject, It is suggested to consider cancelling its inheritance.
 
 ### Conflicts
 
@@ -656,7 +603,7 @@ The following section showcases the possible warnings that can appear while load
 
 1. The missing attribute might have been removed from a clabject and not inherited from elsewhere.
 2. The missing attribute might haven't been declared.
-3. [Suggestion:]{.underline} If the invariant is inherited from a powerclass of the clabject, It is suggested to consider cancelling its inheritance.
+3. **Suggestion:** If the invariant is inherited from a powerclass of the clabject, It is suggested to consider cancelling its inheritance.
 
 **2. Attribute Renamed Causes a Missing Attribute Accessed by an Invariant**
 
@@ -669,7 +616,7 @@ The following section showcases the possible warnings that can appear while load
 
 1. An attribute is renamed in a clabject.
 2. The attribute is accessed by an invariant.
-3. [Suggestion:]{.underline} If the invariant is inherited from a powerclass of the clabject, It is suggested to consider cancelling its inheritance.
+3. **Suggestion:** If the invariant is inherited from a powerclass of the clabject, It is suggested to consider cancelling its inheritance.
 
 **3. Attribute Duplication**
 
@@ -681,15 +628,13 @@ The following section showcases the possible warnings that can appear while load
 **Explanation:**
 
 1. Multiple inheritance can arise from powerclasses or superclasses.
-2. [Suggestion:]{.underline} Check possibility of cancelling or renaming from a powerclass.
+2. **Suggestion:** Check possibility of cancelling or renaming from a powerclass.
 
 ## Appendix B: Formal Definition of MedMLM model specification
 
 [explanation on how to define an MLM, similarly to how they explained it in use: https://github.com/useocl/use/blob/20f1ab4e3229edcf59e19c5717a73454dba9f243/manual/main.md#specifying-a-uml-model-with-use](https://github.com/useocl/use/blob/20f1ab4e3229edcf59e19c5717a73454dba9f243/manual/main.md#specifying-a-uml-model-with-use)
 
 ### Defining an MLM
-
-**[TODO: change examples based on the MLM example]**
 
 Every MLM has a name and a body.
 
@@ -714,15 +659,18 @@ The MLM's name is DeviceManagement.
 
 ```
 MLM DeviceManagement
+
 model Computer_product
-...
+   ...
 model PC
-...
+   ...
+
 mediator Computer_product < NONE
 end
+
 mediator PC < Computer_product
 end
-end
+
 ```
 
 ### **Mediators**
@@ -741,10 +689,10 @@ end
 
 ```
 mediator PC < Computer_product 
-clabject Device : Hardware
-end
-assoclink pcCon : contain
-end
+   clabject Device : Hardware
+   end
+   assoclink pcCon : contain
+   end
 end
 ```
 
@@ -765,12 +713,12 @@ Clabjects represent elements that can change the base elements in a core model l
 
 ```
 clabject Device : Hardware
-attributes
-...
-roles
-...
-constraints
-...
+   attributes
+   ...
+   roles
+   ...
+   constraints
+   ...
 end
 ```
 
@@ -789,8 +737,8 @@ end
 
 ```
 attributes
-oldHardwareAttributeName1 -> newDeviceAttributeName1
-oldHardwareAttributeName2 -> newDeviceAttributeName2
+   oldHardwareAttributeName1 -> newDeviceAttributeName1
+   oldHardwareAttributeName2 -> newDeviceAttributeName2
 ```
 
 ### **Attributes Cancellation** 
@@ -807,8 +755,8 @@ oldHardwareAttributeName2 -> newDeviceAttributeName2
 
 ```
 attributes
-~unnecessaryHardwareAttribute1
-~unnecessaryHardwareAttribute2
+   ~unnecessaryHardwareAttribute1
+   ~unnecessaryHardwareAttribute2
 ```
 
 ### **Constraints Cancellation** 
@@ -825,8 +773,8 @@ Constraints in clabjects can be canceled to remove inherited constraints.
 
 ```
 constraints
-~unnecessaryHardwareConstraint1
-~unnecessaryHardwareConstraint2
+   ~unnecessaryHardwareConstraint1
+   ~unnecessaryHardwareConstraint2
 ```
 
 ### **Role Cancellation** 
@@ -843,8 +791,8 @@ Roles in associations can be canceled to remove inherited roles.
 
 ```
 roles
-~unnecessaryHardwareRole1
-~unnecessaryHardwareRole2
+   ~unnecessaryHardwareRole1
+   ~unnecessaryHardwareRole2
 ```
 
 ### **Assoclinks** 
@@ -863,7 +811,7 @@ Assoclinks represent relationships between associations in multiple models. They
 
 ```
 assoclink pcCon : contain
-parentDevice -> parentHardware
-partDevice -> partHardware
+   parentDevice -> parentHardware
+   partDevice -> partHardware
 end
 ```
