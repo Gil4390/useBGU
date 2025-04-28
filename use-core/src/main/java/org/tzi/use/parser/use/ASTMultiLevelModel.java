@@ -96,6 +96,9 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 continue;
                             }
 
+                            // if the attribute source class in the invariant isn't the same as the context class, then it shouldn't throw an error.
+                            if(!completeData.get(inv).getAttributeAccessCoverage().keySet().stream().anyMatch(aa -> aa.getAttribute().equals(attr) && aa.getSourceClass().equals(inv.cls()))) continue;
+
                             // if the attribute is removed from the clabject, and is accessed by an invariant (local), but the class can be navigated to it, then it shouldn't throw an error.
                             boolean isOtherEndRemoved = false;
                             for(MAssociation assoc : completeData.get(inv).getAssociationCoverage().keySet()) {
@@ -159,6 +162,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             if (clab.getRemovedConstraints().contains(inv)) {
                                 continue;
                             }
+                            // if its an inter-constraints, and the context class isn't the same as the clabject class, then it shouldn't throw an error.
                             if(mMultiLevelModel.interInvariants().contains(inv) && !inv.cls().equals(clab.child())) continue;
                             //1. if the role is removed from a clabject that its power-type class isn't the 'context' class, it shouldn't throw an error.
                             if(!inv.cls().equals(clab.parent())) {
