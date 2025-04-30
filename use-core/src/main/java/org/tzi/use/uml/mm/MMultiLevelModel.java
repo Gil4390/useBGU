@@ -80,19 +80,6 @@ public class MMultiLevelModel extends MMultiModel {
         return prevModel;
     }
 
-    public MModel getNextModel(String modelName) {
-        if (!fModels.containsKey(modelName)){
-            return null;
-        }
-        int i = 0;
-        for (MModel model : fModelsList){
-            if (model.name().equals(modelName) && i<fModelsList.size()-1){
-                return fModelsList.get(i+1);
-            }
-            i++;
-        }
-        return null;
-    }
     public void addMediator(MMediator mediator) throws Exception {
         if (fMediators.containsKey(mediator.name()))
             throw new Exception("MLM already contains a mediator `"
@@ -264,12 +251,12 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
     public List<MClass> powerTypes(String levelName) {
-        MModel prevModel = this.getNextModel(levelName);
-        if (prevModel == null){
-            return new ArrayList<>();
+        for (MMediator med : mediators()){
+            if (med.parentModelName().equals(levelName)){
+                return fMediators.get(med.name()).powerTypes();
+            }
         }
-        MMediator nextMediator = this.getMediator(prevModel.name());
-        return nextMediator.powerTypes();
+        return new ArrayList<>();
     }
 
     public Set<MClass> subClassesOfClassForInvariant(MClass cls, MClassInvariant inv){
