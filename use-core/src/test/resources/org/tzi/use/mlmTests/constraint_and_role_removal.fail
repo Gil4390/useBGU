@@ -1,3 +1,3 @@
 constraint_and_role_removal.use:1:4: Role bb1
-	is removed by clabject CLABJECT_CD@C_AB@A
+	is removed by CLABJECT___CD@C___AB@A
 	but is accessed by invariant AB@i1

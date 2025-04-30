@@ -54,7 +54,7 @@ public class TestMLMUtil {
             mlmApi.createMediator("Mediator2", personCompany2);
             mlmApi.createClabject("Mediator2",personCompany2 + delimiter + personClass, personCompany1 + delimiter +  personClass);
             mlmApi.createAttributeRenaming("Mediator2",
-                    "CLABJECT_" + personCompany2 + delimiter + personClass + "_" + personCompany1 + delimiter +  personClass,
+                    "CLABJECT___" + personCompany2 + delimiter + personClass + "___" + personCompany1 + delimiter +  personClass,
                     "name", "newName");
         } catch (Exception e) {
             throw new Error( e );
@@ -83,7 +83,7 @@ public class TestMLMUtil {
             mlmApi.createMediator("Mediator2", personCompany2);
             mlmApi.createClabject("Mediator2",personCompany2 + delimiter + personClass, personCompany1 + delimiter +  personClass);
             mlmApi.removeAttribute("Mediator2",
-                    "CLABJECT_" + personCompany2 + delimiter + personClass + "_" + personCompany1 + delimiter +  personClass,
+                    "CLABJECT___" + personCompany2 + delimiter + personClass + "___" + personCompany1 + delimiter +  personClass,
                     "name");
         } catch (Exception e) {
             throw new Error( e );
@@ -244,7 +244,7 @@ public class TestMLMUtil {
             mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
             mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
 
-            mlmApi.createAttributeRenaming("CD", "CLABJECT_CD@C_AB@A", "name", "newName");
+            mlmApi.createAttributeRenaming("CD", "CLABJECT___CD@C___AB@A", "name", "newName");
         } catch (Exception e) {
             throw new Error( e );
         }
@@ -264,7 +264,7 @@ public class TestMLMUtil {
             mlmApi.createAssoclink("CD", "CD@cd1", "AB@ab1");
             mlmApi.createAssoclink("CD", "CD@ce1", "AB@ab1");
 
-            mlmApi.createAttributeRenaming("CD", "CLABJECT_CD@C_AB@A", "address", "newName");
+            mlmApi.createAttributeRenaming("CD", "CLABJECT___CD@C___AB@A", "address", "newName");
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -283,9 +283,9 @@ public class TestMLMUtil {
             mlmApi.createClabject("EF","EF@E", "CD@C");
 
             //Check if create and remove attributes works properly in the api
-            mlmApi.createAttributeRenaming("CD", "CLABJECT_CD@C_AB@A", "aa1", "aa3");
-            mlmApi.removeAttribute("CD", "CLABJECT_CD@C_AB@A", "cc");
-            mlmApi.createAttributeRenaming("EF", "CLABJECT_EF@E_CD@C", "cc", "aa1");
+            mlmApi.createAttributeRenaming("CD", "CLABJECT___CD@C___AB@A", "aa1", "aa3");
+            mlmApi.removeAttribute("CD", "CLABJECT___CD@C___AB@A", "cc");
+            mlmApi.createAttributeRenaming("EF", "CLABJECT___EF@E___CD@C", "cc", "aa1");
 
         } catch (Exception e) {
             throw new Error( e );

@@ -102,7 +102,7 @@ public class MClabject extends MGeneralization {
 
     @Override
     public String name(){
-        return "CLABJECT_" + fChild.name() + "_" + fParent.name();
+        return "CLABJECT___" + fChild.name() + "___" + fParent.name();
     }
 
     @Override

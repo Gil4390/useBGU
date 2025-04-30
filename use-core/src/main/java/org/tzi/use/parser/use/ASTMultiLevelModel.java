@@ -128,7 +128,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             mlmContext.reportError(fName,
                                     "Attribute " + attr.name()
                                     + "\n\tthat is accessed by invariant " + inv.name()
-                                    + "\n\ton " + clab.name() + " is missing");
+                                    + "\n\tin " + clab.name() + " is not inherited");
                         }
                     }
                 }
@@ -150,7 +150,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 continue;
                             mlmContext.reportError(fName,
                                     "Attribute " + attr.name()
-                                    + "\n\tis renamed in clabject " + clab.name()
+                                    + "\n\tis renamed in " + clab.name()
                                     + "\n\tbut is accessed by invariant " + inv.name());
                         }
                     }
@@ -169,14 +169,14 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 mlmContext.reportWarning(fName,
                                         "Role " + end.name()
                                                 + "\n\tthat is accessed by a invariant " + inv.name()
-                                                + "\n\ton clabject "+ clab.name() +" is missing");
+                                                + "\n\tin "+ clab.name() +" is not inherited");
                                 continue;
                             }
 
                             //2. if the role is removed from the clabject, and is accessed by an invariant (local), it should throw an error.
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
-                                    + "\n\tis removed by clabject " + clab.name()
+                                    + "\n\tis removed by " + clab.name()
                                     + "\n\tbut is accessed by invariant " + inv.name());
                         }
                     }
@@ -198,7 +198,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
                                             + "\n\tremoved by assoclink: " + assoclink
-                                            + "\n\tand by clabject: " + clab
+                                            + "\n\tand by: " + clab
                                             + "\n\tbut accessed by invariant " + inv.name());
                         }
                     }
