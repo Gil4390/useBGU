@@ -206,10 +206,10 @@ public class MMultiLevelModel extends MMultiModel {
 
     public String checkWellDefinednessState(PrintWriter error){
         Definedness result = Definedness.WellDefined;
-        MModel previousModel = fModelsList.get(0);
-        Collection<MModel> models = this.models().stream().skip(1).collect(Collectors.toList());
-        for (MModel model : models){
-            MMediator mediator = fMediators.get(model.name());
+
+        for (MMediator mediator : mediators()){
+            MModel previousModel = mediator.getParentModel();
+            if (previousModel == null) continue;
             UseMLMSystemApi systemApi = new UseMLMSystemApi(previousModel);
 
             //for each clabject, we create an object of the instance type
@@ -243,7 +243,6 @@ public class MMultiLevelModel extends MMultiModel {
             else if (currRes.equals(Satisfiability.PartiallySatisfied) && result.equals(Definedness.WellDefined)){
                 result = Definedness.PartiallyDefined;
             }
-            previousModel = model;
         }
         if (result.equals(Definedness.PartiallyDefined)){
             return Definedness.WellDefined.toString();
