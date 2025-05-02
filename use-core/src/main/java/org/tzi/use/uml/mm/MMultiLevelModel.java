@@ -263,17 +263,17 @@ public class MMultiLevelModel extends MMultiModel {
         Set<MClass> res = new HashSet<>();
         Set<MClass> children = ((MInternalClassImpl) cls).children();
 
-        //clabjects connect classes from different levels
         for (MClass child : children) {
+            //check if the inheritance is of type clabject, if so the invariant might have been removed.
             if (!child.model().equals(cls.model())) {
                 MGeneralization edge = cls.model().generalizationGraph().edgesBetween(child, cls).iterator().next();
                 MClabject clabject = ((MClabject) edge);
                 if (clabject.getRemovedConstraints().contains(inv)){
                     continue;
                 }
-                res.add(child);
-                subClassesOfClassForInvariant(child, inv);
             }
+            res.add(child);
+            subClassesOfClassForInvariant(child, inv);
         }
         return res;
     }
