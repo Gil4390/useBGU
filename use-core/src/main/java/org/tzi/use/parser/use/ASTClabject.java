@@ -93,7 +93,14 @@ public class ASTClabject extends ASTAnnotatable{
 
         for (Token removedConstraint : fConstraintRemoving){
             String constraintName = removedConstraint.getText();
-            MClassInvariant constraint = parent.model().getClassInvariant(parent.name() + "::" + parent.model().name() + "@" + constraintName);
+            MClassInvariant constraint = null;
+            for (MClassInvariant inv : parent.model().classInvariants()){
+                if (parent.isSubClassifierOf(inv.cls())){
+                    if (inv.name().equals(parent.model().name() + "@" + constraintName)){
+                        constraint = inv;
+                    }
+                }
+            }
             if(constraint == null) {
                 throw new Exception("Parent class: "+ parent.name()+ ", doesn't contain a constraint with the name: "+constraintName);
             }

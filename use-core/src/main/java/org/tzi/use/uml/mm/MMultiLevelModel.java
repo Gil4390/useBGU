@@ -273,7 +273,7 @@ public class MMultiLevelModel extends MMultiModel {
                 }
             }
             res.add(child);
-            subClassesOfClassForInvariant(child, inv);
+            res.addAll(subClassesOfClassForInvariant(child, inv));
         }
         return res;
     }
