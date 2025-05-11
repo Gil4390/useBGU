@@ -4,15 +4,13 @@ import junit.framework.TestCase;
 import org.assertj.core.api.Assertions;
 import org.tzi.use.parser.use.USECompilerMLM;
 import org.tzi.use.uml.mm.MAttribute;
+import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.mm.MMultiLevelModel;
 import org.tzi.use.uml.mm.MultiLevelModelFactory;
 import org.tzi.use.util.SuffixFileFilter;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MLMTestUtil extends TestCase {
@@ -184,6 +182,15 @@ public class MLMTestUtil extends TestCase {
                 ));
     }
 
+    public List<String> getInvariants(MMultiLevelModel mlm, String modelName, String className) {
+        MClass cls = mlm.getClass(modelName, className);
+
+        return mlm.allClassInvariants(cls)
+                .stream()
+                .map(Objects::toString)
+                .toList();
+    }
+
 
     public void assertRolesEqual(String modelName, String className ,Map<String,String> expectedRoles, MMultiLevelModel mlmResult ) {
         Map<String, String> actualRoles = getRoles(mlmResult, modelName, className);
@@ -193,5 +200,10 @@ public class MLMTestUtil extends TestCase {
     public void assertAttributesEqual(String modelName, String className, Map<String, String> expectedAttributes, MMultiLevelModel mlmResult) {
         Map<String, String> actualAttributes = getAttributes(mlmResult, modelName, className);
         Assertions.assertThat(actualAttributes).containsExactlyInAnyOrderEntriesOf(expectedAttributes);
+    }
+
+    public void assertInvariantsEqual(String modelName, String className, List<String> expectedInvariants, MMultiLevelModel mlmResult){
+        List<String> actualInvariants = getInvariants(mlmResult, modelName, className);
+        Assertions.assertThat(expectedInvariants).containsExactlyInAnyOrderElementsOf(actualInvariants);
     }
 }

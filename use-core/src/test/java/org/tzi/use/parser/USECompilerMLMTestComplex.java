@@ -51,7 +51,7 @@ public class USECompilerMLMTestComplex extends TestCase {
     public void testMLMSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 45);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH, ".use", 47);
         // add all the example files which should have no errors
         File[] files = TEST_PATH.listFiles( new SuffixFileFilter(".use") );
         assertNotNull(files);
@@ -554,6 +554,250 @@ public class USECompilerMLMTestComplex extends TestCase {
     }
 
 
+    /**
+     * local constraints should be inherited through clabject inheritance like normal inheritance
+     */
+    public void test_local_constraints_inheritance_with_clabjects_Spec() {
+        File mlmFile = new File(TEST_PATH + "/local_constraints_inheritance_with_clabjects.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
 
+        MLMTestUtil.getInstance().assertInvariantsEqual("M1", "A3", List.of("M1@A1::M1@invA1", "M1@A2::M1@invA2", "M1@A3::M1@invA3"), mlmResult);
+        MLMTestUtil.getInstance().assertInvariantsEqual("M2", "B3", List.of("M1@A1::M1@invA1", "M1@A2::M1@invA2", "M1@A3::M1@invA3", "M2@B1::M2@invB1", "M2@B2::M2@invB2", "M2@B3::M2@invB3"), mlmResult);
+        MLMTestUtil.getInstance().assertInvariantsEqual("M3", "C3", List.of("M1@A1::M1@invA1", "M1@A2::M1@invA2", "M1@A3::M1@invA3", "M2@B1::M2@invB1", "M2@B2::M2@invB2", "M2@B3::M2@invB3", "M3@C1::M3@invC1", "M3@C2::M3@invC2", "M3@C3::M3@invC3"), mlmResult);
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            // Class M1@A3 invariant checks
+            systemApi.createObject("M1@A3", "a3");
+            systemApi.setAttributeValue("a3", "attrA1", "3");
+            systemApi.setAttributeValue("a3", "attrA2", "3");
+            systemApi.setAttributeValue("a3", "attrA3", "3");
+            Assert.assertFalse(systemApi.checkState());
+
+            systemApi.setAttributeValue("a3", "attrA1", "6");
+            systemApi.setAttributeValue("a3", "attrA2", "6");
+            systemApi.setAttributeValue("a3", "attrA3", "6");
+            Assert.assertTrue(systemApi.checkState());
+            // ==================================================================================
+
+            // Class M2@B3 invariant checks
+            systemApi.createObject("M2@B3", "b3");
+            systemApi.setAttributeValue("b3", "attrA1", "6");
+            systemApi.setAttributeValue("b3", "attrA2", "6");
+            systemApi.setAttributeValue("b3", "attrA3", "6");
+            systemApi.setAttributeValue("b3", "attrB1", "6");
+            systemApi.setAttributeValue("b3", "attrB2", "6");
+            systemApi.setAttributeValue("b3", "attrB3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrA1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrA1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrA2", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrA2", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrA3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrA3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrB1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrB1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrB2", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrB2", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrB3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrB3", "6");
+            Assert.assertTrue(systemApi.checkState());
+            // ==================================================================================
+
+            // Class M3@C3 invariant checks
+            systemApi.createObject("M3@C3", "c3");
+            systemApi.setAttributeValue("c3", "attrA1", "6");
+            systemApi.setAttributeValue("c3", "attrA2", "6");
+            systemApi.setAttributeValue("c3", "attrA3", "6");
+            systemApi.setAttributeValue("c3", "attrB1", "6");
+            systemApi.setAttributeValue("c3", "attrB2", "6");
+            systemApi.setAttributeValue("c3", "attrB3", "6");
+            systemApi.setAttributeValue("c3", "attrC1", "6");
+            systemApi.setAttributeValue("c3", "attrC2", "6");
+            systemApi.setAttributeValue("c3", "attrC3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrA1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrA1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrA2", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrA2", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrA3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrA3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrB1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrB1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrB2", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrB2", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrB3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrB3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrC1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrC1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrC2", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrC2", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrC3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrC3", "6");
+            Assert.assertTrue(systemApi.checkState());
+            // ==================================================================================
+
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+    }
+
+    /**
+     * local constraints should be inherited through clabject inheritance like normal inheritance unless removed
+     */
+    public void test_local_constraints_inheritance_with_clabjects_with_constraint_removal_Spec() {
+        File mlmFile = new File(TEST_PATH + "/local_constraints_inheritance_with_clabjects_with_constraint_removal.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        MLMTestUtil.getInstance().assertInvariantsEqual("M1", "A3", List.of("M1@A1::M1@invA1", "M1@A2::M1@invA2", "M1@A3::M1@invA3"), mlmResult);
+        MLMTestUtil.getInstance().assertInvariantsEqual("M2", "B3", List.of("M1@A1::M1@invA1", "M1@A3::M1@invA3", "M2@B1::M2@invB1", "M2@B2::M2@invB2", "M2@B3::M2@invB3"), mlmResult);
+        MLMTestUtil.getInstance().assertInvariantsEqual("M3", "C3", List.of("M1@A1::M1@invA1", "M1@A3::M1@invA3", "M2@B1::M2@invB1", "M2@B3::M2@invB3", "M3@C1::M3@invC1", "M3@C2::M3@invC2", "M3@C3::M3@invC3"), mlmResult);
+
+        MLMSystem mlmSystem = new MLMSystem(mlmResult);
+        UseSystemApi systemApi = new UseSystemApiUndoable(mlmSystem);
+        try {
+            // Class M1@A3 invariant checks
+            systemApi.createObject("M1@A3", "a3");
+            systemApi.setAttributeValue("a3", "attrA1", "3");
+            systemApi.setAttributeValue("a3", "attrA2", "3");
+            systemApi.setAttributeValue("a3", "attrA3", "3");
+            Assert.assertFalse(systemApi.checkState());
+
+            systemApi.setAttributeValue("a3", "attrA1", "6");
+            systemApi.setAttributeValue("a3", "attrA2", "6");
+            systemApi.setAttributeValue("a3", "attrA3", "6");
+            Assert.assertTrue(systemApi.checkState());
+            // ==================================================================================
+
+            // Class M2@B3 invariant checks
+            systemApi.createObject("M2@B3", "b3");
+            systemApi.setAttributeValue("b3", "attrA1", "6");
+            systemApi.setAttributeValue("b3", "attrA3", "6");
+            systemApi.setAttributeValue("b3", "attrB1", "6");
+            systemApi.setAttributeValue("b3", "attrB2", "6");
+            systemApi.setAttributeValue("b3", "attrB3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrA1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrA1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrA3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrA3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrB1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrB1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrB2", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrB2", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("b3", "attrB3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("b3", "attrB3", "6");
+            Assert.assertTrue(systemApi.checkState());
+            // ==================================================================================
+
+            // Class M3@C3 invariant checks
+            systemApi.createObject("M3@C3", "c3");
+            systemApi.setAttributeValue("c3", "attrA1", "6");
+            systemApi.setAttributeValue("c3", "attrA3", "6");
+            systemApi.setAttributeValue("c3", "attrB1", "6");
+            systemApi.setAttributeValue("c3", "attrB3", "6");
+            systemApi.setAttributeValue("c3", "attrC1", "6");
+            systemApi.setAttributeValue("c3", "attrC2", "6");
+            systemApi.setAttributeValue("c3", "attrC3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrA1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrA1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrA3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrA3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrB1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrB1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrB3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrB3", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrC1", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrC1", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrC2", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrC2", "6");
+            Assert.assertTrue(systemApi.checkState());
+
+            systemApi.setAttributeValue("c3", "attrC3", "3");
+            Assert.assertFalse(systemApi.checkState());
+            systemApi.setAttributeValue("c3", "attrC3", "6");
+            Assert.assertTrue(systemApi.checkState());
+            // ==================================================================================
+
+        } catch (Exception e) {
+            fail("Objects and links creation setup should not fail");
+        }
+    }
 
 }

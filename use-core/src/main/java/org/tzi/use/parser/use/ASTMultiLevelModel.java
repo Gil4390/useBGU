@@ -128,7 +128,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             mlmContext.reportError(fName,
                                     "Attribute " + attr.name()
                                     + "\n\tthat is accessed by invariant " + inv.name()
-                                    + "\n\tin " + clab.name() + " is not inherited");
+                                    + "\n\tin " + clab.name() + " is missing");
                         }
                     }
                 }
@@ -169,7 +169,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                                 mlmContext.reportWarning(fName,
                                         "Role " + end.name()
                                                 + "\n\tthat is accessed by a invariant " + inv.name()
-                                                + "\n\tin "+ clab.name() +" is not inherited");
+                                                + "\n\tin "+ clab.name() +" is missing");
                                 continue;
                             }
 

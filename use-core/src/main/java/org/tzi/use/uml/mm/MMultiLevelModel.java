@@ -277,4 +277,27 @@ public class MMultiLevelModel extends MMultiModel {
         }
         return res;
     }
+
+    public Set<MClassInvariant> allClassInvariants(MClass cls) {
+        Set<MClassInvariant> res = cls.model().classInvariants(cls);
+
+         for (MClass parent : cls.parents()){
+             Set<MClassInvariant> parentConstraints = this.allClassInvariants(parent);
+             res.addAll(parentConstraints);
+             //check if the inheritance is of type clabject, if so the invariant might have been removed.
+             if (!parent.model().equals(cls.model())) {
+                 MGeneralization edge = cls.model().generalizationGraph().edgesBetween(cls, parent).iterator().next();
+                 MClabject clabject = ((MClabject) edge);
+
+                 for (MClassInvariant inv : parentConstraints){
+                     if (clabject.getRemovedConstraints().contains(inv)){
+                         res.remove(inv);
+                     }
+                 }
+
+             }
+         }
+
+        return res;
+    }
 }
