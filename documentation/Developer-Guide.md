@@ -47,13 +47,13 @@ When receiving a file, USE first tries to parse it using the parsing rules locat
 
 Let’s look at an example of parsing a regular model:
 
-![](parsingRules1.png)
+![](images/parsingRules1.png)
 
 At first, we have a comment explaining the parsing rule, which in this case simply states that we call another parsing rule called internal\_model and a parsing rule that parses the EOF (end of file) character. Some parsing rules can return a java object, while others do not. In this example, the “model” parsing rule returns a java object called ASTModel (take note of that tricky syntax: the result of the “internal\_model” parsing rule is saved in a variable called ‘m’, and in the curly bracket is being set to the ‘n’ variable which was declared in line 288)
 
 Let's look at a more complex parsing rule:
 
-![](parsingRules2.png)
+![](images/parsingRules2.png)
 
 Again we see that first, we have a comment explaining what the parsing rule does, and then the parsing rule itself,
 
@@ -77,12 +77,12 @@ The result of the gen function of an AST class is an M class, so for ASTModel, t
 
 Partial diagram of some of the AST Classes:
 
-![](ASTDiagram.png)
+![](images/ASTDiagram.png)
 
 # 4. M Classes
 The final classes that represent the parsed model
 
-![](MClassDiagram.png)
+![](images/MClassDiagram.png)
 
 Partial diagram showing important M classes.
 
@@ -115,10 +115,10 @@ Now you should have a rough understanding of how USE works. When we first starte
 ## 5.1. Naming Convention
 Because in USE every element has to have a unique name, if there were two classes with the same name in different models this would cause an error, so we decided that for internal classes and associations, a prefix would be added to their name, the prefix is the name of the model and an ‘@’ sign
 
-## 5.2. Parsing rules that were added:![](multiParsingRules1.png)![](multiParsingRules2.png)
+## 5.2. Parsing rules that were added:![](images/multiParsingRules1.png)![](images/multiParsingRules2.png)
 
 ## 5.3. AST Classes that were added:
-![](ASTMultiClassesDiagram.png)
+![](images/ASTMultiClassesDiagram.png)
 
 **ASTMultiModel.java:**
 
@@ -161,7 +161,7 @@ gen graph data structure - each one of the internal models has its own gen graph
 Since a multi-model is a model, there was no need for any modifications to the object diagram
 
 
-![](MultiMClassDiagram.png)
+![](images/MultiMClassDiagram.png)
 
 ## 5.5. Testing of Multi-Model
 Testing is done in the following classes:
@@ -176,14 +176,14 @@ Testing is done in the following classes:
 An MLM is a multi-model where the models are ordered into levels, with extra elements called Mediators; a mediator can add additional relationships between 2 models of adjacent levels.
 
 ## 6.1. Parsing rules that were added:
-![](mlmParsingRules1.png)
-![](mlmParsingRules2.png)
-![](mlmParsingRules3.png)
-![](mlmParsingRules4.png)
-![](mlmParsingRules5.png)
+![](images/mlmParsingRules1.png)
+![](images/mlmParsingRules2.png)
+![](images/mlmParsingRules3.png)
+![](images/mlmParsingRules4.png)
+![](images/mlmParsingRules5.png)
 
 ##  6.2. AST Classes that were added:
-![](mlmASTDiagram.png)
+![](images/mlmASTDiagram.png)
 
 
 ## 6.3. M Classes that were added:
@@ -193,13 +193,13 @@ when parsing an MLM we first parse the models as part of a multi-model, the next
 
 **MMultiLevelModel:**
 
-![](mlmASTDiagram.png)
+![](images/mlmASTDiagram.png)
 
 **MMediator:**
 
 As the name suggests, the mediator mediates between 2 models and applies a hierarchy of instantiation between them
 
-![](mlmMediatorDiagram.png)
+![](images/mlmMediatorDiagram.png)
 
 **MClabject:**
 
@@ -244,11 +244,11 @@ Created to override a method called isAssignableFrom, which is used by the GUI w
 This Class is used to override the calculateExpandedExpression method of the MClassInvariant class.
 
 
-![](mlmMediatorDiagram.png)
+![](images/mlmMediatorDiagram.png)
 
 **MLMSystem:**
 
-![](mlmMediatorDiagram.png)
+![](images/mlmMediatorDiagram.png)
 
 
 **MSystemState:**
@@ -262,7 +262,7 @@ needed to override the method createLink, we had to add additional checks since 
 
 ExpAllInstancesForInv:
 
-![](mlmExpAllInstancesForInvDiagram.png)
+![](images/mlmExpAllInstancesForInvDiagram.png)
 
 
 **How Constraint Validation Works**
