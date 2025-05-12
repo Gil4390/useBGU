@@ -320,7 +320,20 @@ Testing is done in the following classes:
 
 ## 7.2. Model Validator Plugin
 
-[TODO]
+The current state of the Model Validator Plugin is described in the following link:
+https://github.com/Gil4390/useBGU/tree/MLM-USE/use-core/src/test/resources/org/tzi/use/mlmPlugin
+
+The table in the link above explains what MLM-USE features work with the plugin and which ones don't, along with tests that pinpoint the exact issue.
+
+We had a few tries of modifying the base code of the plugin, as it is a bit outdated, but with no major success. The plugin is built around a specific implementation of USE, so changing parts of USE or adding new features (as we did in MLM-USE), causes it to act unexpectedly.
+
+The changes that we made to the plugin can be found in the following repo:
+https://github.com/amielsaa/use_plugins_bgu
+
+explanation on how to run and use the plugin, can be found in the user manual in section 4.2:
+https://github.com/Gil4390/useBGU/blob/MLM-USE/documentation/MLM-Documentation/user-manual.md
+
+
 ## 7.3. How to Add Plugins to Dev Environment:
 1. In the directory: ‘\use-core\target’, create a new directory named ‘lib’, inside lib create another directory named ‘plugins’. The path should look like so: ‘\use-core\target\lib\plugins’
 2. Inside this directory, drop the JAR files of the plugins
