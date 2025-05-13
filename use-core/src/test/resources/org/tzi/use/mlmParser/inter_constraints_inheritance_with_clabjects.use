@@ -1,0 +1,95 @@
+MLM mlm1
+
+  model M1
+    class A1
+      attributes
+        attrA1: Integer
+    end
+
+    class A2 < A1
+      attributes
+        attrA2: Integer
+    end
+
+    class A3 < A2
+      attributes
+        attrA3: Integer
+    end
+
+
+  model M2
+    class B1
+      attributes
+        attrB1: Integer
+    end
+
+    class B2 < B1
+      attributes
+        attrB2: Integer
+    end
+
+    class B3 < B2
+      attributes
+        attrB3: Integer
+    end
+
+
+  model M3
+    class C1
+      attributes
+        attrC1: Integer
+    end
+
+    class C2 < C1
+      attributes
+        attrC2: Integer
+    end
+
+    class C3 < C2
+      attributes
+        attrC3: Integer
+    end
+
+
+inter-constraints
+  context M1@A1
+    inv invA1:
+      self.attrA1 > 5
+  context M1@A2
+    inv invA2:
+      self.attrA2 > 5
+  context M1@A3
+    inv invA3:
+      self.attrA3 > 5
+  context M2@B1
+    inv invB1:
+      self.attrB1 > 5
+  context M2@B2
+    inv invB2:
+      self.attrB2 > 5
+  context M2@B3
+    inv invB3:
+      self.attrB3 > 5
+  context M3@C1
+    inv invC1:
+      self.attrC1 > 5
+  context M3@C2
+    inv invC2:
+      self.attrC2 > 5
+  context M3@C3
+    inv invC3:
+      self.attrC3 > 5
+    
+mediator M1 < NONE
+end
+
+mediator M2 < M1
+  clabject B3 : A3
+  end
+end
+
+mediator M3 < M2
+  clabject C3 : B3
+  end
+end
+

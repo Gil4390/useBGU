@@ -259,6 +259,9 @@ public class MMultiLevelModel extends MMultiModel {
         return new ArrayList<>();
     }
 
+    // given a class and an invariant, calculates the subclasses that the invariant should be checked for
+    // if the invariant is a local invariant (meaning it's defined within a model) then unless removed in a clabject it is applied to all subclasses
+    // if the invariant is an inter-invariant then it's only applied to subclasses within the scope of the model of the base class
     public Set<MClass> subClassesOfClassForInvariant(MClass cls, MClassInvariant inv){
         Set<MClass> res = new HashSet<>();
         Set<MClass> children = ((MInternalClassImpl) cls).children();
@@ -271,6 +274,9 @@ public class MMultiLevelModel extends MMultiModel {
                 if (clabject.getRemovedConstraints().contains(inv)){
                     continue;
                 }
+                if (this.interInvariants().contains(inv)){
+                    continue;
+                }
             }
             res.add(child);
             res.addAll(subClassesOfClassForInvariant(child, inv));
@@ -279,7 +285,10 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
     public Set<MClassInvariant> allClassInvariants(MClass cls) {
+        //local constraints
         Set<MClassInvariant> res = cls.model().classInvariants(cls);
+        //inter-constraints
+        res.addAll(this.classInvariants(cls));
 
          for (MClass parent : cls.parents()){
              Set<MClassInvariant> parentConstraints = this.allClassInvariants(parent);
@@ -291,6 +300,9 @@ public class MMultiLevelModel extends MMultiModel {
 
                  for (MClassInvariant inv : parentConstraints){
                      if (clabject.getRemovedConstraints().contains(inv)){
+                         res.remove(inv);
+                     }
+                     if (this.interInvariants().contains(inv)){
                          res.remove(inv);
                      }
                  }
