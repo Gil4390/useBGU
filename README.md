@@ -6,22 +6,19 @@ Developer guide can be found here [Developer-Guide Link](documentation/Developer
 
 ## Content:
 
-1. Specification of a Multi-Level Model in MLM-USE
-2. Running MLM-USE
-   - 2.1. MLM-USE Graphical User Interface
-   - 2.2. Visual presentation of a MedMLM model in MLM-USE
-3. Semantics of MLM-USE Models
-   - 3.1. defining object diagrams
-   - 3.2. Inheritance of features over instance-of relations
-4. Metadata Queries, Model Satisfiability and Well-definedness
-   - 4.1. Metadata queries
-   - 4.2. Model satisfiability
-   - 4.3. Model Well-Definedness
-      1. Checking well Definedness
-      2. Model mediators elements
-      3. Object View of a level class model
-- Appendix A: Conflicts and Warnings
-- Appendix B: Formal Definition of MedMLM Model Specification
+1. [Specification of a Multi-Level Model in MLM-USE](#1-models-definition)
+2. [Running MLM-USE](#2-running-mlm-use)
+   1. [MLM-USE Graphical User Interface](#21-graphical-user-interface)
+   2. [Visual presentation of a MedMLM model in MLM-USE](#22-visual-presentation-of-a-medmlm-model-in-mlm-use)
+3. [Semantics of MLM-USE Models](#3-semantics-of-mlm-use-models)
+   1. [Defining object diagrams](#31-defining-object-diagrams)
+   2. [Inheritance of features over instance-of relations](#32-checking-legality-of-an-object-diagram)
+4. [Metadata Queries, Model Satisfiability and Well-definedness](#4-metadata-queries-model-satisfiability-and-well-definedness)
+   1. [Metadata queries](#41-metadata-queries)
+   2. [Model satisfiability](#42-model-satisfiability)
+   3. [Model Well-Definedness](#43-model-well-definedness)
+5. [Appendix A: Conflicts and Warnings](#5-appendix-a-conflicts-and-warnings-in-model-loading)
+6. [Appendix B: Formal Definition of MedMLM Model Specification](#6-appendix-b-formal-definition-of-medmlm-model-specification)
 
 **Running MedMLM model for this manual:**
 
@@ -500,7 +497,7 @@ Well-definedness is a syntactic restriction on MedMLM models that guarantee that
 
 In MLM-USE, well-definedness of a MedMLM model is done via the graphic interface:
 
-#### Checking Well-Definedness
+#### 4.3.1. Checking Well-Definedness
 
 ![Well-Definedness Check](https://github.com/user-attachments/assets/39bb959e-451a-4b28-98bd-c5a8a2bd2e31)
 
@@ -555,7 +552,7 @@ Examples of checking well-definedness:
 ![Well-Definedness Example 4](https://github.com/user-attachments/assets/4bbab6d1-dff9-42ae-b349-cb0e7ca8558d)
 
 
-## Appendix A: Conflicts and Warnings in Model loading
+## 5. Appendix A: Conflicts and Warnings in Model loading
 
 The following section showcases the possible warnings that can appear while loading an MLM file, and the conditions that led to that warning.
 
@@ -626,7 +623,7 @@ The following section showcases the possible warnings that can appear while load
 1. Multiple inheritance can arise from powerclasses or superclasses.
 2. **Suggestion:** Check possibility of cancelling or renaming from a powerclass.
 
-## Appendix B: Formal Definition of MedMLM model specification
+## 6. Appendix B: Formal Definition of MedMLM model specification
 
 [explanation on how to define an MLM, similarly to how they explained it in use: https://github.com/useocl/use/blob/20f1ab4e3229edcf59e19c5717a73454dba9f243/manual/main.md#specifying-a-uml-model-with-use](https://github.com/useocl/use/blob/20f1ab4e3229edcf59e19c5717a73454dba9f243/manual/main.md#specifying-a-uml-model-with-use)
 
