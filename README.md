@@ -2,9 +2,27 @@
 
 MLM-USE is a modeling application for models of MedMLM -- a multi level modeling approach.
 
+This tool was developed as an extension of the existing [USE](https://github.com/useocl/use) tool to support multi level modeling
+
+Developed by:
+- Gil Khais - gil4390@gmail.com
+- Amiel Saad - amielsd09@gmail.com
+
+With the advisory of:
+- Mira Balaban - mira@cs.bgu.ac.il
+- Azzam Maraee - mari@cs.bgu.ac.il
+- Arnon Sturm - sturm@bgu.ac.il
+- Lars Hamann - lars.hamann@haw-hamburg.de
+
+
 Developer guide can be found here [Developer-Guide Link](documentation/Developer-Guide.md)
 
-## Content:
+
+### Refrences:
+- [MedMLM_USE_MULTI24](MedMLM_USE_MULTI24.pdf)
+- [Formal Executable Theory of Multilevel Modeling](Formal%20Executable%20Theory%20of%20Multilevel%20Modeling.pdf)
+
+## Table of Contents:
 
 1. [Specification of a Multi-Level Model in MLM-USE](#1-models-definition)
 2. [Running MLM-USE](#2-running-mlm-use)
