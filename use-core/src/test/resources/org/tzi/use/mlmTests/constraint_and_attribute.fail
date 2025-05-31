@@ -1,3 +1,3 @@
 constraint_and_attribute.use:1:4: Attribute a1
 	that is accessed by invariant AB@i1
-	in CLABJECT___CD@C___AB@A is missing
+	in CLABJECT___CD@C___AB@A not inherited

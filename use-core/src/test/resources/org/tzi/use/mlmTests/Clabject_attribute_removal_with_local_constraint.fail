@@ -1,3 +1,3 @@
 Clabject_attribute_removal_with_local_constraint.use:1:4: Attribute attr1
 	that is accessed by invariant M1@i1
-	in CLABJECT___M2@C___M1@D is missing
+	in CLABJECT___M2@C___M1@D not inherited
