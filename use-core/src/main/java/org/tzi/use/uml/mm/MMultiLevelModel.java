@@ -271,6 +271,11 @@ public class MMultiLevelModel extends MMultiModel {
             if (!child.model().equals(cls.model())) {
                 MGeneralization edge = cls.model().generalizationGraph().edgesBetween(child, cls).iterator().next();
                 MClabject clabject = ((MClabject) edge);
+                if (inv == null){
+                    // if the invariant is null than this function was called as part of the eval of an allInstances expression from a user defined allInstances
+                    // and not during the creation of an ExpAllInstancesForInv which happens as the initial calculation for an invariant
+                    continue;
+                }
                 if (clabject.getRemovedConstraints().contains(inv)){
                     continue;
                 }
