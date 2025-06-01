@@ -23,7 +23,7 @@ import org.antlr.runtime.Token;
 import org.tzi.use.parser.Context;
 import org.tzi.use.parser.SemanticException;
 import org.tzi.use.uml.mm.MClassifier;
-import org.tzi.use.uml.mm.MMultiLevelModel;
+import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.ocl.expr.ExpAllInstances;
 import org.tzi.use.uml.ocl.expr.ExpAllInstancesForInv;
 import org.tzi.use.uml.ocl.expr.ExpInvalidException;
@@ -56,11 +56,13 @@ public class ASTAllInstancesExpression extends ASTExpression {
         }
         
         try {
-            if (ctx.model() instanceof MMultiLevelModel) {
-                res = new ExpAllInstancesForInv(cls, null);
+            // if parsing a regular MModel then use ExpAllInstances
+            if (ctx.model().getClass() == MModel.class) {
+                res = new ExpAllInstances(cls);
             }
             else{
-                res = new ExpAllInstances(cls);
+                // if parsing an MInternalModel as part of an MLM then use ExpAllInstancesForInv
+                res = new ExpAllInstancesForInv(cls, null);
             }
             if (isPre()) res.setIsPre();
         } catch (ExpInvalidException ex) {

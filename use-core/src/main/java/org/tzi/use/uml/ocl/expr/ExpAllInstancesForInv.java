@@ -59,4 +59,8 @@ public class ExpAllInstancesForInv extends ExpAllInstances{
         ctx.exit(this, res);
         return res;
     }
+
+    public void setInvariant(MClassInvariant invariant) {
+        this.invariant = invariant;
+    }
 }

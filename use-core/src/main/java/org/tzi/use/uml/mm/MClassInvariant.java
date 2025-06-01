@@ -391,4 +391,10 @@ public class MClassInvariant extends MModelElementImpl implements UseFileLocatab
     public void processWithVisitor(MMVisitor v) {
         v.visitClassInvariant(this);
     }
+
+    public void setExpAllInstancesForInv() {
+        // using the expression visitor, go through all the nested expressions, and set any ExpAllInstancesForInv with 'this' invariant
+        fBody.processWithVisitor(new ExpressionVisitorExpAllInstances(this));
+        fExpanded.processWithVisitor(new ExpressionVisitorExpAllInstances(this));
+    }
 }

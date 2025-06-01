@@ -85,7 +85,7 @@ public class ASTInvariantClause extends ASTAnnotatable {
 			}
             
             inv = onCreateMClassInvariant(ctx, cf, varNames, expr, invName);
-            
+            inv.setExpAllInstancesForInv(); // needed to set the invariant for the ExpAllInstancesForInv since it's created before the invariant is created
             this.genAnnotations(inv);
             
             // sets the line position of the USE-Model in this  invariant
