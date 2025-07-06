@@ -1,1 +1,429 @@
+MLM Warehouse
+
+-- Continues V8:  Warehouse transaction management
+-- ProductSpecType: 
+--
+-- ProductSpec: 
+--
+-- ProductItem: Add TransactionPST, AddPSTTr, RemovePSTTr classes.
+-- 
+-- interAssociation between TransactionPST and ProductSpecType
+
+
+
+-- *********Model Definitiones**********************
+model ProductSpecFamily
+  class ProductSpecType
+    attributes
+	  pSpecTypeLabel: String
+	    -- pSpecTypeLabel characterizes productSpecTypes, productSpecs, but not productCopies.
+	  taxRate: Integer
+		-- Category attribute.
+	  currency: String
+	  soldProductCopiesPrice: Integer
+	    -- Category attribute. But: clabject has its own "soldProdCopiesPrice" attribute 
+  end
+	
+  class BookSpecType < ProductSpecType
+    attributes
+	  genre : String	
+	   -- genre characterizes booktypes, bookSpecs, but not bookCopies.	   
+  end
+
+  constraints
+context ProductSpecType
+inv taxRateValue:
+-- BookSpecTypes have taxRate=7. All others: 15
+  not self.oclIsKindOf(BookSpecType) implies self.taxRate = 15
+
+context BookSpecType
+inv bookTaxRateValue:
+-- BookSpecType objects have taxRate=7. 
+  self.taxRate = 7
+
+
+-- ;;;;;;;;;;;;;;;;;;;
+model ProductSpec
+  class ProductSpec 
+	attributes
+	  SSP:Integer
+	   -- SSP is a category attribute. Characterizes only category-objects of ProductSpec
+	  soldProductCopiesPrice: Integer
+       -- Category attribute	  
+  end
+	
+  class BookSpec < ProductSpec
+	attributes
+  end
+
+  class SaleMode
+	attributes
+  end
+
+  class BulkMode < SaleMode
+	attributes
+  end	
+	
+  class IndividualMode < SaleMode
+	attributes
+  end	
+  
+  class BulkByWeight < BulkMode
+	attributes
+	  weight: Integer
+  end	  
+  
+  class BulkByQuantity < BulkMode
+	attributes
+	  quantity: Integer
+  end	    
+
+-- associations 
+  association saleMode between
+    ProductSpec[0..*] role pSpec
+	SaleMode[1..*] role sale
+  end
+  
+  association recommend between
+    ProductSpec[0..*] role recommender
+	ProductSpec[0..*] role recommended
+  end
+
+  constraints
+
+  
+-- ;;;;;;;;;;;;;;;;;;;
+model ProductItem
+  class ProductCopy
+    attributes
+	  serialNumber:String
+      weight: Integer
+      quantity: Integer	  
+	  reducedPrice:Integer
+	   -- tax not included
+	  finalPrice:Real
+	  isSold:Boolean
+  end
+
+  class BookCopy < ProductCopy
+	attributes
+  end
+
+  class Warehouse
+	attributes
+	  soldProductCopiesPrice: Integer
+  end
+
+  class TransactionPST
+	attributes
+	  date: String
+  end
+
+  class AddPSTTr < TransactionPST
+	attributes
+  end
+
+  class RemovePSTTr < TransactionPST
+	attributes
+  end
+
+  class Location
+	attributes
+  end
+
+  class StorageArea
+	attributes
+	  pSpecTypeLabel:String
+  end
+
+  class BookStorageArea < StorageArea
+	attributes
+	 genre:String
+  end
+	
+-- ;; associations ;;;;;;;;;;;;;;;;;
+-- Navigation decision: One way: Warehouse-->Copy
+  association warehousePCopy between
+    Warehouse[1] role warehousePCopy
+	ProductCopy[0..*] role pCopy
+  end
+
+  association warehousePSTTr between
+    Warehouse[0..*] role warehousePSTTr
+	TransactionPST[1] role transactionPST
+  end
+
+  association productLocation between
+    ProductCopy[0..1] role pCopyLocation
+	Location[1] role location
+  end
+
+  association locationArea between
+    Location[1..*] role location
+	StorageArea[1] role area
+  end
+  
+  constraints
+context ProductCopy
+inv finalPriceDefined:
+-- if isSold  then  finalPrice<>null
+  self.isSold implies self.finalPrice <> null 
+
+context Warehouse
+inv singletonWarehouse:
+---  Warehouse is a *singelton*
+Warehouse.allInstances()-> size() = 1
+
+context Warehouse
+inv allPCopies:
+-- Warehouse.pCopy includes all ProductCopy objects
+--  self.pCopy -> includesAll(ProductCopy.allInstances())
+ProductCopy.allInstances() -> forAll(pC|self.pCopy -> includes(pC))
+
+context Warehouse
+inv soldCopies:
+-- The warehouse keeps the total price of the sold product Copies.
+self.soldProductCopiesPrice= 
+   self.pCopy -> select(isSold) -> collect(finalPrice) -> sum()
+ 
+-- ************end of models****************************	
+
+
+-- ;;;;;;;;;;;;;;;;;;;
+inter-associations
+-- ;;;;;;;;;;;;;;;;
+
+-- **instanceOf** inter-associations
+-- Navigation decision: One way: Spec--> type
+association instanceOfProductSpecType between
+  ProductSpecFamily@ProductSpecType[1] role pSpecTypeCategory 
+  ProductSpec@ProductSpec[0..*] role instancePSpec
+end
+
+-- Navigation decision: One way: Copy-->Spec
+association instanceOfProductSpec between
+  ProductSpec@ProductSpec[1] role pSpecCategory
+  ProductItem@ProductCopy[0..*] role instancePCopy
+end
+
+-- Navigation decision: One way: Warehouse-->ProductSpec
+association warehousePSpec between
+  ProductItem@Warehouse[1] role warehousePSpec
+  ProductSpec@ProductSpec[0..*] role pSpec
+end
+
+-- Navigation decision: One way: Warehouse-->ProductSpecType
+association warehousePSpecType between
+  ProductItem@Warehouse[1] role warehousePSpecType
+  ProductSpecFamily@ProductSpecType[0..*] role pSpecType
+end
+
+  association transactionPST between
+    ProductSpecFamily@ProductSpecType[1] role pSTTr
+	ProductItem@TransactionPST[0..*] role transactionPST
+  end
+
+-- ;;;;;;;;;;;;;;;;;;;
+inter-constraints
+-- ;;;;;;;;;;;;;;;;
+
+-- **pattern constraints**
+
+-- ***parallel instance-of subclassing structures***
+
+context ProductSpec@BookSpec
+inv BookSpecTypeCategory:
+-- BookSpec objects are linked via pSpecTypeCategory to BookSpecType objects 
+  self.pSpecTypeCategory.oclIsKindOf(ProductSpecFamily@BookSpecType)
+
+context ProductItem@BookCopy
+inv BookSpecCategory:
+-- BookCopy objects are linked via pSpecCategory to BookSpec objects 
+  self.pSpecCategory.oclIsKindOf(ProductSpec@BookSpec)  
+
+
+--;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+-- **Standard** inter-constraints
+
+-- Type constraints:
+--------------------
+
+-- Spec constraints:
+--------------------
+context ProductSpec@ProductSpec 
+inv currencyEqTypeCurrency:
+-- The currency of a ProductSpec is equal to its type currency. 
+   self.currency = self.pSpecTypeCategory.currency 
+
+context ProductSpec@ProductSpec
+inv recommendationSpecType:
+-- A recommender and a recommended Spec objects have the same type 
+  self.recommended -> forAll(pS | pS.pSpecTypeCategory = self.pSpecTypeCategory)
+
+-- Copy constraints:
+--------------------
+context ProductItem@ProductCopy 
+inv currencyEqSpecCurrency:
+-- The currency of a ProductCopy is equal to its ProductSpec currency. 
+   self.currency = self.pSpecCategory.currency 
+
+context ProductItem@ProductCopy 
+inv reducedPrice:
+-- the reducedPrice value of every ProductCopy object does not axceed the SSP-Cl value 
+  self.reducedPrice <= self.pSpecCategory.SSP
+
+-- ;;; SaleMode constraints
+context ProductItem@ProductCopy 
+inv individualCopyID:
+-- a ProductCopy object that is marked as individualy sold, must have a non null "serialNumber" value  
+  self.pSpecCategory.sale -> exists(o|o.oclIsKindOf(ProductSpec@IndividualMode)) implies 
+     self.serialNumber <> null
+	 
+context ProductItem@ProductCopy 
+inv BulkCopyByWeight:
+-- a ProductCopy object that is marked as BulkByWeight sold, must have a non null "weight" value  
+  self.pSpecCategory.sale -> exists(o|o.oclIsKindOf(ProductSpec@BulkByWeight)) implies 
+     self.weight <> null	 
+	 
+context ProductItem@ProductCopy 
+inv BulkCopyByQuantity:
+-- a ProductCopy object that is marked as BulkByQuantity sold, must have a non null "quantity" value  
+  self.pSpecCategory.sale -> exists(o|o.oclIsKindOf(ProductSpec@BulkByQuantity)) implies 
+     self.quantity <> null	 
+
+-- ;;; Area constraints
+context ProductItem@ProductCopy 
+inv productCopyStorageArea:
+-- a ProductCopy object is stored in an area that is marked by its product type label  
+  self.location.area.pSpecTypeLabel = self.pSpecCategory.pSpecTypeLabel
+
+context ProductItem@ProductCopy 
+inv finalPriceComputation:
+--finalPrice= reducedPrice * (1+pSpecCategory.pSpecTypeCategory.taxRate)
+  self.finalPrice = self.reducedPrice * (1+(self.pSpecCategory.pSpecTypeCategory.taxRate)/100)
+
+context ProductItem@BookCopy 
+inv bookCopyStorageByGenre:
+-- a BookCopy object is stored in an area that is marked by its genre label  
+  self.location.area.oclIsKindOf(ProductItem@BookStorageArea) 
+  and 
+  self.location.area.oclAsType(ProductItem@BookStorageArea).genre = 
+      self.pSpecCategory.oclAsType(ProductSpec@BookSpec).genre  
+
+-- ******Warehouse constraints******
+context ProductItem@Warehouse
+inv allPSpecs:
+-- Warehouse.pSpec includes all ProductSpec objects
+--  self.pSpec -> includesAll(ProductSpec.allInstances())
+ProductSpec@ProductSpec.allInstances() -> forAll(pS|self.pSpec -> includes(pS))
+
+context ProductItem@Warehouse
+inv allPSpectypes:
+-- Warehouse.pSpecType includes all ProductSpecType objects
+--  self.pSpecType -> includesAll(ProductSpecType.allInstances())
+ProductSpecFamily@ProductSpecType.allInstances() -> forAll(pST|self.pSpecType -> includes(pST))
+
+context ProductItem@Warehouse
+inv soldCopiesBySpec:
+-- The warehouse makes sure that the "soldProductCopiesPrice" of a ProductSpec object keeps 
+--    the total price of the sold product Copies of this ProductSpec.
+self.pSpec ->
+  forAll(pS|
+          pS.soldProductCopiesPrice = 
+          self.pCopy -> 
+		    select(pC| pC.pSpecCategory = pS and pC.isSold) -> 
+			collect(finalPrice) -> sum() )
+			
+context ProductItem@Warehouse
+inv soldCopiesBySpecType:
+-- The warehouse makes sure that the "soldProductCopiesPrice" of a ProductSpecType object keeps 
+--    the total price of the sold product Copies of this ProductSpecType.
+self.pSpecType ->
+  forAll(pST|
+          pST.soldProductCopiesPrice = 
+          self.pSpec -> 
+		    select(pS| pS.pSpecTypeCategory = pST) -> 
+			collect(soldProductCopiesPrice) -> sum() )
+
+--context ProductSpecFamily@ProductSpecType 
+--inv sharedCurrencyByCopies:
+-- ***DERIVED CONSTRAINT***: ProductCopies that relate to the same ProductSpec share a common currency value. 
+--   self.instancePSpec.instancePCopy.currency -> size() = 1 
+
+
+-- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+-- ****Mediators****
+-- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+mediator ProductSpecFamily < NONE
+end
+
+mediator ProductSpec < ProductSpecFamily
+  clabject ProductSpec : ProductSpecType
+    attributes
+	  ~taxRate
+	  ~soldProductCopiesPrice
+	roles
+	  ~instancePSpec
+	  ~warehousePSpecType
+	  ~transactionPST
+	constraints
+      ~taxRateValue	
+  end
+
+  clabject BookSpec : BookSpecType
+    attributes
+	  ~pSpecTypeLabel
+	   -- to prevent multiple inheritance conflict
+	  ~taxRate
+	  ~currency
+	   -- to prevent multiple inheritance conflict
+	  ~soldProductCopiesPrice
+    roles
+	  ~instancePSpec
+	  ~warehousePSpecType
+	  ~transactionPST
+	constraints
+	  ~taxRateValue
+	  ~bookTaxRateValue
+  end   
+end
+
+mediator ProductItem < ProductSpec
+  clabject ProductCopy : ProductSpec
+    attributes
+      ~SSP
+	  ~pSpecTypeLabel
+	  ~soldProductCopiesPrice
+    roles
+	  ~pSpecTypeCategory
+	  ~instancePCopy
+	  ~sale
+	  ~recommended
+	  ~recommender
+	  ~warehousePSpec
+    constraints
+  end
+
+  clabject BookCopy : BookSpec
+    attributes
+	  ~SSP
+	  ~pSpecTypeLabel
+      ~genre
+	  ~currency
+	   -- to prevent multiple inheritance conflict
+      ~soldProductCopiesPrice	   
+    roles
+	  ~pSpecTypeCategory
+	  ~instancePCopy
+	  ~sale
+	  ~recommended
+	  ~recommender
+      ~warehousePSpec	  
+    constraints
+  end 
+end
+
+
+
 
