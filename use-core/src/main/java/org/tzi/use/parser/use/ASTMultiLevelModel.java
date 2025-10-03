@@ -164,16 +164,12 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                             }
                             // if its an inter-constraints, and the context class isn't the same as the clabject class, then it shouldn't throw an error.
                             if(mMultiLevelModel.interInvariants().contains(inv) && !inv.cls().equals(clab.child())) continue;
-                            //1. if the role is removed from a clabject that its power-type class isn't the 'context' class, it shouldn't throw an error.
-                            if(!inv.cls().equals(clab.parent())) {
-                                mlmContext.reportWarning(fName,
-                                        "Role " + end.name()
-                                                + "\n\tthat is accessed by a invariant " + inv.name()
-                                                + "\n\tin "+ clab.name() +" not inherited");
+
+                            if (!clab.parent().isSubClassifierOf(inv.cls())){
                                 continue;
                             }
 
-                            //2. if the role is removed from the clabject, and is accessed by an invariant (local), it should throw an error.
+                            // if the role is removed from the clabject, and is accessed by an invariant (local), it should throw an error.
                             mlmContext.reportError(fName,
                                     "Role " + end.name()
                                     + "\n\tis removed by " + clab.name()
