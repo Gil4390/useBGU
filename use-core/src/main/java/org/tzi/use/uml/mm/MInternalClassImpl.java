@@ -136,10 +136,16 @@ public class MInternalClassImpl extends MClassImpl{
         }
 
 
-        // Check that allEnds doesn't contain duplicates, throw error if there is any duplicates
-        Set<String> endSet = new HashSet<>();
+        // Check that allEnds doesn't contain duplicates, throw error if there is any duplicates.
+        // A role name reached twice by the *same* MNavigableElement (e.g. via
+        // a same-level subclass edge and this class's own instance-of edge
+        // both converging on the same association end) is a harmless
+        // diamond, not a conflict -- only two genuinely different elements
+        // sharing a name are ambiguous.
+        Map<String, MNavigableElement> endSet = new HashMap<>();
         for (Map.Entry<String, MNavigableElement> entry : allEnds) {
-            if (!endSet.add(entry.getKey())) {
+            MNavigableElement previous = endSet.putIfAbsent(entry.getKey(), entry.getValue());
+            if (previous != null && previous != entry.getValue()) {
                 throw new RuntimeException("Role: "+entry.getKey()+" is already defined in class "+name());
             }
         }

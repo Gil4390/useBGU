@@ -1,0 +1,31 @@
+MLM AttributeDiamond
+
+  model M1
+    class D
+      attributes
+        attr1: Integer
+    end
+
+    class E < D
+    end
+
+
+  model M2
+    class C
+    end
+
+    class F < C
+    end
+
+
+mediator M1 < NONE
+end
+
+mediator M2 < M1
+  clabject C : D
+  end
+
+  clabject F : E
+  end
+
+end

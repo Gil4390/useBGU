@@ -29,7 +29,7 @@ public class USECompilerMLMSimple extends TestCase {
     public void testMLMClabjectSpecification() {
         Options.explicitVariableDeclarations = false;
 
-        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 32);
+        List<File> fileList = MLMTestUtil.getInstance().getFilesMatchingSuffix(TEST_PATH,".use", 34);
 
         // create a new stream for capturing output on stderr
         MLMTestUtil.StringOutputStream errStr = new MLMTestUtil.StringOutputStream();
@@ -94,6 +94,34 @@ public class USECompilerMLMSimple extends TestCase {
 
         //class C should inherit the renamed attribute from D
         MLMTestUtil.getInstance().assertAttributesEqual("M2", "C", Map.of("attr2", "String", "attr3", "Integer"), mlmResult);
+    }
+
+    /**
+     * Regression test: F reaches D's attr1 via two converging paths --
+     * same-level subclassing (F < C, C : D) and F's own instance-of edge
+     * (F : E, E < D) -- both ultimately the same declared attribute. This
+     * must compile successfully: converging on the *same* declaration is
+     * a harmless diamond, not a genuine name conflict.
+     */
+    public void test_Attribute_diamond_inheritance_via_subclass_and_clabject_Spec() {
+        File mlmFile = new File(TEST_PATH + "/Attribute_diamond_inheritance_via_subclass_and_clabject.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        assertNotNull("diamond convergence on the same attribute declaration must not be rejected", mlmResult);
+        MLMTestUtil.getInstance().assertAttributesEqual("M2", "F", Map.of("attr1", "Integer"), mlmResult);
+    }
+
+    /**
+     * Same as above, for roles: F reaches D's "gg1" association end via
+     * F < C (C : D) and via F : E (E < D). Both paths terminate at the
+     * same MAssociationEnd, so this must also compile successfully.
+     */
+    public void test_Role_diamond_inheritance_via_subclass_and_clabject_Spec() {
+        File mlmFile = new File(TEST_PATH + "/Role_diamond_inheritance_via_subclass_and_clabject.use");
+        MMultiLevelModel mlmResult = MLMTestUtil.getInstance().compileMLMSpecification(mlmFile, new PrintWriter(System.out));
+
+        assertNotNull("diamond convergence on the same association end must not be rejected", mlmResult);
+        MLMTestUtil.getInstance().assertRolesEqual("M2", "F", Map.of("gg1", "M1@G"), mlmResult);
     }
 
     public void test_Assoclink_inheritance_overrides_Spec() {

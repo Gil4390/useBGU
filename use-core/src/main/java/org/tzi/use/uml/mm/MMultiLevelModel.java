@@ -130,6 +130,16 @@ public class MMultiLevelModel extends MMultiModel {
             for (MAttribute childAttr : childAttributes){
                 for (MAttribute parentAttr : parentAttributes) {
                     if (childAttr.name().equals(parentAttr.name())){
+                        // Same MAttribute instance reachable via two converging
+                        // paths (e.g. a same-level subclass edge and this
+                        // clabject's own instance-of edge both leading back to
+                        // the same original declaration) is a harmless diamond,
+                        // not a conflict -- allAttributes() hands back the
+                        // declaring classifier's own attribute object by
+                        // reference, so identity is exactly the right test.
+                        if (childAttr == parentAttr) {
+                            continue;
+                        }
                         //conflict
                         if (((MClabject) gen).getRemovedAttribute(parentAttr.name()) != null){
                             //attribute is removed
