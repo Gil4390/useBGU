@@ -1,0 +1,547 @@
+================================================================================
+USE / MLM-USE Language Grammar — Context-Free Grammar (EBNF)
+================================================================================
+Derived from the ANTLR3 grammar assembled by the Maven build at
+  use-core/target/grammars/USE.g
+which is concatenated at build time (see use-core/pom.xml) from six source
+fragments under use-core/src/main/resources/grammars/:
+
+    use/USE.gpart              -- multi-level modeling additions (MLM, clabject,
+                                   mediator, assoclink) + core UML model syntax
+    base/USEBase.gpart         -- core class/association/constraint syntax
+    base/OCLBase.gpart         -- OCL expression grammar
+    base/SoilBase.gpart        -- SOIL (imperative object-manipulation) statements
+    base/OCLLexerRules.gpart   -- shared lexer/token rules
+
+This file is a *pure* CFG: all embedded Java semantic actions, AST-builder
+calls, @init blocks and ANTLR "returns [...]" clauses have been stripped out,
+leaving only the production rules. Notation:
+
+    ::=       "is defined as"
+    |         alternation
+    [ x ]     x is optional
+    { x }     x may repeat zero or more times
+    { x }+    x may repeat one or more times
+    'x'       literal terminal text
+    UPPERCASE reference to a lexical token (defined in the LEXICAL GRAMMAR
+              section at the end)
+    (* ... *) comment
+
+Entry points (which rule the parser starts from depends on what kind of
+spec is being parsed):
+    multi_level_model   -- a full multi-level model file (starts with 'MLM')
+    multi_model         -- a file containing several 'model' blocks plus
+                            inter-model associations/constraints
+    model                -- a single classic USE class-diagram specification
+    expressionOnly       -- parsing a bare OCL expression (e.g. in the shell)
+    typeOnly              -- parsing a bare type
+    statOnly              -- parsing a bare SOIL statement
+
+================================================================================
+SECTION 1 — MULTI-LEVEL MODEL / CORE MODEL GRAMMAR
+================================================================================
+
+(* ---- Multi-level modeling (MLM-USE extension) ---- *)
+
+multi_level_model ::= 'MLM' IDENT multi_model_core { mediator } EOF
+
+mediator ::= 'mediator' IDENT '<' IDENT
+             { clabject | assoclink }
+             'end'
+
+clabject ::= 'clabject' IDENT ':' IDENT
+             [ 'attributes' { (IDENT '->' IDENT) | ('~' IDENT) } ]
+             [ 'roles'      { '~' IDENT } ]
+             [ 'constraints' { '~' IDENT } ]
+             'end'
+
+assoclink ::= 'assoclink' IDENT ':' IDENT
+              (IDENT '->' IDENT)
+              (IDENT '->' IDENT)
+              'end'
+
+(* ---- Multi-model (several ordinary models + inter-model glue) ---- *)
+
+multi_model ::= multi_model_core EOF
+
+multi_model_core ::= [ 'multi_model' IDENT ]
+                      internal_model { internal_model }
+                      [ 'inter-enums'        { enumTypeDefinition } ]
+                      [ 'inter-classes'      { interGeneralClassifierDefinition } ]
+                      [ 'inter-associations' { interAssociationDefinition } ]
+                      [ 'inter-constraints'  { interInvariant | interPrePost } ]
+
+interGeneralClassifierDefinition ::= annotationSet [ 'abstract' ]
+        ( classDefinition
+        | interAssociationClassDefinition
+        | signalDefinition )
+
+interAssociationClassDefinition ::= ('associationClass' | 'associationclass') IDENT
+        [ '<' idList ]
+        [ 'between' interAssociationEnd { interAssociationEnd }+ ]
+        [ 'attributes'   { attributeDefinition } ]
+        [ 'operations'   { operationDefinition } ]
+        [ 'constraints'  { invariantClause } ]
+        [ 'statemachines' { stateMachine } ]
+        [ 'aggregation' | 'composition' ]
+        'end'
+
+interAssociationDefinition ::= annotationSet
+        ('association' | 'aggregation' | 'composition') IDENT
+        'between' interAssociationEnd { interAssociationEnd }+
+        'end'
+
+interAssociationEnd ::= annotationSet
+        ( (IDENT '@' IDENT) | IDENT ) '[' multiplicity ']'
+        [ 'role' IDENT ]
+        { 'ordered'
+        | 'subsets' IDENT
+        | 'union'
+        | 'redefines' IDENT
+        | ('derived' | 'derive') [ '(' elemVarsDeclaration ')' ] '=' expression
+        | 'qualifier' paramList
+        }
+        [ ';' ]
+
+interInvariant ::= 'context'
+        [ IDENT { ',' IDENT } ':' ]
+        (multiType | simpleType)
+        { invariantClause }
+
+interPrePost ::= 'context'
+        ( (IDENT '::' IDENT paramList [ ':' type ])
+        | (multiType '::' IDENT paramList [ ':' type ]) )
+        { prePostClause }+
+
+(* ---- Single classic USE model ---- *)
+
+model ::= internal_model EOF
+
+internal_model ::= annotationSet 'model' IDENT
+        { generalClassifierDefinition
+        | associationDefinition
+        | ( 'constraints' { invariant | prePost } )
+        | enumTypeDefinition
+        }
+
+enumTypeDefinition ::= annotationSet 'enum' IDENT '{' idList '}' [ ';' ]
+
+dataTypeDefinition ::= 'dataType' IDENT
+        [ '<' idList ]
+        [ 'operations'  { operationDefinition } ]
+        [ 'constraints' { invariantClause } ]
+        'end'
+
+generalClassifierDefinition ::= annotationSet [ 'abstract' ]
+        ( classDefinition
+        | dataTypeDefinition
+        | associationClassDefinition
+        | signalDefinition )
+
+classDefinition ::= 'class' IDENT
+        [ '<' idList ]
+        [ 'attributes'    { attributeDefinition } ]
+        [ 'operations'    { operationDefinition } ]
+        [ 'constraints'   { invariantClause } ]
+        [ 'statemachines' { stateMachine } ]
+        'end'
+
+associationClassDefinition ::= ('associationClass' | 'associationclass') IDENT
+        [ '<' idList ]
+        [ 'between' associationEnd { associationEnd }+ ]
+        [ 'attributes'    { attributeDefinition } ]
+        [ 'operations'    { operationDefinition } ]
+        [ 'constraints'   { invariantClause } ]
+        [ 'statemachines' { stateMachine } ]
+        [ 'aggregation' | 'composition' ]
+        'end'
+
+attributeDefinition ::= annotationSet IDENT ':' type
+        [ ( (('derive'|'derived') (':'|'=') expression)
+          | ('init' (':'|'=') expression) ) ]
+        [ ';' ]
+
+operationDefinition ::= annotationSet IDENT paramList superParamList
+        [ ':' type ]
+        [ ('=' expression) | blockStat ]
+        { prePostClause }
+        [ ';' ]
+
+superParamList ::= [ '(' [ IDENT { ',' IDENT } ] ')' ]
+
+associationDefinition ::= annotationSet
+        ('association' | 'aggregation' | 'composition') IDENT
+        'between' associationEnd { associationEnd }+
+        'end'
+
+associationEnd ::= annotationSet IDENT '[' multiplicity ']'
+        [ 'role' IDENT ]
+        { 'ordered'
+        | 'subsets' IDENT
+        | 'union'
+        | 'redefines' IDENT
+        | ('derived' | 'derive') [ '(' elemVarsDeclaration ')' ] '=' expression
+        | 'qualifier' paramList
+        }
+        [ ';' ]
+
+multiplicity      ::= multiplicityRange { ',' multiplicityRange }
+multiplicityRange ::= multiplicitySpec [ '..' multiplicitySpec ]
+multiplicitySpec  ::= INT | '*'
+
+invariant ::= 'context'
+        [ IDENT { ',' IDENT } ':' ]
+        simpleType
+        { invariantClause }
+
+invariantClause ::= annotationSet 'inv' [ IDENT ] ':' expression
+                   | 'existential' 'inv' [ IDENT ] ':' expression
+
+prePost ::= 'context' IDENT '::' IDENT paramList [ ':' type ]
+            { prePostClause }+
+
+prePostClause ::= annotationSet ('pre' | 'post') [ IDENT ] ':' expression
+
+annotationSet    ::= { annotation }
+annotation       ::= '@' IDENT '(' annotationValues ')'
+annotationValues ::= [ annotationValue ] { ',' annotationValue }
+annotationValue  ::= IDENT '=' NON_OCL_STRING
+
+stateMachine ::= 'psm' IDENT
+        'states'      { stateDefinition }+
+        'transitions' { transitionDefinition }+
+        'end'
+
+stateDefinition ::= IDENT [ ':' IDENT ] [ '[' expression ']' ]
+
+transitionDefinition ::= IDENT '->' IDENT
+        [ '{' [ '[' expression ']' ]
+              ( event | IDENT '(' [ paramList ] ')' )
+              [ '[' expression ']' ]
+          '}' ]
+
+event ::= 'create'
+
+signalDefinition ::= 'signal' IDENT
+        [ '<' idList ]
+        [ 'attributes'  { attributeDefinition } ]
+        [ 'constraints' { invariantClause } ]
+        'end'
+
+(* ---- Contextual ("soft") keywords ----
+   The following are NOT reserved words at the lexer level: each is an
+   ordinary IDENT token that is only treated as a keyword when a semantic
+   predicate confirms its exact spelling at that grammar position. This
+   lets 'union', 'role', 'association', 'aggregation', 'composition',
+   'dataType', 'class', 'signal', 'derived', 'derive', 'init', and
+   'qualifier' remain usable as ordinary identifiers elsewhere (e.g. as a
+   class or attribute name) without being reserved everywhere. *)
+
+keyUnion       ::= IDENT   (* text must equal "union" *)
+keyAssociation ::= IDENT   (* text must equal "association" *)
+keyRole        ::= IDENT   (* text must equal "role" *)
+keyComposition ::= IDENT   (* text must equal "composition" *)
+keyAggregation ::= IDENT   (* text must equal "aggregation" *)
+keyDataType    ::= IDENT   (* text must equal "dataType" *)
+keyClass       ::= IDENT   (* text must equal "class" *)
+keySignal      ::= IDENT   (* text must equal "signal" *)
+keyDerived     ::= IDENT   (* text must equal "derived" *)
+keyDerive      ::= IDENT   (* text must equal "derive" *)
+keyInit        ::= IDENT   (* text must equal "init" *)
+keyQualifier   ::= IDENT   (* text must equal "qualifier" *)
+
+================================================================================
+SECTION 2 — OCL EXPRESSION GRAMMAR
+================================================================================
+
+expressionOnly ::= expression EOF
+
+expression ::= { 'let' IDENT [ ':' type ] '=' expression
+                 { ',' IDENT [ ':' type ] '=' expression }
+                 'in' }
+               conditionalImpliesExpression
+
+paramList ::= '(' [ variableDeclaration { ',' variableDeclaration } ] ')'
+
+idList ::= IDENT { ',' IDENT }
+
+variableDeclaration ::= IDENT ':' type
+
+conditionalImpliesExpression ::= conditionalOrExpression    { 'implies' conditionalOrExpression }
+conditionalOrExpression      ::= conditionalXOrExpression   { 'or' conditionalXOrExpression }
+conditionalXOrExpression     ::= conditionalAndExpression   { 'xor' conditionalAndExpression }
+conditionalAndExpression     ::= equalityExpression         { 'and' equalityExpression }
+equalityExpression           ::= relationalExpression       { ('=' | '<>') relationalExpression }
+relationalExpression         ::= additiveExpression         { ('<' | '>' | '<=' | '>=') additiveExpression }
+additiveExpression            ::= multiplicativeExpression   { ('+' | '-') multiplicativeExpression }
+multiplicativeExpression      ::= unaryExpression             { ('*' | '/' | 'div') unaryExpression }
+
+unaryExpression ::= ('not' | '-' | '+') unaryExpression
+                   | postfixExpression
+
+postfixExpression ::= primaryExpression { ('.' | '->') propertyCall }
+
+primaryExpression ::= literal
+                     | objectReference
+                     | propertyCall
+                     | '(' expression ')'
+                     | ifExpression
+                     | IDENT '.' 'allInstances' [ '@' 'pre' ] [ '(' ')' ]
+                     | IDENT '@' IDENT '.' 'allInstances' [ '@' 'pre' ] [ '(' ')' ]
+                     | IDENT '.' 'byUseId' '(' expression ')' [ '@' 'pre' ]
+
+objectReference ::= '@' IDENT
+
+(* propertyCall dispatches on the identifier + following token:
+     - a recognized "query" name immediately followed by '(' -> queryExpression
+     - 'iterate'                                              -> iterateExpression
+     - 'oclIsInState' | 'oclInState'                           -> inStateExpression
+     - 'oclAsType' | 'oclIsKindOf' | 'oclIsTypeOf'
+       | 'selectByType' | 'selectByKind'                       -> typeExpression
+     - anything else                                           -> operationExpression
+   propertyCall carries the preceding expression (the navigation source, or
+   null at the start of an expression) and whether it was reached via '->'. *)
+
+propertyCall ::= queryExpression
+                | iterateExpression
+                | operationExpression
+                | typeExpression
+                | inStateExpression
+
+queryExpression ::= IDENT '(' [ elemVarsDeclaration '|' ] expression ')'
+        (* IDENT here must be one of the recognized query operator names,
+           e.g. select, reject, collect, exists, forAll, isUnique, sortedBy,
+           one, any, collectNested, ... *)
+
+iterateExpression ::= 'iterate' '('
+        elemVarsDeclaration ';'
+        variableInitialization '|'
+        expression
+        ')'
+
+operationExpression ::= IDENT
+        [ '[' expression { ',' expression } ']'
+          [ '[' expression { ',' expression } ']' ] ]
+        [ '@' 'pre' ]
+        [ '(' [ expression { ',' expression } ] ')' ]
+
+inStateExpression ::= ('oclIsInState' | 'oclInState') '(' IDENT ')'
+
+typeExpression ::= ('oclAsType' | 'oclIsKindOf' | 'oclIsTypeOf'
+                    | 'selectByType' | 'selectByKind') '(' type ')'
+
+elemVarsDeclaration ::= IDENT [ ':' type ] { ',' IDENT [ ':' type ] }
+
+variableInitialization ::= IDENT ':' type '=' expression
+
+ifExpression ::= 'if' expression 'then' expression 'else' expression 'endif'
+
+literal ::= 'true' | 'false'
+          | INT | REAL | STRING
+          | '#' IDENT
+          | IDENT '::' IDENT
+          | multiType '::' IDENT
+          | collectionLiteral
+          | emptyCollectionLiteral
+          | undefinedLiteral
+          | tupleLiteral
+          | '*'                          (* unlimited natural, e.g. in multiplicities *)
+
+collectionLiteral ::= ('Set' | 'Sequence' | 'Bag' | 'OrderedSet')
+        '{' [ collectionItem { ',' collectionItem } ] '}'
+
+collectionItem ::= expression [ '..' expression ]
+
+emptyCollectionLiteral ::= 'oclEmpty' '(' collectionType ')'
+                          | collectionType '{' '}'
+
+undefinedLiteral ::= 'oclUndefined' '(' type ')'
+                    | 'Undefined'
+                    | 'null' '(' type ')'
+                    | 'null'
+
+tupleLiteral ::= 'Tuple' '{' tupleItem { ',' tupleItem } '}'
+
+tupleItem ::= IDENT ( (':' type '=' expression) | ((':' | '=') expression) )
+
+type ::= simpleType | collectionType | tupleType | multiType
+
+typeOnly ::= type EOF
+
+simpleType ::= IDENT
+multiType  ::= IDENT '@' IDENT
+
+collectionType ::= ('Collection' | 'Set' | 'Sequence' | 'Bag' | 'OrderedSet')
+                    '(' type ')'
+
+tupleType ::= 'Tuple' '(' tuplePart { ',' tuplePart } ')'
+
+tuplePart ::= IDENT ':' type
+
+================================================================================
+SECTION 3 — SOIL STATEMENT GRAMMAR (object/link manipulation language)
+================================================================================
+
+statOnly ::= stat EOF
+
+stat ::= singleStat { ';' singleStat }
+
+singleStat ::= emptyStat
+             | statStartingWithExpr
+             | varAssignStat
+             | objCreateStat
+             | objDestroyStat
+             | lnkInsStat
+             | lnkDelStat
+             | condExStat
+             | iterStat
+             | whileStat
+             | blockStat
+
+emptyStat ::= (* empty *)
+
+(* An expression-statement, optionally followed by an attribute
+   assignment on that expression (i.e. distinguishes a bare operation
+   call from  "expr.attr := rvalue"). *)
+statStartingWithExpr ::= inSoilExpression [ attAssignStat ]
+
+varAssignStat ::= IDENT ':=' rValue
+
+attAssignStat ::= '.' IDENT ':=' rValue
+
+objCreateStat ::= 'new' simpleType
+        [ '(' [ inSoilExpression ] ')' ]
+        [ 'between' '(' rValListMin2WithOptionalQualifiers ')' ]
+
+objDestroyStat ::= 'destroy' exprListMin1
+
+lnkInsStat ::= 'insert' '(' rValListMin2WithOptionalQualifiers ')' 'into'
+               ( IDENT | IDENT '@' IDENT )
+
+rValListMin2WithOptionalQualifiers ::=
+        rValue [ '{' rValList '}' ]
+        ',' rValue [ '{' rValList '}' ]
+        { ',' rValue [ '{' rValList '}' ] }
+
+lnkDelStat ::= 'delete' '(' rValListMin2WithOptionalQualifiers ')' 'from' IDENT
+
+condExStat ::= 'if' inSoilExpression 'then' statOrImplicitBlock
+               [ 'else' statOrImplicitBlock ]
+               'end'
+
+iterStat ::= 'for' IDENT 'in' inSoilExpression 'do' statOrImplicitBlock 'end'
+
+whileStat ::= 'while' inSoilExpression 'do' statOrImplicitBlock 'end'
+
+blockStat ::= 'begin'
+        [ 'declare' variableDeclaration { ',' variableDeclaration } ';' ]
+        stat
+        'end'
+
+implicitBlockStat ::= 'declare' variableDeclaration { ',' variableDeclaration } ';' stat
+
+statOrImplicitBlock ::= stat | implicitBlockStat
+
+rValue ::= inSoilExpression | objCreateStat
+
+rValList     ::= [ rValListMin1 ]
+rValListMin1 ::= rValue { ',' rValue }
+rValListMin2 ::= rValue ',' rValue { ',' rValue }
+
+inSoilExpression ::= expression
+
+exprList     ::= [ exprListMin1 ]
+exprListMin1 ::= inSoilExpression { ',' inSoilExpression }
+exprListMin2 ::= inSoilExpression ',' inSoilExpression { ',' inSoilExpression }
+
+identList     ::= [ identListMin1 ]
+identListMin1 ::= IDENT { ',' IDENT }
+
+================================================================================
+SECTION 4 — LEXICAL GRAMMAR (tokens)
+================================================================================
+
+(* Whitespace / comments -- discarded (sent to the HIDDEN channel) *)
+WS          ::= ' ' | '\t' | '\f' | NEWLINE
+SL_COMMENT  ::= ('//' | '--') { any char except NEWLINE }
+ML_COMMENT  ::= '/*' { any char, non-greedy } '*/'
+NEWLINE     ::= '\r\n' | '\r' | '\n'
+
+(* Punctuation / operator tokens *)
+ARROW         ::= '->'
+AT            ::= '@'
+BAR           ::= '|'
+COLON         ::= ':'
+COLON_COLON   ::= '::'
+COLON_EQUAL   ::= ':='
+COMMA         ::= ','
+DOT           ::= '.'
+DOTDOT        ::= '..'
+EQUAL         ::= '='
+GREATER       ::= '>'
+GREATER_EQUAL ::= '>='
+HASH          ::= '#'
+LBRACE        ::= '{'
+LBRACK        ::= '['
+LESS          ::= '<'
+LESS_EQUAL    ::= '<='
+LPAREN        ::= '('
+MINUS         ::= '-'
+NOT_EQUAL     ::= '<>'
+PLUS          ::= '+'
+RBRACE        ::= '}'
+RBRACK        ::= ']'
+RPAREN        ::= ')'
+SEMI          ::= ';'
+SLASH         ::= '/'
+STAR          ::= '*'
+
+(* Numbers *)
+INT             ::= digit { digit }                                    (* digit = '0'..'9' *)
+REAL            ::= INT '.' INT [ ('e'|'E') ['+'|'-'] INT ]
+                   | INT ('e'|'E') ['+'|'-'] INT
+RANGE_OR_INT    ::= INT (retyped to INT if followed by '..', else to REAL if it forms a REAL, else stays INT)
+
+(* Strings *)
+STRING          ::= "'" { any char except "'" or '\' | ESC } "'"           (* OCL string literal *)
+NON_OCL_STRING  ::= '"' { any char except '"' or '\' | ESC } '"'           (* used only in annotation values *)
+ESC             ::= '\' ( 'n'|'r'|'t'|'b'|'f'|'"'|"'"|'\'
+                         | 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+                         | '0'..'3' [ '0'..'7' [ '0'..'7' ] ]
+                         | '4'..'7' [ '0'..'7' ] )
+HEX_DIGIT       ::= '0'..'9' | 'A'..'F' | 'a'..'f'
+
+(* Identifiers *)
+IDENT ::= ('$' | letter | '_') { letter | '_' | digit }
+        (* letter = 'a'..'z' | 'A'..'Z' *)
+        (* After matching, ANTLR's literal table reclassifies IDENT tokens
+           whose text matches a quoted keyword used elsewhere in the
+           grammar (e.g. 'class', 'model', 'context', 'inv', 'let', ...)
+           as that keyword token instead. The contextual "soft" keywords
+           listed in Section 1 (union, role, association, ...) are NOT
+           handled this way -- they stay IDENT and are matched only via
+           semantic predicate at the point of use. *)
+
+================================================================================
+NOTES
+================================================================================
+1. This is a *pure* CFG view of the grammar for reading/reasoning purposes.
+   The real ANTLR3 grammar (use-core/target/grammars/USE.g, regenerated on
+   every `mvn compile`/`mvn package` from the .gpart sources listed above)
+   is not equivalent to this file in the formal sense: it interleaves
+   embedded Java actions that build the AST as parsing proceeds, uses a
+   few syntactic-predicate lookaheads (e.g. `(statStartingWithExpr)=>`,
+   `(COLON type EQUAL)=>`) to resolve local ambiguities that a plain CFG
+   can't express, and relies on semantic predicates for the contextual
+   keywords noted above. Treat this file as documentation, not as
+   something you could feed straight into a parser generator.
+
+2. The full six-way split (use/OCL/Soil/Shell/Generator/TestSuite) exists
+   because those sub-languages are reused across five separately-generated
+   parsers (USEParser, OCLParser, SoilParser, ShellCommandParser,
+   GeneratorParser, TestSuiteParser) built from the .gpart fragments in
+   different combinations -- see the <execution> blocks in
+   use-core/pom.xml. This file only reconstructs the USE.g composition
+   (USE.gpart + USEBase.gpart + OCLBase.gpart + SoilBase.gpart +
+   OCLLexerRules.gpart), which is the grammar for ordinary .use / .mlm
+   specification files -- not the interactive shell-command grammar.
