@@ -167,6 +167,18 @@
                                     </sources>
                                     <override>true</override>
                                 </merge>
+                                <merge>
+                                    <!-- Merge CatUSE grammar -->
+                                    <target>${project.build.directory}/grammars/CatUSE.g</target>
+                                    <sources>
+                                        <source>src/main/resources/grammars/catmlm/CatMLM.gpart</source>
+                                        <source>src/main/resources/grammars/base/USEBase.gpart</source>
+                                        <source>src/main/resources/grammars/base/OCLBase.gpart</source>
+                                        <source>src/main/resources/grammars/base/SoilBase.gpart</source>
+                                        <source>src/main/resources/grammars/base/OCLLexerRules.gpart</source>
+                                    </sources>
+                                    <override>true</override>
+                                </merge>
                             </merges>
                         </configuration>
                     </execution>
@@ -275,6 +287,16 @@
                                     <sourceFile>target/generated-sources/antlr3/TestSuiteParser.java</sourceFile>
                                     <destinationFile>
                                         target/generated-sources/antlr3/org/tzi/use/parser/testsuite/TestSuiteParser.java</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>target/generated-sources/antlr3/CatUSELexer.java</sourceFile>
+                                    <destinationFile>
+                                        target/generated-sources/antlr3/org/tzi/use/parser/catmlm/CatUSELexer.java</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>target/generated-sources/antlr3/CatUSEParser.java</sourceFile>
+                                    <destinationFile>
+                                        target/generated-sources/antlr3/org/tzi/use/parser/catmlm/CatUSEParser.java</destinationFile>
                                 </fileSet>
                             </fileSets>
                         </configuration>

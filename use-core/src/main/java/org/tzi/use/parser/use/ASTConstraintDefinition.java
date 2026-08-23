@@ -60,6 +60,14 @@ public class ASTConstraintDefinition extends AST {
         fType = t;
     }
 
+    public ASTType type() {
+        return fType;
+    }
+
+    public List<ASTInvariantClause> invariantClauses() {
+        return fInvariantClauses;
+    }
+
     public void gen(Context ctx) {
     	gen(ctx, true);
     }

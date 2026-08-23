@@ -1,0 +1,28 @@
+MLM CatAssocConflict
+
+model Meta < NONE
+category A
+end
+
+category B
+end
+
+class A1
+end
+
+class B1
+end
+
+association aa1 between
+A[1] role a1
+A1[1] role r1
+end
+
+association bb1 between
+B[1] role b1
+B1[1] role r1
+end
+
+model Instances < Meta
+clabject C : category A, B
+end

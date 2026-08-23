@@ -44,10 +44,27 @@ public class ASTClass extends ASTClassifier {
     protected MClass fClass;
 
     protected List<ASTStateMachine> stateMachines;
-    
+
+    /**
+     * True if this class was declared with CatMLM's {@code category}
+     * keyword rather than {@code class}. Purely a hint for
+     * {@link USECompilerCatUSE}'s desugaring pass -- it has no effect on
+     * ordinary MLMUse semantics, since a "category" desugars to a plain
+     * class either way.
+     */
+    private boolean fIsCategory = false;
+
     public ASTClass(Token name, boolean isAbstract) {
         super(name, isAbstract);
         stateMachines = new ArrayList<ASTStateMachine>();
+    }
+
+    public void setIsCategory(boolean isCategory) {
+        fIsCategory = isCategory;
+    }
+
+    public boolean isCategory() {
+        return fIsCategory;
     }
 
     /**

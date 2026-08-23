@@ -40,6 +40,15 @@ public class ASTAssociation extends ASTClassifier {
     
     private List<ASTAssociationEnd> fAssociationEnds;
 
+    /**
+     * True if this association was tagged {@code catAssociation} in
+     * CatMLM source. Recorded for {@link USECompilerCatUSE}, which
+     * currently passes such associations through unchanged (see the
+     * accompanying writeup for why automatic per-role cancellation was
+     * left out of this first pass).
+     */
+    private boolean fCategoryOnly = false;
+
     public ASTAssociation(Token kind, Token name) {
         super(name, false);
         fKind = kind;
@@ -47,8 +56,20 @@ public class ASTAssociation extends ASTClassifier {
         fAssociationEnds = new ArrayList<ASTAssociationEnd>();
     }
 
+    public void setCategoryOnly(boolean categoryOnly) {
+        fCategoryOnly = categoryOnly;
+    }
+
+    public boolean isCategoryOnly() {
+        return fCategoryOnly;
+    }
+
     public void addEnd(ASTAssociationEnd ae) {
         fAssociationEnds.add(ae);
+    }
+
+    public List<ASTAssociationEnd> getEnds() {
+        return fAssociationEnds;
     }
 
     public MAssociation gen(Context ctx, MModel model) throws SemanticException 

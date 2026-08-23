@@ -38,6 +38,10 @@ public class ASTSimpleType extends ASTType {
         fName = name;
     }
 
+    public Token nameToken() {
+        return fName;
+    }
+
     public Type gen(Context ctx) throws SemanticException {
         String name = fName.getText();
         Type res = TypeFactory.mkSimpleType(name);

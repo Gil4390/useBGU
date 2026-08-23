@@ -41,10 +41,26 @@ public class ASTAttribute extends ASTAnnotatable {
     private ASTExpression initExpression;
     
     private MAttribute attribute = null;
-    
+
+    /**
+     * True if this attribute was tagged {@code catAtt} in CatMLM source
+     * -- i.e. it is category-intrinsic and should be cancelled by
+     * default in every clabject that instantiates this category. Only
+     * consulted by {@link USECompilerCatUSE}'s desugaring pass.
+     */
+    private boolean fCategoryOnly = false;
+
     public ASTAttribute(Token name, ASTType type) {
         fName = name;
         fType = type;
+    }
+
+    public void setCategoryOnly(boolean categoryOnly) {
+        fCategoryOnly = categoryOnly;
+    }
+
+    public boolean isCategoryOnly() {
+        return fCategoryOnly;
     }
 
     /**

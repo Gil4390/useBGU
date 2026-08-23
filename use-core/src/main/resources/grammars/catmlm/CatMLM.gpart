@@ -1,0 +1,194 @@
+/*
+ * CatMLM front-end for MLM-USE.
+ *
+ * This grammar parses the "CatMLM" surface syntax (category/clabject
+ * shorthand, cat* tags) and builds a parse tree that is *desugared*,
+ * in Java (see USECompilerCatUSE.desugar), into the exact same
+ * ASTMultiLevelModel/ASTMediator/ASTClabject/ASTModel/ASTClass AST types
+ * that the plain MLMUse grammar (USEBase.gpart) already builds. Nothing
+ * downstream of that AST (MMultiLevelModel, well-definedness checking,
+ * the GUI, ...) needs to know CatMLM exists.
+ *
+ * Composed as: CatMLM.gpart + USEBase.gpart + OCLBase.gpart +
+ * SoilBase.gpart + OCLLexerRules.gpart (see use-core/pom.xml). All
+ * type/expression/associationEnd/attributeDefinition-style machinery is
+ * reused unmodified from USEBase.gpart/OCLBase.gpart; only the small set
+ * of rules that actually differ between MLMUse and CatMLM are defined
+ * here.
+ */
+
+grammar CatUSE;
+
+options {
+  superClass = BaseParser;
+}
+
+@header {
+package org.tzi.use.parser.catmlm;
+
+import org.tzi.use.parser.base.BaseParser;
+import org.tzi.use.parser.use.statemachines.*;
+import org.tzi.use.parser.ocl.*;
+import org.tzi.use.parser.soil.ast.*;
+import org.tzi.use.parser.use.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
+}
+
+@lexer::header {
+package org.tzi.use.parser.catmlm;
+
+import org.tzi.use.parser.ParseErrorHandler;
+}
+
+@lexer::members {
+    private ParseErrorHandler fParseErrorHandler;
+
+    public String getFilename() {
+        return fParseErrorHandler.getFileName();
+    }
+
+    @Override
+    public String getErrorHeader(RecognitionException e) {
+        return "line " + e.line + ":" + e.charPositionInLine;
+    }
+
+    public void emitErrorMessage(String msg) {
+        fParseErrorHandler.reportError(msg);
+    }
+
+    public void init(ParseErrorHandler handler) {
+        fParseErrorHandler = handler;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Entry point: same leading keyword as MLMUse ("MLM" name), but a
+   sequence of CatMLM-shaped levels instead of separate model/mediator
+   sections.
+------------------------------------------------------------------ */
+catUSE_model returns [ASTCatUSEModel n]
+:
+    'MLM' mlmName=IDENT { $n = new ASTCatUSEModel(mlmName); }
+    ( lvl=catLevel { $n.addLevel($lvl.n); } )+
+    EOF
+    ;
+
+/* ------------------------------------------------------------------
+   "model ID1 [< ID2]" fuses what MLMUse splits across a `model` block
+   and a separate `mediator` block. Its body interleaves ordinary
+   classifier/association definitions with the new clabject shorthand.
+------------------------------------------------------------------ */
+catLevel returns [ASTCatLevel n]
+:
+    'model' name=IDENT ( '<' parent=IDENT )?
+    { $n = new ASTCatLevel(name, parent); }
+    (
+        c  = catClassifierDefinition       { $n.addClassifier($c.n); }
+      | a  = catAssociationDefinition      { $n.addAssociation($a.n); }
+      | cl = catClabjectDefinition         { $n.addClabject($cl.n); }
+      | ( 'constraints'
+          ( inv = catInvariant { $n.addConstraint($inv.n); } )*
+        )
+    )*
+    ;
+
+/* ------------------------------------------------------------------
+   "category ID" / "class ID" -- same ASTClass either way; isCategory
+   is only a hint consumed by the desugarer (it decides nothing about
+   MLMUse semantics by itself).
+------------------------------------------------------------------ */
+catClassifierDefinition returns [ASTClass n]
+@init { boolean isCategory = false; }
+:
+    ( keyCategory { isCategory = true; } | keyClass )
+    name=IDENT { $n = new ASTClass(name, false); $n.setIsCategory(isCategory); }
+    ( '<' idListRes=idList { $n.addSuperClassifiers($idListRes.idList); } )?
+    ( 'attributes'
+        ( a=catAttributeDefinition { $n.addAttribute($a.n); } )*
+    )?
+    ( 'constraints'
+        ( inv=catInvariantClause { $n.addInvariantClause($inv.n); } )*
+    )?
+    'end'
+    ;
+
+/* attr1 : Integer [; catAtt] -- reuses IDENT/COLON/type exactly like
+   the base attributeDefinition; only the trailing tag is new. */
+catAttributeDefinition returns [ASTAttribute n]
+@init { boolean tagged = false; }
+:
+    name=IDENT COLON t=type { $n = new ASTAttribute(name, $t.n); }
+    ( SEMI keyCatAtt { tagged = true; } )?
+    SEMI?
+    { $n.setCategoryOnly(tagged); }
+    ;
+
+/* "inv NAME : [catConst] expr" -- the cat tag sits between the colon
+   and the expression, per the CatMLM worked example. */
+catInvariantClause returns [ASTInvariantClause n]
+@init { boolean tagged = false; }
+:
+    'inv' ( name=IDENT )? COLON ( keyCatConst { tagged = true; } )? e=expression
+    { $n = new ASTInvariantClause(name, $e.n); $n.setCategoryOnly(tagged); }
+    ;
+
+/* Mirrors the base `invariant` rule (context [id:] type invClause*),
+   just calling catInvariantClause instead of the base invariantClause. */
+catInvariant returns [ASTConstraintDefinition n]
+:
+    { $n = new ASTConstraintDefinition(); }
+    'context'
+    ( v=IDENT { $n.addVarName(v); }
+      ( COMMA v=IDENT { $n.addVarName(v); } )* COLON )?
+    t=simpleType { $n.setType($t.n); }
+    ( inv=catInvariantClause { $n.addInvariantClause($inv.n); } )*
+    ;
+
+/* Plain associations, plus the "catAssociation" tag. Reuses the base
+   associationEnd rule unchanged. The tag is recorded for future use
+   by the desugarer; the first cut passes these associations straight
+   through fully inherited, same as an untagged one -- see the
+   accompanying writeup for why auto-deriving per-role cancellation
+   from this tag alone was left out of this pass. */
+catAssociationDefinition returns [ASTAssociation n]
+@init { Token t = null; boolean tagged = false; }
+:
+    { t = input.LT(1); }
+    ( keyCatAssociation { tagged = true; } | keyAssociation | keyAggregation | keyComposition )
+    name=IDENT { $n = new ASTAssociation(t, name); $n.setCategoryOnly(tagged); }
+    'between'
+    ae=associationEnd { $n.addEnd($ae.n); }
+    ( ae=associationEnd { $n.addEnd($ae.n); } )+
+    'end'
+    ;
+
+/* ------------------------------------------------------------------
+   clabject shorthand:
+     clabject C : category A, B end
+     clabject E < D; E : category B2 end
+   One declaration, N powerclasses, optional fused same-level
+   subclass edge -- all three collapse to this single rule.
+------------------------------------------------------------------ */
+catClabjectDefinition returns [ASTCatClabject n]
+:
+    'clabject'
+    ( localName=IDENT '<' localParent=IDENT SEMI )?
+    name=IDENT COLON ( keyCategory )? parent1=IDENT
+    { $n = new ASTCatClabject(name, localParent, parent1); }
+    ( COMMA parentN=IDENT { $n.addPowerclass(parentN); } )*
+    'end'
+    ;
+
+keyCategory:
+  {input.LT(1).getText().equals("category")}? IDENT ;
+
+keyCatAtt:
+  {input.LT(1).getText().equals("catAtt")}? IDENT ;
+
+keyCatConst:
+  {input.LT(1).getText().equals("catConst")}? IDENT ;
+
+keyCatAssociation:
+  {input.LT(1).getText().equals("catAssociation")}? IDENT ;

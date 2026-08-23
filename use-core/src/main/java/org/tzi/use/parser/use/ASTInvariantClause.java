@@ -40,9 +40,27 @@ public class ASTInvariantClause extends ASTAnnotatable {
 	Token fName;      // optional
     ASTExpression fExpr;
 
+    /**
+     * True if this clause was tagged {@code catConst} in CatMLM source.
+     * Only consulted by {@link USECompilerCatUSE}'s desugaring pass.
+     */
+    private boolean fCategoryOnly = false;
+
     public ASTInvariantClause(Token name, ASTExpression e) {
         fName = name;
         fExpr = e;
+    }
+
+    public void setCategoryOnly(boolean categoryOnly) {
+        fCategoryOnly = categoryOnly;
+    }
+
+    public boolean isCategoryOnly() {
+        return fCategoryOnly;
+    }
+
+    public Token nameToken() {
+        return fName;
     }
 
     public String toString() {
