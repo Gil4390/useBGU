@@ -143,6 +143,18 @@ public class USECompilerCatUSE {
             boolean hasParent = level.parentName() != null && !level.parentName().getText().equals("NONE");
             Map<String, ASTClass> ownClasses = classesByLevel.get(level.name().getText());
 
+            // A clabject only means something relative to a parent level's
+            // powerclasses. A level with no parent (top-level, or a bare
+            // "model X" with no "< Y" at all) that still declares clabjects
+            // is almost certainly a missing "< Parent" typo -- catch it
+            // here rather than silently dropping the clabjects, which is
+            // what happens below since the whole clabject-processing block
+            // only runs when hasParent is true.
+            if (!hasParent && !level.clabjects().isEmpty()) {
+                throw new Exception("Level " + level.name().getText() +
+                        " declares clabject(s) but has no parent level (missing '< ParentLevel'?)");
+            }
+
             // Rule 1: category -> class (isCategory is dropped here; it
             // was only ever a hint for this desugarer).
             List<ASTClass> allClasses = new ArrayList<>(level.classifiers());
@@ -227,6 +239,8 @@ public class USECompilerCatUSE {
                                                            ASTClabject clabject) {
         if (!visited.add(cls.getName().getText())) return; // avoid cycles
 
+        String clsName = cls.getName().getText();
+
         for (ASTAttribute attr : cls.fAttributes) {
             if (attr.isCategoryOnly()) {
                 clabject.addAttributeRemoving(attr.nameToken());
@@ -241,11 +255,10 @@ public class USECompilerCatUSE {
         // Model-level constraints ("constraints context A inv X: ..."),
         // the form actually used by the ABCD worked example -- matched
         // by the class name the "context" clause names.
-        String clsNameForConstraints = cls.getName().getText();
         for (ASTConstraintDefinition constraintDef : levelConstraints) {
             ASTType type = constraintDef.type();
             if (!(type instanceof ASTSimpleType)) continue;
-            if (!((ASTSimpleType) type).nameToken().getText().equals(clsNameForConstraints)) continue;
+            if (!((ASTSimpleType) type).nameToken().getText().equals(clsName)) continue;
 
             for (ASTInvariantClause inv : constraintDef.invariantClauses()) {
                 if (inv.isCategoryOnly() && inv.nameToken() != null) {
@@ -260,7 +273,6 @@ public class USECompilerCatUSE {
         // This is what prevents two powerclasses' associations from
         // handing a multi-powerclass clabject two roles with the same
         // name (e.g. two different "r1"s).
-        String clsName = cls.getName().getText();
         for (ASTAssociation assoc : levelAssociations) {
             if (!assoc.isCategoryOnly()) continue;
             boolean touchesCls = assoc.getEnds().stream()

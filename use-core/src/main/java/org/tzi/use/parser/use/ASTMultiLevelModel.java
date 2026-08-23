@@ -64,7 +64,10 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             try {
                 MMediator mMediator = mediator.gen(ctx);
                 mMultiLevelModel.addMediator(mMediator);
-                if (ctx.errorCount() > 0){
+                // ctx forwards all its errors to mlmContext (see MultiContext.reportError),
+                // so ctx's own counter never increments -- check the context errors actually
+                // land on, matching the equivalent check in ASTMultiModel.gen().
+                if (mlmContext.errorCount() > 0){
                     return null;
                 }
 

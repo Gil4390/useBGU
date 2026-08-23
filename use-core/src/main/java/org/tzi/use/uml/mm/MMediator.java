@@ -41,12 +41,23 @@ public class MMediator extends MModelElementImpl {
     }
 
     public MClabject getClabject(MClass child, MClass parent){
+        // fClabjects is a HashMap, so if `child` has clabjects to more than
+        // one powerclass that are all superclassifiers of `parent`, a plain
+        // first-match search over an unordered collection can return a
+        // different (wrong) clabject depending on hash bucket order. An
+        // exact parent match is always unambiguous, so prefer it; only
+        // fall back to the superclass search if no exact match exists.
+        MClabject subclassMatch = null;
         for(MClabject clabject : fClabjects.values()){
-            if(clabject.child().equals(child) && clabject.parent().isSubClassifierOf(parent)){
+            if(!clabject.child().equals(child)) continue;
+            if(clabject.parent().equals(parent)){
                 return clabject;
             }
+            if(subclassMatch == null && clabject.parent().isSubClassifierOf(parent)){
+                subclassMatch = clabject;
+            }
         }
-        return null;
+        return subclassMatch;
     }
 
     public void addAssocLink(MAssoclink assoclink) {

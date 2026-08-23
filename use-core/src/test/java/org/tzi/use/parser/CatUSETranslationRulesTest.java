@@ -185,6 +185,34 @@ public class CatUSETranslationRulesTest extends TestCase {
         assertEquals(Set.of("sku", "price"), attrNames(mlm, "Instances", "SpecialProduct"));
     }
 
+    /**
+     * Regression: a clabject declared in a level with no parent used to be
+     * silently dropped -- the whole clabject-processing block only ran
+     * inside "if (hasParent)". It must now be rejected with a clear error
+     * instead of compiling successfully with the clabject just missing.
+     */
+    public void testClabjectInParentlessLevelIsRejectedNotDropped() {
+        StringWriter errBuf = new StringWriter();
+        PrintWriter err = new PrintWriter(errBuf);
+        MMultiLevelModel mlm = USECompilerCatUSE.compileCatUSESpecification(
+                new ByteArrayInputStream((
+                        "MLM NoParentClabject\n" +
+                        "\n" +
+                        "model Meta < NONE\n" +
+                        "category A\n" +
+                        "end\n" +
+                        "\n" +
+                        "model Orphan\n" +
+                        "clabject C : category A\n" +
+                        "end\n").getBytes(StandardCharsets.UTF_8)),
+                "catuse-orphan-clabject.use", err, new MultiLevelModelFactory());
+        err.flush();
+
+        assertNull("a clabject with no parent level to instantiate from must not silently compile away", mlm);
+        assertTrue("the error should point at the missing '< Parent', not just fail silently",
+                errBuf.toString().contains("no parent level"));
+    }
+
     /** Rule 2: an omitted "< PARENT" and an explicit "< NONE" are equivalent top-level markers. */
     public void testBareModelWithNoParentIsTopLevel() {
         MMultiLevelModel mlm = compile(

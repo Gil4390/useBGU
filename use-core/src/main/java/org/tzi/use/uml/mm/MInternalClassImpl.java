@@ -171,8 +171,11 @@ public class MInternalClassImpl extends MClassImpl{
         //need to find the parent that's not in the current level
         for (MClassifier parent : parents) {
             if (!parent.model().equals(this.model())) {
-                MGeneralization edge = this.model.generalizationGraph().edgesBetween(this, parent).iterator().next();
-                res.add((MClabject) edge);
+                MGeneralization edge = this.model.generalizationGraph()
+                        .edgesBetween(this, parent).stream().findFirst().orElse(null);
+                if (edge != null) {
+                    res.add((MClabject) edge);
+                }
             }
         }
         return res;
@@ -188,8 +191,11 @@ public class MInternalClassImpl extends MClassImpl{
         //need to find the children that's not in the current level
         for (MClassifier child : children) {
             if (!child.model().equals(this.model())) {
-                MGeneralization edge = this.model.generalizationGraph().edgesBetween(child, this).iterator().next();
-                res.add((MClabject) edge);
+                MGeneralization edge = this.model.generalizationGraph()
+                        .edgesBetween(child, this).stream().findFirst().orElse(null);
+                if (edge != null) {
+                    res.add((MClabject) edge);
+                }
             }
         }
         return res;

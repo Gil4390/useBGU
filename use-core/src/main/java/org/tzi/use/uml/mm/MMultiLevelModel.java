@@ -161,9 +161,17 @@ public class MMultiLevelModel extends MMultiModel {
 
     public boolean checkState(){
         boolean result = true;
-        MModel previousModel = fModelsList.get(0);
-        for (MModel model : this.models()){
-            MMediator mediator = fMediators.get(model.name());
+        // Iterate mediators and use each one's own, explicitly-recorded
+        // parent model (mediator.getParentModel()) rather than pairing
+        // models by walking this.models() in sequence -- that collection
+        // is inherited from MMultiModel's TreeMap<String,MModel> and so
+        // iterates *alphabetically* by model name, not in level-hierarchy
+        // order, which silently paired each level with the wrong parent
+        // whenever level names didn't happen to sort in hierarchy order.
+        // This mirrors the already-correct checkWellDefinednessState().
+        for (MMediator mediator : mediators()){
+            MModel previousModel = mediator.getParentModel();
+            if (previousModel == null) continue;
             UseSystemApi systemApi = new UseSystemApiUndoable(previousModel);
 
             //for each clabject, we create an object of the instance type
@@ -191,7 +199,6 @@ public class MMultiLevelModel extends MMultiModel {
             }
 
             result = systemApi.checkState() && result;
-            previousModel = model;
         }
 
         return result;
@@ -279,13 +286,16 @@ public class MMultiLevelModel extends MMultiModel {
         for (MClass child : children) {
             //check if the inheritance is of type clabject, if so the invariant might have been removed.
             if (!child.model().equals(cls.model())) {
-                MGeneralization edge = cls.model().generalizationGraph().edgesBetween(child, cls).iterator().next();
-                MClabject clabject = ((MClabject) edge);
-                if (clabject.getRemovedConstraints().contains(inv)){
-                    continue;
-                }
-                if (this.interInvariants().contains(inv)){
-                    continue;
+                MGeneralization edge = cls.model().generalizationGraph()
+                        .edgesBetween(child, cls).stream().findFirst().orElse(null);
+                if (edge instanceof MClabject) {
+                    MClabject clabject = (MClabject) edge;
+                    if (clabject.getRemovedConstraints().contains(inv)){
+                        continue;
+                    }
+                    if (this.interInvariants().contains(inv)){
+                        continue;
+                    }
                 }
             }
             res.add(child);
@@ -305,18 +315,20 @@ public class MMultiLevelModel extends MMultiModel {
              res.addAll(parentConstraints);
              //check if the inheritance is of type clabject, if so the invariant might have been removed.
              if (!parent.model().equals(cls.model())) {
-                 MGeneralization edge = cls.model().generalizationGraph().edgesBetween(cls, parent).iterator().next();
-                 MClabject clabject = ((MClabject) edge);
+                 MGeneralization edge = cls.model().generalizationGraph()
+                         .edgesBetween(cls, parent).stream().findFirst().orElse(null);
+                 if (edge instanceof MClabject) {
+                     MClabject clabject = (MClabject) edge;
 
-                 for (MClassInvariant inv : parentConstraints){
-                     if (clabject.getRemovedConstraints().contains(inv)){
-                         res.remove(inv);
-                     }
-                     if (this.interInvariants().contains(inv)){
-                         res.remove(inv);
+                     for (MClassInvariant inv : parentConstraints){
+                         if (clabject.getRemovedConstraints().contains(inv)){
+                             res.remove(inv);
+                         }
+                         if (this.interInvariants().contains(inv)){
+                             res.remove(inv);
+                         }
                      }
                  }
-
              }
          }
 
