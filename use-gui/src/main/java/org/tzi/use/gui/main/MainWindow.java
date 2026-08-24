@@ -48,6 +48,7 @@ import org.tzi.use.main.Session.EvaluatedStatement;
 import org.tzi.use.main.runtime.IRuntime;
 import org.tzi.use.main.shell.Shell;
 import org.tzi.use.parser.use.USECompiler;
+import org.tzi.use.parser.use.USECompilerCatUSE;
 import org.tzi.use.parser.use.USECompilerMLM;
 import org.tzi.use.parser.use.USECompilerMulti;
 import org.tzi.use.runtime.gui.impl.PluginActionProxy;
@@ -175,6 +176,7 @@ public class MainWindow extends JFrame {
 		addToToolBar(fToolBar, fActionFileOpenSpec,  "Open specification");
         addToToolBar(fToolBar, fActionFileOpenMultiSpec,  "Open multi-model specification");
         addToToolBar(fToolBar, fActionFileOpenMLMSpec,  "Open multi-level-model specification");
+        addToToolBar(fToolBar, fActionFileOpenCatUSESpec,  "Open CatUSE specification");
         addToToolBar(fToolBar, fActionFileReload,  "Reload current specification");
 		
 		fActionFileReload.setEnabled(!Options.getRecentFiles().isEmpty());
@@ -238,6 +240,7 @@ public class MainWindow extends JFrame {
 
         mi = menu.add(fActionFileOpenMultiSpec);
         mi = menu.add(fActionFileOpenMLMSpec);
+        mi = menu.add(fActionFileOpenCatUSESpec);
         mi = menu.add(fActionFileOpenSpec);
 
         mi.setAccelerator(KeyStroke
@@ -1039,6 +1042,7 @@ public class MainWindow extends JFrame {
     private final ActionFileOpenSpec fActionFileOpenSpec = new ActionFileOpenSpec();
     private final ActionFileOpenMultiSpec fActionFileOpenMultiSpec = new ActionFileOpenMultiSpec();
     private final ActionFileOpenMLMSpec fActionFileOpenMLMSpec = new ActionFileOpenMLMSpec();
+    private final ActionFileOpenCatUSESpec fActionFileOpenCatUSESpec = new ActionFileOpenCatUSESpec();
 
     private final ActionFileRefreshSpec fActionFileReload = new ActionFileRefreshSpec();
     
@@ -1378,6 +1382,77 @@ public class MainWindow extends JFrame {
             MModel model = null;
             try (InputStream iStream = Files.newInputStream(f)) {
                 model = USECompilerMLM.compileMLMSpecification(iStream, f.toAbsolutePath().toString(),
+                        fLogWriter, new MultiLevelModelFactory());
+                fLogWriter.println("done.");
+            } catch (IOException ex) {
+                fLogWriter.println("File `" + f.toAbsolutePath().toString() + "' not found.");
+            }
+
+            final MSystem system;
+            if (model != null) {
+                fLogWriter.println(model.getStats());
+                // create system
+                system = new MLMSystem(model);
+            } else {
+                system = null;
+            }
+
+            // set new system (may be null if compilation failed)
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fSession.setSystem(system);
+                }
+            });
+
+            if (system != null) {
+                Options.getRecentFiles().push(f.toString());
+                Options.setLastDirectory(f.getParent());
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private class ActionFileOpenCatUSESpec extends ActionFileOpenMLMSpec {
+
+        ActionFileOpenCatUSESpec() {
+            super("Open CatUSE specification...", getIcon("document-open-mlm.png"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!validateOpenPossible()) return;
+
+            JFileChooser fChooser = new JFileChooser(Options.getLastDirectory().toFile());
+            ExtFileFilter filter = new ExtFileFilter("use", "USE specifications");
+            fChooser.setFileFilter(filter);
+            fChooser.setDialogTitle("Open CatUSE specification");
+
+            int returnVal = fChooser.showOpenDialog(MainWindow.this);
+            if (returnVal != JFileChooser.APPROVE_OPTION)
+                return;
+
+            Path path = fChooser.getCurrentDirectory().toPath();
+            Options.setLastDirectory(path);
+            Path f = fChooser.getSelectedFile().toPath();
+
+            compile(f);
+
+            Options.getRecentFiles().push(f.toAbsolutePath().toString());
+        }
+
+        @Override
+        protected boolean compile(final Path f) {
+            fLogPanel.clear();
+            showLogPanel();
+
+            fLogWriter.println("compiling CatUSE specification " + f.toString() + "...");
+
+            MModel model = null;
+            try (InputStream iStream = Files.newInputStream(f)) {
+                model = USECompilerCatUSE.compileCatUSESpecification(iStream, f.toAbsolutePath().toString(),
                         fLogWriter, new MultiLevelModelFactory());
                 fLogWriter.println("done.");
             } catch (IOException ex) {
