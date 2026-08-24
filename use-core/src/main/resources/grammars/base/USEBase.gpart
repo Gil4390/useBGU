@@ -59,7 +59,7 @@ clabject returns [ASTClabject n]
         | ( '~' oldAtrName=IDENT {$n.addAttributeRemoving($oldAtrName);} )
         )*
     )?
-    ('roles'
+    (keyRoles
         ( ( '~' oldRoleName=IDENT {$n.addRoleRemoving($oldRoleName);} )
         )*
     )?
@@ -802,6 +802,9 @@ keyAssociation:
   
 keyRole:
   {input.LT(1).getText().equals("role")}? IDENT ;
+
+keyRoles:
+  {input.LT(1).getText().equals("roles")}? IDENT ;
 
 keyComposition:
   {input.LT(1).getText().equals("composition")}? IDENT ;
