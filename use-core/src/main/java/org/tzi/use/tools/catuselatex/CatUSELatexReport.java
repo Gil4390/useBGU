@@ -72,7 +72,7 @@ public class CatUSELatexReport {
         Path pumlPath = outputDir.resolve(pumlFileName);
         Files.writeString(pumlPath, plantUml, StandardCharsets.UTF_8);
 
-        String tex = buildLatex(displayName, catUseSource, mlmUseText, flatUseText, plantUml,
+        String tex = buildLatex(baseName, displayName, catUseSource, mlmUseText, flatUseText, plantUml,
                 absOutputDir.resolve(pumlFileName).toString(),
                 absOutputDir.resolve(svgFileName).toString(),
                 absOutputDir.resolve(pdfFileName).toString(),
@@ -96,10 +96,12 @@ public class CatUSELatexReport {
         return dot < 0 ? filename : filename.substring(0, dot);
     }
 
-    private static String buildLatex(String displayName, String catUseSource, String mlmUseText, String flatUseText,
-                                      String plantUml, String absPumlPath, String absSvgPath, String absPdfPath,
-                                      String pdfFileNameForInclude) {
+    private static String buildLatex(String baseName, String displayName, String catUseSource, String mlmUseText,
+                                      String flatUseText, String plantUml, String absPumlPath, String absSvgPath,
+                                      String absPdfPath, String pdfFileNameForInclude) {
         StringBuilder tex = new StringBuilder();
+        // Requires plantuml and inkscape on PATH (rendering the class diagram at build time via \write18).
+        tex.append("% pdflatex -shell-escape ").append(baseName).append(".tex\n");
         tex.append("\\documentclass[11pt]{article}\n");
         tex.append("\\usepackage[margin=1in]{geometry}\n");
         tex.append("\\usepackage{listings}\n");
