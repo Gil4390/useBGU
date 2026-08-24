@@ -33,6 +33,10 @@ public class ASTMediator extends ASTAnnotatable{
         return fName.getText();
     }
 
+    public String getParentModelName(){
+        return fParentModelName.getText();
+    }
+
     public MMediator gen(MLMContext mlmContext) throws Exception {
         MMediator mMediator = mlmContext.modelFactory().createMediator(fName.getText());
         MModel parentModel = mlmContext.getParentModel();

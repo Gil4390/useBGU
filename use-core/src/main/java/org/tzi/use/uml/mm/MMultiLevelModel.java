@@ -24,7 +24,21 @@ public class MMultiLevelModel extends MMultiModel {
     }
 
     protected MMultiLevelModel(MMultiModel multiModel){
-        super(multiModel.name());
+        this(multiModel.name(), multiModel);
+    }
+
+    /**
+     * @param name the MLM's own declared name (e.g. "ABCD" from "MLM
+     *  ABCD"). Must be passed explicitly rather than trusting
+     *  {@code multiModel.name()}: {@code multiModel} is built by the
+     *  grammar's inner {@code multi_model_core} rule, which keeps its
+     *  hard-coded placeholder name ("MLM") unless the source uses the
+     *  rarely-used optional "multi_model IDENT" clause -- so
+     *  {@code multiModel.name()} is usually just "MLM", not the name the
+     *  user actually declared.
+     */
+    protected MMultiLevelModel(String name, MMultiModel multiModel){
+        super(name);
         fModelsList = new ArrayList<>();
 
         //steal all the fields from the multiModel

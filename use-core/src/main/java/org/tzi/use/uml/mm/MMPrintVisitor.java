@@ -23,7 +23,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +53,19 @@ public class MMPrintVisitor implements MMVisitor {
     protected PrintWriter fOut;
     private int fIndent;    // number of columns to indent output
     private int fIndentStep = 2;
+
+    /**
+     * Level name(s) currently in local scope while printing one level's
+     * "model X ... " block or one mediator's "mediator X &lt; Y ... end"
+     * block from within {@link #visitMLM}. Multi-level model elements
+     * store their name fully qualified as "Level@Name" (to stay distinct
+     * across levels), but a declaration/reference local to one of these
+     * blocks must use the bare name -- see {@link #localName}. Left empty
+     * everywhere else (plain models, the MLM's own inter-* sections, and
+     * any element visited standalone rather than via visitMLM), where
+     * names are kept fully qualified.
+     */
+    private final Set<String> fLocalLevels = new LinkedHashSet<>();
 
     public MMPrintVisitor(PrintWriter out) {
         fOut = out;
@@ -113,12 +129,68 @@ public class MMPrintVisitor implements MMVisitor {
             print(ws());
     }
 
+    /**
+     * Strips a "Level@" prefix back to the bare name if that level is
+     * currently in local scope (see {@link #fLocalLevels}); otherwise
+     * returns the name unchanged. Plain (non-multi-level) names never
+     * contain "@" and pass through as-is regardless of scope.
+     */
+    private String localName(String qualifiedName) {
+        int at = qualifiedName.indexOf('@');
+        if (at < 0) {
+            return qualifiedName;
+        }
+        String level = qualifiedName.substring(0, at);
+        return fLocalLevels.contains(level) ? qualifiedName.substring(at + 1) : qualifiedName;
+    }
+
+    private static String levelOf(String qualifiedName) {
+        int at = qualifiedName.indexOf('@');
+        return at < 0 ? "" : qualifiedName.substring(0, at);
+    }
+
+    /**
+     * A classifier's {@code parents()} mixes two structurally different
+     * edges that happen to share the same underlying generalization graph
+     * in a multi-level model: genuine same-level "class X &lt; Y"
+     * subclassing, and cross-level clabject instance-of edges (the
+     * "clabject X : Y" links declared under a mediator). Printing all of
+     * them after "&lt;" would produce invalid syntax -- a clabject's
+     * powerclass appearing as if it were a same-level superclass. A
+     * clabject relates a class to a class exactly one level up by
+     * construction, so filtering to same-level parents is enough to
+     * recover just the genuine superclasses; for a plain (non-multi-level)
+     * classifier every name has the same (empty) level, so this is a
+     * no-op.
+     */
+    private static List<MClassifier> sameLevelParents(MClassifier e) {
+        String ownLevel = levelOf(e.name());
+        List<MClassifier> result = new ArrayList<>();
+        for (MClassifier parent : e.parents()) {
+            if (levelOf(parent.name()).equals(ownLevel)) {
+                result.add(parent);
+            }
+        }
+        return result;
+    }
+
+    private String joinLocalNames(List<MClassifier> classifiers) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < classifiers.size(); i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(localName(classifiers.get(i).name()));
+        }
+        return sb.toString();
+    }
+
     @Override
 	public void visitAssociation(MAssociation e) {
         visitAnnotations(e);
         indent();
-        println(keyword(MAggregationKind.name(e.aggregationKind())) + ws() + 
-                id(e.name()) + ws() + keyword("between"));
+        println(keyword(MAggregationKind.name(e.aggregationKind())) + ws() +
+                id(localName(e.name())) + ws() + keyword("between"));
 
         incIndent();
         
@@ -148,7 +220,7 @@ public class MMPrintVisitor implements MMVisitor {
         
         print( keyword( "associationclass" ) );
         print( ws() );
-        print( id( e.name() ) );
+        print( id( localName(e.name()) ) );
 
         Set<MAssociationClass> parents = e.parents();
         if ( !parents.isEmpty() ) {
@@ -205,7 +277,7 @@ public class MMPrintVisitor implements MMVisitor {
         StringBuilder result = new StringBuilder();
         
         indent();
-        result.append(id(e.cls().name()));
+        result.append(id(localName(e.cls().name())));
         result.append(other("[" + e.multiplicity() + "]"));
         
         if(!e.cls().nameAsRolename().equals(e.nameAsRolename())){
@@ -281,8 +353,8 @@ public class MMPrintVisitor implements MMVisitor {
         visitAnnotations(e);
         
         indent();
-        print(id(e.name()) + ws() + other(":") + ws() +
-                other(e.type().toString()));
+        print(id(localName(e.name())) + ws() + other(":") + ws() +
+                other(localName(e.type().toString())));
         
         if(e.getInitExpression().isPresent()){
         	print(ws() + keyword("init") + ws() + other(":") + ws());
@@ -337,12 +409,12 @@ public class MMPrintVisitor implements MMVisitor {
         indent();
         if (e.isAbstract() )
             print(keyword("abstract") + ws());
-        print(keyword("class") + ws() + id(e.name()));
+        print(keyword("class") + ws() + id(localName(e.name())));
 
-        Set<? extends MClassifier> parents = e.parents();
+        List<MClassifier> parents = sameLevelParents(e);
         if (! parents.isEmpty() ) {
-            print(ws() + other("<") + ws() + 
-                       other(StringUtil.fmtSeq(parents.iterator(), ",")));
+            print(ws() + other("<") + ws() +
+                       other(joinLocalNames(parents)));
         }
         println();
         
@@ -358,12 +430,12 @@ public class MMPrintVisitor implements MMVisitor {
         indent();
         if (e.isAbstract() )
             print(keyword("abstract") + ws());
-        print(keyword("dataType") + ws() + id(e.name()));
+        print(keyword("dataType") + ws() + id(localName(e.name())));
 
-        Set<? extends MClassifier> parents = e.parents();
+        List<MClassifier> parents = sameLevelParents(e);
         if (!parents.isEmpty() ) {
             print(ws() + other("<") + ws() +
-                    other(StringUtil.fmtSeq(parents.iterator(), ",")));
+                    other(joinLocalNames(parents)));
         }
         println();
 
@@ -386,7 +458,7 @@ public class MMPrintVisitor implements MMVisitor {
     		line.append(ws());
     	}
     	
-    	line.append(other(e.cls().name()));
+    	line.append(other(localName(e.cls().name())));
     	
     	if(e.isAnnotated()){
     		println(line.toString());
@@ -405,7 +477,7 @@ public class MMPrintVisitor implements MMVisitor {
     	
     	line.append(keyword("inv"));
     	line.append(ws());
-    	line.append(id(e.name()));
+    	line.append(id(localName(e.name())));
     	line.append(other(":"));
         
     	println(line.toString());
@@ -431,7 +503,7 @@ public class MMPrintVisitor implements MMVisitor {
 	public void visitModel(MModel e) {
         visitAnnotations(e);
         indent();
-        println(keyword("model") + ws() + id(e.name()));
+        println(keyword("model") + ws() + id(localName(e.name())));
         println();
     
         // print user-defined data types
@@ -479,14 +551,98 @@ public class MMPrintVisitor implements MMVisitor {
         }
     }
 
+    /**
+     * Prints one "model X ... " block per level, the
+     * "inter-classes"/"inter-associations"/"inter-constraints" sections
+     * (only the ones that are non-empty), and one "mediator X &lt; Y ...
+     * end" block per mediator -- the actual MLM-USE grammar shape (see
+     * any real fixture, e.g. mlm-figure-1-test.use). Each level's own
+     * classes/attributes/associations/invariants are visited with that
+     * level's name in {@link #fLocalLevels}, so their "Level@" qualifiers
+     * print as the bare local names a human would actually write; each
+     * mediator's clabjects/assoclinks are visited with both its own level
+     * and its parent level in scope, since a clabject line references
+     * both ("clabject Child : Parent"). The inter-* sections are printed
+     * with no local scope, keeping full qualification since those
+     * elements inherently span levels.
+     */
     @Override
     public void visitMLM(MMultiLevelModel e) {
-        visitModel(e);
-        List<MMediator> mediators = e.mediators();
-        for (MMediator mediator : mediators) {
+        indent();
+        println(keyword("MLM") + ws() + id(e.name()));
+        println();
+
+        for (MModel level : orderedLevels(e)) {
+            fLocalLevels.clear();
+            fLocalLevels.add(level.name());
+            visitModel(level);
+            println();
+        }
+        fLocalLevels.clear();
+
+        if (!e.interClasses().isEmpty()) {
+            indent();
+            println(keyword("inter-classes"));
+            for (MClass cls : e.interClasses()) {
+                cls.processWithVisitor(this);
+                println();
+            }
+        }
+        if (!e.interAssociations().isEmpty()) {
+            indent();
+            println(keyword("inter-associations"));
+            for (MAssociation assoc : e.interAssociations()) {
+                assoc.processWithVisitor(this);
+                println();
+            }
+        }
+        if (!e.interInvariants().isEmpty()) {
+            indent();
+            println(keyword("inter-constraints"));
+            for (MClassInvariant inv : e.interInvariants()) {
+                inv.processWithVisitor(this);
+                println();
+            }
+        }
+
+        for (MMediator mediator : e.mediators()) {
+            fLocalLevels.clear();
+            fLocalLevels.add(mediator.getCurrentModel().name());
+            fLocalLevels.add(mediator.parentModelName());
             mediator.processWithVisitor(this);
             println();
         }
+        fLocalLevels.clear();
+    }
+
+    /**
+     * Parent levels before children, using each mediator's parent link.
+     * Levels form a simple chain (each mediator has at most one parent
+     * model) in this system, so a depth-by-walking-parents sort is enough.
+     */
+    private static List<MModel> orderedLevels(MMultiLevelModel e) {
+        Map<String, MModel> parentOf = new HashMap<>();
+        for (MMediator mediator : e.mediators()) {
+            if (mediator.getParentModel() != null) {
+                parentOf.put(mediator.getCurrentModel().name(), mediator.getParentModel());
+            }
+        }
+
+        Map<String, Integer> depth = new HashMap<>();
+        for (MModel model : e.models()) {
+            int d = 0;
+            String curName = model.name();
+            Set<String> seen = new HashSet<>();
+            while (parentOf.containsKey(curName) && seen.add(curName)) {
+                curName = parentOf.get(curName).name();
+                d++;
+            }
+            depth.put(model.name(), d);
+        }
+
+        List<MModel> levels = new ArrayList<>(e.models());
+        levels.sort(Comparator.comparingInt(m -> depth.getOrDefault(m.name(), 0)));
+        return levels;
     }
 
     @Override
@@ -621,7 +777,7 @@ public class MMPrintVisitor implements MMVisitor {
     public void visitMediator(MMediator mMediator) {
         visitAnnotations(mMediator);
         indent();
-        println(keyword("mediator") + ws() + id(mMediator.name()) + ws() + keyword(":") +ws() + id(mMediator.parentModelName()) );
+        println(keyword("mediator") + ws() + id(mMediator.name()) + ws() + keyword("<") + ws() + id(mMediator.parentModelName()) );
         incIndent();
         visitClabjectsAndAssoclinks(mMediator);
         decIndent();
@@ -632,7 +788,7 @@ public class MMPrintVisitor implements MMVisitor {
     public void visitClabject(MClabject e) {
         visitAnnotations(e);
         indent();
-        println(keyword("clabject") + ws() + id(e.child().name()) + ws() + keyword(":") + ws() + id(e.parent().name()));
+        println(keyword("clabject") + ws() + id(localName(e.child().name())) + ws() + keyword(":") + ws() + id(localName(e.parent().name())));
 
         incIndent();
 
@@ -679,8 +835,7 @@ public class MMPrintVisitor implements MMVisitor {
         // visit constraint removal
         for (MClassInvariant invariant : e.getRemovedConstraints()) {
             indent();
-            String invName = invariant.name().contains("@") ? invariant.name().split("@")[1] : invariant.name();
-            println(other("~") + id(invName));
+            println(other("~") + id(localName(invariant.name())));
         }
 
         decIndent();
@@ -693,7 +848,7 @@ public class MMPrintVisitor implements MMVisitor {
     public void visitAssoclink(MAssoclink e) {
         visitAnnotations(e);
         indent();
-        println(keyword("assoclink") + ws() + id(e.child().name()) + ws() + keyword(":") + ws() + id(e.parent().name()));
+        println(keyword("assoclink") + ws() + id(localName(e.child().name())) + ws() + keyword(":") + ws() + id(localName(e.parent().name())));
 
         incIndent();
 

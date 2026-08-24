@@ -35,7 +35,7 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             if (multiModel == null){
                 throw new Exception("error parsing multi level model");
             }
-            mMultiLevelModel = mlmContext.modelFactory().createMLM(multiModel);
+            mMultiLevelModel = mlmContext.modelFactory().createMLM(fName.getText(), multiModel);
             mMultiLevelModel.setFilename(mlmContext.filename());
         }
         catch (Exception e){
@@ -45,13 +45,24 @@ public class ASTMultiLevelModel extends ASTMultiModel{
 
 
         Iterator<ASTMediator> medIt = fMediators.iterator();
-        MModel prevModel = null;
         while(medIt.hasNext()) {
             ASTMediator mediator = medIt.next();
 
             MLMContext ctx = new MLMContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
             ctx.setMainContext(mlmContext);
-            ctx.setParentModel(prevModel);
+            // Resolve the mediator's own declared "< ParentName" by name --
+            // not by "whichever mediator happened to be processed just
+            // before this one in fMediators' order". Mediators are free to
+            // be declared/iterated in any order (nothing in the grammar
+            // requires parent-before-child), so a positional/sequential
+            // "previous model" stood in for the real parent link only by
+            // accident, whenever a file happened to declare them in that
+            // order; any other order produced a wrong (or, for the first
+            // non-"NONE" mediator in a differently-ordered file, null)
+            // parent model here.
+            String parentModelName = mediator.getParentModelName();
+            MModel parentModel = parentModelName.equals("NONE") ? null : mMultiLevelModel.getModel(parentModelName);
+            ctx.setParentModel(parentModel);
             ctx.setModel(mMultiLevelModel);
 
             MModel currentModel = mMultiLevelModel.getModel(mediator.getName());
@@ -70,8 +81,6 @@ public class ASTMultiLevelModel extends ASTMultiModel{
                 if (mlmContext.errorCount() > 0){
                     return null;
                 }
-
-                prevModel = currentModel;
             }
             catch(Exception e) {
                 mlmContext.reportError(fName,e);

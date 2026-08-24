@@ -14,6 +14,10 @@ public class MultiLevelModelFactory extends MultiModelFactory {
         return new MMultiLevelModel(multiModel);
     }
 
+    public MMultiLevelModel createMLM(String name, MMultiModel multiModel){
+        return new MMultiLevelModel(name, multiModel);
+    }
+
     @Override
     public MClassInvariant createClassInvariant(String name, List<String> vars, MClassifier cls, Expression inv, boolean isExistential) throws ExpInvalidException {
         return new MInternalClassInvariant(modelName + name, vars, cls, inv, isExistential);
