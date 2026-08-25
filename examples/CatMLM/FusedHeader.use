@@ -1,0 +1,60 @@
+-- Demonstrates the fused classifier/clabject header: a category or class
+-- declaration can carry its cross-level instantiation right on its own
+-- header, Java-"implements"-style, instead of (or alongside) a separate
+-- "clabject NAME : ..." statement.
+--
+--   category NAME [< superclassifier-list] [: powerclass-list]
+--
+-- A list of exactly one name is bare; two or more must be parenthesized
+-- -- purely a readability convention (the grammar has no actual ambiguity
+-- here), applied consistently to both the "<" and ":" clauses, and to a
+-- standalone clabject's own ":" list too.
+
+MLM FusedHeaderDemo
+
+model M3
+category Vehicle
+attributes
+wheels: Integer
+end
+
+category Insurable
+attributes
+riskScore: Integer
+end
+
+
+model M2 < M3
+
+class Hatchback
+attributes
+trunkVolume: Integer
+end
+
+class Convertible
+attributes
+hasRoof: Boolean
+end
+
+-- Single superclassifier, single powerclass: no parentheses needed.
+category Car < Hatchback : Vehicle
+attributes
+seats: Integer
+end
+
+-- Two superclassifiers AND two powerclasses: both lists parenthesized.
+category SportsCar < (Hatchback, Convertible) : (Vehicle, Insurable)
+attributes
+topSpeed: Integer
+end
+
+-- Silent union: PickupTruck's powerclass list is split across its own
+-- fused header (Vehicle) and a separate standalone clabject statement
+-- (Insurable) for the same name -- both apply, they don't conflict.
+category PickupTruck : Vehicle
+attributes
+bedLength: Integer
+end
+
+clabject PickupTruck : Insurable
+end

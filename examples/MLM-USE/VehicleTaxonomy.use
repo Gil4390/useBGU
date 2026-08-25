@@ -1,0 +1,82 @@
+-- Plain MLM-USE. Same domain as USE/Vehicle.use, but restructured across
+-- three levels of instantiation instead of one level of generalization:
+--   Vehicle   (M3, most abstract -- defines wheels/isMultiTrack/PositiveWheels)
+--   Car       (M2 -- its OWN seats/isFamilyCar/ReasonableSeats, AND
+--              instantiates Vehicle, renaming "wheels" to "wheelCount" and
+--              cancelling PositiveWheels for this edge)
+--   CarModel  (M1, most concrete -- its OWN modelYear/ValidYear, AND
+--              instantiates Car, inheriting everything Car has -- both its
+--              own features and what Car itself inherited from Vehicle)
+--
+-- Things worth noticing when reading this (see the "defined vs. declared"
+-- discussion this example came from):
+--   - Operations are ALWAYS fully inherited through a clabject edge, with
+--     no cancellation mechanism at all -- unlike attributes/roles/
+--     constraints, which each get their own optional rename/removal
+--     section in a clabject's body. isMultiTrack, defined once on Vehicle,
+--     is simply callable on Car and CarModel alike.
+--   - A clabject's rename/removal can only target something its DIRECT
+--     parent (the one named right after ":") owns itself, not something
+--     further up the chain. That's why "wheels -> wheelCount" and
+--     "~PositiveWheels" are declared on the Car:Vehicle mediator, not the
+--     CarModel:Car one, even though CarModel is the class you'd instantiate
+--     in an object diagram.
+
+MLM VehicleTaxonomy
+
+model M3
+
+class Vehicle
+attributes
+  wheels: Integer
+operations
+  isMultiTrack(): Boolean = self.wheels > 2
+end
+
+constraints
+context Vehicle inv PositiveWheels:
+  self.wheels > 0
+
+
+model M2
+
+class Car
+attributes
+  seats: Integer
+operations
+  isFamilyCar(): Boolean = self.seats >= 5
+end
+
+constraints
+context Car inv ReasonableSeats:
+  self.seats > 0 and self.seats <= 9
+
+
+model M1
+
+class CarModel
+attributes
+  modelYear: Integer
+end
+
+constraints
+context CarModel inv ValidYear:
+  self.modelYear > 1900
+
+
+mediator M3 < NONE
+end
+
+mediator M2 < M3
+clabject Car : Vehicle
+attributes
+wheels -> wheelCount
+constraints
+~PositiveWheels
+end
+end
+
+mediator M1 < M2
+clabject CarModel : Car
+end
+end

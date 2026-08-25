@@ -1,0 +1,58 @@
+-- CatMLM equivalent of MLM-USE/VehicleTaxonomy.use -- same domain, same
+-- resolved model, terser surface syntax. Differences worth noticing:
+--   - "category"/"class" fuses what plain MLM-USE splits across a model
+--     block and a mediator block: Car's own shape AND the fact that it
+--     instantiates Vehicle are both declared in Car's own "category ...
+--     end" body (via the trailing "clabject Car : Vehicle" statement in
+--     the same model block), not two separate MLM-USE-style blocks.
+--   - CatMLM genuinely CANNOT express the plain-MLM-USE version's
+--     "wheels -> wheelCount" rename, or per-clabject constraint removal --
+--     catClabjectDefinition has no body at all beyond the powerclass list.
+--     The only cancellation mechanism here is the "catConstr" tag, applied
+--     once on PositiveWheels' own declaration -- it fires for every
+--     instantiator of Vehicle, not selectively. That's why this version
+--     keeps the attribute named "wheelCount" from the start, rather than
+--     renaming it at the instantiation site.
+--   - Operations still cannot be written in CatMLM at all (no "operations"
+--     section in catClassifierDefinition) -- see MLM-USE/VehicleTaxonomy.use
+--     for the version with isMultiTrack/isFamilyCar.
+
+MLM VehicleTaxonomy
+
+model M3
+category Vehicle
+attributes
+wheelCount: Integer
+end
+
+constraints
+context Vehicle inv PositiveWheels: catConstr
+self.wheelCount > 0
+
+
+model M2 < M3
+category Car
+attributes
+seats: Integer
+end
+
+constraints
+context Car inv ReasonableSeats:
+self.seats > 0 and self.seats <= 9
+
+clabject Car : Vehicle
+end
+
+
+model M1 < M2
+class CarModel
+attributes
+modelYear: Integer
+end
+
+constraints
+context CarModel inv ValidYear:
+self.modelYear > 1900
+
+clabject CarModel : Car
+end

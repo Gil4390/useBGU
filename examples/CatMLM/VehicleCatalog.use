@@ -1,0 +1,48 @@
+-- Deliberately small CatMLM example exercising every "cat*" mechanism in
+-- one file: catAtt, catConstr, catAssociation, and a clabject instantiating
+-- more than one powerclass at once.
+--
+-- Two orthogonal category dimensions at the taxonomy level: a vehicle's
+-- physical form (Vehicle) and its commercial classification (Product).
+-- A concrete vehicle type can be simultaneously an instance of both.
+
+MLM VehicleCatalog
+
+model Taxonomy < NONE
+
+category Vehicle
+attributes
+wheels: Integer
+internalCode: String; catAtt
+end
+
+category Product
+attributes
+listPrice: Integer
+skuPrefix: String; catAtt
+end
+
+-- Declared once between the two categories; without catAssociation, any
+-- clabject instantiating both would inherit *two* navigable roles that
+-- both point back at itself -- meaningless at the instance level.
+catAssociation classifiedAs between
+Vehicle[1] role vehicleSide
+Product[1] role productSide
+end
+
+constraints
+context Vehicle inv PositiveWheels: catConstr
+self.wheels > 0
+
+model Fleet < Taxonomy
+
+-- Car is both a Vehicle and a Product: gets wheels+listPrice, but neither
+-- internalCode/skuPrefix (catAtt) nor vehicleSide/productSide (catAssociation).
+clabject Car : (Vehicle, Product)
+end
+
+-- Bicycle is only a Vehicle: gets wheels, and PositiveWheels stays cancelled
+-- (catConstr), but productSide is still cancelled too -- it was only ever
+-- meaningful for something that is *also* a Product.
+clabject Bicycle : Vehicle
+end
