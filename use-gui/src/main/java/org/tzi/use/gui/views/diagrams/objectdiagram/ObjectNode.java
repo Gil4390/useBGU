@@ -89,7 +89,7 @@ public class ObjectNode extends PlaceableNode implements SortChangeListener, Obj
 		this.fOpt.addOptionChangedListener(fOptChaneListener);
 
 		MClass cls = obj.cls();
-		fLabel = obj.name() + ":" + cls.name();
+		fLabel = obj.name() + ":" + classFirstDisplayName(cls.name());
 		fLabelA = new AttributedString(fLabel);
 		fLabelA.addAttribute(TextAttribute.FONT, parent.getFont());
 		fLabelA.addAttribute(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
@@ -105,6 +105,24 @@ public class ObjectNode extends PlaceableNode implements SortChangeListener, Obj
 
 		fStateValues = new String[fStateMachines.size()];
 
+	}
+
+	/**
+	 * MLM class names are internally "Level@Class" (level first, e.g. from
+	 * {@code MInternalClassImpl.name()}) -- for on-diagram display, show
+	 * "Class@Level" instead: easier for a human to scan, since same-named
+	 * classes from different levels then sort/read together by class
+	 * identity first. Non-MLM names (no "@") are returned unchanged. This
+	 * only affects the displayed label -- the underlying class's own
+	 * {@code name()} keeps its original "Level@Class" form, since that is
+	 * still relied on elsewhere (e.g. per-level colour coding).
+	 */
+	private static String classFirstDisplayName(String qualifiedName) {
+		int at = qualifiedName.indexOf('@');
+		if (at < 0) {
+			return qualifiedName;
+		}
+		return qualifiedName.substring(at + 1) + "@" + qualifiedName.substring(0, at);
 	}
 
 	public MObject object() {

@@ -57,9 +57,28 @@ public abstract class ClassifierNode extends CompartmentNode implements DiagramO
     
     public ClassifierNode(MClassifier cls, DiagramOptions opt) {
     	this.classifier = cls;
-    	this.fLabel = cls.name();
+    	this.fLabel = classFirstDisplayName(cls.name());
     	this.fOpt = opt;
     	this.fOpt.addOptionChangedListener(this);
+    }
+
+    /**
+     * MLM class names are internally "Level@Class" (level first, e.g. from
+     * {@code MInternalClassImpl.name()}) -- for on-diagram display, show
+     * "Class@Level" instead: easier for a human to scan, since same-named
+     * classes from different levels then sort/read together by class
+     * identity first. Non-MLM names (no "@") are returned unchanged. This
+     * only affects the displayed label -- {@link #classifier}'s own
+     * {@code name()} keeps its original "Level@Class" form, since that is
+     * still relied on elsewhere (e.g. per-level colour coding in
+     * {@code ClassDiagram}).
+     */
+    private static String classFirstDisplayName(String qualifiedName) {
+    	int at = qualifiedName.indexOf('@');
+    	if (at < 0) {
+    		return qualifiedName;
+    	}
+    	return qualifiedName.substring(at + 1) + "@" + qualifiedName.substring(0, at);
     }
     
 	public MClassifier getClassifier() {
