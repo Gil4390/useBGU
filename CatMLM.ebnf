@@ -1,0 +1,212 @@
+================================================================================
+CatMLM ("CatUSE") Grammar — DELTA over MLM-USE.ebnf (EBNF)
+================================================================================
+This file lists ONLY what the CatMLM front-end -- the terser "category"/
+"clabject" surface syntax with cat* tags, informally called "CatUSE" -- adds
+on top of MLM-USE.ebnf. It is a separate, additive grammar: it changes
+nothing in USEBase.gpart/USE.ebnf/MLM-USE.ebnf, and everything downstream
+of parsing (MMultiLevelModel, well-definedness checking, the GUI, ...) has
+no notion that CatMLM exists at all. A CatMLM parse tree is *desugared*, in
+Java (USECompilerCatUSE.desugar), into the exact same ASTMultiLevelModel /
+ASTMediator / ASTClabject / ASTModel / ASTClass tree that parsing the
+equivalent plain MLM-USE.ebnf source would produce.
+
+Source: use-core/src/main/resources/grammars/catmlm/CatMLM.gpart, composed
+as CatMLM.gpart + USEBase.gpart + OCLBase.gpart + SoilBase.gpart +
+OCLLexerRules.gpart -- a genuinely separate ANTLR grammar/parser
+(CatUSEParser) from the one USE.ebnf/MLM-USE.ebnf describe, sharing only
+the reused-unchanged rules noted below.
+
+Notation is the same as USE.ebnf:
+    ::=       "is defined as"        |    alternation
+    [ x ]     x is optional          { x }    x may repeat zero or more times
+    { x }+    x may repeat one or more times
+    'x'       literal terminal text
+    UPPERCASE reference to a lexical token (see USE.ebnf Section 4)
+    (* ... *) comment
+
+New entry point:
+    catUSE_model   -- a full CatMLM file (also starts with 'MLM' IDENT --
+                      see the dispatch note below)
+
+Note on dispatch: catUSE_model and MLM-USE.ebnf's multi_level_model both
+start with the literal sequence 'MLM' IDENT, so a bare file is NOT
+self-describing -- there is no sniffing of file content to decide which
+grammar to parse it with. The tool chooses: the GUI has a separate "Open
+CatUSE specification..." action (MainWindow.ActionFileOpenCatUSESpec)
+distinct from its plain "Open MLM specification..." action, and
+USECompilerCatUSE.compileCatUSESpecification vs. the plain MLM compiler
+are two different entry points at the Java level.
+
+================================================================================
+NEW RULES
+================================================================================
+
+catUSE_model ::= 'MLM' IDENT { catLevel }+ EOF
+        (* "MLM" here is MLM-USE.ebnf's keyMLM soft keyword, reused
+           unchanged -- not redefined in this file, see below. *)
+
+catLevel ::= 'model' IDENT [ '<' IDENT ]
+             { catClassifierDefinition
+             | catAssociationDefinition
+             | catClabjectDefinition
+             | ( 'constraints' { catInvariant } )
+             }
+        (* Fuses what MLM-USE.ebnf splits across a separate 'model' block
+           (in multi_model_core) and a separate 'mediator' block: one
+           "model ID [< Parent]" section holds both the level's own
+           classifiers/associations/constraints AND its clabjects (which
+           desugar into the *parent* level's mediator). *)
+
+catClassifierDefinition ::= ( 'category' | 'class' ) IDENT
+        [ '<' catRefList ]
+        [ ':' catRefList ]
+        [ 'attributes'  { catAttributeDefinition } ]
+        [ 'constraints' { catInvariantClause } ]
+        'end'
+        (* "category X ... end" and "class X ... end" desugar to the exact
+           same AST class either way -- isCategory is purely a hint for a
+           human reader (and, incidentally, for the study tool's PlantUML
+           diagram stereotypes); it is never checked against anything and
+           decides nothing about the resulting model's semantics.
+
+           The ":" clause is Java-"implements"-style fusion of instantiation
+           onto the classifier's own header, e.g.:
+             category C2 < D : C3
+             attributes
+               seats: Integer
+             end
+           as an alternative to a separate catClabjectDefinition statement
+           for the same name. It desugars to exactly the same ASTCatClabject
+           a standalone "clabject C2 : C3 end" would produce, added to the
+           same level -- so the two spellings are sugar for each other, and
+           using both for the same class name is not an error: their
+           reference lists union (see the NOTES section on silent union). *)
+
+catRefList ::= IDENT
+             | '(' IDENT ',' IDENT { ',' IDENT } ')'
+        (* One bare identifier, or two-or-more wrapped in parentheses --
+           used for every class-name reference list in CatMLM: both
+           clauses of catClassifierDefinition above, and
+           catClabjectDefinition's powerclass list below. The grammar
+           itself has no ambiguity that requires the parentheses (":"
+           already unambiguously ends a preceding "<" list on its own,
+           and a standalone list never sits next to another one) -- this
+           is a readability convention, applied consistently everywhere
+           such a list can appear, not a parsing necessity. A single name
+           is never parenthesized: "(A)" is rejected, only "A" or
+           "(A, B, ...)" are valid. *)
+
+catAttributeDefinition ::= IDENT ':' type [ ';' 'catAtt' ] [ ';' ]
+        (* Reuses IDENT/COLON/type exactly like USE.ebnf's attributeDefinition;
+           only the optional trailing "catAtt" tag is new. A catAtt-tagged
+           attribute is automatically cancelled in every clabject that
+           instantiates this (or an inheriting) category. *)
+
+catInvariantClause ::= 'inv' [ IDENT ] ':' [ 'catConstr' ] expression
+        (* The "catConstr" tag sits between the colon and the expression.
+           A catConstr-tagged invariant is automatically cancelled in every
+           instantiating clabject, the same way catAtt cancels attributes. *)
+
+catInvariant ::= 'context'
+        [ IDENT { ',' IDENT } ':' ]
+        simpleType
+        { catInvariantClause }
+        (* Mirrors USE.ebnf's invariant rule exactly, just built from
+           catInvariantClause instead of invariantClause. *)
+
+catAssociationDefinition ::= ( 'catAssociation' | 'association' | 'aggregation' | 'composition' ) IDENT
+        'between' associationEnd { associationEnd }+
+        'end'
+        (* associationEnd is MLM-USE.ebnf/USE.ebnf's rule, reused unchanged.
+           A catAssociation-tagged association has its far-end role(s)
+           cancelled for any clabject instantiating the near end -- this is
+           what stops a clabject instantiating two powerclasses from ending
+           up with two different roles that happen to share a name. *)
+
+catClabjectDefinition ::= 'clabject'
+        [ IDENT '<' IDENT ';' ]
+        IDENT ':' catRefList
+        'end'
+        (* One declaration, N powerclasses, and an optional fused same-level
+           subclass edge, all collapsing to this single rule:
+             clabject C : A end
+             clabject C : (A, B) end
+             clabject E < D; E : B2 end
+           The first optional "IDENT < IDENT ;" is a same-level superclass
+           edge (like MLM-USE.ebnf's own "class X < Y"); the required
+           "IDENT : catRefList" lists the one-or-more powerclasses this
+           clabject instantiates (parenthesized if more than one -- see
+           catRefList above), desugaring to one plain MLM-USE
+           `clabject <name> : <powerclass>` per listed powerclass. No
+           keyword precedes the powerclass list -- see below. The leading
+           "clabject" is MLM-USE.ebnf's keyClabject soft keyword, reused
+           unchanged -- not redefined in this file, see below. *)
+
+================================================================================
+NEW CONTEXTUAL ("soft") KEYWORDS
+================================================================================
+keyCategory       ::= IDENT   (* text must equal "category"; matched only
+                                 in catClassifierDefinition, choosing between
+                                 "category ID ... end" and "class ID ... end" *)
+keyCatAtt         ::= IDENT   (* text must equal "catAtt" *)
+keyCatConstr      ::= IDENT   (* text must equal "catConstr" *)
+keyCatAssociation ::= IDENT   (* text must equal "catAssociation" *)
+
+(keyMLM and keyClabject, used above, are MLM-USE.ebnf's soft keywords --
+CatMLM.gpart reuses those rule definitions rather than declaring its own
+"MLM"/"clabject" literals a second time, which would have created the same
+"reserved everywhere in this composed grammar's lexer" problem independently
+of USEBase.gpart. This mirrors how catClassifierDefinition already reuses
+USE.ebnf's keyClass, and catAssociationDefinition reuses keyAssociation,
+keyAggregation, and keyComposition.)
+
+Note on "category" and catClabjectDefinition: an earlier version of this
+grammar also accepted an optional "category" hint immediately after the
+colon in catClabjectDefinition (i.e. "clabject C : category A, B end").
+It was removed: the "<" vs ":" already unambiguously distinguishes
+same-level generalization from cross-level instantiation, so the keyword
+added no information a reader didn't already have from the symbol choice
+-- and it was never actually checked against the named class's own
+declaration (a clabject could "instantiate" a plain "class", not just a
+"category", keyword or no keyword, both before and after this change).
+keyCategory today is used exclusively in catClassifierDefinition.
+
+================================================================================
+NOTES
+================================================================================
+1. Every non-terminal referenced above but not defined here -- type,
+   expression, simpleType, associationEnd -- is reused completely unchanged
+   from USE.ebnf/MLM-USE.ebnf. catRefList is CatMLM's own rule (defined
+   above): the base grammar's plain idList (a bare comma list, no
+   parentheses ever) is no longer used anywhere in CatMLM.gpart at all --
+   catRefList replaced its two former uses (catClassifierDefinition's "<"
+   list, catClabjectDefinition's ":" list) and is also used for the new
+   ":" clause on catClassifierDefinition.
+
+2. As with the other two files, this is a pure-CFG view for reading and
+   reasoning, not something to feed straight into a parser generator: the
+   real grammar's semantic actions build the desugared AST as parsing
+   proceeds (see USECompilerCatUSE.desugar's four translation rules), and
+   ANTLR's adaptive lookahead resolves a few local ambiguities a plain CFG
+   can't express -- for instance, a category or clabject literally named
+   "category" (or "catAtt", "role", etc.) still parses correctly as an
+   ordinary identifier wherever an IDENT is expected, backtracking off the
+   soft-keyword reading when it can't also complete a valid parse.
+
+3. Silent union, and a bug it uncovered: declaring the same class name's
+   instantiation or same-level superclassifiers via more than one route --
+   the fused ":"/"<" header on catClassifierDefinition, a separate
+   catClabjectDefinition statement, and/or that statement's own fused
+   "IDENT < IDENT ;" local-superclass prefix -- is not an error. All of
+   them contribute to the same union, by design: e.g. a classifier declared
+   with "category C2 < D : C3 end" and, elsewhere in the same level, a
+   separate "clabject C2 : C4 end" both apply to the one class C2, which
+   ends up instantiating both C3 and C4. Building this surfaced a genuine
+   pre-existing bug (not new in this change) in
+   ASTClassifier.addSuperClassifiers: it used to *replace*
+   (fSuperClassifiers = idList) rather than accumulate, so a class whose
+   same-level superclassifiers were set from two different declaration
+   sites would silently keep only whichever one ran last. Fixed to
+   accumulate instead -- safe for every base-grammar caller too, since none
+   of them ever call it more than once per classifier.

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Keywords — MLM-USE &amp; CatMLM</title>
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    max-width: 900px;
+    margin: 2em auto;
+    padding: 0 1.5em;
+    color: #222;
+    line-height: 1.5;
+  }
+  h1 { font-size: 1.6em; border-bottom: 2px solid #333; padding-bottom: 0.3em; }
+  h2 { font-size: 1.35em; margin-top: 2.2em; border-bottom: 2px solid #666; padding-bottom: 0.2em; }
+  h3 { font-size: 1.1em; margin-top: 1.8em; border-bottom: 1px solid #999; padding-bottom: 0.2em; }
+  code, .kw { font-family: 'Courier New', Courier, monospace; }
+  p.intro { color: #444; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0 1.5em 0;
+    font-size: 0.95em;
+  }
+  caption {
+    text-align: left;
+    font-weight: bold;
+    margin-bottom: 0.4em;
+  }
+  th, td {
+    border: 1px solid #bbb;
+    padding: 0.5em 0.7em;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #333;
+    color: #fff;
+  }
+  tr:nth-child(even) td { background: #f4f4f4; }
+  td.kw {
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  .note {
+    background: #fff8e1;
+    border: 1px solid #e0c97a;
+    padding: 0.8em 1em;
+    margin: 1em 0;
+    font-size: 0.95em;
+  }
+  .file {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    color: #555;
+  }
+  footer {
+    margin-top: 3em;
+    padding-top: 1em;
+    border-top: 1px solid #ccc;
+    font-size: 0.85em;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+
+<h1>Keywords — MLM-USE &amp; CatMLM</h1>
+
+<p class="intro">
+This grammar has two kinds of keyword. A <strong>hard keyword</strong> is a
+bare quoted literal in the grammar (e.g. <code>'end'</code>); under ANTLR3's
+<code>testLiterals</code> mechanism, any such literal is auto-promoted to a
+token reserved <em>everywhere</em> the shared lexer applies &mdash; it can
+never be used as an ordinary identifier anywhere in that composed grammar,
+even far from the one rule that actually needs it. A <strong>soft
+(contextual) keyword</strong> is the deliberate alternative: an ordinary
+<code>IDENT</code> token that a semantic predicate reclassifies as a keyword
+only at one specific grammar position, of the shape:
+</p>
+<pre class="kw">keyXxx:
+  {input.LT(1).getText().equals("xxx")}? IDENT ;</pre>
+<p class="intro">
+This lets the word remain usable as an ordinary identifier (a class name,
+attribute name, powerclass name, ...) everywhere else in the language.
+Counted below: <strong>69 hard</strong> keywords and <strong>21 soft</strong>
+keywords, confirmed by extracting every quoted literal (hard) and every
+<code>keyXxx</code> semantic-predicate rule (soft) from
+<span class="file">USEBase.gpart</span>, <span class="file">OCLBase.gpart</span>,
+<span class="file">SoilBase.gpart</span>, and <span class="file">CatMLM.gpart</span>
+&mdash; the grammar for ordinary <span class="file">.use</span> /
+<span class="file">.mlm</span> specification files. (Scope note: this
+excludes the separate interactive shell-command grammar &mdash;
+<span class="file">ShellCommandBase.gpart</span>, <span class="file">TestSuite.gpart</span>,
+<span class="file">Generator.gpart</span> &mdash; which is not covered here.)
+</p>
+
+<h2>Hard (fully reserved) keywords — 69</h2>
+<p class="intro">
+These can never be used as an ordinary identifier anywhere in their
+composed grammar, in any context, even one unrelated to where the keyword
+is actually meaningful.
+</p>
+
+<h3>Core model grammar — <span class="file">USEBase.gpart</span> (21)</h3>
+<table>
+  <caption>Hard keywords in the class/association/constraint/statemachine grammar</caption>
+  <thead>
+    <tr><th>Keyword</th><th>Where it's used</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="kw">model</td><td>single-model entry point</td></tr>
+    <tr><td class="kw">multi_model</td><td>multi-model entry point</td></tr>
+    <tr><td class="kw">abstract</td><td>abstract classifier modifier</td></tr>
+    <tr><td class="kw">associationClass</td><td>association-class definition (deprecated spelling)</td></tr>
+    <tr><td class="kw">associationclass</td><td>association-class definition (current spelling)</td></tr>
+    <tr><td class="kw">attributes</td><td>attributes section header</td></tr>
+    <tr><td class="kw">operations</td><td>operations section header</td></tr>
+    <tr><td class="kw">constraints</td><td>constraints section header</td></tr>
+    <tr><td class="kw">between</td><td>association-end list header</td></tr>
+    <tr><td class="kw">enum</td><td>enum type definition</td></tr>
+    <tr><td class="kw">statemachines</td><td>statemachines section header</td></tr>
+    <tr><td class="kw">psm</td><td>protocol state machine header</td></tr>
+    <tr><td class="kw">states</td><td>state-machine states section</td></tr>
+    <tr><td class="kw">transitions</td><td>state-machine transitions section</td></tr>
+    <tr><td class="kw">create</td><td>state-machine transition event</td></tr>
+    <tr><td class="kw">context</td><td>invariant / pre/post context header</td></tr>
+    <tr><td class="kw">inv</td><td>invariant clause</td></tr>
+    <tr><td class="kw">existential</td><td>existential-invariant modifier</td></tr>
+    <tr><td class="kw">pre</td><td>precondition clause</td></tr>
+    <tr><td class="kw">post</td><td>postcondition clause</td></tr>
+    <tr><td class="kw">end</td><td>closes almost every block-shaped construct (class, association, mediator, clabject, SOIL blocks, ...)</td></tr>
+  </tbody>
+</table>
+
+<h3>OCL expression grammar — <span class="file">OCLBase.gpart</span> (37)</h3>
+<table>
+  <caption>Hard keywords in OCL expressions</caption>
+  <thead>
+    <tr><th>Keyword</th><th>Where it's used</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="kw">let</td><td>let-expression</td></tr>
+    <tr><td class="kw">in</td><td>let-expression body</td></tr>
+    <tr><td class="kw">if</td><td>conditional expression</td></tr>
+    <tr><td class="kw">then</td><td>conditional expression</td></tr>
+    <tr><td class="kw">else</td><td>conditional expression</td></tr>
+    <tr><td class="kw">endif</td><td>conditional expression</td></tr>
+    <tr><td class="kw">not</td><td>unary boolean negation</td></tr>
+    <tr><td class="kw">and</td><td>boolean operator</td></tr>
+    <tr><td class="kw">or</td><td>boolean operator</td></tr>
+    <tr><td class="kw">xor</td><td>boolean operator</td></tr>
+    <tr><td class="kw">implies</td><td>boolean operator</td></tr>
+    <tr><td class="kw">div</td><td>integer division operator</td></tr>
+    <tr><td class="kw">true</td><td>boolean literal</td></tr>
+    <tr><td class="kw">false</td><td>boolean literal</td></tr>
+    <tr><td class="kw">null</td><td>undefined-value literal (alt. form)</td></tr>
+    <tr><td class="kw">Undefined</td><td>undefined-value literal</td></tr>
+    <tr><td class="kw">oclUndefined</td><td>typed undefined-value literal</td></tr>
+    <tr><td class="kw">oclEmpty</td><td>typed empty-collection literal</td></tr>
+    <tr><td class="kw">Set</td><td>collection literal / type</td></tr>
+    <tr><td class="kw">Sequence</td><td>collection literal / type</td></tr>
+    <tr><td class="kw">Bag</td><td>collection literal / type</td></tr>
+    <tr><td class="kw">OrderedSet</td><td>collection literal / type</td></tr>
+    <tr><td class="kw">Collection</td><td>collection type (supertype of the above)</td></tr>
+    <tr><td class="kw">Tuple</td><td>tuple literal / type</td></tr>
+    <tr><td class="kw">iterate</td><td>explicit iteration expression</td></tr>
+    <tr><td class="kw">allInstances</td><td>class-extent query</td></tr>
+    <tr><td class="kw">byUseId</td><td>object-by-internal-id query</td></tr>
+    <tr><td class="kw">oclAsType</td><td>type-cast expression</td></tr>
+    <tr><td class="kw">oclIsKindOf</td><td>type-test expression</td></tr>
+    <tr><td class="kw">oclIsTypeOf</td><td>type-test expression</td></tr>
+    <tr><td class="kw">selectByKind</td><td>collection type-filter query</td></tr>
+    <tr><td class="kw">selectByType</td><td>collection type-filter query</td></tr>
+    <tr><td class="kw">oclIsInState</td><td>state-machine state-test expression</td></tr>
+    <tr><td class="kw">oclInState</td><td>state-machine state-test expression (alt. spelling)</td></tr>
+    <tr><td class="kw">ordered</td><td>association-end modifier</td></tr>
+    <tr><td class="kw">subsets</td><td>association-end modifier</td></tr>
+    <tr><td class="kw">redefines</td><td>association-end modifier</td></tr>
+  </tbody>
+</table>
+
+<h3>SOIL statement grammar — <span class="file">SoilBase.gpart</span> (11)</h3>
+<table>
+  <caption>Hard keywords in SOIL (object/link manipulation) statements</caption>
+  <thead>
+    <tr><th>Keyword</th><th>Where it's used</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="kw">new</td><td>object-creation statement</td></tr>
+    <tr><td class="kw">destroy</td><td>object-destruction statement</td></tr>
+    <tr><td class="kw">insert</td><td>link-insertion statement</td></tr>
+    <tr><td class="kw">into</td><td>link-insertion statement</td></tr>
+    <tr><td class="kw">delete</td><td>link-deletion statement</td></tr>
+    <tr><td class="kw">from</td><td>link-deletion statement</td></tr>
+    <tr><td class="kw">for</td><td>for-loop statement</td></tr>
+    <tr><td class="kw">do</td><td>for-loop / while-loop body</td></tr>
+    <tr><td class="kw">while</td><td>while-loop statement</td></tr>
+    <tr><td class="kw">begin</td><td>block statement</td></tr>
+    <tr><td class="kw">declare</td><td>block-local variable declaration</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+<strong>MLM-USE and CatMLM contribute no hard keywords of their own.</strong>
+The four candidates that once would have qualified &mdash;
+<code class="kw">MLM</code>, <code class="kw">mediator</code>,
+<code class="kw">clabject</code>, <code class="kw">assoclink</code> &mdash;
+are all soft keywords today (see below); every other bare literal
+<span class="file">CatMLM.gpart</span> uses (<code>model</code>,
+<code>attributes</code>, <code>constraints</code>, <code>between</code>,
+<code>end</code>, <code>context</code>, <code>inv</code>) is already one of
+the core-model hard keywords above, confirmed by diffing CatMLM.gpart's
+literals against the base grammar's: the set difference is empty.
+</div>
+
+<h2>Soft (contextual) keywords — 21</h2>
+
+<h3>Base USE — <span class="file">USEBase.gpart</span> (13)</h3>
+<table>
+  <caption>Soft keywords defined in the base USE grammar</caption>
+  <thead>
+    <tr><th>Keyword</th><th>Where it's recognized</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="kw">union</td><td>association / interAssociation end modifiers</td></tr>
+    <tr><td class="kw">association</td><td>association / associationClass definitions</td></tr>
+    <tr><td class="kw">role</td><td>association end role name</td></tr>
+    <tr><td class="kw">roles</td><td>clabject's role-removal section header</td></tr>
+    <tr><td class="kw">composition</td><td>association kind</td></tr>
+    <tr><td class="kw">aggregation</td><td>association kind</td></tr>
+    <tr><td class="kw">dataType</td><td>data-type classifier declaration</td></tr>
+    <tr><td class="kw">class</td><td>class classifier declaration</td></tr>
+    <tr><td class="kw">signal</td><td>signal declaration</td></tr>
+    <tr><td class="kw">derived</td><td>attribute / end derivation marker</td></tr>
+    <tr><td class="kw">derive</td><td>attribute / end derivation marker (verb form)</td></tr>
+    <tr><td class="kw">init</td><td>attribute initializer marker</td></tr>
+    <tr><td class="kw">qualifier</td><td>association end qualifier</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+<strong>Note on <code class="kw">roles</code>:</strong> this one did not start
+as a soft keyword. It was originally a bare ANTLR3 literal in the clabject
+rule, which auto-promotes to a keyword reserved <em>everywhere</em> in the
+composed grammar &mdash; silently breaking any plain USE model that used
+"roles" as an ordinary identifier (e.g. an OCL operation parameter), including
+<span class="file">use-gui</span>'s own <span class="file">ShellIT</span> /
+<span class="file">t109.use</span> integration fixture. Fixed by converting it
+to a proper soft keyword, matching the pattern already used for
+<code class="kw">role</code>, <code class="kw">union</code>, and
+<code class="kw">association</code>.
+</div>
+
+<h3>MLM-USE — <span class="file">USEBase.gpart</span> (4)</h3>
+<table>
+  <caption>Soft keywords defined for the multi-level-modeling extension</caption>
+  <thead>
+    <tr><th>Keyword</th><th>Where it's recognized</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="kw">MLM</td><td>start of a multi-level model file</td></tr>
+    <tr><td class="kw">mediator</td><td>mediator block header</td></tr>
+    <tr><td class="kw">clabject</td><td>clabject declaration header</td></tr>
+    <tr><td class="kw">assoclink</td><td>assoclink declaration header</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+<strong>Note on these four:</strong> like <code class="kw">roles</code> above,
+all four started life as bare ANTLR3 literals (<code>'MLM'</code>,
+<code>'mediator'</code>, <code>'clabject'</code>, <code>'assoclink'</code>),
+globally reserved even though none of them mean anything outside an MLM
+file. Confirmed empirically: a plain, single-level model with an attribute
+named <code>clabject</code> (or <code>mediator</code>, <code>assoclink</code>,
+or <code>MLM</code>) failed to parse before this fix
+(<code>mismatched input 'clabject' expecting 'end'</code>). Fixed the same
+way as <code class="kw">roles</code>. <code class="kw">clabject</code> and
+<code class="kw">MLM</code> were bare literals in
+<span class="file">CatMLM.gpart</span> too, independently of
+<span class="file">USEBase.gpart</span> &mdash; since CatMLM is a
+separately-composed grammar with its own lexer, both files needed the fix;
+CatMLM.gpart's rules now simply reuse the <code>keyMLM</code>/
+<code>keyClabject</code> rules defined once in USEBase.gpart, the same way
+they already reused <code>keyClass</code> and <code>keyAssociation</code>.
+</div>
+
+<h3>CatMLM — <span class="file">CatMLM.gpart</span> (4)</h3>
+<table>
+  <caption>Soft keywords defined in the CatMLM front-end grammar</caption>
+  <thead>
+    <tr><th>Keyword</th><th>Where it's recognized</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="kw">category</td><td>classifier declaration (<code>category X ... end</code> vs. <code>class X ... end</code>)</td></tr>
+    <tr><td class="kw">catAtt</td><td>attribute tag</td></tr>
+    <tr><td class="kw">catConstr</td><td>invariant tag</td></tr>
+    <tr><td class="kw">catAssociation</td><td>association kind tag</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+<strong>Note on <code class="kw">category</code>:</strong> an earlier version
+of the grammar also accepted an optional <code>category</code> hint right
+after the colon in a clabject declaration
+(<code>clabject C : category A, B end</code>). It was removed: the
+<code>&lt;</code> vs <code>:</code> already unambiguously distinguishes
+same-level generalization from cross-level instantiation, so the keyword
+added no information the symbol didn't already carry &mdash; and it was
+never actually checked against the named class's own declaration anyway.
+<code class="kw">category</code> is now recognized in exactly one place: the
+classifier-declaration choice above.
+</div>
+
+<h2>Related, but neither hard nor soft</h2>
+<p>
+OCL's query-expression names (<code>select</code>, <code>reject</code>,
+<code>collect</code>, <code>exists</code>, <code>forAll</code>,
+<code>isUnique</code>, <code>sortedBy</code>, <code>one</code>,
+<code>any</code>, <code>collectNested</code>, &hellip;) use a different
+predicate &mdash; <code>ParserHelper.isQueryIdent(input.LT(1))</code> in
+<span class="file">OCLBase.gpart</span> &mdash; to decide whether an
+identifier immediately followed by <code>(</code> should build a query-call
+AST node instead of a plain operation-call one. Unlike every keyword above,
+none of these names are ever reserved in any sense: they remain fully usable
+as ordinary operation names everywhere, including in that exact position.
+The predicate only chooses which kind of AST node to build, never whether
+parsing succeeds.
+</p>
+
+<footer>
+Derived from <span class="file">use-core/src/main/resources/grammars/base/USEBase.gpart</span>,
+<span class="file">OCLBase.gpart</span>, <span class="file">SoilBase.gpart</span>,
+and <span class="file">use-core/src/main/resources/grammars/catmlm/CatMLM.gpart</span>
+in the <code>sturmarn/useBGU</code> fork, branch <code>MLM-USE</code>.
+Hard keywords were extracted by stripping comments and collecting every
+quoted literal token; soft keywords by collecting every <code>keyXxx</code>
+semantic-predicate rule. See <span class="file">USE.ebnf</span>,
+<span class="file">MLM-USE.ebnf</span>, and <span class="file">CatMLM.ebnf</span>
+for the full grammar these keywords belong to.
+</footer>
+
+</body>
+</html>

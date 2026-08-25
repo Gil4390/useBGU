@@ -1,21 +1,32 @@
 ================================================================================
-USE / MLM-USE Language Grammar — Context-Free Grammar (EBNF)
+USE Language Grammar — Context-Free Grammar (EBNF)
 ================================================================================
-Derived from the ANTLR3 grammar assembled by the Maven build at
-  use-core/target/grammars/USE.g
-which is concatenated at build time (see use-core/pom.xml) from six source
-fragments under use-core/src/main/resources/grammars/:
+This is the BASE layer: the classic, single-level USE language (classes,
+associations, OCL constraints, SOIL statements) as it stands in this fork
+today -- with NO multi-level-modeling and NO CatMLM extensions. It is one
+of three layered EBNF files describing this fork's composed grammar:
 
-    use/USE.gpart              -- multi-level modeling additions (MLM, clabject,
-                                   mediator, assoclink) + core UML model syntax
-    base/USEBase.gpart         -- core class/association/constraint syntax
-    base/OCLBase.gpart         -- OCL expression grammar
-    base/SoilBase.gpart        -- SOIL (imperative object-manipulation) statements
-    base/OCLLexerRules.gpart   -- shared lexer/token rules
+    USE.ebnf       (this file)  -- the base language, standalone
+    MLM-USE.ebnf                -- the DELTA that BGU's multi-level-modeling
+                                    extension (MLM, clabject, mediator,
+                                    assoclink) adds on top of this file
+    CatMLM.ebnf                 -- the DELTA that the CatMLM/"CatUSE" front-
+                                    end syntax sugar adds on top of MLM-USE
+
+Each delta file only lists rules that are new or changed at that layer;
+anything not mentioned there is reused unchanged from the layer(s) below.
+
+Source: derived from use-core/src/main/resources/grammars/base/USEBase.gpart
++ OCLBase.gpart + SoilBase.gpart + OCLLexerRules.gpart, with the
+multi-level-modeling rules (multi_level_model, mediator, clabject,
+assoclink, and the "roles" contextual keyword) excluded -- those are
+documented in MLM-USE.ebnf instead. See that file's header for why they
+live in this same physical .gpart file despite being a separate layer
+conceptually.
 
 This file is a *pure* CFG: all embedded Java semantic actions, AST-builder
-calls, @init blocks and ANTLR "returns [...]" clauses have been stripped out,
-leaving only the production rules. Notation:
+calls, @init blocks and ANTLR "returns [...]" clauses have been stripped
+out, leaving only the production rules. Notation:
 
     ::=       "is defined as"
     |         alternation
@@ -29,36 +40,23 @@ leaving only the production rules. Notation:
 
 Entry points (which rule the parser starts from depends on what kind of
 spec is being parsed):
-    multi_level_model   -- a full multi-level model file (starts with 'MLM')
-    multi_model         -- a file containing several 'model' blocks plus
-                            inter-model associations/constraints
     model                -- a single classic USE class-diagram specification
-    expressionOnly       -- parsing a bare OCL expression (e.g. in the shell)
+    multi_model          -- a file containing several 'model' blocks plus
+                            inter-model associations/constraints (this is
+                            a base-language feature: no clabjects, no
+                            mediators, no levels -- just several ordinary
+                            models glued by inter-* declarations)
+    expressionOnly        -- parsing a bare OCL expression (e.g. in the shell)
     typeOnly              -- parsing a bare type
     statOnly              -- parsing a bare SOIL statement
 
+Note: 'multi_level_model' (the "MLM ..." entry point) is NOT part of this
+file -- it's MLM-USE.ebnf's entry point, defined on top of multi_model_core
+below (see that file).
+
 ================================================================================
-SECTION 1 — MULTI-LEVEL MODEL / CORE MODEL GRAMMAR
+SECTION 1 — CORE MODEL GRAMMAR
 ================================================================================
-
-(* ---- Multi-level modeling (MLM-USE extension) ---- *)
-
-multi_level_model ::= 'MLM' IDENT multi_model_core { mediator } EOF
-
-mediator ::= 'mediator' IDENT '<' IDENT
-             { clabject | assoclink }
-             'end'
-
-clabject ::= 'clabject' IDENT ':' IDENT
-             [ 'attributes' { (IDENT '->' IDENT) | ('~' IDENT) } ]
-             [ 'roles'      { '~' IDENT } ]
-             [ 'constraints' { '~' IDENT } ]
-             'end'
-
-assoclink ::= 'assoclink' IDENT ':' IDENT
-              (IDENT '->' IDENT)
-              (IDENT '->' IDENT)
-              'end'
 
 (* ---- Multi-model (several ordinary models + inter-model glue) ---- *)
 
@@ -70,6 +68,9 @@ multi_model_core ::= [ 'multi_model' IDENT ]
                       [ 'inter-classes'      { interGeneralClassifierDefinition } ]
                       [ 'inter-associations' { interAssociationDefinition } ]
                       [ 'inter-constraints'  { interInvariant | interPrePost } ]
+
+(* multi_level_model (MLM-USE.ebnf) wraps this same rule, unchanged, with
+   a leading "MLM" IDENT and a trailing sequence of mediators. *)
 
 interGeneralClassifierDefinition ::= annotationSet [ 'abstract' ]
         ( classDefinition
@@ -167,6 +168,11 @@ operationDefinition ::= annotationSet IDENT paramList superParamList
         { prePostClause }
         [ ';' ]
 
+(* superParamList: an optional second, plain parenthesized identifier list
+   right after an operation's normal parameter list, used to mark which
+   parameters an operation named after its own classifier (a constructor)
+   forwards to a super-classifier rather than storing as its own attribute.
+   Independent of multi-level modeling -- applies to any classifier. *)
 superParamList ::= [ '(' [ IDENT { ',' IDENT } ] ')' ]
 
 associationDefinition ::= annotationSet
@@ -235,7 +241,9 @@ signalDefinition ::= 'signal' IDENT
    lets 'union', 'role', 'association', 'aggregation', 'composition',
    'dataType', 'class', 'signal', 'derived', 'derive', 'init', and
    'qualifier' remain usable as ordinary identifiers elsewhere (e.g. as a
-   class or attribute name) without being reserved everywhere. *)
+   class or attribute name) without being reserved everywhere. MLM-USE.ebnf
+   and CatMLM.ebnf each add their own such keywords, scoped to their own
+   grammar positions only -- see those files. *)
 
 keyUnion       ::= IDENT   (* text must equal "union" *)
 keyAssociation ::= IDENT   (* text must equal "association" *)
@@ -370,6 +378,8 @@ typeOnly ::= type EOF
 
 simpleType ::= IDENT
 multiType  ::= IDENT '@' IDENT
+        (* multiType (Level@Name) is a base-language token shape reused
+           heavily by MLM-USE for fully-qualified names -- see MLM-USE.ebnf. *)
 
 collectionType ::= ('Collection' | 'Set' | 'Sequence' | 'Bag' | 'OrderedSet')
                     '(' type ')'
@@ -460,6 +470,8 @@ identListMin1 ::= IDENT { ',' IDENT }
 ================================================================================
 SECTION 4 — LEXICAL GRAMMAR (tokens)
 ================================================================================
+Shared verbatim by all three layers (USE, MLM-USE, CatMLM) -- none of them
+add or change a token definition.
 
 (* Whitespace / comments -- discarded (sent to the HIDDEN channel) *)
 WS          ::= ' ' | '\t' | '\f' | NEWLINE
@@ -518,30 +530,27 @@ IDENT ::= ('$' | letter | '_') { letter | '_' | digit }
            whose text matches a quoted keyword used elsewhere in the
            grammar (e.g. 'class', 'model', 'context', 'inv', 'let', ...)
            as that keyword token instead. The contextual "soft" keywords
-           listed in Section 1 (union, role, association, ...) are NOT
-           handled this way -- they stay IDENT and are matched only via
-           semantic predicate at the point of use. *)
+           listed above (union, role, association, ...) are NOT handled
+           this way -- they stay IDENT and are matched only via semantic
+           predicate at the point of use. *)
 
 ================================================================================
 NOTES
 ================================================================================
 1. This is a *pure* CFG view of the grammar for reading/reasoning purposes.
    The real ANTLR3 grammar (use-core/target/grammars/USE.g, regenerated on
-   every `mvn compile`/`mvn package` from the .gpart sources listed above)
-   is not equivalent to this file in the formal sense: it interleaves
-   embedded Java actions that build the AST as parsing proceeds, uses a
-   few syntactic-predicate lookaheads (e.g. `(statStartingWithExpr)=>`,
+   every `mvn compile`/`mvn package` from the .gpart sources) is not
+   equivalent to this file in the formal sense: it interleaves embedded
+   Java actions that build the AST as parsing proceeds, uses a few
+   syntactic-predicate lookaheads (e.g. `(statStartingWithExpr)=>`,
    `(COLON type EQUAL)=>`) to resolve local ambiguities that a plain CFG
    can't express, and relies on semantic predicates for the contextual
    keywords noted above. Treat this file as documentation, not as
    something you could feed straight into a parser generator.
 
-2. The full six-way split (use/OCL/Soil/Shell/Generator/TestSuite) exists
-   because those sub-languages are reused across five separately-generated
-   parsers (USEParser, OCLParser, SoilParser, ShellCommandParser,
-   GeneratorParser, TestSuiteParser) built from the .gpart fragments in
-   different combinations -- see the <execution> blocks in
-   use-core/pom.xml. This file only reconstructs the USE.g composition
-   (USE.gpart + USEBase.gpart + OCLBase.gpart + SoilBase.gpart +
-   OCLLexerRules.gpart), which is the grammar for ordinary .use / .mlm
-   specification files -- not the interactive shell-command grammar.
+2. This file, together with MLM-USE.ebnf and CatMLM.ebnf, reconstructs the
+   full USE.g composition (USEBase.gpart + OCLBase.gpart + SoilBase.gpart +
+   OCLLexerRules.gpart, layered with the multi-level and CatMLM additions)
+   -- the grammar for ordinary .use / .mlm specification files, not the
+   interactive shell-command grammar (a separate, sixth fragment,
+   ShellCommandBase.gpart, builds that one instead).

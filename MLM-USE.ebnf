@@ -1,0 +1,138 @@
+================================================================================
+MLM-USE Grammar — DELTA over USE.ebnf (EBNF)
+================================================================================
+This file lists ONLY what the BGU multi-level-modeling extension (clabjects,
+mediators, powerclasses, assoclinks) adds on top of the base language in
+USE.ebnf. Anything not mentioned here -- class/association/constraint/OCL/
+SOIL syntax, the "model"/"multi_model" entry points, etc. -- is exactly the
+grammar in USE.ebnf, unchanged.
+
+Notation is the same as USE.ebnf:
+    ::=       "is defined as"        |    alternation
+    [ x ]     x is optional          { x }    x may repeat zero or more times
+    { x }+    x may repeat one or more times
+    'x'       literal terminal text
+    UPPERCASE reference to a lexical token (see USE.ebnf Section 4)
+    (* ... *) comment
+
+--------------------------------------------------------------------------------
+Where this actually lives (important, and the reason the old merged
+USE-grammar.ebnf file was misleading about it): despite the project's
+directory layout suggesting a clean per-feature split --
+
+    use/USE.gpart              -- (its own header comment claims:) "multi-
+                                   level modeling additions (MLM, clabject,
+                                   mediator, assoclink) + core UML model
+                                   syntax"
+    base/USEBase.gpart         -- "core class/association/constraint syntax"
+
+-- use/USE.gpart in fact contains ONLY grammar boilerplate (package
+declarations, lexer error-handling members) and defines NO production
+rules at all. Every rule below is physically defined inside
+base/USEBase.gpart, interleaved with the base-language rules from
+USE.ebnf. Confirmed by diffing USEBase.gpart against its state at commit
+6106270f, the last commit before MLM work began (571a84bb, "Began
+implementing MLM, added parsing rules and AST classes") -- multi_level_
+model, mediator, clabject, and assoclink are a clean, self-contained
+insertion with no further changes anywhere else in the file since. This
+file corrects that attribution: everything below is the true MLM-USE
+delta, regardless of which physical .gpart file it happens to sit in.
+--------------------------------------------------------------------------------
+
+New entry point (alongside 'model' and 'multi_model' from USE.ebnf):
+    multi_level_model   -- a full multi-level model file (starts with 'MLM')
+
+================================================================================
+NEW RULES
+================================================================================
+
+multi_level_model ::= 'MLM' IDENT multi_model_core { mediator } EOF
+        (* multi_model_core is USE.ebnf's rule, reused completely unchanged
+           -- an MLM file is exactly "MLM <name>" followed by the same
+           several-models-plus-inter-* body multi_model already accepts,
+           followed by zero or more mediators. "MLM" here is a soft keyword
+           (keyMLM below), not a global reserved word -- see that section. *)
+
+mediator ::= 'mediator' IDENT '<' IDENT
+             { clabject | assoclink }
+             'end'
+        (* "mediator" is a soft keyword (keyMediator below). *)
+
+clabject ::= 'clabject' IDENT ':' IDENT
+             [ 'attributes' { (IDENT '->' IDENT) | ('~' IDENT) } ]
+             [ 'roles'      { '~' IDENT } ]
+             [ 'constraints' { '~' IDENT } ]
+             'end'
+        (* The child (IDENT before ':') instantiates the powerclass (IDENT
+           after ':') from the mediator's parent model. The three optional
+           sections cancel or rename inherited features: attribute renaming
+           (IDENT -> IDENT) or removal (~IDENT), role removal, and
+           constraint removal -- each by the powerclass's own feature name.
+           "clabject" is a soft keyword (keyClabject below); "roles" is too
+           (keyRoles below). *)
+
+assoclink ::= 'assoclink' IDENT ':' IDENT
+              (IDENT '->' IDENT)
+              (IDENT '->' IDENT)
+              'end'
+        (* An assoclink between two clabjects instantiates an association
+           between their two powerclasses; the two role-renaming pairs
+           bind the child association's two role names to the parent
+           association's two role names. "assoclink" is a soft keyword
+           (keyAssoclink below). *)
+
+================================================================================
+NEW CONTEXTUAL ("soft") KEYWORDS
+================================================================================
+keyMLM       ::= IDENT   (* text must equal "MLM"; matched only at the start
+                            of a multi_level_model *)
+keyMediator  ::= IDENT   (* text must equal "mediator"; matched only at a
+                            mediator block's header *)
+keyClabject  ::= IDENT   (* text must equal "clabject"; matched only at a
+                            clabject declaration's header *)
+keyAssoclink ::= IDENT   (* text must equal "assoclink"; matched only at an
+                            assoclink declaration's header *)
+keyRoles     ::= IDENT   (* text must equal "roles"; matched only inside the
+                            clabject rule's own "roles" section header above *)
+
+None of these five existed as soft keywords from the start. All five were
+originally written as bare ANTLR3 literals directly in these rules, which
+auto-promotes each one to a keyword reserved *everywhere* in its composed
+grammar -- not just inside the one multi-level-modeling section it actually
+belongs to. That silently broke any plain, non-MLM USE model that happened
+to use "roles", "MLM", "mediator", "clabject", or "assoclink" as an ordinary
+identifier (e.g. an OCL operation parameter, or an attribute name) -- "roles"
+was caught first, breaking use-gui's own ShellIT/t109.use integration
+fixture; the other four were found and fixed as a direct follow-up, confirmed
+empirically the same way (a plain model with an attribute named "clabject"
+failed to parse with "mismatched input 'clabject' expecting 'end'" before
+the fix). "MLM" and "clabject" were bare literals in CatMLM.gpart too,
+independently of USEBase.gpart -- since CatMLM is a separately-composed
+grammar with its own lexer, both files needed fixing; CatMLM.gpart's rules
+now reuse the keyMLM/keyClabject rules defined once here, the same way they
+already reused keyClass and keyAssociation from USE.ebnf. Fixed by
+introducing these five soft keywords, the same pattern USE.ebnf's base
+contextual keywords already use (keyRole, keyUnion, keyAssociation, ...):
+confirmed via an isolated git worktree that the "roles" instance of the bug
+predated any multi-level-modeling work and was purely a base-grammar defect
+introduced alongside the clabject rule.
+
+================================================================================
+NOTES
+================================================================================
+1. Every non-terminal referenced above but not defined here or reused
+   verbatim from USE.ebnf (IDENT, and the multi_model_core it wraps) comes
+   from USE.ebnf. multiType (IDENT '@' IDENT, i.e. "Level@Name") is USE.ebnf's
+   token shape but is where MLM-USE's fully-qualified names live at the
+   semantic level -- the grammar itself doesn't need a separate production
+   for it since ordinary type/simpleType references already parse it.
+
+2. As with USE.ebnf, this is a pure-CFG view for reading/reasoning; the real
+   grammar interleaves Java AST-builder actions (e.g. resolving a mediator's
+   parent model by name, not by declaration order -- a bug found and fixed
+   in this fork's Java layer, not visible at the grammar level at all).
+
+3. See CatMLM.ebnf for the front-end sugar layer built on top of this one --
+   CatMLM's "category"/"clabject" shorthand and cat* tags desugar, before
+   any of this grammar runs, into exactly the plain MLM-USE AST that parsing
+   the rules above would itself produce.
