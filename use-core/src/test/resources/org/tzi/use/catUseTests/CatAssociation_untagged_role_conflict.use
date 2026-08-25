@@ -24,5 +24,5 @@ B1[1] role r1
 end
 
 model Instances < Meta
-clabject C : category A, B
+clabject C : (A, B)
 end

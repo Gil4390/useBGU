@@ -66,20 +66,20 @@ public class CatUSESmokeTest extends TestCase {
             "end\n" +
             "\n" +
             "constraints\n" +
-            "context A inv ABMLM: catConst\n" +
+            "context A inv ABMLM: catConstr\n" +
             "self.b.attr2 = 'MLM'\n" +
             "\n" +
             "context A1 inv A1B1MLM:\n" +
             "self.a1.b.r1.attr1 > 5\n" +
             "\n" +
             "model CD < AB\n" +
-            "clabject C : category A, B\n" +
+            "clabject C : (A, B)\n" +
             "end\n" +
             "\n" +
-            "clabject D : category B\n" +
+            "clabject D : B\n" +
             "end\n" +
             "\n" +
-            "clabject E : category B2\n" +
+            "clabject E : B2\n" +
             "end\n";
 
     public void testAbcdWorkedExample() {
@@ -117,7 +117,7 @@ public class CatUSESmokeTest extends TestCase {
                 .map(inv -> inv.name())
                 .collect(Collectors.toSet());
         System.out.println("CD@C invariants = " + cInvariants);
-        assertTrue("catConst-tagged ABMLM should have been cancelled for clabject C",
+        assertTrue("catConstr-tagged ABMLM should have been cancelled for clabject C",
                 cInvariants.stream().noneMatch(n -> n.contains("ABMLM")));
 
         System.out.println("CatMLM ABCD smoke test: PASSED");

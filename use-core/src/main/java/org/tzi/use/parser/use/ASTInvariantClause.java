@@ -41,7 +41,7 @@ public class ASTInvariantClause extends ASTAnnotatable {
     ASTExpression fExpr;
 
     /**
-     * True if this clause was tagged {@code catConst} in CatMLM source.
+     * True if this clause was tagged {@code catConstr} in CatMLM source.
      * Only consulted by {@link USECompilerCatUSE}'s desugaring pass.
      */
     private boolean fCategoryOnly = false;

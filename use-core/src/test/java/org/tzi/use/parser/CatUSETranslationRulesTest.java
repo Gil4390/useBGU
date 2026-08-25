@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * One focused test per CatMLM-to-MLMUse translation rule, complementing
  * the single large ABCD integration test in {@link CatUSESmokeTest}.
  * Each case isolates exactly one rule and avoids the diamond-inheritance
- * conflicts that made the full ABCD example's {@code E < D; E : category B2}
+ * conflicts that made the full ABCD example's {@code E < D; E : B2}
  * combination untestable end-to-end.
  */
 public class CatUSETranslationRulesTest extends TestCase {
@@ -74,16 +74,16 @@ public class CatUSETranslationRulesTest extends TestCase {
                 "end\n" +
                 "\n" +
                 "model Instances < Meta\n" +
-                "clabject Dog : category Animal\n" +
+                "clabject Dog : Animal\n" +
                 "end\n");
 
         assertEquals(Set.of("legs"), attrNames(mlm, "Instances", "Dog"));
     }
 
-    /** Rule 4b: a catConst-tagged model-level constraint is cancelled the same way. */
-    public void testCatConstCancelsConstraint() {
+    /** Rule 4b: a catConstr-tagged model-level constraint is cancelled the same way. */
+    public void testCatConstrCancelsConstraint() {
         MMultiLevelModel mlm = compile(
-                "MLM CatConstSimple\n" +
+                "MLM CatConstrSimple\n" +
                 "\n" +
                 "model Meta < NONE\n" +
                 "category Animal\n" +
@@ -92,16 +92,16 @@ public class CatUSETranslationRulesTest extends TestCase {
                 "end\n" +
                 "\n" +
                 "constraints\n" +
-                "context Animal inv LegsPositive: catConst\n" +
+                "context Animal inv LegsPositive: catConstr\n" +
                 "self.legs > 0\n" +
                 "\n" +
                 "model Instances < Meta\n" +
-                "clabject Dog : category Animal\n" +
+                "clabject Dog : Animal\n" +
                 "end\n");
 
         boolean stillHasIt = mlm.allClassInvariants(mlm.getClass("Instances", "Dog")).stream()
                 .anyMatch(inv -> inv.name().contains("LegsPositive"));
-        assertFalse("catConst-tagged invariant should be cancelled for the clabject", stillHasIt);
+        assertFalse("catConstr-tagged invariant should be cancelled for the clabject", stillHasIt);
     }
 
     /**
@@ -127,14 +127,14 @@ public class CatUSETranslationRulesTest extends TestCase {
                 "end\n" +
                 "\n" +
                 "model Instances < Meta\n" +
-                "clabject Dog : category Animal\n" +
+                "clabject Dog : Animal\n" +
                 "end\n");
 
         assertFalse("the far-end role 'residents' should be cancelled for Dog",
                 mlm.getClass("Instances", "Dog").navigableEnds().containsKey("residents"));
     }
 
-    /** Rule 3: "clabject C : category A, B" expands into one clabject per powerclass. */
+    /** Rule 3: "clabject C : (A, B)" expands into one clabject per powerclass. */
     public void testMultiPowerclassClabjectCombinesBoth() {
         MMultiLevelModel mlm = compile(
                 "MLM MultiPowerclassSimple\n" +
@@ -151,14 +151,14 @@ public class CatUSETranslationRulesTest extends TestCase {
                 "end\n" +
                 "\n" +
                 "model Instances < Meta\n" +
-                "clabject Tank : category Vehicle, Weapon\n" +
+                "clabject Tank : (Vehicle, Weapon)\n" +
                 "end\n");
 
         assertEquals(Set.of("wheels", "damage"), attrNames(mlm, "Instances", "Tank"));
     }
 
     /**
-     * The fused "X < Y; X : category Z" shorthand: X should carry both
+     * The fused "X < Y; X : Z" shorthand: X should carry both
      * Y's (same-level) and Z's (instance-of) attributes, chosen here with
      * disjoint attribute names so it can succeed without hitting the
      * dual-inheritance-diamond case discussed separately.
@@ -179,7 +179,7 @@ public class CatUSETranslationRulesTest extends TestCase {
                 "sku: String\n" +
                 "end\n" +
                 "\n" +
-                "clabject SpecialProduct < Product; SpecialProduct : category Item\n" +
+                "clabject SpecialProduct < Product; SpecialProduct : Item\n" +
                 "end\n");
 
         assertEquals(Set.of("sku", "price"), attrNames(mlm, "Instances", "SpecialProduct"));
@@ -203,7 +203,7 @@ public class CatUSETranslationRulesTest extends TestCase {
                         "end\n" +
                         "\n" +
                         "model Orphan\n" +
-                        "clabject C : category A\n" +
+                        "clabject C : A\n" +
                         "end\n").getBytes(StandardCharsets.UTF_8)),
                 "catuse-orphan-clabject.use", err, new MultiLevelModelFactory());
         err.flush();

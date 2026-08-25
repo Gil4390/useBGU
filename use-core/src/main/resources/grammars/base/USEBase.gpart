@@ -33,7 +33,7 @@
 
 multi_level_model returns [ASTMultiLevelModel n]
 :
-    'MLM' mlmName=IDENT {$n = new ASTMultiLevelModel($mlmName);}
+    keyMLM mlmName=IDENT {$n = new ASTMultiLevelModel($mlmName);}
 
     m=multi_model_core {$n.addMultiModel($m.n);}
 
@@ -44,7 +44,7 @@ multi_level_model returns [ASTMultiLevelModel n]
 
 mediator returns [ASTMediator n]
 :
-    'mediator' medName=IDENT '<' parentModelName=IDENT {$n = new ASTMediator($medName, $parentModelName);}
+    keyMediator medName=IDENT '<' parentModelName=IDENT {$n = new ASTMediator($medName, $parentModelName);}
     ((c = clabject {$n.addClabject($c.n);}) |
      (a = assoclink {$n.addAssoclink($a.n);})
     )*
@@ -53,7 +53,7 @@ mediator returns [ASTMediator n]
 
 clabject returns [ASTClabject n]
 :
-    'clabject' childClsName=IDENT COLON parentClsName=IDENT {$n = new ASTClabject(childClsName, parentClsName);}
+    keyClabject childClsName=IDENT COLON parentClsName=IDENT {$n = new ASTClabject(childClsName, parentClsName);}
     ('attributes'
         ( (oldAtrName=IDENT '->' newAtrName=IDENT {$n.addAttributeRenaming($oldAtrName, $newAtrName);})
         | ( '~' oldAtrName=IDENT {$n.addAttributeRemoving($oldAtrName);} )
@@ -71,7 +71,7 @@ clabject returns [ASTClabject n]
 
 assoclink returns [ASTAssoclink n]
 :
-    'assoclink'
+    keyAssoclink
     childAssocName=IDENT COLON parentAssocName=IDENT {$n = new ASTAssoclink(childAssocName, parentAssocName);}
     (
         (childRoleName1=IDENT '->' parentRoleName1=IDENT {$n.addRoleBinding1($childRoleName1, $parentRoleName1);})
@@ -805,6 +805,18 @@ keyRole:
 
 keyRoles:
   {input.LT(1).getText().equals("roles")}? IDENT ;
+
+keyMLM:
+  {input.LT(1).getText().equals("MLM")}? IDENT ;
+
+keyMediator:
+  {input.LT(1).getText().equals("mediator")}? IDENT ;
+
+keyClabject:
+  {input.LT(1).getText().equals("clabject")}? IDENT ;
+
+keyAssoclink:
+  {input.LT(1).getText().equals("assoclink")}? IDENT ;
 
 keyComposition:
   {input.LT(1).getText().equals("composition")}? IDENT ;

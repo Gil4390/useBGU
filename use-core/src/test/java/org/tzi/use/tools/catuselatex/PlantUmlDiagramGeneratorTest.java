@@ -22,7 +22,7 @@ public class PlantUmlDiagramGeneratorTest extends TestCase {
             "end\n" +
             "\n" +
             "model Instances < Meta\n" +
-            "clabject Dog : category Animal\n" +
+            "clabject Dog : Animal\n" +
             "end\n";
 
     public void testDiagramMarksCategoryAndClabjectStereotypesAndInstanceOfEdge() {

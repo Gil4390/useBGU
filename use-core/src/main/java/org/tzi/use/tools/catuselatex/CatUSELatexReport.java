@@ -112,7 +112,7 @@ public class CatUSELatexReport {
         tex.append("\\lstdefinelanguage{MlmUse}{\n");
         tex.append("  morekeywords={MLM,model,mediator,clabject,assoclink,class,category,").append("\n");
         tex.append("    abstract,attributes,operations,associations,association,between,role,end,\n");
-        tex.append("    constraints,context,inv,catAtt,catConst,catAssociation,").append("\n");
+        tex.append("    constraints,context,inv,catAtt,catConstr,catAssociation,").append("\n");
         tex.append("    attributes,roles,inter-classes,inter-associations,inter-constraints,NONE},\n");
         tex.append("  sensitive=true,\n");
         tex.append("  morecomment=[l]{--},\n");

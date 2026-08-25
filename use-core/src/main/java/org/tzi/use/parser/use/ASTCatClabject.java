@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * "clabject NAME [&lt; LOCAL_PARENT ;] : category POWERCLASS (, POWERCLASS)* end"
+ * "clabject NAME [&lt; LOCAL_PARENT ;] : POWERCLASS (, POWERCLASS)* end"
  * -- the CatMLM clabject shorthand. Desugars, in
  * {@link USECompilerCatUSE}, into one plain {@link ASTClabject} per
  * listed powerclass (the same expansion MLMUse itself requires when one

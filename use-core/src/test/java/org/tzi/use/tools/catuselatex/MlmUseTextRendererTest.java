@@ -61,14 +61,14 @@ public class MlmUseTextRendererTest extends TestCase {
             "end\n" +
             "\n" +
             "constraints\n" +
-            "context A inv ABMLM: catConst\n" +
+            "context A inv ABMLM: catConstr\n" +
             "self.attr2 > 0\n" +
             "\n" +
             "model CD < AB\n" +
-            "clabject C : category A, B\n" +
+            "clabject C : (A, B)\n" +
             "end\n" +
             "\n" +
-            "clabject D : category B\n" +
+            "clabject D : B\n" +
             "end\n";
 
     private MMultiLevelModel compileCatUse(String src) {

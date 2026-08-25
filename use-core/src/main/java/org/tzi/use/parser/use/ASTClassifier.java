@@ -63,8 +63,20 @@ public abstract class ASTClassifier extends ASTAnnotatable {
         fSuperAttributes.add(a);
     }
 
+    /**
+     * Accumulates superclassifiers rather than replacing them: a classifier
+     * can pick up its same-level supers from more than one declaration site
+     * (e.g. CatMLM's fused "category X &lt; A : B end" header and a
+     * separate "clabject X &lt; C; X : B end" statement for the same X),
+     * and those are meant to union, not have the later one silently
+     * overwrite the earlier.
+     */
     public void addSuperClassifiers(List<Token> idList) {
-        fSuperClassifiers = idList;
+        if (fSuperClassifiers == null) {
+            fSuperClassifiers = new ArrayList<Token>(idList);
+        } else {
+            fSuperClassifiers.addAll(idList);
+        }
     }
 
     public void addOperation(ASTOperation op) {

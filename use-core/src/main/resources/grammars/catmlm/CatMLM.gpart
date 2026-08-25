@@ -34,6 +34,9 @@ import org.tzi.use.parser.use.*;
 import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 }
 
 @lexer::header {
@@ -70,7 +73,7 @@ import org.tzi.use.parser.ParseErrorHandler;
 ------------------------------------------------------------------ */
 catUSE_model returns [ASTCatUSEModel n]
 :
-    'MLM' mlmName=IDENT { $n = new ASTCatUSEModel(mlmName); }
+    keyMLM mlmName=IDENT { $n = new ASTCatUSEModel(mlmName); }
     ( lvl=catLevel { $n.addLevel($lvl.n); } )+
     EOF
     ;
@@ -79,13 +82,34 @@ catUSE_model returns [ASTCatUSEModel n]
    "model ID1 [< ID2]" fuses what MLMUse splits across a `model` block
    and a separate `mediator` block. Its body interleaves ordinary
    classifier/association definitions with the new clabject shorthand.
+
+   A classifier declaration may itself carry a ": powerclass-list"
+   clause (see catClassifierDefinition) -- Java-"implements"-style
+   fusion of instantiation onto the classifier header, as an
+   alternative to a separate catClabjectDefinition statement for the
+   same name. When present, it is desugared here into exactly the
+   same kind of ASTCatClabject a standalone "clabject NAME : ..."
+   statement would produce, added to the very same level -- so the
+   two spellings are pure syntax sugar for each other, and using both
+   for the same class name (e.g. once via the fused header, again via
+   a separate clabject statement) is not an error: their powerclass
+   lists simply union, the same way two same-level "< ..." clauses
+   for one class would.
 ------------------------------------------------------------------ */
 catLevel returns [ASTCatLevel n]
 :
     'model' name=IDENT ( '<' parent=IDENT )?
     { $n = new ASTCatLevel(name, parent); }
     (
-        c  = catClassifierDefinition       { $n.addClassifier($c.n); }
+        c  = catClassifierDefinition       {
+            $n.addClassifier($c.n);
+            if ($c.powerclasses != null && !$c.powerclasses.isEmpty()) {
+                Iterator<Token> it = $c.powerclasses.iterator();
+                ASTCatClabject implied = new ASTCatClabject($c.n.getName(), null, it.next());
+                while (it.hasNext()) { implied.addPowerclass(it.next()); }
+                $n.addClabject(implied);
+            }
+        }
       | a  = catAssociationDefinition      { $n.addAssociation($a.n); }
       | cl = catClabjectDefinition         { $n.addClabject($cl.n); }
       | ( 'constraints'
@@ -98,13 +122,30 @@ catLevel returns [ASTCatLevel n]
    "category ID" / "class ID" -- same ASTClass either way; isCategory
    is only a hint consumed by the desugarer (it decides nothing about
    MLMUse semantics by itself).
+
+   Two optional reference-list clauses, mirroring Java's
+   "class A extends C implements I1, I2, I3":
+     '<' catRefList   -- same-level superclassifiers (as before)
+     ':' catRefList   -- NEW: cross-level powerclasses this classifier
+                          itself instantiates, fused onto its own
+                          header instead of a separate clabject
+                          statement (see catLevel above for how the
+                          two spellings unify).
+   Both use catRefList, not the base grammar's idList: a list of more
+   than one name must be parenthesized here, e.g. "< (A, B) : (C, D)",
+   purely for readability -- the grammar itself has no ambiguity that
+   requires it (":" already unambiguously ends the "<" list on its
+   own), but writing two adjacent comma lists side by side in one
+   header is hard to scan without a visual boundary. A single name
+   stays bare either way: "< A : C".
 ------------------------------------------------------------------ */
-catClassifierDefinition returns [ASTClass n]
+catClassifierDefinition returns [ASTClass n, List<Token> powerclasses]
 @init { boolean isCategory = false; }
 :
     ( keyCategory { isCategory = true; } | keyClass )
     name=IDENT { $n = new ASTClass(name, false); $n.setIsCategory(isCategory); }
-    ( '<' idListRes=idList { $n.addSuperClassifiers($idListRes.idList); } )?
+    ( '<' superRefs=catRefList { $n.addSuperClassifiers($superRefs.refs); } )?
+    ( COLON powerRefs=catRefList { $powerclasses = $powerRefs.refs; } )?
     ( 'attributes'
         ( a=catAttributeDefinition { $n.addAttribute($a.n); } )*
     )?
@@ -113,6 +154,20 @@ catClassifierDefinition returns [ASTClass n]
     )?
     'end'
     ;
+
+/* One bare IDENT, or two-or-more wrapped in parentheses -- see the
+   readability note on catClassifierDefinition above. Used for every
+   CatMLM class-name reference list: catClassifierDefinition's own
+   "<" and ":" clauses, and catClabjectDefinition's ":" powerclass
+   list below. */
+catRefList returns [List<Token> refs]
+@init { $refs = new ArrayList<Token>(); }
+:
+    single=IDENT { $refs.add(single); }
+  | LPAREN first=IDENT { $refs.add(first); }
+    ( COMMA next=IDENT { $refs.add(next); } )+
+    RPAREN
+  ;
 
 /* attr1 : Integer [; catAtt] -- reuses IDENT/COLON/type exactly like
    the base attributeDefinition; only the trailing tag is new. */
@@ -125,12 +180,12 @@ catAttributeDefinition returns [ASTAttribute n]
     { $n.setCategoryOnly(tagged); }
     ;
 
-/* "inv NAME : [catConst] expr" -- the cat tag sits between the colon
+/* "inv NAME : [catConstr] expr" -- the cat tag sits between the colon
    and the expression, per the CatMLM worked example. */
 catInvariantClause returns [ASTInvariantClause n]
 @init { boolean tagged = false; }
 :
-    'inv' ( name=IDENT )? COLON ( keyCatConst { tagged = true; } )? e=expression
+    'inv' ( name=IDENT )? COLON ( keyCatConstr { tagged = true; } )? e=expression
     { $n = new ASTInvariantClause(name, $e.n); $n.setCategoryOnly(tagged); }
     ;
 
@@ -166,18 +221,31 @@ catAssociationDefinition returns [ASTAssociation n]
 
 /* ------------------------------------------------------------------
    clabject shorthand:
-     clabject C : category A, B end
-     clabject E < D; E : category B2 end
+     clabject C : A, B end
+     clabject C : (A, B) end        -- equivalent; parens optional for 2
+     clabject E < D; E : B2 end
    One declaration, N powerclasses, optional fused same-level
-   subclass edge -- all three collapse to this single rule.
+   subclass edge -- all three collapse to this single rule. No keyword
+   precedes the powerclass list: the position after "clabject NAME :"
+   unambiguously means "instantiates", just as "clabject NAME <" means
+   "same-level subclass of" -- the two relations are already
+   distinguished by "<" vs ":", so tagging the right-hand side with
+   "category" would be redundant, and it was never checked against the
+   target's own declaration anyway. The powerclass list is a
+   catRefList (see catClassifierDefinition above), so two or more
+   names must be parenthesized, same as everywhere else in CatMLM a
+   class-name reference list can appear.
 ------------------------------------------------------------------ */
 catClabjectDefinition returns [ASTCatClabject n]
 :
-    'clabject'
+    keyClabject
     ( localName=IDENT '<' localParent=IDENT SEMI )?
-    name=IDENT COLON ( keyCategory )? parent1=IDENT
-    { $n = new ASTCatClabject(name, localParent, parent1); }
-    ( COMMA parentN=IDENT { $n.addPowerclass(parentN); } )*
+    name=IDENT COLON refs=catRefList
+    {
+        Iterator<Token> it = $refs.refs.iterator();
+        $n = new ASTCatClabject(name, localParent, it.next());
+        while (it.hasNext()) { $n.addPowerclass(it.next()); }
+    }
     'end'
     ;
 
@@ -187,8 +255,8 @@ keyCategory:
 keyCatAtt:
   {input.LT(1).getText().equals("catAtt")}? IDENT ;
 
-keyCatConst:
-  {input.LT(1).getText().equals("catConst")}? IDENT ;
+keyCatConstr:
+  {input.LT(1).getText().equals("catConstr")}? IDENT ;
 
 keyCatAssociation:
   {input.LT(1).getText().equals("catAssociation")}? IDENT ;

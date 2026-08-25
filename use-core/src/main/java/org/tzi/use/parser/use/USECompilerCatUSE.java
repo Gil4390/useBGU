@@ -44,10 +44,10 @@ import java.util.Set;
  *       from the classifier itself and acted on below instead.</li>
  *   <li>{@code model ID1 < ID2} becomes a {@code mediator ID1 < ID2}
  *       (or {@code < NONE} for a level with no parent).</li>
- *   <li>{@code clabject C : category A, B} becomes one plain
+ *   <li>{@code clabject C : A, B} becomes one plain
  *       {@code clabject C : A} / {@code clabject C : B} per listed
  *       powerclass.</li>
- *   <li>Every attribute/constraint tagged {@code catAtt}/{@code catConst}
+ *   <li>Every attribute/constraint tagged {@code catAtt}/{@code catConstr}
  *       on a powerclass (walking that powerclass's own same-level
  *       superclass chain, since a clabject can instantiate a subclass of
  *       the class that actually declares the tagged feature) is
@@ -161,7 +161,7 @@ public class USECompilerCatUSE {
 
             // Clabjects in CatMLM may name a class that was never given
             // its own "class"/"category" body (e.g. "clabject E < D;
-            // E : category B2 end" with no separate declaration of E).
+            // E : B2 end" with no separate declaration of E).
             // Synthesize an empty one, same as MLMUse's own
             // "class E < D end" would.
             for (ASTCatClabject cc : level.clabjects()) {
