@@ -43,14 +43,14 @@ public class FlatUseTextRendererTest extends TestCase {
             "end\n" +
             "\n" +
             "constraints\n" +
-            "context Vehicle inv PositiveWheels: catConst\n" +
+            "context Vehicle inv PositiveWheels: catConstr\n" +
             "self.wheels > 0\n" +
             "\n" +
             "model Fleet < Taxonomy\n" +
-            "clabject Car : category Vehicle, Product\n" +
+            "clabject Car : (Vehicle, Product)\n" +
             "end\n" +
             "\n" +
-            "clabject Bicycle : category Vehicle\n" +
+            "clabject Bicycle : Vehicle\n" +
             "end\n";
 
     private MMultiLevelModel compileCatUse(String src) {
@@ -102,8 +102,8 @@ public class FlatUseTextRendererTest extends TestCase {
         assertFalse("catAtt-cancelled skuPrefix must not appear on Car", carBlock.contains("skuPrefix"));
     }
 
-    /** catConst cancellation: the invariant must print once, only under its surviving owner. */
-    public void testCatConstInvariantOnlyAppearsOnceUnderItsOrigin() {
+    /** catConstr cancellation: the invariant must print once, only under its surviving owner. */
+    public void testCatConstrInvariantOnlyAppearsOnceUnderItsOrigin() {
         String rendered = FlatUseTextRenderer.render(compileCatUse(CATMLM_VEHICLE), "VehicleCatalog");
         assertTrue(rendered.contains("context Vehicle inv PositiveWheels"));
         assertFalse(rendered.contains("context Car inv PositiveWheels"));
@@ -141,7 +141,7 @@ public class FlatUseTextRendererTest extends TestCase {
                 "end\n" +
                 "\n" +
                 "model Instances < Meta\n" +
-                "clabject Dog : category Animal\n" +
+                "clabject Dog : Animal\n" +
                 "end\n";
 
         String rendered = FlatUseTextRenderer.render(compileCatUse(src), "InheritedRoleDemo");
@@ -155,6 +155,83 @@ public class FlatUseTextRendererTest extends TestCase {
                 "flat.use", err, new ModelFactory());
         err.flush();
         assertNotNull("flattened text with an inherited-role comment failed to re-parse:\n" + errBuf, reparsed);
+    }
+
+    /**
+     * Two different levels are allowed to declare a class with the same
+     * short name -- that's exactly why classes are named "Level@Class"
+     * internally in the first place. Flattening must not silently collapse
+     * them into two identically-named plain-USE classes (a genuine bug
+     * found while discussing this renderer: it used to do exactly that,
+     * producing a "Redefinition of X" failure on re-parse). The colliding
+     * pair must instead come out as "Item__AT__M3"/"Item__AT__M2" -- class
+     * name first, level name last -- and still re-parse.
+     */
+    public void testCollidingShortNamesAreDisambiguatedClassFirst() {
+        String src =
+                "MLM CollisionDemo\n" +
+                "\n" +
+                "model M3\n" +
+                "category Item\n" +
+                "attributes\n" +
+                "a3: Integer\n" +
+                "end\n" +
+                "\n" +
+                "model M2 < M3\n" +
+                "category Item\n" +
+                "attributes\n" +
+                "a2: Integer\n" +
+                "end\n" +
+                "\n" +
+                "clabject Item : Item\n" +
+                "end\n";
+
+        String rendered = FlatUseTextRenderer.render(compileCatUse(src), "CollisionDemo");
+        assertTrue(rendered.contains("class Item__AT__M3"));
+        assertTrue(rendered.contains("class Item__AT__M2"));
+        assertFalse("bare 'class Item' must not appear once the name is ambiguous",
+                rendered.contains("class Item\n"));
+
+        StringWriter errBuf = new StringWriter();
+        PrintWriter err = new PrintWriter(errBuf);
+        MModel reparsed = USECompiler.compileSpecification(
+                new ByteArrayInputStream(rendered.getBytes(StandardCharsets.UTF_8)),
+                "flat.use", err, new ModelFactory());
+        err.flush();
+        assertNotNull("disambiguated flattened text failed to re-parse:\n" + errBuf + "\n---\n" + rendered, reparsed);
+    }
+
+    /** A short name unique across the whole flattened model stays bare -- no gratuitous "__AT__" noise. */
+    public void testUniqueShortNamesStayBare() {
+        String rendered = FlatUseTextRenderer.render(compileCatUse(CATMLM_VEHICLE), "VehicleCatalog");
+        assertFalse(rendered.contains("__AT__"));
+    }
+
+    /**
+     * "__AT__" is reserved for this renderer's own synthesized names. Exactly
+     * two underscores on both sides of "AT" is rejected; an extra underscore
+     * on either side is not the reserved token and must be accepted.
+     */
+    public void testReservedAtTokenIsRejectedOnlyWhenExact() {
+        assertReservedTokenRejected("this__AT__is_not");
+        assertNameAccepted("this___AT__is_ok");
+        assertNameAccepted("this__AT___is_ok");
+    }
+
+    private void assertReservedTokenRejected(String className) {
+        try {
+            FlatUseTextRenderer.render(compileCatUse(
+                    "MLM T\n\nmodel M\nclass " + className + "\nend\n"), "T");
+            fail("expected an IllegalArgumentException for the reserved name \"" + className + "\"");
+        } catch (IllegalArgumentException expected) {
+            assertTrue(expected.getMessage().contains("__AT__"));
+        }
+    }
+
+    private void assertNameAccepted(String className) {
+        String rendered = FlatUseTextRenderer.render(compileCatUse(
+                "MLM T\n\nmodel M\nclass " + className + "\nend\n"), "T");
+        assertTrue(rendered.contains("class " + className));
     }
 
     private static int countOccurrences(String haystack, String needle) {
