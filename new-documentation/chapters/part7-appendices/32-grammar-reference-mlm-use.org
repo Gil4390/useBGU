@@ -1,0 +1,20 @@
+* The MLM-USE Grammar
+:PROPERTIES:
+:CUSTOM_ID: appendix-grammar-mlm-use
+:END:
+
+The multi-level-modeling extension, as a *delta* on top of the USE
+grammar in Appendix [[#appendix-grammar-use]]: only rules that are new or
+changed at this layer are listed. Reproduced verbatim from
+=MLM-USE.ebnf= at the repository root.
+
+This grammar describes syntax only. A construct can parse cleanly here
+and still be rejected during semantic analysis once it's nested inside a
+multi-level model -- most notably, a =model ... end= block's classifier
+list reuses the plain USE =associationclass= rule unchanged, so an
+association class inside a =model= block parses, but is rejected at
+compile time (it's only accepted in =inter-classes=). See Chapter
+[[#chap-expressiveness-gaps]] for this and the other cases where the
+grammar alone doesn't tell the whole story.
+
+#+INCLUDE: "../../../MLM-USE.ebnf" src ebnf

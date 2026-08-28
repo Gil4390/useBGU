@@ -1,0 +1,8 @@
+* Class Diagrams
+:PROPERTIES:
+:CUSTOM_ID: chap-class-diagrams
+:END:
+
+# TODO: write this chapter.
+
+This chapter is a placeholder.

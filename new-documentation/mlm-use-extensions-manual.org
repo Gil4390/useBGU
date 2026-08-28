@@ -1,0 +1,21 @@
+#+TITLE: The Multilevel USE Extensions
+#+AUTHOR: MLM-USE / CatUSE Project
+#+SETUPFILE: latex/preamble.org
+
+#+LATEX: \frontmatter
+#+LATEX: \mainmatter
+
+#+INCLUDE: "chapters/part1-getting-started/part.org" :minlevel 1
+#+INCLUDE: "chapters/part2-plain-use/part.org" :minlevel 1
+#+INCLUDE: "chapters/part3-mlm-use/part.org" :minlevel 1
+#+INCLUDE: "chapters/part4-catuse/part.org" :minlevel 1
+#+INCLUDE: "chapters/part5-extending/part.org" :minlevel 1
+#+INCLUDE: "chapters/part6-history/part.org" :minlevel 1
+
+#+LATEX: \appendix
+
+#+INCLUDE: "chapters/part7-appendices/part.org" :minlevel 1
+
+#+LATEX: \backmatter
+#+LATEX: \bibliography{bib/references}
+#+LATEX: \printindex

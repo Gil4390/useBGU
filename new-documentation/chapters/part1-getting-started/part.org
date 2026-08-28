@@ -1,0 +1,9 @@
+* Getting Started
+:PROPERTIES:
+:CUSTOM_ID: part-getting-started
+:END:
+
+#+INCLUDE: "01-introduction.org" :minlevel 2
+#+INCLUDE: "02-installing-and-building.org" :minlevel 2
+#+INCLUDE: "03-running-the-system.org" :minlevel 2
+#+INCLUDE: "04-quickstart-tutorial.org" :minlevel 2

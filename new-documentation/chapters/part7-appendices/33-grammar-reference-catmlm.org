@@ -1,0 +1,11 @@
+* The CatMLM Grammar
+:PROPERTIES:
+:CUSTOM_ID: appendix-grammar-catmlm
+:END:
+
+The CatMLM ("CatUSE") front-end syntax sugar, as a *delta* on top of
+MLM-USE (Appendix [[#appendix-grammar-mlm-use]]): CatMLM desugars into
+exactly the same AST that plain MLM-USE produces. Reproduced verbatim
+from =CatMLM.ebnf= at the repository root.
+
+#+INCLUDE: "../../../CatMLM.ebnf" src ebnf

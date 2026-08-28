@@ -1,0 +1,14 @@
+* The USE Grammar
+:PROPERTIES:
+:CUSTOM_ID: appendix-grammar-use
+:END:
+
+The base USE language grammar (classes, associations, OCL constraints,
+SOIL statements), with no multi-level-modeling and no CatMLM extensions.
+Reproduced verbatim from =USE.ebnf= at the repository root, which is
+generated/maintained directly from the actual grammar sources
+(=USEBase.gpart=, =OCLBase.gpart=, =SoilBase.gpart=,
+=OCLLexerRules.gpart=) rather than transcribed by hand, so this appendix
+can never drift from the real, compiled grammar.
+
+#+INCLUDE: "../../../USE.ebnf" src ebnf

@@ -1,0 +1,95 @@
+* Known Expressiveness Gaps
+:PROPERTIES:
+:CUSTOM_ID: chap-expressiveness-gaps
+:END:
+
+This chapter documents constructs that are deliberately unsupported, or
+supported only in a restricted form, in MLM-USE and CatMLM -- as opposed
+to bugs, which belong in the issue tracker, not here. Each entry says
+what's restricted, why, and what to write instead. The full empirical
+investigation behind each entry (reproducers, root causes in the Java
+source, considered alternatives) lives in =known-issues.org= at the repo
+root; this chapter gives the user-facing summary.
+
+** Association classes are per-model, not multi-level
+
+*** The restriction
+
+An =associationclass= declared directly in =inter-classes= is a full
+citizen of a multi-level model. The same declaration inside an ordinary
+=model ... end= block is rejected at compile time with a clear error
+naming the class and model.
+
+*** Why
+
+An association class is simultaneously a class and an association. Every
+other multi-level construct keeps those two facets on entirely separate
+tracks -- a clabject edge refines a class one level down, an assoclink
+edge refines an association one level down, and nothing in the framework
+lets one edge do both to the same declaration at once. Giving a per-model
+association class real multi-level behavior would mean deciding what it
+means for a single declaration to be refined as a class *and* as an
+association simultaneously, including how the two refinements stay
+consistent with each other -- semantics that don't exist yet in the
+theory this tool implements. That is a research question, not an
+implementation gap, so it is intentionally out of scope.
+
+*** What to write instead
+
+- If the association class is inherently a bridge between two different
+  models (or an inter-class and a model class), declare it directly in
+  =inter-classes= -- this already works. See
+  =examples/MLM-USE/InterAssociationClassBridge.use=.
+- If it's local to one model, reify the edge as an ordinary class plus
+  two ordinary associations, one to each endpoint. This gives up nothing
+  practical: the reified edge is still an object, so population-bound
+  invariants (=allInstances()->size()=) apply to it exactly as they would
+  to a real association class. (=examples/= carries no worked file for
+  this pattern specifically -- it's reserved for constructs that work
+  without qualification, and this one exists only because of the
+  restriction above.)
+
+** CatMLM's =instanceOf= only ever targets a level's declared parent
+
+*** The restriction
+
+A CatMLM level is declared as =model ID1 < ID2=, and every clabject in
+that level instantiates a powerclass from exactly one level: =ID2=, the
+one named in that header. There is no syntax for a clabject to name a
+powerclass from any other level.
+
+*** Why this isn't a gap in practice
+
+Because instanceOf is always resolved against exactly the declared
+parent's class table, reusing a class name at another level -- even at
+every level of a chain -- is never ambiguous: there is only ever one
+table consulted, so a same-named class anywhere else is simply never
+looked at. (Same-level subclassing, =<=, has the identical property for
+the unrelated reason that it's resolved purely within the declaring
+level's own table.) This is locked in as a regression test,
+=CatMLMLevelNameDuplicationTest=, which reuses one class name at every
+level of a three-level chain -- including a same-level subclass sharing
+the name too -- and checks every instantiation still resolves to exactly
+its own declared parent.
+
+Note that this is a restriction of CatMLM's front-end syntax specifically,
+not of MLM-USE's underlying multi-level model: a plain MLM-USE mediator
+names its parent model by name (=mediator Child < Parent=), with no
+adjacency requirement at all, so a lower-level class instantiating a
+class from a non-adjacent ancestor level is already expressible in plain
+MLM-USE today. CatMLM simply has no surface syntax to ask for that yet.
+
+*** What to write instead
+
+If a class genuinely needs to instantiate a powerclass from further up
+than its immediate CatMLM parent, drop to plain MLM-USE for that level
+and name the target model explicitly in the =mediator ... < ...=
+declaration.
+
+** Other CatMLM gaps (unchanged from earlier passes)
+
+CatMLM's =catUSE_model= has no =operations= section, no =inter-*=
+sections (constraints/associations/classes), and no per-clabject
+attribute rename -- cancellation is only via =catAtt=/=catConstr= tags on
+the powerclass's own declaration, applying to every instantiator, not
+selectively. Drop to plain MLM-USE for any of these.

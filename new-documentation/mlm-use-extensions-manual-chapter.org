@@ -1,0 +1,10 @@
+#+TITLE: The Multilevel USE Extensions --- Chapter Draft
+#+AUTHOR: MLM-USE / CatUSE Project
+#+SETUPFILE: latex/preamble.org
+
+# Single-chapter fast-iteration build. Point the #+INCLUDE: line below at
+# whichever chapter file is currently being drafted, then `make chapter`.
+# Cross-references into chapters not included here will show up as LaTeX
+# "undefined reference" warnings -- expected, not a bug, while iterating.
+
+#+INCLUDE: "chapters/part1-getting-started/01-introduction.org" :minlevel 1

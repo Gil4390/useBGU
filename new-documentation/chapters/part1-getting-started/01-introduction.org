@@ -1,0 +1,153 @@
+* Introduction
+:PROPERTIES:
+:CUSTOM_ID: chap-introduction
+:END:
+
+This manual documents a research fork of USE that adds *multi-level
+modeling* (MLM-USE) and a terser front-end syntax for it (CatUSE, also
+called CatMLM). It is written for someone who wants to actually write,
+check, and reason about models in this system --- not just read about
+the theory behind it.
+
+** What Is USE?
+:PROPERTIES:
+:CUSTOM_ID: sec-what-is-use
+:END:
+
+#+INDEX: USE
+
+USE (the "UML-based Specification Environment") is a tool for
+specifying and validating models written in a subset of UML together
+with the Object Constraint Language (OCL). A USE specification is a
+plain text file describing classes, associations, and OCL invariants;
+USE compiles it, lets you populate a running /system state/ with
+objects and links (by hand, via scripts, or interactively), and
+continuously checks that state against the model's constraints.
+Originally developed at the University of Bremen, it is both a
+teaching tool for UML/OCL and a research platform -- this fork is an
+example of the latter.
+
+Everything in Part [[#part-plain-use]] describes plain USE as it stands
+in this fork today, independent of anything multi-level.
+
+** Three Layers: USE, MLM-USE, CatUSE
+:PROPERTIES:
+:CUSTOM_ID: sec-three-layers
+:END:
+
+#+INDEX: MLM-USE
+#+INDEX: CatUSE!relationship to MLM-USE
+
+This fork (developed at Ben-Gurion University, building on the
+"Mediation-Based MLM in USE" line of work) adds two more layers on top
+of plain USE, each strictly *additive*: every plain USE model is
+already a valid input to the layers above it.
+
+#+ATTR_LATEX: :align lp{7cm}l
+| Layer   | Adds                                          | Entry keyword     |
+|---------+------------------------------------------------+-------------------|
+| USE     | Classes, associations, OCL constraints, SOIL   | =model=           |
+| MLM-USE | Levels, clabjects, mediators, powerclasses     | =MLM=             |
+| CatUSE  | Terser syntax that desugars into MLM-USE's AST | =category=        |
+
+*MLM-USE* (Part [[#part-mlm-use]]) is where multi-level modeling
+actually lives: a class can simultaneously be an ordinary class *and*
+an instance of another class one level up (a /clabject/), letting a
+single model describe several ontological levels -- for example, a
+product catalog level whose classes are themselves instances of a
+"kind of product" level -- without collapsing them into one flat
+model or duplicating information across separate models.
+
+*CatUSE* (Part [[#part-catuse]], also called CatMLM in the source) is a
+front-end grammar layered on top of MLM-USE. It does not add any new
+semantics of its own: a CatUSE specification is parsed and then
+desugared into exactly the same abstract syntax tree that an
+equivalent, more verbose MLM-USE specification would produce. Compare:
+
+#+ATTR_LATEX: :options caption={CatUSE (terse)}
+#+begin_src catmlm
+category Car < Vehicle : Product
+  attributes
+    price : Integer
+end
+#+end_src
+
+against the MLM-USE it desugars into (a separate =clabject= statement
+naming the same cross-level relationship):
+
+#+ATTR_LATEX: :options caption={The MLM-USE it desugars to}
+#+begin_src use
+class Car < Vehicle
+  attributes
+    price : Integer
+end
+
+clabject Car : Product end
+#+end_src
+
+CatUSE currently covers less ground than MLM-USE -- some things (see
+Chapter [[#chap-expressiveness-gaps]]) can only be written in full
+MLM-USE. Which one to reach for is mostly a matter of how much of a
+model is genuinely multi-level: CatUSE reads better when most classes
+in a level participate in cross-level instantiation; plain MLM-USE
+keeps more control when only a few do, or when a construct CatUSE
+cannot express is needed.
+
+** Terminology at a Glance
+:PROPERTIES:
+:CUSTOM_ID: sec-terminology
+:END:
+
+A handful of terms recur throughout this manual. This is only a
+pointer to where each is properly introduced, not a substitute for
+reading that section.
+
+#+INDEX: clabject
+#+INDEX: mediator
+#+INDEX: powerclass
+#+INDEX: level (multi-level modeling)
+
+- *Model* :: A named collection of classes, associations, and
+  constraints -- the unit USE compiles and checks. See Chapter
+  [[#chap-class-diagrams]].
+- *Level* :: One "floor" of a multi-level model. See Chapter
+  [[#chap-mlm-concepts]].
+- *Clabject* :: A class that is also, simultaneously, an instance of a
+  class at a higher level. The name blends "class" and "object". See
+  Chapter [[#chap-mlm-concepts]].
+- *Powerclass* :: The higher-level class a clabject is an instance of.
+  See Chapter [[#chap-mlm-concepts]].
+- *Mediator* :: A declaration that relates classes across two adjacent
+  levels. See Chapter [[#chap-mlm-concepts]].
+- *Category* :: CatUSE's keyword for a classifier declaration that may
+  also carry cross-level instantiation directly on its own header. See
+  Chapter [[#chap-catmlm-syntax]].
+
+** How to Read This Manual
+:PROPERTIES:
+:CUSTOM_ID: sec-how-to-read
+:END:
+
+Part [[#part-getting-started]] gets the system installed, built, and
+running, and ends with a short guided walkthrough (Chapter
+[[#chap-quickstart-tutorial]]). Part [[#part-plain-use]] documents plain
+USE in full. Parts [[#part-mlm-use]] and [[#part-catuse]] cover MLM-USE
+and CatUSE respectively, each in the same shape: concepts, syntax,
+worked examples. Part [[#part-extending]] is for anyone modifying this
+fork's own implementation, not just writing models in it. Part
+[[#part-history]] covers where USE and this fork came from. The
+appendices are lookup references (grammars, keywords, shell commands),
+not narrative -- go there when you need to check a detail, not to read
+start to end.
+
+Code listings are syntax-highlighted: hard (fully reserved) keywords
+in one color, soft (contextual) keywords in another -- see Chapter
+[[#chap-keyword-reference]] for what that distinction means and why it
+matters. Boxed notes call out things worth pausing on:
+
+#+begin_manualnote
+This manual assumes no prior familiarity with USE. If you already know
+plain USE and only want the multi-level material, Part
+[[#part-getting-started]] can be skimmed and Part [[#part-plain-use]]
+skipped entirely.
+#+end_manualnote

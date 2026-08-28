@@ -1,0 +1,97 @@
+* Installing and Building
+:PROPERTIES:
+:CUSTOM_ID: chap-installing-and-building
+:END:
+
+** Prerequisites
+:PROPERTIES:
+:CUSTOM_ID: sec-prerequisites
+:END:
+
+#+INDEX: JDK
+#+INDEX: Maven
+
+You need:
+
+- A JDK for Java 21 or later (the build sets both
+  =maven.compiler.source= and =maven.compiler.target= to =21=; older
+  JDKs cannot compile this codebase).
+- Apache Maven (any reasonably current 3.x release).
+
+No other tools are required to build and run the system itself.
+Building this manual is a separate matter, covered by its own
+=Makefile= in =new-documentation/=, not by the project's Maven build.
+
+** Getting the Source
+:PROPERTIES:
+:CUSTOM_ID: sec-getting-the-source
+:END:
+
+#+begin_src sh
+git clone https://github.com/sturmarn/useBGU.git
+cd useBGU
+git checkout MLM-USE
+#+end_src
+
+All multi-level and CatUSE work described in this manual lives on the
+=MLM-USE= branch of this fork, not on upstream USE.
+
+** Module Layout
+:PROPERTIES:
+:CUSTOM_ID: sec-module-layout
+:END:
+
+The build is a single Maven reactor with three modules:
+
+#+ATTR_LATEX: :align lp{10cm}
+| Module         | Contains                                                       |
+|----------------+------------------------------------------------------------------|
+| =use-core=     | Grammars, parser, AST, the M-model (classes/associations/etc.), the compiler and system-state engine |
+| =use-gui=      | The Swing GUI, the interactive shell, and the =Main= entry point |
+| =use-assembly= | Packages the other two, plus scripts and bundled examples, into a runnable distribution |
+
+Chapters [[#chap-codebase-tour]] onward go into this layout in much more
+detail; this chapter only covers enough to build and run the system.
+
+** Building with Maven
+:PROPERTIES:
+:CUSTOM_ID: sec-building-with-maven
+:END:
+
+From the repository root:
+
+#+begin_src sh
+mvn clean package
+#+end_src
+
+Maven's reactor builds =use-core=, then =use-gui=, then
+=use-assembly=, in that order, in a single invocation -- there is no
+separate per-module build step to run by hand.
+
+#+begin_manualnote
+=mvn package= runs the unit test suite (via Surefire) as part of the
+build; a failing test fails the build. To also run the slower
+integration tests (Failsafe, classes named =*IT=, e.g. GUI smoke
+tests), use =mvn verify= instead -- this is what CI runs.
+#+end_manualnote
+
+** Build Artifacts
+:PROPERTIES:
+:CUSTOM_ID: sec-build-artifacts
+:END:
+
+After a successful build:
+
+- =use-core/target/*.jar= -- the compiler/engine as a library.
+- =use-gui/target/use-gui.jar= -- a single runnable jar with all
+  dependencies bundled and a manifest =Main-Class= of
+  =org.tzi.use.main.Main=. This is the jar Chapter
+  [[#chap-running-the-system]] runs directly.
+- =use-assembly/target/use-7.1.1.tar.gz= and =.zip= -- a full
+  distributable archive: a =bin/= launcher script, =lib/use-gui.jar=,
+  bundled OCL extensions, plugin jars, and the example models shipped
+  with the project.
+
+The version number in the assembly's filename tracks the project's
+=pom.xml= version (=7.1.1= at the time of writing); it will differ if
+that version has moved on since.

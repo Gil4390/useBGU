@@ -1,0 +1,12 @@
+* Modeling in Plain USE
+:PROPERTIES:
+:CUSTOM_ID: part-plain-use
+:END:
+
+#+INCLUDE: "05-class-diagrams.org" :minlevel 2
+#+INCLUDE: "06-ocl-constraints.org" :minlevel 2
+#+INCLUDE: "07-ocl-standard-library.org" :minlevel 2
+#+INCLUDE: "08-system-states-and-shell.org" :minlevel 2
+#+INCLUDE: "09-validating-specifications.org" :minlevel 2
+#+INCLUDE: "10-the-gui.org" :minlevel 2
+#+INCLUDE: "11-model-unit-tests.org" :minlevel 2

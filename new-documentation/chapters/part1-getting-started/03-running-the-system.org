@@ -1,0 +1,176 @@
+* Running the System
+:PROPERTIES:
+:CUSTOM_ID: chap-running-the-system
+:END:
+
+** Running the Assembled Distribution
+:PROPERTIES:
+:CUSTOM_ID: sec-running-assembled
+:END:
+
+Unpack =use-assembly/target/use-7.1.1.tar.gz= (or the =.zip=) and run
+its launcher script:
+
+#+begin_src sh
+tar xzf use-7.1.1.tar.gz
+cd use-7.1.1
+bin/use
+#+end_src
+
+The script resolves its own location, points at
+=lib/use-gui.jar= next to it, and forwards any arguments you give it
+verbatim to that jar (=bin/use [options] [spec_file] [cmd_file]=,
+covered below).
+
+** Running Directly with =java -jar=
+:PROPERTIES:
+:CUSTOM_ID: sec-running-java-jar
+:END:
+
+Without unpacking a distribution, the freshly built jar runs on its
+own:
+
+#+begin_src sh
+java -jar use-gui/target/use-gui.jar
+#+end_src
+
+This is the same jar =bin/use= wraps, so every option below behaves
+identically either way.
+
+** Double-Clicking the Jar
+:PROPERTIES:
+:CUSTOM_ID: sec-double-clicking
+:END:
+
+=use-gui.jar= carries a manifest =Main-Class=, so on a system where
+=.jar= files are associated with a Java launcher (typically the case
+on Windows and macOS out of the box; Linux desktop environments vary
+and often need that association set up manually) double-clicking it
+launches the GUI directly, with no arguments -- equivalent to running
+=java -jar use-gui.jar= with no =spec_file=. Passing command-line
+options or a spec file to open on startup requires an actual
+command-line invocation; double-clicking cannot supply either.
+
+** Command-Line Options
+:PROPERTIES:
+:CUSTOM_ID: sec-command-line-options
+:END:
+
+#+INDEX: command-line options
+
+The full usage message (=java -jar use-gui.jar -h=):
+
+#+begin_example
+usage: use [options] [spec_file] [cmd_file]
+
+options:
+  -c            compile only
+  -cp           compile and print specification
+  -disableCollectShorthand
+                flag use of OCL shorthand notation as error
+  -oclAnyCollectionsChecks:W
+                (W)arn|(E)rror|(I)gnore
+  -extendedTypeSystemChecks:W
+                (W)arn|(E)rror|(I)gnore
+  -implicitTypes  Implicit variable typing in operations
+  -nogui        do not use GUI
+  -noplugins    do not use plugins
+  -h            print help
+  -H=path       home of use installation
+  -nr           suppress warnings about missing readline library
+  -q            reads spec_file, executes cmd_file, and checks constraints
+                exit code is 1 if constraints fail, otherwise 0
+  -qv           like -q but with verbose output of constraint check
+  -v            print verbose messages
+  -vt           print verbose messages with time info
+  -V            print version info and exit
+
+spec_file:      file containing a USE specification
+cmd_file:       script file containing commands (will be executed on startup)
+
+diagnostics:
+  -debug        print lots of messages
+  -p            print stack traces on errors
+  -t            testing mode (less user-centric output)
+#+end_example
+
+The ones you will reach for most as a new user are =-nogui= (run
+headless), =-v= (see what's happening during a slow compile), =-q= /
+=-qv= (batch-check a model and get a process exit code -- useful for
+scripting or CI), and =-h= / =-V=. The =diagnostics= group and
+=-disableCollectShorthand=, =-oclAnyCollectionsChecks=, and
+=-extendedTypeSystemChecks= are aimed more at people working on the
+compiler itself (Part [[#part-extending]]) than at someone writing
+models.
+
+** The Shell Runs Underneath the GUI, Too
+:PROPERTIES:
+:CUSTOM_ID: sec-shell-underneath-gui
+:END:
+
+#+INDEX: shell!relationship to the GUI
+
+=-nogui= does not disable the interactive shell -- it only suppresses
+the window. Looking at how startup actually proceeds: if a
+=spec_file= is given, it is compiled and a system state is created
+*before* the GUI or shell start; then, unconditionally, a shell thread
+is started; the GUI window is created only if =-nogui= was not passed.
+The GUI is a window wrapped around the same underlying engine the
+shell drives -- not a separate mode. Chapter
+[[#chap-system-states-and-shell]] covers the shell's own command
+language in full.
+
+** Opening a Specification: Four Entry Points
+:PROPERTIES:
+:CUSTOM_ID: sec-four-entry-points
+:END:
+
+#+INDEX: opening a specification (GUI)
+
+The GUI's File menu offers four distinct "Open..." actions, and they
+are *not* content-sniffed: each parses its input with a different
+grammar entry point, and you must pick the one matching what you
+actually wrote.
+
+#+ATTR_LATEX: :align lp{9cm}
+| Action                              | Parses                                                   |
+|--------------------------------------+-----------------------------------------------------------|
+| Open specification...                | A plain, single =model= (Part [[#part-plain-use]])        |
+| Open multi specification...          | Several ordinary models glued by =inter-*= sections, no levels |
+| Open multi level specification...    | An =MLM= file: levels, clabjects, mediators (Part [[#part-mlm-use]]) |
+| Open CatUSE specification...         | A CatUSE/CatMLM file (Part [[#part-catuse]])              |
+
+Opening a file with the wrong action produces a parse error, not a
+silent misinterpretation -- if in doubt, the file's own leading
+keyword (=model=, =multi_model=, =MLM=, or =category= / =class= at
+the top level) tells you which one it is.
+
+** Loading a Specification from the Command Line
+:PROPERTIES:
+:CUSTOM_ID: sec-loading-from-cli
+:END:
+
+The command line has no separate "which grammar" switch -- =spec_file=
+is compiled with the entry point matching what a =-nogui= batch run
+needs, inferred the same way as the table above from the file's own
+syntax. A typical scripted check:
+
+#+begin_src sh
+java -jar use-gui.jar -nogui -q myModel.use myChecks.cmd
+#+end_src
+
+=myChecks.cmd= runs on startup against the freshly loaded model; the
+process exits =1= if any constraint failed, =0= otherwise -- suitable
+for a CI step that should fail the build on a broken model.
+
+** A Quick Sanity Check
+:PROPERTIES:
+:CUSTOM_ID: sec-quick-sanity-check
+:END:
+
+To confirm the build actually works end to end, try opening one of the
+worked examples that ship in the repository's own =examples/=
+directory, e.g. =examples/USE/Vehicle.use=, with "Open
+specification...". Chapter [[#chap-quickstart-tutorial]] walks through
+a small model like this one in full, from writing it to checking its
+first invariant.

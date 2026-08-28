@@ -1,0 +1,8 @@
+* The OCL Standard Library
+:PROPERTIES:
+:CUSTOM_ID: chap-ocl-standard-library
+:END:
+
+# TODO: write this chapter.
+
+This chapter is a placeholder.

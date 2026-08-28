@@ -1,0 +1,8 @@
+* The Graphical User Interface
+:PROPERTIES:
+:CUSTOM_ID: chap-the-gui
+:END:
+
+# TODO: write this chapter.
+
+This chapter is a placeholder.

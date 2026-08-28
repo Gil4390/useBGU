@@ -1,0 +1,120 @@
+#+LATEX_CLASS: book
+#+LATEX_CLASS_OPTIONS: [11pt,twoside,a4paper]
+#+OPTIONS: toc:t H:4 num:t ':t
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage[a4paper,margin=1in]{geometry}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{tcolorbox}
+#+LATEX_HEADER: \tcbuselibrary{skins,breakable}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \makeindex
+#+LATEX_HEADER: \hypersetup{colorlinks=true,linkcolor=mlmblue,citecolor=mlmblue,urlcolor=mlmblue}
+#+LATEX_HEADER: \usepackage{longtable}
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \bibliographystyle{plain}
+
+# ---------------------------------------------------------------------------
+# Color palette. mlmblue/mlmgreen/mlmorange are reused for the per-level
+# colour coding in MLM diagrams, matching the GUI's own level colours -- see
+# chapters/part3-mlm-use for the worked correspondence once it's written.
+# ---------------------------------------------------------------------------
+#+LATEX_HEADER: \definecolor{mlmblue}{HTML}{1B4F72}
+#+LATEX_HEADER: \definecolor{mlmgreen}{HTML}{1E8449}
+#+LATEX_HEADER: \definecolor{mlmorange}{HTML}{B9770E}
+#+LATEX_HEADER: \definecolor{kwcolor}{HTML}{7D3C98}
+#+LATEX_HEADER: \definecolor{softkwcolor}{HTML}{1F618D}
+#+LATEX_HEADER: \definecolor{querykwcolor}{HTML}{117864}
+#+LATEX_HEADER: \definecolor{commentcolor}{HTML}{6C7A89}
+#+LATEX_HEADER: \definecolor{stringcolor}{HTML}{922B21}
+#+LATEX_HEADER: \definecolor{bgcode}{HTML}{F7F7F7}
+
+# ---------------------------------------------------------------------------
+# `listings` language definitions for plain USE / MLM-USE and for CatMLM.
+#
+# Keyword lists and lexical rules (comment styles `//`, `--`, `/* ... */`;
+# string delimiters `'...'` and `"..."`) are taken directly from
+# USEBase.gpart, OCLBase.gpart, SoilBase.gpart, CatMLM.gpart and
+# OCLLexerRules.gpart -- see keywords.html for the derivation. "Hard"
+# keywords (class [1]), "soft" keywords (class [2]) and OCL query names
+# (class [3], never actually reserved, but worth distinguishing visually)
+# each get their own colour.
+# ---------------------------------------------------------------------------
+#+LATEX_HEADER: \lstdefinelanguage{MLMUSE}{%
+#+LATEX_HEADER:   morekeywords=[1]{model,multi_model,abstract,associationClass,associationclass,%
+#+LATEX_HEADER:     attributes,operations,constraints,between,enum,statemachines,psm,states,%
+#+LATEX_HEADER:     transitions,create,context,inv,existential,pre,post,end,%
+#+LATEX_HEADER:     let,in,if,then,else,endif,not,and,or,xor,implies,div,true,false,null,%
+#+LATEX_HEADER:     Undefined,oclUndefined,oclEmpty,Set,Sequence,Bag,OrderedSet,Collection,Tuple,%
+#+LATEX_HEADER:     iterate,allInstances,byUseId,oclAsType,oclIsKindOf,oclIsTypeOf,selectByKind,%
+#+LATEX_HEADER:     selectByType,oclIsInState,oclInState,ordered,subsets,redefines,%
+#+LATEX_HEADER:     new,destroy,insert,into,delete,from,for,do,while,begin,declare},%
+#+LATEX_HEADER:   morekeywords=[2]{union,association,role,roles,composition,aggregation,dataType,%
+#+LATEX_HEADER:     class,signal,derived,derive,init,qualifier,MLM,mediator,clabject,assoclink},%
+#+LATEX_HEADER:   morekeywords=[3]{select,reject,collect,exists,forAll,isUnique,sortedBy,one,any,%
+#+LATEX_HEADER:     collectNested},%
+#+LATEX_HEADER:   sensitive=true,%
+#+LATEX_HEADER:   morecomment=[l]{//},%
+#+LATEX_HEADER:   morecomment=[l]{--},%
+#+LATEX_HEADER:   morecomment=[s]{/*}{*/},%
+#+LATEX_HEADER:   morestring=[b]',%
+#+LATEX_HEADER:   morestring=[b]"%
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \lstdefinelanguage{CatMLM}{%
+#+LATEX_HEADER:   morekeywords=[1]{model,multi_model,abstract,associationClass,associationclass,%
+#+LATEX_HEADER:     attributes,operations,constraints,between,enum,statemachines,psm,states,%
+#+LATEX_HEADER:     transitions,create,context,inv,existential,pre,post,end,%
+#+LATEX_HEADER:     let,in,if,then,else,endif,not,and,or,xor,implies,div,true,false,null,%
+#+LATEX_HEADER:     Undefined,oclUndefined,oclEmpty,Set,Sequence,Bag,OrderedSet,Collection,Tuple,%
+#+LATEX_HEADER:     iterate,allInstances,byUseId,oclAsType,oclIsKindOf,oclIsTypeOf,selectByKind,%
+#+LATEX_HEADER:     selectByType,oclIsInState,oclInState,ordered,subsets,redefines,%
+#+LATEX_HEADER:     new,destroy,insert,into,delete,from,for,do,while,begin,declare},%
+#+LATEX_HEADER:   morekeywords=[2]{union,association,role,roles,composition,aggregation,dataType,%
+#+LATEX_HEADER:     class,signal,derived,derive,init,qualifier,MLM,mediator,clabject,assoclink,%
+#+LATEX_HEADER:     category,catAtt,catConstr,catAssociation},%
+#+LATEX_HEADER:   morekeywords=[3]{select,reject,collect,exists,forAll,isUnique,sortedBy,one,any,%
+#+LATEX_HEADER:     collectNested},%
+#+LATEX_HEADER:   sensitive=true,%
+#+LATEX_HEADER:   morecomment=[l]{//},%
+#+LATEX_HEADER:   morecomment=[l]{--},%
+#+LATEX_HEADER:   morecomment=[s]{/*}{*/},%
+#+LATEX_HEADER:   morestring=[b]',%
+#+LATEX_HEADER:   morestring=[b]"%
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \lstdefinelanguage{ShellSession}{%
+#+LATEX_HEADER:   morecomment=[l]{\#},%
+#+LATEX_HEADER:   morestring=[b]",%
+#+LATEX_HEADER:   morestring=[b]',%
+#+LATEX_HEADER:   sensitive=true%
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \lstdefinelanguage{EBNF}{%
+#+LATEX_HEADER:   morecomment=[s]{(*}{*)},%
+#+LATEX_HEADER:   sensitive=true%
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \lstset{%
+#+LATEX_HEADER:   basicstyle=\ttfamily\small,%
+#+LATEX_HEADER:   keywordstyle=[1]\color{kwcolor}\bfseries,%
+#+LATEX_HEADER:   keywordstyle=[2]\color{softkwcolor}\bfseries,%
+#+LATEX_HEADER:   keywordstyle=[3]\color{querykwcolor},%
+#+LATEX_HEADER:   commentstyle=\color{commentcolor}\itshape,%
+#+LATEX_HEADER:   stringstyle=\color{stringcolor},%
+#+LATEX_HEADER:   backgroundcolor=\color{bgcode},%
+#+LATEX_HEADER:   numbers=left,numberstyle=\tiny\color{commentcolor},numbersep=8pt,%
+#+LATEX_HEADER:   frame=single,rulecolor=\color{black!20},%
+#+LATEX_HEADER:   breaklines=true,%
+#+LATEX_HEADER:   showstringspaces=false,%
+#+LATEX_HEADER:   captionpos=b,%
+#+LATEX_HEADER:   extendedchars=true,%
+#+LATEX_HEADER:   literate={—}{{---}}1,%
+#+LATEX_HEADER:   language=MLMUSE%
+#+LATEX_HEADER: }
+
+# tcolorbox styles for Note / Warning admonitions.
+#+LATEX_HEADER: \newtcolorbox{manualnote}{colback=mlmblue!5,colframe=mlmblue,fonttitle=\bfseries,title=Note,breakable}
+#+LATEX_HEADER: \newtcolorbox{manualwarning}{colback=mlmorange!8,colframe=mlmorange,fonttitle=\bfseries,title=Warning,breakable}

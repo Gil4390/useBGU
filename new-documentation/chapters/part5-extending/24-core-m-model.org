@@ -1,0 +1,8 @@
+* The Core M-Model
+:PROPERTIES:
+:CUSTOM_ID: chap-core-m-model
+:END:
+
+# TODO: write this chapter.
+
+This chapter is a placeholder.

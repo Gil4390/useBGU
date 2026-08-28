@@ -1,0 +1,1549 @@
+% Created 2026-08-26 Wed 09:48
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt,twoside,a4paper]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{makeidx}
+\makeindex
+\hypersetup{colorlinks=true,linkcolor=mlmblue,citecolor=mlmblue,urlcolor=mlmblue}
+\usepackage{longtable}
+\usepackage{booktabs}
+\bibliographystyle{plain}
+\definecolor{mlmblue}{HTML}{1B4F72}
+\definecolor{mlmgreen}{HTML}{1E8449}
+\definecolor{mlmorange}{HTML}{B9770E}
+\definecolor{kwcolor}{HTML}{7D3C98}
+\definecolor{softkwcolor}{HTML}{1F618D}
+\definecolor{querykwcolor}{HTML}{117864}
+\definecolor{commentcolor}{HTML}{6C7A89}
+\definecolor{stringcolor}{HTML}{922B21}
+\definecolor{bgcode}{HTML}{F7F7F7}
+\lstdefinelanguage{MLMUSE}{%
+morekeywords=[1]{model,multi_model,abstract,associationClass,associationclass,%
+attributes,operations,constraints,between,enum,statemachines,psm,states,%
+transitions,create,context,inv,existential,pre,post,end,%
+let,in,if,then,else,endif,not,and,or,xor,implies,div,true,false,null,%
+Undefined,oclUndefined,oclEmpty,Set,Sequence,Bag,OrderedSet,Collection,Tuple,%
+iterate,allInstances,byUseId,oclAsType,oclIsKindOf,oclIsTypeOf,selectByKind,%
+selectByType,oclIsInState,oclInState,ordered,subsets,redefines,%
+new,destroy,insert,into,delete,from,for,do,while,begin,declare},%
+morekeywords=[2]{union,association,role,roles,composition,aggregation,dataType,%
+class,signal,derived,derive,init,qualifier,MLM,mediator,clabject,assoclink},%
+morekeywords=[3]{select,reject,collect,exists,forAll,isUnique,sortedBy,one,any,%
+collectNested},%
+sensitive=true,%
+morecomment=[l]{//},%
+morecomment=[l]{--},%
+morecomment=[s]{/*}{*/},%
+morestring=[b]',%
+morestring=[b]"%
+}
+\lstdefinelanguage{CatMLM}{%
+morekeywords=[1]{model,multi_model,abstract,associationClass,associationclass,%
+attributes,operations,constraints,between,enum,statemachines,psm,states,%
+transitions,create,context,inv,existential,pre,post,end,%
+let,in,if,then,else,endif,not,and,or,xor,implies,div,true,false,null,%
+Undefined,oclUndefined,oclEmpty,Set,Sequence,Bag,OrderedSet,Collection,Tuple,%
+iterate,allInstances,byUseId,oclAsType,oclIsKindOf,oclIsTypeOf,selectByKind,%
+selectByType,oclIsInState,oclInState,ordered,subsets,redefines,%
+new,destroy,insert,into,delete,from,for,do,while,begin,declare},%
+morekeywords=[2]{union,association,role,roles,composition,aggregation,dataType,%
+class,signal,derived,derive,init,qualifier,MLM,mediator,clabject,assoclink,%
+category,catAtt,catConstr,catAssociation},%
+morekeywords=[3]{select,reject,collect,exists,forAll,isUnique,sortedBy,one,any,%
+collectNested},%
+sensitive=true,%
+morecomment=[l]{//},%
+morecomment=[l]{--},%
+morecomment=[s]{/*}{*/},%
+morestring=[b]',%
+morestring=[b]"%
+}
+\lstdefinelanguage{ShellSession}{%
+morecomment=[l]{\#},%
+morestring=[b]",%
+morestring=[b]',%
+sensitive=true%
+}
+\lstdefinelanguage{EBNF}{%
+morecomment=[s]{(*}{*)},%
+sensitive=true%
+}
+\lstset{%
+basicstyle=\ttfamily\small,%
+keywordstyle=[1]\color{kwcolor}\bfseries,%
+keywordstyle=[2]\color{softkwcolor}\bfseries,%
+keywordstyle=[3]\color{querykwcolor},%
+commentstyle=\color{commentcolor}\itshape,%
+stringstyle=\color{stringcolor},%
+backgroundcolor=\color{bgcode},%
+numbers=left,numberstyle=\tiny\color{commentcolor},numbersep=8pt,%
+frame=single,rulecolor=\color{black!20},%
+breaklines=true,%
+showstringspaces=false,%
+captionpos=b,%
+extendedchars=true,%
+literate={—}{{---}}1,%
+language=MLMUSE%
+}
+\newtcolorbox{manualnote}{colback=mlmblue!5,colframe=mlmblue,fonttitle=\bfseries,title=Note,breakable}
+\newtcolorbox{manualwarning}{colback=mlmorange!8,colframe=mlmorange,fonttitle=\bfseries,title=Warning,breakable}
+\author{MLM-USE / CatUSE Project}
+\date{\today}
+\title{The Multilevel USE Extensions}
+\hypersetup{
+ pdfauthor={MLM-USE / CatUSE Project},
+ pdftitle={The Multilevel USE Extensions},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.3 (Org mode 9.6.15)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\frontmatter
+\mainmatter
+
+\part{Getting Started}
+\label{sec:org3abc47a}
+\chapter{Introduction}
+\label{sec:orgcb60dbc}
+This manual documents a research fork of USE that adds \textbf{multi-level
+modeling} (MLM-USE) and a terser front-end syntax for it (CatUSE, also
+called CatMLM). It is written for someone who wants to actually write,
+check, and reason about models in this system --- not just read about
+the theory behind it.
+
+\section{What Is USE?}
+\label{sec:org3d2738d}
+\index{USE}
+
+USE (the ``UML-based Specification Environment'') is a tool for
+specifying and validating models written in a subset of UML together
+with the Object Constraint Language (OCL). A USE specification is a
+plain text file describing classes, associations, and OCL invariants;
+USE compiles it, lets you populate a running \emph{system state} with
+objects and links (by hand, via scripts, or interactively), and
+continuously checks that state against the model's constraints.
+Originally developed at the University of Bremen, it is both a
+teaching tool for UML/OCL and a research platform -- this fork is an
+example of the latter.
+
+Everything in Part \ref{sec:org2c3ff8a} describes plain USE as it stands
+in this fork today, independent of anything multi-level.
+
+\section{Three Layers: USE, MLM-USE, CatUSE}
+\label{sec:org831f152}
+\index{MLM-USE}
+\index{CatUSE!relationship to MLM-USE}
+
+This fork (developed at Ben-Gurion University, building on the
+``Mediation-Based MLM in USE'' line of work) adds two more layers on top
+of plain USE, each strictly \textbf{additive}: every plain USE model is
+already a valid input to the layers above it.
+
+\begin{center}
+\begin{tabular}{lp{7cm}l}
+Layer & Adds & Entry keyword\\[0pt]
+\hline
+USE & Classes, associations, OCL constraints, SOIL & \texttt{model}\\[0pt]
+MLM-USE & Levels, clabjects, mediators, powerclasses & \texttt{MLM}\\[0pt]
+CatUSE & Terser syntax that desugars into MLM-USE's AST & \texttt{category}\\[0pt]
+\end{tabular}
+\end{center}
+
+\textbf{MLM-USE} (Part \ref{sec:orga1bec65}) is where multi-level modeling
+actually lives: a class can simultaneously be an ordinary class \textbf{and}
+an instance of another class one level up (a \emph{clabject}), letting a
+single model describe several ontological levels -- for example, a
+product catalog level whose classes are themselves instances of a
+``kind of product'' level -- without collapsing them into one flat
+model or duplicating information across separate models.
+
+\textbf{CatUSE} (Part \ref{sec:orge58ddb4}, also called CatMLM in the source) is a
+front-end grammar layered on top of MLM-USE. It does not add any new
+semantics of its own: a CatUSE specification is parsed and then
+desugared into exactly the same abstract syntax tree that an
+equivalent, more verbose MLM-USE specification would produce. Compare:
+
+\begin{lstlisting}[language=CatMLM,label= ,caption= ,captionpos=b,numbers=none,caption={CatUSE (terse)}]
+category Car < Vehicle : Product
+  attributes
+    price : Integer
+end
+\end{lstlisting}
+
+against the MLM-USE it desugars into (a separate \texttt{clabject} statement
+naming the same cross-level relationship):
+
+\begin{lstlisting}[language=MLMUSE,label= ,caption= ,captionpos=b,numbers=none,caption={The MLM-USE it desugars to}]
+class Car < Vehicle
+  attributes
+    price : Integer
+end
+
+clabject Car : Product end
+\end{lstlisting}
+
+CatUSE currently covers less ground than MLM-USE -- some things (see
+Chapter \ref{sec:org63541d4}) can only be written in full
+MLM-USE. Which one to reach for is mostly a matter of how much of a
+model is genuinely multi-level: CatUSE reads better when most classes
+in a level participate in cross-level instantiation; plain MLM-USE
+keeps more control when only a few do, or when a construct CatUSE
+cannot express is needed.
+
+\section{Terminology at a Glance}
+\label{sec:orgeb539b8}
+A handful of terms recur throughout this manual. This is only a
+pointer to where each is properly introduced, not a substitute for
+reading that section.
+
+\index{clabject}
+\index{mediator}
+\index{powerclass}
+\index{level (multi-level modeling)}
+
+\begin{description}
+\item[{\textbf{Model}}] A named collection of classes, associations, and
+constraints -- the unit USE compiles and checks. See Chapter
+\ref{sec:org145cbce}.
+\item[{\textbf{Level}}] One ``floor'' of a multi-level model. See Chapter
+\ref{sec:orga4c021d}.
+\item[{\textbf{Clabject}}] A class that is also, simultaneously, an instance of a
+class at a higher level. The name blends ``class'' and ``object''. See
+Chapter \ref{sec:orga4c021d}.
+\item[{\textbf{Powerclass}}] The higher-level class a clabject is an instance of.
+See Chapter \ref{sec:orga4c021d}.
+\item[{\textbf{Mediator}}] A declaration that relates classes across two adjacent
+levels. See Chapter \ref{sec:orga4c021d}.
+\item[{\textbf{Category}}] CatUSE's keyword for a classifier declaration that may
+also carry cross-level instantiation directly on its own header. See
+Chapter \ref{sec:org06db68c}.
+\end{description}
+
+\section{How to Read This Manual}
+\label{sec:org5fa921c}
+Part \ref{sec:org3abc47a} gets the system installed, built, and
+running, and ends with a short guided walkthrough (Chapter
+\ref{sec:orgd9cc398}). Part \ref{sec:org2c3ff8a} documents plain
+USE in full. Parts \ref{sec:orga1bec65} and \ref{sec:orge58ddb4} cover MLM-USE
+and CatUSE respectively, each in the same shape: concepts, syntax,
+worked examples. Part \ref{sec:org745982f} is for anyone modifying this
+fork's own implementation, not just writing models in it. Part
+\ref{sec:orgc5ae712} covers where USE and this fork came from. The
+appendices are lookup references (grammars, keywords, shell commands),
+not narrative -- go there when you need to check a detail, not to read
+start to end.
+
+Code listings are syntax-highlighted: hard (fully reserved) keywords
+in one color, soft (contextual) keywords in another -- see Chapter
+\ref{sec:org46d74f9} for what that distinction means and why it
+matters. Boxed notes call out things worth pausing on:
+
+\begin{manualnote}
+This manual assumes no prior familiarity with USE. If you already know
+plain USE and only want the multi-level material, Part
+\ref{sec:org3abc47a} can be skimmed and Part \ref{sec:org2c3ff8a}
+skipped entirely.
+\end{manualnote}
+\chapter{Installing and Building}
+\label{sec:orgf97e73e}
+\section{Prerequisites}
+\label{sec:org3029462}
+\index{JDK}
+\index{Maven}
+
+You need:
+
+\begin{itemize}
+\item A JDK for Java 21 or later (the build sets both
+\texttt{maven.compiler.source} and \texttt{maven.compiler.target} to \texttt{21}; older
+JDKs cannot compile this codebase).
+\item Apache Maven (any reasonably current 3.x release).
+\end{itemize}
+
+No other tools are required to build and run the system itself.
+Building this manual is a separate matter, covered by its own
+\texttt{Makefile} in \texttt{new-documentation/}, not by the project's Maven build.
+
+\section{Getting the Source}
+\label{sec:org155dd77}
+\begin{lstlisting}[language=ShellSession,label= ,caption= ,captionpos=b,numbers=none]
+git clone https://github.com/sturmarn/useBGU.git
+cd useBGU
+git checkout MLM-USE
+\end{lstlisting}
+
+All multi-level and CatUSE work described in this manual lives on the
+\texttt{MLM-USE} branch of this fork, not on upstream USE.
+
+\section{Module Layout}
+\label{sec:org7c8eff9}
+The build is a single Maven reactor with three modules:
+
+\begin{center}
+\begin{tabular}{lp{10cm}}
+Module & Contains\\[0pt]
+\hline
+\texttt{use-core} & Grammars, parser, AST, the M-model (classes/associations/etc.), the compiler and system-state engine\\[0pt]
+\texttt{use-gui} & The Swing GUI, the interactive shell, and the \texttt{Main} entry point\\[0pt]
+\texttt{use-assembly} & Packages the other two, plus scripts and bundled examples, into a runnable distribution\\[0pt]
+\end{tabular}
+\end{center}
+
+Chapters \ref{sec:org92b8b93} onward go into this layout in much more
+detail; this chapter only covers enough to build and run the system.
+
+\section{Building with Maven}
+\label{sec:orgab5016f}
+From the repository root:
+
+\begin{lstlisting}[language=ShellSession,label= ,caption= ,captionpos=b,numbers=none]
+mvn clean package
+\end{lstlisting}
+
+Maven's reactor builds \texttt{use-core}, then \texttt{use-gui}, then
+\texttt{use-assembly}, in that order, in a single invocation -- there is no
+separate per-module build step to run by hand.
+
+\begin{manualnote}
+\texttt{mvn package} runs the unit test suite (via Surefire) as part of the
+build; a failing test fails the build. To also run the slower
+integration tests (Failsafe, classes named \texttt{*IT}, e.g. GUI smoke
+tests), use \texttt{mvn verify} instead -- this is what CI runs.
+\end{manualnote}
+
+\section{Build Artifacts}
+\label{sec:orgffd822d}
+After a successful build:
+
+\begin{itemize}
+\item \texttt{use-core/target/*.jar} -- the compiler/engine as a library.
+\item \texttt{use-gui/target/use-gui.jar} -- a single runnable jar with all
+dependencies bundled and a manifest \texttt{Main-Class} of
+\texttt{org.tzi.use.main.Main}. This is the jar Chapter
+\ref{sec:orgfe2e8a9} runs directly.
+\item \texttt{use-assembly/target/use-7.1.1.tar.gz} and \texttt{.zip} -- a full
+distributable archive: a \texttt{bin/} launcher script, \texttt{lib/use-gui.jar},
+bundled OCL extensions, plugin jars, and the example models shipped
+with the project.
+\end{itemize}
+
+The version number in the assembly's filename tracks the project's
+\texttt{pom.xml} version (\texttt{7.1.1} at the time of writing); it will differ if
+that version has moved on since.
+\chapter{Running the System}
+\label{sec:orgfe2e8a9}
+\section{Running the Assembled Distribution}
+\label{sec:org6b0e5f2}
+Unpack \texttt{use-assembly/target/use-7.1.1.tar.gz} (or the \texttt{.zip}) and run
+its launcher script:
+
+\begin{lstlisting}[language=ShellSession,label= ,caption= ,captionpos=b,numbers=none]
+tar xzf use-7.1.1.tar.gz
+cd use-7.1.1
+bin/use
+\end{lstlisting}
+
+The script resolves its own location, points at
+\texttt{lib/use-gui.jar} next to it, and forwards any arguments you give it
+verbatim to that jar (\texttt{bin/use [options] [spec\_file] [cmd\_file]},
+covered below).
+
+\section{Running Directly with \texttt{java -jar}}
+\label{sec:org45ede65}
+Without unpacking a distribution, the freshly built jar runs on its
+own:
+
+\begin{lstlisting}[language=ShellSession,label= ,caption= ,captionpos=b,numbers=none]
+java -jar use-gui/target/use-gui.jar
+\end{lstlisting}
+
+This is the same jar \texttt{bin/use} wraps, so every option below behaves
+identically either way.
+
+\section{Double-Clicking the Jar}
+\label{sec:orgd2d97d8}
+\texttt{use-gui.jar} carries a manifest \texttt{Main-Class}, so on a system where
+\texttt{.jar} files are associated with a Java launcher (typically the case
+on Windows and macOS out of the box; Linux desktop environments vary
+and often need that association set up manually) double-clicking it
+launches the GUI directly, with no arguments -- equivalent to running
+\texttt{java -jar use-gui.jar} with no \texttt{spec\_file}. Passing command-line
+options or a spec file to open on startup requires an actual
+command-line invocation; double-clicking cannot supply either.
+
+\section{Command-Line Options}
+\label{sec:org1be0851}
+\index{command-line options}
+
+The full usage message (\texttt{java -jar use-gui.jar -h}):
+
+\begin{verbatim}
+usage: use [options] [spec_file] [cmd_file]
+
+options:
+  -c            compile only
+  -cp           compile and print specification
+  -disableCollectShorthand
+                flag use of OCL shorthand notation as error
+  -oclAnyCollectionsChecks:W
+                (W)arn|(E)rror|(I)gnore
+  -extendedTypeSystemChecks:W
+                (W)arn|(E)rror|(I)gnore
+  -implicitTypes  Implicit variable typing in operations
+  -nogui        do not use GUI
+  -noplugins    do not use plugins
+  -h            print help
+  -H=path       home of use installation
+  -nr           suppress warnings about missing readline library
+  -q            reads spec_file, executes cmd_file, and checks constraints
+                exit code is 1 if constraints fail, otherwise 0
+  -qv           like -q but with verbose output of constraint check
+  -v            print verbose messages
+  -vt           print verbose messages with time info
+  -V            print version info and exit
+
+spec_file:      file containing a USE specification
+cmd_file:       script file containing commands (will be executed on startup)
+
+diagnostics:
+  -debug        print lots of messages
+  -p            print stack traces on errors
+  -t            testing mode (less user-centric output)
+\end{verbatim}
+
+The ones you will reach for most as a new user are \texttt{-nogui} (run
+headless), \texttt{-v} (see what's happening during a slow compile), \texttt{-q} /
+\texttt{-qv} (batch-check a model and get a process exit code -- useful for
+scripting or CI), and \texttt{-h} / \texttt{-V}. The \texttt{diagnostics} group and
+\texttt{-disableCollectShorthand}, \texttt{-oclAnyCollectionsChecks}, and
+\texttt{-extendedTypeSystemChecks} are aimed more at people working on the
+compiler itself (Part \ref{sec:org745982f}) than at someone writing
+models.
+
+\section{The Shell Runs Underneath the GUI, Too}
+\label{sec:org7afd954}
+\index{shell!relationship to the GUI}
+
+\texttt{-nogui} does not disable the interactive shell -- it only suppresses
+the window. Looking at how startup actually proceeds: if a
+\texttt{spec\_file} is given, it is compiled and a system state is created
+\textbf{before} the GUI or shell start; then, unconditionally, a shell thread
+is started; the GUI window is created only if \texttt{-nogui} was not passed.
+The GUI is a window wrapped around the same underlying engine the
+shell drives -- not a separate mode. Chapter
+\ref{sec:org66d4965} covers the shell's own command
+language in full.
+
+\section{Opening a Specification: Four Entry Points}
+\label{sec:orgf62dfcf}
+\index{opening a specification (GUI)}
+
+The GUI's File menu offers four distinct ``Open\ldots{}'' actions, and they
+are \textbf{not} content-sniffed: each parses its input with a different
+grammar entry point, and you must pick the one matching what you
+actually wrote.
+
+\begin{center}
+\begin{tabular}{lp{9cm}}
+Action & Parses\\[0pt]
+\hline
+Open specification\ldots{} & A plain, single \texttt{model} (Part \ref{sec:org2c3ff8a})\\[0pt]
+Open multi specification\ldots{} & Several ordinary models glued by \texttt{inter-*} sections, no levels\\[0pt]
+Open multi level specification\ldots{} & An \texttt{MLM} file: levels, clabjects, mediators (Part \ref{sec:orga1bec65})\\[0pt]
+Open CatUSE specification\ldots{} & A CatUSE/CatMLM file (Part \ref{sec:orge58ddb4})\\[0pt]
+\end{tabular}
+\end{center}
+
+Opening a file with the wrong action produces a parse error, not a
+silent misinterpretation -- if in doubt, the file's own leading
+keyword (\texttt{model}, \texttt{multi\_model}, \texttt{MLM}, or \texttt{category} / \texttt{class} at
+the top level) tells you which one it is.
+
+\section{Loading a Specification from the Command Line}
+\label{sec:org1360463}
+The command line has no separate ``which grammar'' switch -- \texttt{spec\_file}
+is compiled with the entry point matching what a \texttt{-nogui} batch run
+needs, inferred the same way as the table above from the file's own
+syntax. A typical scripted check:
+
+\begin{lstlisting}[language=ShellSession,label= ,caption= ,captionpos=b,numbers=none]
+java -jar use-gui.jar -nogui -q myModel.use myChecks.cmd
+\end{lstlisting}
+
+\texttt{myChecks.cmd} runs on startup against the freshly loaded model; the
+process exits \texttt{1} if any constraint failed, \texttt{0} otherwise -- suitable
+for a CI step that should fail the build on a broken model.
+
+\section{A Quick Sanity Check}
+\label{sec:org4b27450}
+To confirm the build actually works end to end, try opening one of the
+worked examples that ship in the repository's own \texttt{examples/}
+directory, e.g. \texttt{examples/USE/Vehicle.use}, with ``Open
+specification\ldots{}''. Chapter \ref{sec:orgd9cc398} walks through
+a small model like this one in full, from writing it to checking its
+first invariant.
+\chapter{A Quickstart Tutorial}
+\label{sec:orgd9cc398}
+This chapter is a placeholder.
+\part{Modeling in Plain USE}
+\label{sec:org2c3ff8a}
+\chapter{Class Diagrams}
+\label{sec:org145cbce}
+This chapter is a placeholder.
+\chapter{OCL Constraints}
+\label{sec:org68ceb0a}
+This chapter is a placeholder.
+\chapter{The OCL Standard Library}
+\label{sec:org2d77302}
+This chapter is a placeholder.
+\chapter{System States and the Shell}
+\label{sec:org66d4965}
+This chapter is a placeholder.
+\chapter{Validating Specifications}
+\label{sec:orgf947642}
+This chapter is a placeholder.
+\chapter{The Graphical User Interface}
+\label{sec:org549683a}
+This chapter is a placeholder.
+\chapter{Model Unit Tests}
+\label{sec:org82d72ae}
+This chapter is a placeholder.
+\part{Multi-Level Modeling with MLM-USE}
+\label{sec:orga1bec65}
+\chapter{Concepts}
+\label{sec:orga4c021d}
+This chapter is a placeholder.
+\chapter{MLM-USE Syntax in Detail}
+\label{sec:org56cf687}
+This chapter is a placeholder.
+\chapter{Multi-Level Shell Commands}
+\label{sec:org8c526d9}
+This chapter is a placeholder.
+\chapter{Worked Examples}
+\label{sec:org0a95039}
+This chapter is a placeholder.
+\part{CatUSE and CatMLM}
+\label{sec:orge58ddb4}
+\chapter{Motivation}
+\label{sec:orge6bfe96}
+This chapter is a placeholder.
+\chapter{CatMLM Syntax in Detail}
+\label{sec:org06db68c}
+This chapter is a placeholder.
+\chapter{Known Expressiveness Gaps}
+\label{sec:org63541d4}
+This chapter is a placeholder.
+\chapter{Worked Examples}
+\label{sec:orgab622e4}
+This chapter is a placeholder.
+\chapter{The CatUSE-to-\LaTeX{} Study Tool}
+\label{sec:orgb931df4}
+This chapter is a placeholder.
+\part{Extending the Implementation}
+\label{sec:org745982f}
+\chapter{Codebase Tour}
+\label{sec:org92b8b93}
+This chapter is a placeholder.
+\chapter{The Grammar and Parser}
+\label{sec:org96052cc}
+This chapter is a placeholder.
+\chapter{AST and Compilation Pipeline}
+\label{sec:orgb6762f1}
+This chapter is a placeholder.
+\chapter{The Core M-Model}
+\label{sec:org82be8e7}
+This chapter is a placeholder.
+\chapter{The Multi-Model and Multi-Level-Model Classes}
+\label{sec:org1ad312f}
+This chapter is a placeholder.
+\chapter{Flattening and Rendering}
+\label{sec:org4845d5d}
+This chapter is a placeholder.
+\chapter{Testing the Compiler}
+\label{sec:orga228bfe}
+This chapter is a placeholder.
+\chapter{Releasing a New Version and Writing Plugins}
+\label{sec:org7e48434}
+This chapter is a placeholder.
+\part{History}
+\label{sec:orgc5ae712}
+\chapter{History of USE}
+\label{sec:orgc92fa29}
+This chapter is a placeholder.
+\chapter{History of the MLM-USE/CatUSE Fork}
+\label{sec:orga2d4c2e}
+This chapter is a placeholder.
+
+\appendix
+
+\part{Appendices}
+\label{sec:org4e718de}
+\chapter{The USE Grammar}
+\label{sec:orgd28d585}
+The base USE language grammar (classes, associations, OCL constraints,
+SOIL statements), with no multi-level-modeling and no CatMLM extensions.
+Reproduced verbatim from \texttt{USE.ebnf} at the repository root, which is
+generated/maintained directly from the actual grammar sources
+(\texttt{USEBase.gpart}, \texttt{OCLBase.gpart}, \texttt{SoilBase.gpart},
+\texttt{OCLLexerRules.gpart}) rather than transcribed by hand, so this appendix
+can never drift from the real, compiled grammar.
+
+\begin{lstlisting}[language=EBNF,label= ,caption= ,captionpos=b,numbers=none]
+================================================================================
+USE Language Grammar — Context-Free Grammar (EBNF)
+================================================================================
+This is the BASE layer: the classic, single-level USE language (classes,
+associations, OCL constraints, SOIL statements) as it stands in this fork
+today -- with NO multi-level-modeling and NO CatMLM extensions. It is one
+of three layered EBNF files describing this fork's composed grammar:
+
+    USE.ebnf       (this file)  -- the base language, standalone
+    MLM-USE.ebnf                -- the DELTA that BGU's multi-level-modeling
+                                    extension (MLM, clabject, mediator,
+                                    assoclink) adds on top of this file
+    CatMLM.ebnf                 -- the DELTA that the CatMLM/"CatUSE" front-
+                                    end syntax sugar adds on top of MLM-USE
+
+Each delta file only lists rules that are new or changed at that layer;
+anything not mentioned there is reused unchanged from the layer(s) below.
+
+Source: derived from use-core/src/main/resources/grammars/base/USEBase.gpart
++ OCLBase.gpart + SoilBase.gpart + OCLLexerRules.gpart, with the
+multi-level-modeling rules (multi_level_model, mediator, clabject,
+assoclink, and the "roles" contextual keyword) excluded -- those are
+documented in MLM-USE.ebnf instead. See that file's header for why they
+live in this same physical .gpart file despite being a separate layer
+conceptually.
+
+This file is a *pure* CFG: all embedded Java semantic actions, AST-builder
+calls, @init blocks and ANTLR "returns [...]" clauses have been stripped
+out, leaving only the production rules. Notation:
+
+    ::=       "is defined as"
+    |         alternation
+    [ x ]     x is optional
+    { x }     x may repeat zero or more times
+    { x }+    x may repeat one or more times
+    'x'       literal terminal text
+    UPPERCASE reference to a lexical token (defined in the LEXICAL GRAMMAR
+              section at the end)
+    (* ... *) comment
+
+Entry points (which rule the parser starts from depends on what kind of
+spec is being parsed):
+    model                -- a single classic USE class-diagram specification
+    multi_model          -- a file containing several 'model' blocks plus
+                            inter-model associations/constraints (this is
+                            a base-language feature: no clabjects, no
+                            mediators, no levels -- just several ordinary
+                            models glued by inter-* declarations)
+    expressionOnly        -- parsing a bare OCL expression (e.g. in the shell)
+    typeOnly              -- parsing a bare type
+    statOnly              -- parsing a bare SOIL statement
+
+Note: 'multi_level_model' (the "MLM ..." entry point) is NOT part of this
+file -- it's MLM-USE.ebnf's entry point, defined on top of multi_model_core
+below (see that file).
+
+================================================================================
+SECTION 1 — CORE MODEL GRAMMAR
+================================================================================
+
+(* ---- Multi-model (several ordinary models + inter-model glue) ---- *)
+
+multi_model ::= multi_model_core EOF
+
+multi_model_core ::= [ 'multi_model' IDENT ]
+                      internal_model { internal_model }
+                      [ 'inter-enums'        { enumTypeDefinition } ]
+                      [ 'inter-classes'      { interGeneralClassifierDefinition } ]
+                      [ 'inter-associations' { interAssociationDefinition } ]
+                      [ 'inter-constraints'  { interInvariant | interPrePost } ]
+
+(* multi_level_model (MLM-USE.ebnf) wraps this same rule, unchanged, with
+   a leading "MLM" IDENT and a trailing sequence of mediators. *)
+
+interGeneralClassifierDefinition ::= annotationSet [ 'abstract' ]
+        ( classDefinition
+        | interAssociationClassDefinition
+        | signalDefinition )
+
+interAssociationClassDefinition ::= ('associationClass' | 'associationclass') IDENT
+        [ '<' idList ]
+        [ 'between' interAssociationEnd { interAssociationEnd }+ ]
+        [ 'attributes'   { attributeDefinition } ]
+        [ 'operations'   { operationDefinition } ]
+        [ 'constraints'  { invariantClause } ]
+        [ 'statemachines' { stateMachine } ]
+        [ 'aggregation' | 'composition' ]
+        'end'
+
+interAssociationDefinition ::= annotationSet
+        ('association' | 'aggregation' | 'composition') IDENT
+        'between' interAssociationEnd { interAssociationEnd }+
+        'end'
+
+interAssociationEnd ::= annotationSet
+        ( (IDENT '@' IDENT) | IDENT ) '[' multiplicity ']'
+        [ 'role' IDENT ]
+        { 'ordered'
+        | 'subsets' IDENT
+        | 'union'
+        | 'redefines' IDENT
+        | ('derived' | 'derive') [ '(' elemVarsDeclaration ')' ] '=' expression
+        | 'qualifier' paramList
+        }
+        [ ';' ]
+
+interInvariant ::= 'context'
+        [ IDENT { ',' IDENT } ':' ]
+        (multiType | simpleType)
+        { invariantClause }
+
+interPrePost ::= 'context'
+        ( (IDENT '::' IDENT paramList [ ':' type ])
+        | (multiType '::' IDENT paramList [ ':' type ]) )
+        { prePostClause }+
+
+(* ---- Single classic USE model ---- *)
+
+model ::= internal_model EOF
+
+internal_model ::= annotationSet 'model' IDENT
+        { generalClassifierDefinition
+        | associationDefinition
+        | ( 'constraints' { invariant | prePost } )
+        | enumTypeDefinition
+        }
+
+enumTypeDefinition ::= annotationSet 'enum' IDENT '{' idList '}' [ ';' ]
+
+dataTypeDefinition ::= 'dataType' IDENT
+        [ '<' idList ]
+        [ 'operations'  { operationDefinition } ]
+        [ 'constraints' { invariantClause } ]
+        'end'
+
+generalClassifierDefinition ::= annotationSet [ 'abstract' ]
+        ( classDefinition
+        | dataTypeDefinition
+        | associationClassDefinition
+        | signalDefinition )
+
+classDefinition ::= 'class' IDENT
+        [ '<' idList ]
+        [ 'attributes'    { attributeDefinition } ]
+        [ 'operations'    { operationDefinition } ]
+        [ 'constraints'   { invariantClause } ]
+        [ 'statemachines' { stateMachine } ]
+        'end'
+
+associationClassDefinition ::= ('associationClass' | 'associationclass') IDENT
+        [ '<' idList ]
+        [ 'between' associationEnd { associationEnd }+ ]
+        [ 'attributes'    { attributeDefinition } ]
+        [ 'operations'    { operationDefinition } ]
+        [ 'constraints'   { invariantClause } ]
+        [ 'statemachines' { stateMachine } ]
+        [ 'aggregation' | 'composition' ]
+        'end'
+
+attributeDefinition ::= annotationSet IDENT ':' type
+        [ ( (('derive'|'derived') (':'|'=') expression)
+          | ('init' (':'|'=') expression) ) ]
+        [ ';' ]
+
+operationDefinition ::= annotationSet IDENT paramList superParamList
+        [ ':' type ]
+        [ ('=' expression) | blockStat ]
+        { prePostClause }
+        [ ';' ]
+
+(* superParamList: an optional second, plain parenthesized identifier list
+   right after an operation's normal parameter list, used to mark which
+   parameters an operation named after its own classifier (a constructor)
+   forwards to a super-classifier rather than storing as its own attribute.
+   Independent of multi-level modeling -- applies to any classifier. *)
+superParamList ::= [ '(' [ IDENT { ',' IDENT } ] ')' ]
+
+associationDefinition ::= annotationSet
+        ('association' | 'aggregation' | 'composition') IDENT
+        'between' associationEnd { associationEnd }+
+        'end'
+
+associationEnd ::= annotationSet IDENT '[' multiplicity ']'
+        [ 'role' IDENT ]
+        { 'ordered'
+        | 'subsets' IDENT
+        | 'union'
+        | 'redefines' IDENT
+        | ('derived' | 'derive') [ '(' elemVarsDeclaration ')' ] '=' expression
+        | 'qualifier' paramList
+        }
+        [ ';' ]
+
+multiplicity      ::= multiplicityRange { ',' multiplicityRange }
+multiplicityRange ::= multiplicitySpec [ '..' multiplicitySpec ]
+multiplicitySpec  ::= INT | '*'
+
+invariant ::= 'context'
+        [ IDENT { ',' IDENT } ':' ]
+        simpleType
+        { invariantClause }
+
+invariantClause ::= annotationSet 'inv' [ IDENT ] ':' expression
+                   | 'existential' 'inv' [ IDENT ] ':' expression
+
+prePost ::= 'context' IDENT '::' IDENT paramList [ ':' type ]
+            { prePostClause }+
+
+prePostClause ::= annotationSet ('pre' | 'post') [ IDENT ] ':' expression
+
+annotationSet    ::= { annotation }
+annotation       ::= '@' IDENT '(' annotationValues ')'
+annotationValues ::= [ annotationValue ] { ',' annotationValue }
+annotationValue  ::= IDENT '=' NON_OCL_STRING
+
+stateMachine ::= 'psm' IDENT
+        'states'      { stateDefinition }+
+        'transitions' { transitionDefinition }+
+        'end'
+
+stateDefinition ::= IDENT [ ':' IDENT ] [ '[' expression ']' ]
+
+transitionDefinition ::= IDENT '->' IDENT
+        [ '{' [ '[' expression ']' ]
+              ( event | IDENT '(' [ paramList ] ')' )
+              [ '[' expression ']' ]
+          '}' ]
+
+event ::= 'create'
+
+signalDefinition ::= 'signal' IDENT
+        [ '<' idList ]
+        [ 'attributes'  { attributeDefinition } ]
+        [ 'constraints' { invariantClause } ]
+        'end'
+
+(* ---- Contextual ("soft") keywords ----
+   The following are NOT reserved words at the lexer level: each is an
+   ordinary IDENT token that is only treated as a keyword when a semantic
+   predicate confirms its exact spelling at that grammar position. This
+   lets 'union', 'role', 'association', 'aggregation', 'composition',
+   'dataType', 'class', 'signal', 'derived', 'derive', 'init', and
+   'qualifier' remain usable as ordinary identifiers elsewhere (e.g. as a
+   class or attribute name) without being reserved everywhere. MLM-USE.ebnf
+   and CatMLM.ebnf each add their own such keywords, scoped to their own
+   grammar positions only -- see those files. *)
+
+keyUnion       ::= IDENT   (* text must equal "union" *)
+keyAssociation ::= IDENT   (* text must equal "association" *)
+keyRole        ::= IDENT   (* text must equal "role" *)
+keyComposition ::= IDENT   (* text must equal "composition" *)
+keyAggregation ::= IDENT   (* text must equal "aggregation" *)
+keyDataType    ::= IDENT   (* text must equal "dataType" *)
+keyClass       ::= IDENT   (* text must equal "class" *)
+keySignal      ::= IDENT   (* text must equal "signal" *)
+keyDerived     ::= IDENT   (* text must equal "derived" *)
+keyDerive      ::= IDENT   (* text must equal "derive" *)
+keyInit        ::= IDENT   (* text must equal "init" *)
+keyQualifier   ::= IDENT   (* text must equal "qualifier" *)
+
+================================================================================
+SECTION 2 — OCL EXPRESSION GRAMMAR
+================================================================================
+
+expressionOnly ::= expression EOF
+
+expression ::= { 'let' IDENT [ ':' type ] '=' expression
+                 { ',' IDENT [ ':' type ] '=' expression }
+                 'in' }
+               conditionalImpliesExpression
+
+paramList ::= '(' [ variableDeclaration { ',' variableDeclaration } ] ')'
+
+idList ::= IDENT { ',' IDENT }
+
+variableDeclaration ::= IDENT ':' type
+
+conditionalImpliesExpression ::= conditionalOrExpression    { 'implies' conditionalOrExpression }
+conditionalOrExpression      ::= conditionalXOrExpression   { 'or' conditionalXOrExpression }
+conditionalXOrExpression     ::= conditionalAndExpression   { 'xor' conditionalAndExpression }
+conditionalAndExpression     ::= equalityExpression         { 'and' equalityExpression }
+equalityExpression           ::= relationalExpression       { ('=' | '<>') relationalExpression }
+relationalExpression         ::= additiveExpression         { ('<' | '>' | '<=' | '>=') additiveExpression }
+additiveExpression            ::= multiplicativeExpression   { ('+' | '-') multiplicativeExpression }
+multiplicativeExpression      ::= unaryExpression             { ('*' | '/' | 'div') unaryExpression }
+
+unaryExpression ::= ('not' | '-' | '+') unaryExpression
+                   | postfixExpression
+
+postfixExpression ::= primaryExpression { ('.' | '->') propertyCall }
+
+primaryExpression ::= literal
+                     | objectReference
+                     | propertyCall
+                     | '(' expression ')'
+                     | ifExpression
+                     | IDENT '.' 'allInstances' [ '@' 'pre' ] [ '(' ')' ]
+                     | IDENT '@' IDENT '.' 'allInstances' [ '@' 'pre' ] [ '(' ')' ]
+                     | IDENT '.' 'byUseId' '(' expression ')' [ '@' 'pre' ]
+
+objectReference ::= '@' IDENT
+
+(* propertyCall dispatches on the identifier + following token:
+     - a recognized "query" name immediately followed by '(' -> queryExpression
+     - 'iterate'                                              -> iterateExpression
+     - 'oclIsInState' | 'oclInState'                           -> inStateExpression
+     - 'oclAsType' | 'oclIsKindOf' | 'oclIsTypeOf'
+       | 'selectByType' | 'selectByKind'                       -> typeExpression
+     - anything else                                           -> operationExpression
+   propertyCall carries the preceding expression (the navigation source, or
+   null at the start of an expression) and whether it was reached via '->'. *)
+
+propertyCall ::= queryExpression
+                | iterateExpression
+                | operationExpression
+                | typeExpression
+                | inStateExpression
+
+queryExpression ::= IDENT '(' [ elemVarsDeclaration '|' ] expression ')'
+        (* IDENT here must be one of the recognized query operator names,
+           e.g. select, reject, collect, exists, forAll, isUnique, sortedBy,
+           one, any, collectNested, ... *)
+
+iterateExpression ::= 'iterate' '('
+        elemVarsDeclaration ';'
+        variableInitialization '|'
+        expression
+        ')'
+
+operationExpression ::= IDENT
+        [ '[' expression { ',' expression } ']'
+          [ '[' expression { ',' expression } ']' ] ]
+        [ '@' 'pre' ]
+        [ '(' [ expression { ',' expression } ] ')' ]
+
+inStateExpression ::= ('oclIsInState' | 'oclInState') '(' IDENT ')'
+
+typeExpression ::= ('oclAsType' | 'oclIsKindOf' | 'oclIsTypeOf'
+                    | 'selectByType' | 'selectByKind') '(' type ')'
+
+elemVarsDeclaration ::= IDENT [ ':' type ] { ',' IDENT [ ':' type ] }
+
+variableInitialization ::= IDENT ':' type '=' expression
+
+ifExpression ::= 'if' expression 'then' expression 'else' expression 'endif'
+
+literal ::= 'true' | 'false'
+          | INT | REAL | STRING
+          | '#' IDENT
+          | IDENT '::' IDENT
+          | multiType '::' IDENT
+          | collectionLiteral
+          | emptyCollectionLiteral
+          | undefinedLiteral
+          | tupleLiteral
+          | '*'                          (* unlimited natural, e.g. in multiplicities *)
+
+collectionLiteral ::= ('Set' | 'Sequence' | 'Bag' | 'OrderedSet')
+        '{' [ collectionItem { ',' collectionItem } ] '}'
+
+collectionItem ::= expression [ '..' expression ]
+
+emptyCollectionLiteral ::= 'oclEmpty' '(' collectionType ')'
+                          | collectionType '{' '}'
+
+undefinedLiteral ::= 'oclUndefined' '(' type ')'
+                    | 'Undefined'
+                    | 'null' '(' type ')'
+                    | 'null'
+
+tupleLiteral ::= 'Tuple' '{' tupleItem { ',' tupleItem } '}'
+
+tupleItem ::= IDENT ( (':' type '=' expression) | ((':' | '=') expression) )
+
+type ::= simpleType | collectionType | tupleType | multiType
+
+typeOnly ::= type EOF
+
+simpleType ::= IDENT
+multiType  ::= IDENT '@' IDENT
+        (* multiType (Level@Name) is a base-language token shape reused
+           heavily by MLM-USE for fully-qualified names -- see MLM-USE.ebnf. *)
+
+collectionType ::= ('Collection' | 'Set' | 'Sequence' | 'Bag' | 'OrderedSet')
+                    '(' type ')'
+
+tupleType ::= 'Tuple' '(' tuplePart { ',' tuplePart } ')'
+
+tuplePart ::= IDENT ':' type
+
+================================================================================
+SECTION 3 — SOIL STATEMENT GRAMMAR (object/link manipulation language)
+================================================================================
+
+statOnly ::= stat EOF
+
+stat ::= singleStat { ';' singleStat }
+
+singleStat ::= emptyStat
+             | statStartingWithExpr
+             | varAssignStat
+             | objCreateStat
+             | objDestroyStat
+             | lnkInsStat
+             | lnkDelStat
+             | condExStat
+             | iterStat
+             | whileStat
+             | blockStat
+
+emptyStat ::= (* empty *)
+
+(* An expression-statement, optionally followed by an attribute
+   assignment on that expression (i.e. distinguishes a bare operation
+   call from  "expr.attr := rvalue"). *)
+statStartingWithExpr ::= inSoilExpression [ attAssignStat ]
+
+varAssignStat ::= IDENT ':=' rValue
+
+attAssignStat ::= '.' IDENT ':=' rValue
+
+objCreateStat ::= 'new' simpleType
+        [ '(' [ inSoilExpression ] ')' ]
+        [ 'between' '(' rValListMin2WithOptionalQualifiers ')' ]
+
+objDestroyStat ::= 'destroy' exprListMin1
+
+lnkInsStat ::= 'insert' '(' rValListMin2WithOptionalQualifiers ')' 'into'
+               ( IDENT | IDENT '@' IDENT )
+
+rValListMin2WithOptionalQualifiers ::=
+        rValue [ '{' rValList '}' ]
+        ',' rValue [ '{' rValList '}' ]
+        { ',' rValue [ '{' rValList '}' ] }
+
+lnkDelStat ::= 'delete' '(' rValListMin2WithOptionalQualifiers ')' 'from' IDENT
+
+condExStat ::= 'if' inSoilExpression 'then' statOrImplicitBlock
+               [ 'else' statOrImplicitBlock ]
+               'end'
+
+iterStat ::= 'for' IDENT 'in' inSoilExpression 'do' statOrImplicitBlock 'end'
+
+whileStat ::= 'while' inSoilExpression 'do' statOrImplicitBlock 'end'
+
+blockStat ::= 'begin'
+        [ 'declare' variableDeclaration { ',' variableDeclaration } ';' ]
+        stat
+        'end'
+
+implicitBlockStat ::= 'declare' variableDeclaration { ',' variableDeclaration } ';' stat
+
+statOrImplicitBlock ::= stat | implicitBlockStat
+
+rValue ::= inSoilExpression | objCreateStat
+
+rValList     ::= [ rValListMin1 ]
+rValListMin1 ::= rValue { ',' rValue }
+rValListMin2 ::= rValue ',' rValue { ',' rValue }
+
+inSoilExpression ::= expression
+
+exprList     ::= [ exprListMin1 ]
+exprListMin1 ::= inSoilExpression { ',' inSoilExpression }
+exprListMin2 ::= inSoilExpression ',' inSoilExpression { ',' inSoilExpression }
+
+identList     ::= [ identListMin1 ]
+identListMin1 ::= IDENT { ',' IDENT }
+
+================================================================================
+SECTION 4 — LEXICAL GRAMMAR (tokens)
+================================================================================
+Shared verbatim by all three layers (USE, MLM-USE, CatMLM) -- none of them
+add or change a token definition.
+
+(* Whitespace / comments -- discarded (sent to the HIDDEN channel) *)
+WS          ::= ' ' | '\t' | '\f' | NEWLINE
+SL_COMMENT  ::= ('//' | '--') { any char except NEWLINE }
+ML_COMMENT  ::= '/*' { any char, non-greedy } '*/'
+NEWLINE     ::= '\r\n' | '\r' | '\n'
+
+(* Punctuation / operator tokens *)
+ARROW         ::= '->'
+AT            ::= '@'
+BAR           ::= '|'
+COLON         ::= ':'
+COLON_COLON   ::= '::'
+COLON_EQUAL   ::= ':='
+COMMA         ::= ','
+DOT           ::= '.'
+DOTDOT        ::= '..'
+EQUAL         ::= '='
+GREATER       ::= '>'
+GREATER_EQUAL ::= '>='
+HASH          ::= '#'
+LBRACE        ::= '{'
+LBRACK        ::= '['
+LESS          ::= '<'
+LESS_EQUAL    ::= '<='
+LPAREN        ::= '('
+MINUS         ::= '-'
+NOT_EQUAL     ::= '<>'
+PLUS          ::= '+'
+RBRACE        ::= '}'
+RBRACK        ::= ']'
+RPAREN        ::= ')'
+SEMI          ::= ';'
+SLASH         ::= '/'
+STAR          ::= '*'
+
+(* Numbers *)
+INT             ::= digit { digit }                                    (* digit = '0'..'9' *)
+REAL            ::= INT '.' INT [ ('e'|'E') ['+'|'-'] INT ]
+                   | INT ('e'|'E') ['+'|'-'] INT
+RANGE_OR_INT    ::= INT (retyped to INT if followed by '..', else to REAL if it forms a REAL, else stays INT)
+
+(* Strings *)
+STRING          ::= "'" { any char except "'" or '\' | ESC } "'"           (* OCL string literal *)
+NON_OCL_STRING  ::= '"' { any char except '"' or '\' | ESC } '"'           (* used only in annotation values *)
+ESC             ::= '\' ( 'n'|'r'|'t'|'b'|'f'|'"'|"'"|'\'
+                         | 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+                         | '0'..'3' [ '0'..'7' [ '0'..'7' ] ]
+                         | '4'..'7' [ '0'..'7' ] )
+HEX_DIGIT       ::= '0'..'9' | 'A'..'F' | 'a'..'f'
+
+(* Identifiers *)
+IDENT ::= ('$' | letter | '_') { letter | '_' | digit }
+        (* letter = 'a'..'z' | 'A'..'Z' *)
+        (* After matching, ANTLR's literal table reclassifies IDENT tokens
+           whose text matches a quoted keyword used elsewhere in the
+           grammar (e.g. 'class', 'model', 'context', 'inv', 'let', ...)
+           as that keyword token instead. The contextual "soft" keywords
+           listed above (union, role, association, ...) are NOT handled
+           this way -- they stay IDENT and are matched only via semantic
+           predicate at the point of use. *)
+
+================================================================================
+NOTES
+================================================================================
+1. This is a *pure* CFG view of the grammar for reading/reasoning purposes.
+   The real ANTLR3 grammar (use-core/target/grammars/USE.g, regenerated on
+   every `mvn compile`/`mvn package` from the .gpart sources) is not
+   equivalent to this file in the formal sense: it interleaves embedded
+   Java actions that build the AST as parsing proceeds, uses a few
+   syntactic-predicate lookaheads (e.g. `(statStartingWithExpr)=>`,
+   `(COLON type EQUAL)=>`) to resolve local ambiguities that a plain CFG
+   can't express, and relies on semantic predicates for the contextual
+   keywords noted above. Treat this file as documentation, not as
+   something you could feed straight into a parser generator.
+
+2. This file, together with MLM-USE.ebnf and CatMLM.ebnf, reconstructs the
+   full USE.g composition (USEBase.gpart + OCLBase.gpart + SoilBase.gpart +
+   OCLLexerRules.gpart, layered with the multi-level and CatMLM additions)
+   -- the grammar for ordinary .use / .mlm specification files, not the
+   interactive shell-command grammar (a separate, sixth fragment,
+   ShellCommandBase.gpart, builds that one instead).
+\end{lstlisting}
+\chapter{The MLM-USE Grammar}
+\label{sec:org32606a9}
+The multi-level-modeling extension, as a \textbf{delta} on top of the USE
+grammar in Appendix \ref{sec:orgd28d585}: only rules that are new or
+changed at this layer are listed. Reproduced verbatim from
+\texttt{MLM-USE.ebnf} at the repository root.
+
+\begin{lstlisting}[language=EBNF,label= ,caption= ,captionpos=b,numbers=none]
+================================================================================
+MLM-USE Grammar — DELTA over USE.ebnf (EBNF)
+================================================================================
+This file lists ONLY what the BGU multi-level-modeling extension (clabjects,
+mediators, powerclasses, assoclinks) adds on top of the base language in
+USE.ebnf. Anything not mentioned here -- class/association/constraint/OCL/
+SOIL syntax, the "model"/"multi_model" entry points, etc. -- is exactly the
+grammar in USE.ebnf, unchanged.
+
+Notation is the same as USE.ebnf:
+    ::=       "is defined as"        |    alternation
+    [ x ]     x is optional          { x }    x may repeat zero or more times
+    { x }+    x may repeat one or more times
+    'x'       literal terminal text
+    UPPERCASE reference to a lexical token (see USE.ebnf Section 4)
+    (* ... *) comment
+
+--------------------------------------------------------------------------------
+Where this actually lives (important, and the reason the old merged
+USE-grammar.ebnf file was misleading about it): despite the project's
+directory layout suggesting a clean per-feature split --
+
+    use/USE.gpart              -- (its own header comment claims:) "multi-
+                                   level modeling additions (MLM, clabject,
+                                   mediator, assoclink) + core UML model
+                                   syntax"
+    base/USEBase.gpart         -- "core class/association/constraint syntax"
+
+-- use/USE.gpart in fact contains ONLY grammar boilerplate (package
+declarations, lexer error-handling members) and defines NO production
+rules at all. Every rule below is physically defined inside
+base/USEBase.gpart, interleaved with the base-language rules from
+USE.ebnf. Confirmed by diffing USEBase.gpart against its state at commit
+6106270f, the last commit before MLM work began (571a84bb, "Began
+implementing MLM, added parsing rules and AST classes") -- multi_level_
+model, mediator, clabject, and assoclink are a clean, self-contained
+insertion with no further changes anywhere else in the file since. This
+file corrects that attribution: everything below is the true MLM-USE
+delta, regardless of which physical .gpart file it happens to sit in.
+--------------------------------------------------------------------------------
+
+New entry point (alongside 'model' and 'multi_model' from USE.ebnf):
+    multi_level_model   -- a full multi-level model file (starts with 'MLM')
+
+================================================================================
+NEW RULES
+================================================================================
+
+multi_level_model ::= 'MLM' IDENT multi_model_core { mediator } EOF
+        (* multi_model_core is USE.ebnf's rule, reused completely unchanged
+           -- an MLM file is exactly "MLM <name>" followed by the same
+           several-models-plus-inter-* body multi_model already accepts,
+           followed by zero or more mediators. "MLM" here is a soft keyword
+           (keyMLM below), not a global reserved word -- see that section. *)
+
+mediator ::= 'mediator' IDENT '<' IDENT
+             { clabject | assoclink }
+             'end'
+        (* "mediator" is a soft keyword (keyMediator below). *)
+
+clabject ::= 'clabject' IDENT ':' IDENT
+             [ 'attributes' { (IDENT '->' IDENT) | ('~' IDENT) } ]
+             [ 'roles'      { '~' IDENT } ]
+             [ 'constraints' { '~' IDENT } ]
+             'end'
+        (* The child (IDENT before ':') instantiates the powerclass (IDENT
+           after ':') from the mediator's parent model. The three optional
+           sections cancel or rename inherited features: attribute renaming
+           (IDENT -> IDENT) or removal (~IDENT), role removal, and
+           constraint removal -- each by the powerclass's own feature name.
+           "clabject" is a soft keyword (keyClabject below); "roles" is too
+           (keyRoles below). *)
+
+assoclink ::= 'assoclink' IDENT ':' IDENT
+              (IDENT '->' IDENT)
+              (IDENT '->' IDENT)
+              'end'
+        (* An assoclink between two clabjects instantiates an association
+           between their two powerclasses; the two role-renaming pairs
+           bind the child association's two role names to the parent
+           association's two role names. "assoclink" is a soft keyword
+           (keyAssoclink below). *)
+
+================================================================================
+NEW CONTEXTUAL ("soft") KEYWORDS
+================================================================================
+keyMLM       ::= IDENT   (* text must equal "MLM"; matched only at the start
+                            of a multi_level_model *)
+keyMediator  ::= IDENT   (* text must equal "mediator"; matched only at a
+                            mediator block's header *)
+keyClabject  ::= IDENT   (* text must equal "clabject"; matched only at a
+                            clabject declaration's header *)
+keyAssoclink ::= IDENT   (* text must equal "assoclink"; matched only at an
+                            assoclink declaration's header *)
+keyRoles     ::= IDENT   (* text must equal "roles"; matched only inside the
+                            clabject rule's own "roles" section header above *)
+
+None of these five existed as soft keywords from the start. All five were
+originally written as bare ANTLR3 literals directly in these rules, which
+auto-promotes each one to a keyword reserved *everywhere* in its composed
+grammar -- not just inside the one multi-level-modeling section it actually
+belongs to. That silently broke any plain, non-MLM USE model that happened
+to use "roles", "MLM", "mediator", "clabject", or "assoclink" as an ordinary
+identifier (e.g. an OCL operation parameter, or an attribute name) -- "roles"
+was caught first, breaking use-gui's own ShellIT/t109.use integration
+fixture; the other four were found and fixed as a direct follow-up, confirmed
+empirically the same way (a plain model with an attribute named "clabject"
+failed to parse with "mismatched input 'clabject' expecting 'end'" before
+the fix). "MLM" and "clabject" were bare literals in CatMLM.gpart too,
+independently of USEBase.gpart -- since CatMLM is a separately-composed
+grammar with its own lexer, both files needed fixing; CatMLM.gpart's rules
+now reuse the keyMLM/keyClabject rules defined once here, the same way they
+already reused keyClass and keyAssociation from USE.ebnf. Fixed by
+introducing these five soft keywords, the same pattern USE.ebnf's base
+contextual keywords already use (keyRole, keyUnion, keyAssociation, ...):
+confirmed via an isolated git worktree that the "roles" instance of the bug
+predated any multi-level-modeling work and was purely a base-grammar defect
+introduced alongside the clabject rule.
+
+================================================================================
+NOTES
+================================================================================
+1. Every non-terminal referenced above but not defined here or reused
+   verbatim from USE.ebnf (IDENT, and the multi_model_core it wraps) comes
+   from USE.ebnf. multiType (IDENT '@' IDENT, i.e. "Level@Name") is USE.ebnf's
+   token shape but is where MLM-USE's fully-qualified names live at the
+   semantic level -- the grammar itself doesn't need a separate production
+   for it since ordinary type/simpleType references already parse it.
+
+2. As with USE.ebnf, this is a pure-CFG view for reading/reasoning; the real
+   grammar interleaves Java AST-builder actions (e.g. resolving a mediator's
+   parent model by name, not by declaration order -- a bug found and fixed
+   in this fork's Java layer, not visible at the grammar level at all).
+
+3. See CatMLM.ebnf for the front-end sugar layer built on top of this one --
+   CatMLM's "category"/"clabject" shorthand and cat* tags desugar, before
+   any of this grammar runs, into exactly the plain MLM-USE AST that parsing
+   the rules above would itself produce.
+\end{lstlisting}
+\chapter{The CatMLM Grammar}
+\label{sec:org2df123a}
+The CatMLM (``CatUSE'') front-end syntax sugar, as a \textbf{delta} on top of
+MLM-USE (Appendix \ref{sec:org32606a9}): CatMLM desugars into
+exactly the same AST that plain MLM-USE produces. Reproduced verbatim
+from \texttt{CatMLM.ebnf} at the repository root.
+
+\begin{lstlisting}[language=EBNF,label= ,caption= ,captionpos=b,numbers=none]
+================================================================================
+CatMLM ("CatUSE") Grammar — DELTA over MLM-USE.ebnf (EBNF)
+================================================================================
+This file lists ONLY what the CatMLM front-end -- the terser "category"/
+"clabject" surface syntax with cat* tags, informally called "CatUSE" -- adds
+on top of MLM-USE.ebnf. It is a separate, additive grammar: it changes
+nothing in USEBase.gpart/USE.ebnf/MLM-USE.ebnf, and everything downstream
+of parsing (MMultiLevelModel, well-definedness checking, the GUI, ...) has
+no notion that CatMLM exists at all. A CatMLM parse tree is *desugared*, in
+Java (USECompilerCatUSE.desugar), into the exact same ASTMultiLevelModel /
+ASTMediator / ASTClabject / ASTModel / ASTClass tree that parsing the
+equivalent plain MLM-USE.ebnf source would produce.
+
+Source: use-core/src/main/resources/grammars/catmlm/CatMLM.gpart, composed
+as CatMLM.gpart + USEBase.gpart + OCLBase.gpart + SoilBase.gpart +
+OCLLexerRules.gpart -- a genuinely separate ANTLR grammar/parser
+(CatUSEParser) from the one USE.ebnf/MLM-USE.ebnf describe, sharing only
+the reused-unchanged rules noted below.
+
+Notation is the same as USE.ebnf:
+    ::=       "is defined as"        |    alternation
+    [ x ]     x is optional          { x }    x may repeat zero or more times
+    { x }+    x may repeat one or more times
+    'x'       literal terminal text
+    UPPERCASE reference to a lexical token (see USE.ebnf Section 4)
+    (* ... *) comment
+
+New entry point:
+    catUSE_model   -- a full CatMLM file (also starts with 'MLM' IDENT --
+                      see the dispatch note below)
+
+Note on dispatch: catUSE_model and MLM-USE.ebnf's multi_level_model both
+start with the literal sequence 'MLM' IDENT, so a bare file is NOT
+self-describing -- there is no sniffing of file content to decide which
+grammar to parse it with. The tool chooses: the GUI has a separate "Open
+CatUSE specification..." action (MainWindow.ActionFileOpenCatUSESpec)
+distinct from its plain "Open MLM specification..." action, and
+USECompilerCatUSE.compileCatUSESpecification vs. the plain MLM compiler
+are two different entry points at the Java level.
+
+================================================================================
+NEW RULES
+================================================================================
+
+catUSE_model ::= 'MLM' IDENT { catLevel }+ EOF
+        (* "MLM" here is MLM-USE.ebnf's keyMLM soft keyword, reused
+           unchanged -- not redefined in this file, see below. *)
+
+catLevel ::= 'model' IDENT [ '<' IDENT ]
+             { catClassifierDefinition
+             | catAssociationDefinition
+             | catClabjectDefinition
+             | ( 'constraints' { catInvariant } )
+             }
+        (* Fuses what MLM-USE.ebnf splits across a separate 'model' block
+           (in multi_model_core) and a separate 'mediator' block: one
+           "model ID [< Parent]" section holds both the level's own
+           classifiers/associations/constraints AND its clabjects (which
+           desugar into the *parent* level's mediator). *)
+
+catClassifierDefinition ::= ( 'category' | 'class' ) IDENT
+        [ '<' catRefList ]
+        [ ':' catRefList ]
+        [ 'attributes'  { catAttributeDefinition } ]
+        [ 'constraints' { catInvariantClause } ]
+        'end'
+        (* "category X ... end" and "class X ... end" desugar to the exact
+           same AST class either way -- isCategory is purely a hint for a
+           human reader (and, incidentally, for the study tool's PlantUML
+           diagram stereotypes); it is never checked against anything and
+           decides nothing about the resulting model's semantics.
+
+           The ":" clause is Java-"implements"-style fusion of instantiation
+           onto the classifier's own header, e.g.:
+             category C2 < D : C3
+             attributes
+               seats: Integer
+             end
+           as an alternative to a separate catClabjectDefinition statement
+           for the same name. It desugars to exactly the same ASTCatClabject
+           a standalone "clabject C2 : C3 end" would produce, added to the
+           same level -- so the two spellings are sugar for each other, and
+           using both for the same class name is not an error: their
+           reference lists union (see the NOTES section on silent union). *)
+
+catRefList ::= IDENT
+             | '(' IDENT ',' IDENT { ',' IDENT } ')'
+        (* One bare identifier, or two-or-more wrapped in parentheses --
+           used for every class-name reference list in CatMLM: both
+           clauses of catClassifierDefinition above, and
+           catClabjectDefinition's powerclass list below. The grammar
+           itself has no ambiguity that requires the parentheses (":"
+           already unambiguously ends a preceding "<" list on its own,
+           and a standalone list never sits next to another one) -- this
+           is a readability convention, applied consistently everywhere
+           such a list can appear, not a parsing necessity. A single name
+           is never parenthesized: "(A)" is rejected, only "A" or
+           "(A, B, ...)" are valid. *)
+
+catAttributeDefinition ::= IDENT ':' type [ ';' 'catAtt' ] [ ';' ]
+        (* Reuses IDENT/COLON/type exactly like USE.ebnf's attributeDefinition;
+           only the optional trailing "catAtt" tag is new. A catAtt-tagged
+           attribute is automatically cancelled in every clabject that
+           instantiates this (or an inheriting) category. *)
+
+catInvariantClause ::= 'inv' [ IDENT ] ':' [ 'catConstr' ] expression
+        (* The "catConstr" tag sits between the colon and the expression.
+           A catConstr-tagged invariant is automatically cancelled in every
+           instantiating clabject, the same way catAtt cancels attributes. *)
+
+catInvariant ::= 'context'
+        [ IDENT { ',' IDENT } ':' ]
+        simpleType
+        { catInvariantClause }
+        (* Mirrors USE.ebnf's invariant rule exactly, just built from
+           catInvariantClause instead of invariantClause. *)
+
+catAssociationDefinition ::= ( 'catAssociation' | 'association' | 'aggregation' | 'composition' ) IDENT
+        'between' associationEnd { associationEnd }+
+        'end'
+        (* associationEnd is MLM-USE.ebnf/USE.ebnf's rule, reused unchanged.
+           A catAssociation-tagged association has its far-end role(s)
+           cancelled for any clabject instantiating the near end -- this is
+           what stops a clabject instantiating two powerclasses from ending
+           up with two different roles that happen to share a name. *)
+
+catClabjectDefinition ::= 'clabject'
+        [ IDENT '<' IDENT ';' ]
+        IDENT ':' catRefList
+        'end'
+        (* One declaration, N powerclasses, and an optional fused same-level
+           subclass edge, all collapsing to this single rule:
+             clabject C : A end
+             clabject C : (A, B) end
+             clabject E < D; E : B2 end
+           The first optional "IDENT < IDENT ;" is a same-level superclass
+           edge (like MLM-USE.ebnf's own "class X < Y"); the required
+           "IDENT : catRefList" lists the one-or-more powerclasses this
+           clabject instantiates (parenthesized if more than one -- see
+           catRefList above), desugaring to one plain MLM-USE
+           `clabject <name> : <powerclass>` per listed powerclass. No
+           keyword precedes the powerclass list -- see below. The leading
+           "clabject" is MLM-USE.ebnf's keyClabject soft keyword, reused
+           unchanged -- not redefined in this file, see below. *)
+
+================================================================================
+NEW CONTEXTUAL ("soft") KEYWORDS
+================================================================================
+keyCategory       ::= IDENT   (* text must equal "category"; matched only
+                                 in catClassifierDefinition, choosing between
+                                 "category ID ... end" and "class ID ... end" *)
+keyCatAtt         ::= IDENT   (* text must equal "catAtt" *)
+keyCatConstr      ::= IDENT   (* text must equal "catConstr" *)
+keyCatAssociation ::= IDENT   (* text must equal "catAssociation" *)
+
+(keyMLM and keyClabject, used above, are MLM-USE.ebnf's soft keywords --
+CatMLM.gpart reuses those rule definitions rather than declaring its own
+"MLM"/"clabject" literals a second time, which would have created the same
+"reserved everywhere in this composed grammar's lexer" problem independently
+of USEBase.gpart. This mirrors how catClassifierDefinition already reuses
+USE.ebnf's keyClass, and catAssociationDefinition reuses keyAssociation,
+keyAggregation, and keyComposition.)
+
+Note on "category" and catClabjectDefinition: an earlier version of this
+grammar also accepted an optional "category" hint immediately after the
+colon in catClabjectDefinition (i.e. "clabject C : category A, B end").
+It was removed: the "<" vs ":" already unambiguously distinguishes
+same-level generalization from cross-level instantiation, so the keyword
+added no information a reader didn't already have from the symbol choice
+-- and it was never actually checked against the named class's own
+declaration (a clabject could "instantiate" a plain "class", not just a
+"category", keyword or no keyword, both before and after this change).
+keyCategory today is used exclusively in catClassifierDefinition.
+
+================================================================================
+NOTES
+================================================================================
+1. Every non-terminal referenced above but not defined here -- type,
+   expression, simpleType, associationEnd -- is reused completely unchanged
+   from USE.ebnf/MLM-USE.ebnf. catRefList is CatMLM's own rule (defined
+   above): the base grammar's plain idList (a bare comma list, no
+   parentheses ever) is no longer used anywhere in CatMLM.gpart at all --
+   catRefList replaced its two former uses (catClassifierDefinition's "<"
+   list, catClabjectDefinition's ":" list) and is also used for the new
+   ":" clause on catClassifierDefinition.
+
+2. As with the other two files, this is a pure-CFG view for reading and
+   reasoning, not something to feed straight into a parser generator: the
+   real grammar's semantic actions build the desugared AST as parsing
+   proceeds (see USECompilerCatUSE.desugar's four translation rules), and
+   ANTLR's adaptive lookahead resolves a few local ambiguities a plain CFG
+   can't express -- for instance, a category or clabject literally named
+   "category" (or "catAtt", "role", etc.) still parses correctly as an
+   ordinary identifier wherever an IDENT is expected, backtracking off the
+   soft-keyword reading when it can't also complete a valid parse.
+
+3. Silent union, and a bug it uncovered: declaring the same class name's
+   instantiation or same-level superclassifiers via more than one route --
+   the fused ":"/"<" header on catClassifierDefinition, a separate
+   catClabjectDefinition statement, and/or that statement's own fused
+   "IDENT < IDENT ;" local-superclass prefix -- is not an error. All of
+   them contribute to the same union, by design: e.g. a classifier declared
+   with "category C2 < D : C3 end" and, elsewhere in the same level, a
+   separate "clabject C2 : C4 end" both apply to the one class C2, which
+   ends up instantiating both C3 and C4. Building this surfaced a genuine
+   pre-existing bug (not new in this change) in
+   ASTClassifier.addSuperClassifiers: it used to *replace*
+   (fSuperClassifiers = idList) rather than accumulate, so a class whose
+   same-level superclassifiers were set from two different declaration
+   sites would silently keep only whichever one ran last. Fixed to
+   accumulate instead -- safe for every base-grammar caller too, since none
+   of them ever call it more than once per classifier.
+\end{lstlisting}
+\chapter{Keyword Reference}
+\label{sec:org46d74f9}
+This chapter is a placeholder.
+\chapter{Shell Command Reference}
+\label{sec:orgbffd437}
+This chapter is a placeholder.
+
+\backmatter
+\bibliography{bib/references}
+\printindex
+\end{document}

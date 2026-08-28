@@ -1,0 +1,8 @@
+* Flattening and Rendering
+:PROPERTIES:
+:CUSTOM_ID: chap-flattening-and-rendering
+:END:
+
+# TODO: write this chapter.
+
+This chapter is a placeholder.

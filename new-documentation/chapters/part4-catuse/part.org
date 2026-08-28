@@ -1,0 +1,10 @@
+* CatUSE and CatMLM
+:PROPERTIES:
+:CUSTOM_ID: part-catuse
+:END:
+
+#+INCLUDE: "16-motivation.org" :minlevel 2
+#+INCLUDE: "17-catmlm-syntax.org" :minlevel 2
+#+INCLUDE: "18-expressiveness-gaps.org" :minlevel 2
+#+INCLUDE: "19-worked-examples-catmlm.org" :minlevel 2
+#+INCLUDE: "20-catuse-latex-study-tool.org" :minlevel 2

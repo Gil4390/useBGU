@@ -115,3 +115,16 @@ fabric.properties
 /use-core/target
 /use-gui/target
 /use-assembly/target
+
+### LaTeX build byproducts (new-documentation/'s org-to-PDF pipeline) ###
+new-documentation/*.aux
+new-documentation/*.log
+new-documentation/*.toc
+new-documentation/*.out
+new-documentation/*.fls
+new-documentation/*.fdb_latexmk
+new-documentation/*.blg
+new-documentation/*.ilg
+new-documentation/*.ind
+new-documentation/*.idx
+new-documentation/*.bbl

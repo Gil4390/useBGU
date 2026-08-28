@@ -1,0 +1,8 @@
+* Shell Command Reference
+:PROPERTIES:
+:CUSTOM_ID: chap-shell-command-reference
+:END:
+
+# TODO: write this chapter.
+
+This chapter is a placeholder.
