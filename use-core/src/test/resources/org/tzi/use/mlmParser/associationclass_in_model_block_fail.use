@@ -1,0 +1,35 @@
+MLM associationclass_in_model_block_fail
+
+-- Regression test for the crash documented in known-issues.org, Issue 1:
+-- an `associationclass' declared inside an ordinary `model ... end' block
+-- of a multi-level model must be rejected with a clear error, not crash
+-- (ClassCastException) or silently corrupt the resulting MMultiLevelModel.
+-- Compare associationclass_in_inter_classes.use, where the same construct
+-- placed in `inter-classes' is expected to succeed.
+
+model M2
+
+class Thing
+end
+
+associationclass Edge
+between
+  Thing[*] role a
+  Thing[*] role b
+attributes
+  w : Integer
+end
+
+model M1
+
+class Widget
+end
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject Widget : Thing
+end
+end

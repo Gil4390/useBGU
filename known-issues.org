@@ -1,0 +1,219 @@
+#+TITLE: MLM-USE Compiler Issues Found While Writing Examples
+#+AUTHOR: Mayer Goldberg
+#+DATE: 2026-08-28
+
+Both issues below were found empirically, while building the 20
+graph-theoretic examples in =examples/MLM-USE/= and =examples/CatMLM/=,
+using a throwaway harness that calls =USECompilerMLM= / =USECompilerCatUSE=
+directly (the CLI jar has no flag that reaches those entry points). Issue
+1 was a genuine crash and has since been fixed. Issue 2 is a real gap,
+still open, with no code change made -- see its "Resolution" section for
+why.
+
+* Issue 1: an =associationclass= inside a model block crashed a multi-level model [FIXED 2026-08-28]
+
+** Summary
+
+Declaring an =associationclass= inside an ordinary =model ... end= block
+of a multi-level (MLM/CatMLM) specification used to crash the compiler
+with a bare =ClassCastException=, and -- worse -- the crash was silently
+swallowed by a catch-all in =MMultiLevelModel='s constructor, so an
+isolated reproducer with nothing else depending on the broken class would
+print the exception's message as noise and then still report "OK" as if
+compilation had succeeded, handing back a silently-corrupted model. The
+exact same construct declared directly in =inter-classes= (the genuinely
+inter-level scope) always worked correctly -- association classes there
+are unaffected by anything in this issue.
+
+** Root cause (as found)
+
+- =MultiModelFactory.createClass()= / =createAssociation()= build the
+  multi-level-aware =MInternalClassImpl= / =MInternalAssociationImpl= types,
+  but =createAssociationClass()= just delegated to the base
+  =ModelFactory=, producing a plain =MAssociationClassImpl= -- the one
+  factory method not updated to match its siblings.
+- =MMultiLevelModel.addModel()= did
+  =model.classes().forEach(cls -> ((MInternalClassImpl)cls).setMainModel(this))=
+  -- an unconditional cast, no =instanceof= guard, so it threw the moment
+  a model contained an association class.
+- =MMultiLevelModel='s "steal all the fields from the multiModel"
+  constructor wrapped everything in one
+  =catch (Exception e) { System.out.println(e.getMessage()); }= --
+  completely silent, no error count increment, no real error-channel
+  report. Whatever fields hadn't been copied yet when this fired were
+  silently dropped, and the half-built model was still handed back as if
+  nothing had gone wrong.
+
+** Fix implemented
+
+- =MMultiLevelModel.addModel()= now checks every class in the incoming
+  model with =instanceof MInternalClassImpl= *before* the cast, and
+  throws a clear, specific =Exception= naming the offending class and
+  model if the check fails, pointing the user at =inter-classes= or at
+  reifying the link as a plain class instead.
+- The constructor's silent =catch= now rethrows as an unchecked
+  =IllegalStateException= instead of printing and continuing. This
+  required no signature changes anywhere in the call chain:
+  =ASTMultiLevelModel.gen()= already wrapped its call into this
+  constructor (via =MultiLevelModelFactory.createMLM(...)=) in a
+  =try { ... } catch (Exception e) { mlmContext.reportError(fName, e); return null; }=
+  that wasn't previously being exercised for this failure at all (a
+  runtime exception is still an =Exception=), so the existing, correct
+  error-reporting path now handles it for free.
+- Net effect: the construct is now rejected with a clean, single-cause
+  compile error instead of crashing or silently succeeding. Real
+  multi-level support for association classes was *not* added -- see
+  "Considered and rejected" below for why not.
+
+** Regression coverage added
+
+- =use-core/src/test/resources/org/tzi/use/mlmParser/associationclass_in_model_block_fail.use=
+  + matching =.fail= -- the per-model case now fails cleanly with the new
+  message (two lines: the specific cause, then the pre-existing generic
+  "error parsing multi level model" line that
+  =ASTMultiLevelModel.gen()= already appends whenever the per-model
+  generation phase reports any error -- this is pre-existing,
+  checked-in-elsewhere behavior, not something introduced by this fix;
+  see the comment at that throw site).
+- =use-core/src/test/resources/org/tzi/use/mlmParser/associationclass_in_inter_classes.use=
+  -- the =inter-classes= placement of the same construct still compiles
+  cleanly (positive control, no =.fail= file).
+- =USECompilerMLMTestComplex='s expected file count bumped 48 -> 50.
+- Full =use-core= test suite (347 tests) and all 29 files in =examples/=
+  re-verified green after the fix.
+
+** Considered and rejected: real multi-level support for association classes
+
+An association class is simultaneously a class (participates in the
+clabject graph, child/parent : =MClass=) and an association (participates
+in the assoclink graph, child/parent : =MAssociation=) --
+=MMediator= keeps these as two entirely separate maps
+(=fClabjects= / =fAssocLinks=), and the well-definedness checker builds a
+witness for each kind separately (=createObject=for a clabject,
+=createLink= for an assoclink) with no third primitive for "an object
+that is also a link between two other objects." Making a per-model
+association class properly multi-level-aware would mean inventing a new
+edge type that is both at once, plus the consistency rules between its
+class-refinement and association-refinement facets on the same
+declaration -- semantics nobody (including the MLM paper's own authors)
+has committed to. That's a research question, not a bug fix, so it was
+deliberately left out of scope; the clean rejection above is the
+intended, final behavior for this case, not a placeholder.
+
+** Note on the examples directory
+
+=examples/= is reserved for constructs that work, by policy (2026-08-28)
+-- it carries no illustration of the per-model case this issue was about,
+fixed or not. =examples/MLM-USE/InterAssociationClassBridge.use= still
+demonstrates the always-working =inter-classes= placement, since that's
+a genuine working feature, not a workaround for anything.
+
+* Issue 2: an =inter-enums= enum cannot type an attribute inside a =model= block [OPEN]
+
+** Summary
+
+An enum declared in =inter-enums= types an attribute on a genuine
+=inter-classes= class without trouble, but the same enum cannot type an
+attribute declared inside an ordinary =model ... end= block: it fails
+with =Expected type name, found `Status'.=
+
+** Root cause
+
+- =ASTMultiModel.gen()='s =while (mIt.hasNext())= loop fully generates
+  every =model= block (each with its own per-model =MultiContext= bound
+  to that one internal =MModel=) *before* the separate
+  =for (ASTEnumTypeDefinition e : fEnumTypeDefs)= loop that registers
+  inter-enums onto the multi-model -- by construction, no per-model
+  attribute type can ever see an inter-enum, not a wrong-scope-object
+  issue, a strict processing-order one.
+- =ASTSimpleType.gen(Context ctx)= resolves an attribute's type via
+  =ctx.model().enumType(name)=, where =ctx.model()= is the per-model
+  =MInternalModel=, whose own =enumType()= only searches enums declared
+  inside that same model.
+- =MMultiModel.enumType(String name)= already has correct, working
+  qualified (=Model@Enum=) and bare-name (inter-enum) resolution logic --
+  proving the intent that inter-enums should be broadly resolvable -- but
+  it's unreachable from a per-model attribute-type context, both because
+  of the ordering above and because =ctx.model()= there is never the
+  =MMultiModel= itself.
+- =MultiContext= already carries a =mainContext= field, but today it's
+  used only to forward error reports, never for model/type/classifier
+  resolution -- the natural extension point a real fix would use.
+
+** Suggested fixes (not implemented)
+
+1. *Principled fix*: extend =MultiContext='s existing =mainContext=
+   fallback pattern to also cover type/enum resolution in
+   =ASTSimpleType.gen()=, paired with reordering =ASTMultiModel.gen()= to
+   register inter-enums before the per-model loop.
+2. *Cheaper alternative*: pre-seed every per-model enum table with all
+   inter-enums at model-construction time, with the same reordering
+   needed; minor shadowing risk if a per-model enum and an inter-enum
+   ever share a name.
+3. *No-code option*: document as an accepted restriction, since the
+   =inter-classes= workaround already covers the practical need.
+
+** Resolution: not acted on
+
+Deliberately left open. The user's decision, communicated 2026-08-28: no
+action yet, revisit later if it becomes a practical blocker.
+
+** Note on the examples directory
+
+=examples/= is reserved for constructs that work, by policy (2026-08-28)
+-- it carries no illustration of the failing per-model case.
+=examples/MLM-USE/EnumViaInterEnum.use= still demonstrates the
+always-working placement (an inter-enum typing a genuine =inter-classes=
+attribute), since that's a genuine working feature, not a workaround for
+anything.
+
+* Addendum: CatMLM level-order / instanceOf name duplication (2026-08-28)
+
+While discussing Issue 1's fix, a related question came up: does CatMLM's
+=instanceOf= (=:=, a clabject's powerclass reference) need a
+level-qualified spelling to handle a class name that's reused at more
+than one level, and does that require "skipping levels" in a way
+MLM-USE's mediator model can't express?
+
+Checked empirically, both concerns turn out not to apply to the code as
+it stands:
+
+- *Same-level subclassing (=<=) is never ambiguous across levels*:
+  =USECompilerCatUSE.desugar()= resolves a =<= reference only against
+  the declaring level's own class table (=classesByLevel.get(level.name())=).
+- *=instanceOf= is never ambiguous across levels either, but not because
+  of name resolution -- because there's nothing to resolve against*: a
+  CatMLM level's header (=model ID1 < ID2=) names exactly one parent, and
+  the desugarer builds exactly one mediator per level, reusing that one
+  parent's class table
+  (=classesByLevel.get(level.parentName())=) for every clabject in the
+  level. There is no CatMLM syntax today that can even ask for a
+  powerclass from any level other than the declared parent, so a
+  duplicate name elsewhere is simply never consulted.
+- *Plain MLM-USE itself does *not* forbid "skipping levels"*: a mediator
+  resolves its parent purely by name
+  (=mMultiLevelModel.getModel(parentModelName)=), with no adjacency
+  check anywhere -- confirmed by compiling a 3-level spec where the
+  bottom level's clabject instantiates the top level's class directly,
+  bypassing the middle level entirely; it compiled clean and reported
+  =WellDefined=. Whatever restricts "skipping" today lives entirely in
+  CatMLM's one-parent-per-level header, not in MLM-USE's target
+  semantics.
+- Adding a positional "a mediator's parent must be the textually
+  preceding model" check to MLM-USE itself was considered and rejected:
+  it would resurrect exactly the assumption
+  =MMultiLevelModel.checkState()='s own docstring already documents as
+  wrong and fixed away from -- "declaration order != hierarchy order" --
+  since mediators are explicitly free to be declared in any order and
+  name their parent explicitly. MLM-USE's forest-of-named-parents design
+  is deliberately more general than a single linear chain (independent
+  hierarchies side by side, e.g. two mediators both naming the same
+  top-level model as parent, is normal and used by several files in
+  =examples/=), and no coherent invariant in the current design
+  corresponds to "no skipping."
+
+Net effect: nothing to fix in either front-end. Regression coverage
+added (=CatMLMLevelNameDuplicationTest.java=) locks in that reusing a
+class name at every level of a 3-level CatMLM chain, including a
+same-level subclass sharing the name too, still resolves every
+=instanceOf= edge to exactly its own declared parent.

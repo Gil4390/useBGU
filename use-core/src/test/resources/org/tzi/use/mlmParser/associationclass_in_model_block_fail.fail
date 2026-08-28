@@ -1,0 +1,2 @@
+associationclass_in_model_block_fail.use:0:0: Association class `M2@Edge' cannot be declared inside model `M2' of a multi-level model: association classes are not supported inside a `model' block there. Declare it in `inter-classes' instead, or reify the link as a plain class with two ordinary associations.
+associationclass_in_model_block_fail.use:1:4: error parsing multi level model

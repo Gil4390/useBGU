@@ -33,6 +33,15 @@ public class ASTMultiLevelModel extends ASTMultiModel{
             MultiContext multiCtx = new MultiContext(mlmContext.filename(), mlmContext.getOut(), null, mlmContext.modelFactory());
             MMultiModel multiModel = fMultiModel.gen(multiCtx);
             if (multiModel == null){
+                // NOTE: when multiModel is null because ASTMultiModel.gen()'s
+                // own per-model loop already reported a specific cause (e.g.
+                // inherited_roles_are_not_accessible_through_local_constraints
+                // .fail, or the association-class-in-a-model-block rejection
+                // in MMultiLevelModel.addModel()), this generic message is
+                // reported *in addition* to that one, as a second line --
+                // pre-existing, checked-in-test-expected behavior; don't
+                // "fix" this into a single line without also updating every
+                // .fail file in mlmParser/ that already expects both lines.
                 throw new Exception("error parsing multi level model");
             }
             mMultiLevelModel = mlmContext.modelFactory().createMLM(fName.getText(), multiModel);

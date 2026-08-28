@@ -60,8 +60,19 @@ public class MMultiLevelModel extends MMultiModel {
             for (MClassInvariant invariant : multiModel.interConstraints()) {
                 this.addClassInvariant(invariant);
             }
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            // Must NOT silently swallow and continue: whichever fields hadn't
+            // been copied yet when this fired are now permanently missing
+            // from `this`, so returning it as if construction had succeeded
+            // would hand every caller a silently-corrupted MMultiLevelModel
+            // (see known-issues.org, Issue 1, for the associationclass-in-a-
+            // model-block case this was originally found through). Rethrow
+            // unchecked so this constructor's signature doesn't have to
+            // change: ASTMultiLevelModel.gen() already wraps its call to
+            // MultiLevelModelFactory.createMLM(...) in a try/catch(Exception)
+            // that reports the message through the real error channel and
+            // fails the compile cleanly, so this propagates there for free.
+            throw new IllegalStateException(e.getMessage(), e);
         }
         fMediators = new HashMap<>();
     }
@@ -71,6 +82,31 @@ public class MMultiLevelModel extends MMultiModel {
     @Override
     public void addModel(MModel model) throws Exception {
         super.addModel(model);
+
+        // Association classes are not multi-level-aware: MultiModelFactory
+        // .createAssociationClass() builds a plain MAssociationClassImpl
+        // (unlike createClass()/createAssociation(), which build the
+        // MInternalClass/AssociationImpl types every other class in a
+        // multi-level model uses), so a `model ... end` block that declares
+        // one hands us a class here that isn't an MInternalClassImpl. Reject
+        // it with a clear message instead of letting the cast below throw a
+        // bare ClassCastException -- see known-issues.org, Issue 1, and
+        // examples/MLM-USE/WeightedEdgeClass.use for the supported
+        // workaround (reify the edge as a plain class + two associations).
+        // An association class declared directly in `inter-classes` is
+        // unaffected: it never reaches this method at all (interClasses()
+        // is copied via addClass(), not addModel(), in the constructor
+        // above), and continues to work exactly as before.
+        for (MClass cls : model.classes()) {
+            if (!(cls instanceof MInternalClassImpl)) {
+                throw new Exception("Association class `" + cls.name() + "' cannot be " +
+                        "declared inside model `" + model.name() + "' of a multi-level model: " +
+                        "association classes are not supported inside a `model' block there. " +
+                        "Declare it in `inter-classes' instead, or reify the link as a plain " +
+                        "class with two ordinary associations.");
+            }
+        }
+
         model.classes().forEach(cls -> ((MInternalClassImpl)cls).setMainModel(this));
         fModelsList.add(model);
 

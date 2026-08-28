@@ -1,0 +1,36 @@
+MLM associationclass_in_inter_classes
+
+-- Positive counterpart to associationclass_in_model_block_fail.use: the
+-- same kind of associationclass, placed in `inter-classes' instead of a
+-- per-model `model ... end' block, is expected to compile cleanly -- see
+-- known-issues.org, Issue 1.
+
+model M2
+
+class Thing
+end
+
+model M1
+
+class Widget
+end
+
+
+inter-classes
+
+associationclass Edge
+between
+  M2@Thing[*] role a
+  M2@Thing[*] role b
+attributes
+  w : Integer
+end
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject Widget : Thing
+end
+end
