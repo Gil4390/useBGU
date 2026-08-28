@@ -78,7 +78,9 @@ are unaffected by anything in this issue.
 - =use-core/src/test/resources/org/tzi/use/mlmParser/associationclass_in_inter_classes.use=
   -- the =inter-classes= placement of the same construct still compiles
   cleanly (positive control, no =.fail= file).
-- =USECompilerMLMTestComplex='s expected file count bumped 48 -> 50.
+- =USECompilerMLMComplexTest='s (renamed from =USECompilerMLMTestComplex=,
+  2026-08-28, so Surefire's default naming-pattern discovery actually
+  picks it up -- see below) expected file count bumped 48 -> 50.
 - Full =use-core= test suite (347 tests) and all 29 files in =examples/=
   re-verified green after the fix.
 
@@ -217,3 +219,52 @@ added (=CatMLMLevelNameDuplicationTest.java=) locks in that reusing a
 class name at every level of a 3-level CatMLM chain, including a
 same-level subclass sharing the name too, still resolves every
 =instanceOf= edge to exactly its own declared parent.
+
+* Issue 3: two MLM test classes never ran under =mvn test= or CI [FIXED 2026-08-28]
+
+** Summary
+
+While answering "how many tests were added" for this whole engagement,
+diffing test counts before/after turned up a real gap: a plain
+=mvn test= (and CI's =mvn --batch-mode --update-snapshots verify= in
+=.github/workflows/maven.yml=) went from 290 to 347 tests, not 290 to
+349+ as the source-level count of new test methods implied.
+=USECompilerMLMSimple= (26 tests) and =USECompilerMLMTestComplex= (29
+tests, including this file's own Issue 1 regression fixtures) were
+missing entirely from *both* the before and after run -- not a
+regression from this session's work, a pre-existing gap.
+
+** Root cause
+
+This repo's Surefire version (2.12.4) only auto-discovers test classes
+whose name starts with =Test= or ends with =Test=/=TestCase= (the
+plural =*Tests.java= pattern that later Surefire versions also default
+to isn't in effect here -- confirmed empirically: =AllTests.java=, an
+old JUnit3 suite aggregator that explicitly lists both classes, doesn't
+run under a plain =mvn test= either, despite ending in "Tests"). Neither
+=USECompilerMLMSimple= (ends in "Simple") nor
+=USECompilerMLMTestComplex= (ends in "Complex") matches any of
+Surefire's default include patterns, so neither was ever run by a plain
+=mvn test= or by CI's =mvn verify= -- only by an explicit
+=-Dtest=ClassName= selection, which is how every check against them in
+this engagement was actually run.
+
+** Fix implemented
+
+Renamed both files (via =git mv=, preserving history) so their names
+match Surefire's default patterns:
+- =USECompilerMLMSimple.java= -> =USECompilerMLMSimpleTest.java=
+  (class renamed to match)
+- =USECompilerMLMTestComplex.java= -> =USECompilerMLMComplexTest.java=
+  (class renamed to match)
+
+Updated the two references to the old names: =AllTests.java='s
+=addTestSuite(...)= calls, and this file's Issue 1 section.
+
+** Verification
+
+Full =use-core= suite via a plain =mvn test= (no =-Dtest= filter, i.e.
+exactly what CI runs): before this fix, 347 tests (the two renamed
+classes' 55 tests silently absent); after, =402= tests, all passing --
+confirming both classes are now genuinely collected and exercised by
+the same command CI uses.

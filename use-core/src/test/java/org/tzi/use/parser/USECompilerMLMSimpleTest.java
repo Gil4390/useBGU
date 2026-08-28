@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 
-public class USECompilerMLMSimple extends TestCase {
+public class USECompilerMLMSimpleTest extends TestCase {
     private static final boolean VERBOSE = false;
 
     private static File TEST_PATH;

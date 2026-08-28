@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *  </ol>
  *
  */
-public class USECompilerMLMTestComplex extends TestCase {
+public class USECompilerMLMComplexTest extends TestCase {
     private static final boolean VERBOSE = false;
 
     private static File TEST_PATH;
