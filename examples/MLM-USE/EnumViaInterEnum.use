@@ -1,0 +1,39 @@
+-- "inter-enums" -- an enum type owned by no single constituent model,
+-- typing an attribute on a genuine inter-classes class (Marker below),
+-- which is resolved in the multi-model's own context.
+
+MLM EnumViaInterEnum
+
+model Graph
+
+class Node
+end
+
+
+model Groups
+
+class Category
+end
+
+
+inter-enums
+enum Status {Active, Inactive}
+
+
+inter-classes
+class Marker
+attributes
+  status: Status
+end
+
+
+inter-constraints
+context Marker inv StatusIsSet:
+  self.status = Status::Active or self.status = Status::Inactive
+
+
+mediator Graph < NONE
+end
+
+mediator Groups < NONE
+end

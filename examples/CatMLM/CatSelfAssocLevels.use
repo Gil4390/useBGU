@@ -1,0 +1,28 @@
+-- The smallest possible CatMLM file combining catAssociation and
+-- catConstr: a self-association plus an invariant that's cancelled for
+-- every instantiator (SpecialNode included) the moment the association's
+-- own "category" is instantiated further down.
+
+MLM CatSelfAssocLevels
+
+model M2
+
+category Node
+end
+
+catAssociation AdjacentTo between
+  Node[*] role neighbors
+  Node[*] role neighborOf
+end
+
+constraints
+context Node inv NoSelfLoop: catConstr
+  self.neighbors->excludes(self)
+
+
+model M1 < M2
+
+category SpecialNode : Node
+attributes
+  tag: String
+end

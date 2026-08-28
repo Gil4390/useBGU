@@ -1,0 +1,56 @@
+-- Three UML association-end refinement modifiers that no other example
+-- here exercises: "redefines" (SpecialBuddy narrows Buddy's "friend" role
+-- from Node down to SpecialNode, the standard subclass-narrows-an-
+-- inherited-role pattern), and "union"/"subsets" (CloseFriend's "close"
+-- role is declared as a subset of the broader "acquainted" role, which is
+-- itself marked as their union). All three are ordinary same-level USE
+-- features -- included here to contrast with the cross-level mechanisms
+-- (clabject/assoclink) the rest of this directory focuses on, with just
+-- one clabject edge at the end to keep the file connected to the theme.
+
+MLM UnionSubsetsRedefine
+
+model M2
+
+class Node
+end
+
+class SpecialNode < Node
+end
+
+association Buddy between
+  Node[*] role a
+  Node[*] role friend
+end
+
+association SpecialBuddy between
+  SpecialNode[*] role sa
+  SpecialNode[*] role specialFriend redefines friend
+end
+
+association Acquaintance between
+  Node[*] role p1
+  Node[*] role acquainted union
+end
+
+association CloseFriend between
+  Node[*] role q1
+  Node[*] role close subsets acquainted
+end
+
+
+model M1
+
+class NamedNode
+attributes
+  name: String
+end
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject NamedNode : SpecialNode
+end
+end

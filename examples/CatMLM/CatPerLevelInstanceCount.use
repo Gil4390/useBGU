@@ -1,0 +1,30 @@
+-- Contrast this with examples/MLM-USE/InstanceCount.use. A population
+-- bound over allInstances() works fine per level here -- catInvariant's
+-- grammar takes a simpleType (bare class name), never a multiType, so it
+-- can only ever be written against ITS OWN level's own class. There is no
+-- CatMLM way to write InstanceCount.use's FewerSpecialsThanNodes
+-- (comparing two different levels' population counts in one invariant):
+-- there's no inter-constraints section to hold it, and no multiType
+-- syntax in catInvariant to name a class in another level even if there
+-- were one.
+
+MLM CatPerLevelInstanceCount
+
+model M2
+
+category Node
+end
+
+constraints
+context Node inv AtMostTenNodes:
+  Node.allInstances()->size() <= 10
+
+
+model M1 < M2
+
+category SpecialNode : Node
+end
+
+constraints
+context SpecialNode inv AtMostThreeSpecial:
+  SpecialNode.allInstances()->size() <= 3

@@ -1,0 +1,43 @@
+-- A derived attribute (computed from a self-association, not stored) at
+-- M2, inherited unchanged by M1's clabject. The interesting part is
+-- *where* SpecialNode's own bound on it has to live: not in M1's own
+-- "constraints" block -- that section is checked against SpecialNode as
+-- a plain, bare class, before clabject inheritance ever applies, so it
+-- knows nothing about "degree" at all (inherited features, renamed or
+-- not, only exist post-resolution). It has to live in inter-constraints.
+
+MLM DerivedDegree
+
+model M2
+
+class Node
+attributes
+  degree: Integer derive = self.neighbors->size()
+end
+
+association AdjacentTo between
+  Node[*] role neighbors
+  Node[*] role neighborOf
+end
+
+
+model M1
+
+class SpecialNode
+attributes
+  tag: String
+end
+
+
+inter-constraints
+context M1@SpecialNode inv BoundedDerivedDegree:
+  self.degree <= 5
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject SpecialNode : Node
+end
+end

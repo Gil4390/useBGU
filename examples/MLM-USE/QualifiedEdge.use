@@ -1,0 +1,44 @@
+-- Qualified association ends (the "dictionary lookup" association-end
+-- modifier, keyed navigation) combined with assoclink: M1 doesn't inherit
+-- IndexedLink unchanged, it declares its OWN qualified association and
+-- ties it back to M2's via assoclink, role by role -- same mechanism as
+-- examples/MLM-USE/DagRefinement.use, just with qualified ends this time.
+
+MLM QualifiedEdge
+
+model M2
+
+class Node
+end
+
+association IndexedLink between
+  Node[*] role owner
+  Node[*] role targets qualifier(key: Integer)
+end
+
+
+model M1
+
+class RefinedNode
+attributes
+  tag: String
+end
+
+association IndexedRefinedLink between
+  RefinedNode[*] role rOwner
+  RefinedNode[*] role rTargets qualifier(key: Integer)
+end
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject RefinedNode : Node
+end
+
+assoclink IndexedRefinedLink : IndexedLink
+  owner -> rOwner
+  targets -> rTargets
+end
+end

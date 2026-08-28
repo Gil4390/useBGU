@@ -1,0 +1,83 @@
+-- A FOUR-level clabject chain (every other example in this directory
+-- stops at three): M4 Thing -> M3 Node -> M2 ColoredNode -> M1 NamedNode.
+-- Each direct edge renames-and-cancels its own parent's attribute and
+-- invariant (the same restriction examples/MLM-USE/VehicleTaxonomy.use
+-- and examples/MLM-USE/GraphColoring.use establish: a clabject can only
+-- rename/cancel something its DIRECT parent owns, never further up the
+-- chain). The payoff is one inter-constraint chaining allInstances()
+-- comparisons across all four levels at once.
+
+MLM DeepChain4Levels
+
+model M4
+
+class Thing
+attributes
+  id: Integer
+end
+
+constraints
+context Thing inv PositiveId:
+  self.id > 0
+
+
+model M3
+
+class Node
+attributes
+  degree: Integer
+end
+
+constraints
+context Node inv NonNegDegree:
+  self.degree >= 0
+
+
+model M2
+
+class ColoredNode
+attributes
+  color: Integer
+end
+
+
+model M1
+
+class NamedNode
+attributes
+  label: String
+end
+
+
+inter-constraints
+context M1@NamedNode inv InstanceCountsShrink:
+  M1@NamedNode.allInstances()->size() <= M2@ColoredNode.allInstances()->size() and
+  M2@ColoredNode.allInstances()->size() <= M3@Node.allInstances()->size() and
+  M3@Node.allInstances()->size() <= M4@Thing.allInstances()->size()
+
+
+mediator M4 < NONE
+end
+
+mediator M3 < M4
+clabject Node : Thing
+attributes
+  id -> identifier
+constraints
+  ~PositiveId
+end
+end
+
+mediator M2 < M3
+clabject ColoredNode : Node
+attributes
+  degree -> valence
+constraints
+  ~NonNegDegree
+end
+end
+
+mediator M1 < M2
+clabject NamedNode : ColoredNode
+end
+end

@@ -1,0 +1,41 @@
+-- "interPrePost" -- a pre/post-condition specified from inter-constraints
+-- for an operation declared inside one constituent model, multiType-
+-- qualified the same way an interInvariant's context is. No other
+-- example in this directory writes a cross-level pre/post-condition;
+-- every other operation example (examples/MLM-USE/VehicleTaxonomy.use)
+-- only shows that operations are always fully inherited, never that
+-- their contracts can be stated from the inter- layer.
+
+MLM OperationPrePost
+
+model M2
+
+class Node
+operations
+  addLink(n: Node)
+end
+
+association LinkedTo between
+  Node[*] role linked
+  Node[*] role linkedBy
+end
+
+
+model M1
+
+class SpecialNode
+end
+
+
+inter-constraints
+context M2@Node::addLink(n: M2@Node)
+  post: self.linked->includes(n)
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject SpecialNode : Node
+end
+end

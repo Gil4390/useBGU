@@ -1,0 +1,57 @@
+-- The same abstract-graph-to-DAG domain as MLM-USE/DagRefinement.use, in
+-- CatMLM -- and a clean illustration of TWO expressiveness gaps that
+-- example's plain-MLM-USE version doesn't have to work around:
+--
+--   1. No assoclink equivalent at all. catUSE_model's grammar has no
+--      keyword or clause for "this association at my level is what that
+--      association at the level above becomes" -- DirectedEdge below is
+--      just a brand-new, ordinary association, entirely unconnected (as
+--      far as the compiler is concerned) to M2's Edge. Contrast this
+--      with MLM-USE/DagRefinement.use's explicit
+--        assoclink DirectedEdge : Edge
+--          tail -> source
+--          head -> target
+--        end
+--      which has no CatMLM spelling whatsoever.
+--
+--   2. No inter-constraints section at all. There is therefore no way to
+--      write this domain's whole point -- MLM-USE/DagRefinement.use's
+--      Acyclic invariant ("every edge goes from a lower order number to
+--      a higher one") -- anywhere in this file. catLevel's constraints
+--      block only ever attaches to ONE level at a time; nothing in the
+--      grammar can name both M1 and M2 in the same constraint the way
+--      "context M1@OrderedNode inv Acyclic: ..." does in plain MLM-USE.
+--
+-- This isn't a workaround-with-more-typing situation, unlike, say,
+-- CatMLM's missing per-clabject rename (worked around in
+-- CatMLM/VehicleTaxonomy.use by just choosing the final attribute name
+-- up front) -- there is no CatMLM spelling of either gap above, full
+-- stop. Anything genuinely cross-level has to be written in plain
+-- MLM-USE.
+
+MLM DagRefinement
+
+model M2
+category Node
+end
+
+association Edge between
+  Node[*] role tail
+  Node[*] role head
+end
+
+constraints
+context Node inv NoSelfLoop:
+  self.head->excludes(self)
+
+
+model M1 < M2
+category OrderedNode : Node
+attributes
+  order: Integer
+end
+
+association DirectedEdge between
+  OrderedNode[*] role source
+  OrderedNode[*] role target
+end

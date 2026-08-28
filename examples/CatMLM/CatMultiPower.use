@@ -1,0 +1,27 @@
+-- CatMLM's clabject shorthand can instantiate more than one powerclass in
+-- a single statement -- "clabject C : (A, B) end" -- something plain
+-- MLM-USE's "clabject" rule genuinely cannot do directly (its grammar
+-- only ever takes ONE parent class name per clabject statement; see
+-- USEBase.gpart's "clabject ID ':' ID"). Rooted and Labeled are two
+-- unrelated graph-structural properties; RootLabel is simultaneously an
+-- instance of both.
+
+MLM CatMultiPower
+
+model M2
+
+category Rooted
+attributes
+  depth: Integer
+end
+
+category Labeled
+attributes
+  tag: String
+end
+
+
+model M1 < M2
+
+clabject RootLabel : (Rooted, Labeled)
+end

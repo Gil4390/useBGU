@@ -1,0 +1,38 @@
+-- "inter-classes" -- a genuine inter-level class, System, declared
+-- directly in the multi-model, owned by no single constituent model.
+-- That's exactly the one case where a BARE class name (simpleType) is
+-- correct inside inter-constraints/inter-associations, contrasted right
+-- here with Graph@Node, which -- because it DOES belong to one specific
+-- model -- still needs the usual Model@Class (multiType) qualification.
+-- See the reverted-fix note in project memory for why the bare-name
+-- rejection on Graph@Node's kind of reference is deliberate, not a bug.
+
+MLM InterClassHub
+
+model Graph
+
+class Node
+end
+
+
+inter-classes
+class System
+attributes
+  name: String
+end
+
+
+inter-associations
+association Contains between
+  System[1] role owner
+  Graph@Node[*] role elements
+end
+
+
+inter-constraints
+context System inv SystemHasAName:
+  self.name <> ''
+
+
+mediator Graph < NONE
+end

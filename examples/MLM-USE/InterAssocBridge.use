@@ -1,0 +1,40 @@
+-- "inter-associations" -- a section no other example in this directory
+-- uses yet -- lets an association connect classes belonging to TWO
+-- DIFFERENT constituent models directly, with no clabject/mediator
+-- relationship between those models at all: Graph and Groups are both
+-- top-level (mediator ... < NONE), unrelated to each other, and
+-- CategorizedAs is the only thing that ever connects them.
+
+MLM InterAssocBridge
+
+model Graph
+
+class Node
+end
+
+
+model Groups
+
+class Category
+attributes
+  name: String
+end
+
+
+inter-associations
+association CategorizedAs between
+  Groups@Category[1] role category
+  Graph@Node[*] role members
+end
+
+
+inter-constraints
+context Groups@Category inv NonEmptyCategory:
+  self.members->notEmpty()
+
+
+mediator Graph < NONE
+end
+
+mediator Groups < NONE
+end

@@ -1,0 +1,49 @@
+-- The most direct answer to "how many instances of a class can exist":
+-- USE has no dedicated syntax for it (no per-clabject cardinality slot
+-- anywhere in the grammar) -- it's just an ordinary OCL invariant over
+-- Class.allInstances()->size(). What makes it interesting at the
+-- multi-level layer is that allInstances() needs a multiType-qualified
+-- class name (Model@Class) the moment it's used outside that class's own
+-- model, so a bound on a level's population -- or a comparison BETWEEN
+-- two different levels' populations, in one invariant -- can only be
+-- written in inter-constraints, never as a plain model-local constraint.
+
+MLM InstanceCount
+
+model M2
+
+class Node
+attributes
+  label: String
+end
+
+association LinkedTo between
+  Node[*] role linked
+  Node[*] role linkedBy
+end
+
+
+model M1
+
+class SpecialNode
+end
+
+
+inter-constraints
+context M2@Node inv AtMostTenNodes:
+  M2@Node.allInstances()->size() <= 10
+
+context M1@SpecialNode inv AtMostThreeSpecial:
+  M1@SpecialNode.allInstances()->size() <= 3
+
+context M1@SpecialNode inv FewerSpecialsThanNodes:
+  M1@SpecialNode.allInstances()->size() <= M2@Node.allInstances()->size()
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject SpecialNode : Node
+end
+end

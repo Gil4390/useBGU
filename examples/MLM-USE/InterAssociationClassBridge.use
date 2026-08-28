@@ -1,0 +1,38 @@
+-- An inter-level associationclass: Membership isn't owned by either
+-- Graph or Groups, and it has its own attribute (since) and its own
+-- invariant -- it lives in inter-classes as a full inter-level
+-- classifier, its two ends multiType-qualified into the two different
+-- constituent models it bridges. Nothing else in this directory shows an
+-- association carrying its own state and constraints ACROSS models like
+-- this at once.
+
+MLM InterAssociationClassBridge
+
+model Graph
+
+class Node
+end
+
+
+model Groups
+
+class Category
+end
+
+
+inter-classes
+associationclass Membership between
+  Groups@Category[1] role category
+  Graph@Node[*] role members
+attributes
+  since: Integer
+constraints
+  inv PositiveSince: self.since > 0
+end
+
+
+mediator Graph < NONE
+end
+
+mediator Groups < NONE
+end

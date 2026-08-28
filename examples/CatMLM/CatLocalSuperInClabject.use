@@ -1,0 +1,26 @@
+-- A second, alternate spelling of the same information
+-- examples/CatMLM/FusedHeader.use writes on the classifier's own header
+-- ("category RootNode < Node : AbstractNode end"): a standalone
+-- "clabject" statement can carry a same-level "<" edge itself, right
+-- before its own ":" powerclass list --
+--   clabject RootNode < Node; RootNode : AbstractNode end
+-- -- for a classifier (RootNode) that was declared bare, with no clauses
+-- of its own at all.
+
+MLM CatLocalSuperInClabject
+
+model M2
+
+category AbstractNode
+end
+
+
+model M1 < M2
+
+category Node
+end
+
+category RootNode
+end
+
+clabject RootNode < Node; RootNode : AbstractNode end

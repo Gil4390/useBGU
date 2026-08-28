@@ -1,0 +1,49 @@
+-- Two different senses of "how many" side by side, deliberately not
+-- confused with each other:
+--   1. Association-end multiplicity ("Node[0..3] role targets") -- a
+--      structural bound on how many links a SINGLE object may have,
+--      enforced the classic UML way, at declaration time.
+--   2. An inter-constraints population bound over allInstances() -- a
+--      bound on how many OBJECTS may satisfy some condition, which is
+--      genuinely just an invariant, not a declared property at all.
+-- The self-association is declared once at M2 and inherited unchanged by
+-- SpecialNode at M1 -- no assoclink needed, since nothing about it
+-- changes across the edge.
+
+MLM BoundedDegree
+
+model M2
+
+class Node
+end
+
+association LinksTo between
+  Node[0..3] role targets
+  Node[*] role sources
+end
+
+constraints
+context Node inv NoSelfLink:
+  self.targets->excludes(self)
+
+
+model M1
+
+class SpecialNode
+attributes
+  tag: String
+end
+
+
+inter-constraints
+context M1@SpecialNode inv FewSaturatedSpecials:
+  M1@SpecialNode.allInstances()->select(n | n.targets->size() = 3)->size() <= 2
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject SpecialNode : Node
+end
+end

@@ -1,0 +1,37 @@
+-- The "ordered" association-end modifier: a Node's steps along a path
+-- form a Sequence, not a Set. Inherited unchanged by M1's clabject, same
+-- as any other un-refined self-association in this directory.
+
+MLM OrderedPath
+
+model M2
+
+class Node
+end
+
+association PathStep between
+  Node[1] role owner
+  Node[*] role steps ordered
+end
+
+
+model M1
+
+class NamedNode
+attributes
+  name: String
+end
+
+
+inter-constraints
+context M1@NamedNode inv OwnPathNotSelfContaining:
+  self.steps->excludes(self)
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject NamedNode : Node
+end
+end

@@ -1,0 +1,41 @@
+-- A ternary (3-ary) association -- Between, three Node roles at once,
+-- e.g. "b lies between a and c" -- declared once at M2 and inherited as a
+-- whole by M1's clabject with no assoclink, exactly like a binary
+-- self-association would be. n-ary associations aren't special-cased
+-- anywhere in the clabject/assoclink machinery; they inherit the same
+-- way. Paired with a population bound at M1, purely for variety.
+
+MLM TernaryBetween
+
+model M2
+
+class Node
+end
+
+association Between between
+  Node[*] role a
+  Node[*] role b
+  Node[*] role c
+end
+
+
+model M1
+
+class NamedNode
+attributes
+  name: String
+end
+
+
+inter-constraints
+context M1@NamedNode inv AtMostFiveNamed:
+  M1@NamedNode.allInstances()->size() <= 5
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject NamedNode : Node
+end
+end

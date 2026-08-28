@@ -1,0 +1,88 @@
+-- Demonstrates "assoclink" -- the one mechanism no other example in this
+-- directory shows yet -- in a small, purely symbolic graph-theoretic
+-- setting: an abstract, unordered graph refined into a concrete DAG.
+--
+--   M2 Node/Edge         -- an abstract directed graph: just vertices and
+--                            edges, no acyclicity built in (only that an
+--                            edge can't be a self-loop).
+--   M1 OrderedNode/DirectedEdge -- a concrete instance: every node gets a
+--                            topological "order" number, and its OWN,
+--                            separately-declared association
+--                            DirectedEdge -- linked back to M2's Edge via
+--                            "assoclink", not inherited automatically the
+--                            way an unchanged association would be.
+--
+-- Why declare a whole new association instead of just inheriting Edge
+-- unchanged (the way MLM-USE/GraphColoring.use's AdjacentTo is inherited
+-- by ColoredVertex with no assoclink at all)? Because here the roles
+-- themselves change name (tail/head -> source/target) as part of the
+-- refinement -- assoclink is what says "DirectedEdge at M1 is what Edge
+-- at M2 becomes here", role by role:
+--     assoclink DirectedEdge : Edge
+--       tail -> source
+--       head -> target
+--     end
+-- (Read as PARENT role -> CHILD role -- confirmed against the existing
+-- ABCD test fixtures in use-core/src/test/resources/org/tzi/use/mlmParser/,
+-- since the .gpart grammar's own variable names, childRoleName1/
+-- parentRoleName1, actually name the two sides the other way around.)
+--
+-- The real payoff is Acyclic, in inter-constraints: it can ONLY be
+-- stated at M1, because "order" -- the whole reason the constraint is
+-- expressible at all -- doesn't exist until M1. This is the case for
+-- levels existing in the first place: some invariants are simply not
+-- statable in terms of the abstract vertices/edges alone, only once a
+-- concrete refinement adds the extra structure (here, a numbering) that
+-- makes them checkable.
+--
+-- Compare examples/CatMLM/DagRefinement.use, which shows the same domain
+-- and runs into a hard wall trying to express either of these two
+-- things.
+
+MLM DagRefinement
+
+model M2
+
+class Node
+end
+
+association Edge between
+  Node[*] role tail
+  Node[*] role head
+end
+
+constraints
+context Node inv NoSelfLoop:
+  self.head->excludes(self)
+
+
+model M1
+
+class OrderedNode
+attributes
+  order: Integer
+end
+
+association DirectedEdge between
+  OrderedNode[*] role source
+  OrderedNode[*] role target
+end
+
+
+inter-constraints
+context M1@OrderedNode inv Acyclic:
+  self.target->forAll(t | t.order > self.order)
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject OrderedNode : Node
+end
+
+assoclink DirectedEdge : Edge
+  tail -> source
+  head -> target
+end
+end

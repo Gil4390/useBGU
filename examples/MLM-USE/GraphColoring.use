@@ -1,0 +1,101 @@
+-- A 3-level clabject chain over a purely graph-theoretic domain (no
+-- taxonomy, no real-world story): an abstract notion of a graph vertex,
+-- refined step by step into a properly-colored, then labeled, vertex.
+--   M3 Vertex         -- degree only, plus a self-association giving
+--                         every vertex its neighbors.
+--   M2 ColoredVertex   -- instantiates Vertex; renames "degree" to
+--                         "valence" and cancels Vertex's own degree
+--                         invariant at that same edge (replaced by an
+--                         inter-constraint below, same pattern as
+--                         MLM-USE/VehicleTaxonomy.use's wheel rename).
+--   M1 LabeledVertex   -- instantiates ColoredVertex; adds nothing but
+--                         a name -- included just to show a 3-deep
+--                         chain still resolves everything from M3 and
+--                         M2 correctly.
+--
+-- The two things worth studying closely here, both only representable
+-- because MLM-USE (unlike CatMLM) has a real inter-constraints section:
+--
+--   1. NonNegativeValence has to live in inter-constraints, not in M2's
+--      own "constraints" block. A constraint written directly inside
+--      "model M2 ... constraints" is checked against ColoredVertex as a
+--      PLAIN class, before the clabject edge below ever applies its
+--      rename -- at that point ColoredVertex has no "valence" at all,
+--      only its own "color". Only inter-constraints (via "M2@..") sees
+--      the class *after* clabject inheritance/renaming has been
+--      resolved, so that's the only place a constraint can mention an
+--      inherited-and-renamed feature.
+--
+--   2. ProperColoring needs "oclAsType(M2@ColoredVertex)" on the
+--      neighbors it navigates to. AdjacentTo is declared once, on
+--      Vertex at M3, and is inherited unchanged by every level below --
+--      but inheriting a role doesn't change ITS DECLARED TYPE. Statically,
+--      "self.neighbors" is still a Set(M3@Vertex), even when every actual
+--      vertex in the running system is really a ColoredVertex. Reading
+--      ".color" off a neighbor needs an explicit multiType-qualified
+--      downcast; without it, the compiler correctly refuses "color" as
+--      unknown on Vertex.
+
+MLM GraphColoring
+
+model M3
+
+class Vertex
+attributes
+  degree: Integer
+end
+
+constraints
+context Vertex inv NonNegativeDegree:
+  self.degree >= 0
+
+association AdjacentTo between
+  Vertex[*] role neighbors
+  Vertex[*] role neighborOf
+end
+
+
+model M2
+
+class ColoredVertex
+attributes
+  color: Integer
+end
+
+constraints
+context ColoredVertex inv ValidColor:
+  self.color >= 0 and self.color <= 2
+
+
+model M1
+
+class LabeledVertex
+attributes
+  label: String
+end
+
+
+inter-constraints
+context M2@ColoredVertex inv NonNegativeValence:
+  self.valence >= 0
+
+context M2@ColoredVertex inv ProperColoring:
+  self.neighbors->forAll(n | n.oclAsType(M2@ColoredVertex).color <> self.color)
+
+
+mediator M3 < NONE
+end
+
+mediator M2 < M3
+clabject ColoredVertex : Vertex
+attributes
+  degree -> valence
+constraints
+  ~NonNegativeDegree
+end
+end
+
+mediator M1 < M2
+clabject LabeledVertex : ColoredVertex
+end
+end

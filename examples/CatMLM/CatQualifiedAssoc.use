@@ -1,0 +1,22 @@
+-- The qualifier association-end modifier, in CatMLM: catAssociation
+-- reuses the exact same associationEnd grammar rule plain MLM-USE
+-- associations do (see examples/MLM-USE/QualifiedEdge.use), so nothing
+-- about qualifiers needs its own CatMLM spelling at all.
+
+MLM CatQualifiedAssoc
+
+model M2
+
+category Node
+end
+
+catAssociation IndexedLink between
+  Node[*] role owner
+  Node[*] role targets qualifier(key: Integer)
+end
+
+
+model M1 < M2
+
+category SpecialNode : Node
+end

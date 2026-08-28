@@ -1,0 +1,45 @@
+-- The "composition" association kind (as opposed to a plain
+-- "association"), modeling a rooted tree via a self-association: each
+-- Node has at most one parent, any number of children. Combined with the
+-- allInstances()->select(...)->size() idiom to state a genuinely
+-- structural property -- "exactly one root" -- that isn't expressible as
+-- a per-object invariant or a multiplicity at all, only as a population
+-- constraint over the whole extent.
+
+MLM TreeComposition
+
+model M2
+
+class Node
+end
+
+composition ParentOf between
+  Node[0..1] role parent
+  Node[*] role children
+end
+
+constraints
+context Node inv NoSelfParent:
+  self.parent->excludes(self)
+
+
+model M1
+
+class LabeledNode
+attributes
+  label: String
+end
+
+
+inter-constraints
+context M1@LabeledNode inv ExactlyOneRoot:
+  M1@LabeledNode.allInstances()->select(n | n.parent->isEmpty())->size() = 1
+
+
+mediator M2 < NONE
+end
+
+mediator M1 < M2
+clabject LabeledNode : Node
+end
+end
